@@ -1,0 +1,122 @@
+\documentclass{book}
+
+\usepackage{listings}
+\usepackage{color}
+\usepackage{colortbl}
+
+
+\definecolor{dkblue}{rgb}{0,0.1,0.5}
+\definecolor{lightblue}{rgb}{0,0.5,0.5}
+\definecolor{dkgreen}{rgb}{0,0.4,0}
+\definecolor{dk2green}{rgb}{0.4,0,0}
+\definecolor{dkviolet}{rgb}{0.6,0,0.8}
+
+\def\lstlanguagefiles{defManSSR.tex}
+\lstset{language=SSR}
+
+% Highlights identifiers, |* id *| in underlined red, can we do better?
+\lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
+
+\title{The Book}
+\author{Assia, Enrico}
+
+\begin{document}
+\maketitle
+\tableofcontents{}
+
+\part{The art of formalizing}
+
+\chapter{Computational Thinking}\label{ch:compthink}
+
+This chapter should motive the activity of formalizing mathematics
+with the {\bf Coq} proof assistant, emphasizing its computing skills,
+and as opposed to other foundations like HOL. However the challenge is
+to keep mathematicians as the privileged target, while motivating the
+ssr approach to a CS oriented reader.
+
+See \verb+../coq/ch0.v+.
+
+Aim of the chapter:
+\begin{itemize}
+\item should sound natural and easy to a CS person (but with the ssr twist)
+\item should sound different but well motivated to a Coq user (do show, maybe in
+  the exercises, that leqn is 100 times better than "Inductive le").  Try to
+  reproduce the shock we had the first time we used Boolean predicates.  It may
+  help to compare, in the *advanced* section, the approach with the standard
+  one, so that one sees two proof scripts in the same page.
+\end{itemize}
+
+\chapter{Logics}
+
+From calculability to proofs, hence the CC, and the fact that
+reasoning principles without a computational content become axioms.
+
+This is a non technical chapter and message should be:
+\begin{itemize}
+\item instantiation of a universal statement is application
+\item Excluded middle is not available by default (choice?)
+\item Conversion as a pervasive indistinguishably, what inside
+  (beta, definition unfolding,...)
+\item Dependent types: eq, sigma (which example?)
+\end{itemize}
+\chapter{Programming}
+
+Presentation of inductive data structures, recursive programs on these
+datas.
+Bool, Boolean connectives, Boolean reflection (cf
+ch. \ref{ch:compthink}), views.
+Examples of equality tests ($==$, with a forward reference to
+explain the magic if needed), operations on sequences, nats,
+exercises on prime, div.
+
+\chapter{Proofs by case, recurrence}
+
+Where one learns to do proofs, in particular on things defined in the
+previous chapter, associated tactics, exercises on prime, div,
+binomial, etc.
+
+\chapter{Mixing datas and proofs}
+Boolean sigma types, records, coercions, UIP. Examples: ordinals,
+tuples (not their use which requires CS).
+
+\chapter{Type inference}
+
+Implicit arguments (Is it possible to survive without implicit
+argument up to this point? We should probably use them plus forward
+references to here), canonical structures. Combining with
+notations. Now the real $==$, tuples.
+\chapter{Hierarchy}
+Packaging records, the bigop hierarchy.
+Scaling with packed classes and mixins, to the ssralg
+hierarchy. Presentation of the content of ssralg in terms of structures
+and of the theory? Should the latter be a separate chapter.
+
+\part{Mathematics in Mathematical Components}
+
+\chapter{Finite group theory}
+
+\chapter{Numbers}
+
+\chapter{Linear algebra}
+
+\chapter{Representation theory}
+
+\chapter{Character theory}
+
+\chapter{Galois}
+
+\chapter{Real closed fields}
+
+\chapter{Algebraic closure}
+
+\part{Annexes}
+
+\chapter{What is done where?}
+
+\chapter{How tos}
+
+\chapter{Naming conventions}
+
+\chapter{Index of notations}
+
+\end{document}
