@@ -62,7 +62,7 @@ This is a non technical chapter and message should be:
 \chapter{Programming}
 
 Presentation of inductive data structures, recursive programs on these
-datas.
+data.
 Bool, Boolean connectives, Boolean reflection (cf
 ch. \ref{ch:compthink}), views.
 Examples of equality tests ($==$, with a forward reference to
@@ -77,16 +77,19 @@ proofs on things defined in the
 previous chapter, associated tactics, exercises on prime, div,
 binomial, etc.
 
-\chapter{Mixing datas and proofs}
+\chapter{Mixing data and proofs}
 Boolean sigma types, records, coercions, UIP. Examples: ordinals,
-tuples (not their use which requires CS).
+tuples (not their use which requires CS). This chapter might come
+after some presentation of basic canonical structures, i.e. reorganize
+the content between this chapter and the next.
 
-\chapter{Type inference}
+\chapter{Type inference/Genericity}
 
 Implicit arguments (Is it possible to survive without implicit
 argument up to this point? We should probably use them plus forward
 references to here), canonical structures. Combining with
-notations. Now the real $==$, tuples.
+notations. Now the real $==$, tuples. 
+
 \chapter{Hierarchy}
 Packaging records, the bigop hierarchy.
 Scaling with packed classes and mixins, to the ssralg
@@ -97,15 +100,26 @@ and of the theory? Should the latter be a separate chapter.
 
 \chapter{Numbers}
 
+Axiomatization, order is defined from norm, partial orders (in
+particular for complex numbers).
+
+\chapter{Polynomials, Linear algebra}
+
+2-stage presentation: interface plus explicit. Expansion of
+Georges'ITP paper. Here is one of the main application of the choice
+operator (complement a base).
+
 \chapter{Finite group theory}
 
-\chapter{Linear algebra}
+Data-structures, how to craft the set of variants of a same theorem to
+make the formalization handy. Permutations. Presentations?
 
-\chapter{Representation theory}
+\chapter{Representation theory, Character theory}
 
-\chapter{Character theory}
+As an example of application, in particular of the linear algebra
+theory.
 
-\chapter{Galois}
+\chapter{Galois Theory}
 
 \chapter{Real closed fields}
 
@@ -116,7 +130,18 @@ and of the theory? Should the latter be a separate chapter.
 \chapter{What is done where?}
 
 \chapter{How tos}
-
+suggestions:
+\begin{itemize}
+\item Get more information when you do not understand the error
+  message
+\item Search in the library
+\item Canonical structures: define a new instance
+\item Canonical structures: add a new structure
+\item Give a relevant name to the lemma I just stated
+\item Forbid unwanted expansions
+\item Choose a notation (what not to do...)
+\item Compute ``for real'' (Natbin, Coqeal)
+\end{itemize}
 \chapter{Naming conventions}
 
 \chapter{Index of notations}
