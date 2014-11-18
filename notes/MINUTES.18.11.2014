@@ -1,0 +1,33 @@
+Try to implement a 'packed-classes' plugin in order to
+systematize/automate/hide the verbosity of declaring new instance (and
+hence adding a new structure) in a hierarchy of packed classes.
+
+Technicalities
+
+It seems that the best available solution as of today is LaTeX, we
+mentionned:
+- TeXmacs but it is not sure it scales to a book
+- coqdoc but the pdf rendering is ugly plus we will have lots of math
+symbols
+
+Other question: do we plan to have an other format that pdf? Yves
+mentionned ebooks. Probably no.
+
+-> decision: good old latex.
+
+Cyril mentions tryocaml for complement, teaching oriented,
+material. Everyone agrees that it is good/mandatory to have a sort of
+"course", lecture material.
+
+Yves about the process in the CoqArt sources:
+
+- a perl script 
+
+- it recognizes the portions of text between special
+  delimiters and put them in a separate file. There is a key for each portion,
+with a number. Then the output of the Coq execution is stored in a
+  third file. There is a single Coq file per chapter. The keys are
+  used to separate the output which is parsed back and included in the
+  LaTeX sources.
+
+- Caveat : inlined code was not executed by the device.
