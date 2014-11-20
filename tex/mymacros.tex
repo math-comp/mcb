@@ -1,0 +1,16 @@
+
+\definecolor{dkblue}{rgb}{0,0.1,0.5}
+\definecolor{lightblue}{rgb}{0,0.5,0.5}
+\definecolor{dkgreen}{rgb}{0,0.4,0}
+\definecolor{dk2green}{rgb}{0.4,0,0}
+\definecolor{dkviolet}{rgb}{0.6,0,0.8}
+
+\def\lstlanguagefiles{defManSSR.tex}
+\lstset{language=SSR}
+
+% Highlights identifiers, |* id *| in underlined red, can we do better?
+\lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
+
+% to be made nice
+\newcommand{\mantra}[1]{\framebox[\width]{\parbox{\textwidth}{mantra: #1}}}
+\newcommand{\gotcha}[1]{\framebox[\width]{\parbox{\textwidth}{gotcha: #1}}}

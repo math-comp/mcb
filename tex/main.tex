@@ -1,50 +1,30 @@
 \documentclass{book}
 
 \usepackage{listings}
-\usepackage{color}
+\usepackage{xcolor}
 \usepackage{colortbl}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+\usepackage{marginnote}
 
 
-\definecolor{dkblue}{rgb}{0,0.1,0.5}
-\definecolor{lightblue}{rgb}{0,0.5,0.5}
-\definecolor{dkgreen}{rgb}{0,0.4,0}
-\definecolor{dk2green}{rgb}{0.4,0,0}
-\definecolor{dkviolet}{rgb}{0.6,0,0.8}
-
-\def\lstlanguagefiles{defManSSR.tex}
-\lstset{language=SSR}
-
-% Highlights identifiers, |* id *| in underlined red, can we do better?
-\lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
+\input{mymacros.tex}
 
 \title{The Book}
-\author{Assia, Enrico}
+\author{Assia, Enrico, \ldots (you are welcome)}
 
 \begin{document}
 \maketitle
 \tableofcontents{}
 
+\input{ch0.tex}
+
 \part{The art of formalizing}
-
-\chapter*{Computational Thinking}\label{ch:compthink}
-
-This chapter should motive the activity of formalizing mathematics
-with the {\bf Coq} proof assistant, emphasizing its computing skills,
-and as opposed to other foundations like HOL. However the challenge is
-to keep mathematicians as the privileged target, while motivating the
-ssr approach to a CS oriented reader.
-
-See \verb+../coq/ch0.v+.
-
-Aim of the chapter:
-\begin{itemize}
-\item should sound natural and easy to a CS person (but with the ssr twist)
-\item should sound different but well motivated to a Coq user (do show, maybe in
-  the exercises, that leqn is 100 times better than "Inductive le").  Try to
-  reproduce the shock we had the first time we used Boolean predicates.  It may
-  help to compare, in the *advanced* section, the approach with the standard
-  one, so that one sees two proof scripts in the same page.
-\end{itemize}
 
 \chapter{Logics}
 
@@ -53,12 +33,23 @@ reasoning principles without a computational content become axioms.
 
 This is a non technical chapter and message should be:
 \begin{itemize}
-\item instantiation of a universal statement is application
+\item instantiation of a universal statement is application (also the pair)
 \item Excluded middle is not available by default (choice?)
 \item Conversion as a pervasive indistinguishably, what inside
   (beta, definition unfolding,...)
 \item Dependent types: eq, sigma (which example?)
 \end{itemize}
+
+One options is: avoid relating type theory and other logics. We say:
+we have a formal game where the basic elements are programs/functions
+that come with types to avoid confusion. full stop. (no relation with
+proof theory, set theory). maybe mention that roots are in calculability (hence
+the choice to pick functions as primitive and not sets). This is lucky because
+(computable) functions are today executable by a computer.  Still not all
+concepts are "computable" hence some principles are problematic: EM,.... we
+mainly stay in the lucky fragment (again no propaganda on intuitionistic logic,
+constructive math; just a mention).
+
 \chapter{Programming}
 
 Presentation of inductive data structures, recursive programs on these
@@ -77,18 +68,42 @@ proofs on things defined in the
 previous chapter, associated tactics, exercises on prime, div,
 binomial, etc.
 
+spec? A new vernacular to declare specs without typing coinductive and
+by writing explicitly the equations.
+
+\chapter{Type inference/Genericity}
+
+put here a minimalistic presentation of records.
+
+Implicit arguments (Is it possible to survive without implicit
+argument up to this point? We should probably use them plus forward
+references to here), canonical structures. Combining with
+notations. Now the real $==$. 
+
 \chapter{Mixing data and proofs}
 Boolean sigma types, records, coercions, UIP. Examples: ordinals,
 tuples (not their use which requires CS). This chapter might come
 after some presentation of basic canonical structures, i.e. reorganize
 the content between this chapter and the next.
 
-\chapter{Type inference/Genericity}
+example of tuples here? better ordinals?
 
-Implicit arguments (Is it possible to survive without implicit
-argument up to this point? We should probably use them plus forward
-references to here), canonical structures. Combining with
-notations. Now the real $==$, tuples. 
+GG: makes many points here (not fully understood by Enrico):
+\begin{itemize}
+\item ordinals/tuples are easy to use but hard to build
+\item it is a tradeoff, but is not clear if we can give hints on when
+	a specific datatype like ordinals is better that unpackaged
+	stuff.
+\end{itemize}
+
+UIP is advanced, the basic user should just be told that putting
+bools inside a record is just fine.
+
+\begin{itemize}
+	\item record (flat)
+	
+\end{itemize}
+
 
 \chapter{Hierarchy}
 Packaging records, the bigop hierarchy.
@@ -96,13 +111,50 @@ Scaling with packed classes and mixins, to the ssralg
 hierarchy. Presentation of the content of ssralg in terms of structures
 and of the theory? Should the latter be a separate chapter.
 
-\chapter{Larger scale reflection}
+Maybe a plugin for a new vernacular to script the creation/declaration
+of structures/instances so that the level basic can touch the argument
+easily.
+
+Explain what the abstraction barrier is (like unfolding a GRing projection)
+
+\gotcha{if you see GRing.toto then you broke an abstraction barrier}
+
+\mantra{
+	if you have a proof in mind, don't let the system drive you
+        to another, less clean and abstract, proof.
+}
+
+Declaring an instance is hard... we need to document the multuiple processes 
+for each structure in each hierarchy and possibily make a program out of it.
+
+\chapter{Larger scale reflection (out of place)}
 Four colours, decomposition in primes, example in peterfalvi. In
 particular example where a case analysis does not follow the
 constructors of an existing inductive type: then craft an ad hoc one
 to hint the proof. This topic is probably at a wrong place.
 
 \part{Mathematics in Mathematical Components}
+
+\section{STYLE of these chapters}
+These chapters hopefully in the following style:
+\begin{itemize}
+\item first math mode to review the (not so standard) definitions and
+\item then touch some real proof script to show why/how the definition
+  make it possible to model the proofs (as they are in math)
+\item use the (few) examples to illustrate a cool proof strategy if
+  any (not necessarily typical of the math subject, but that happens to
+  be there, like in OOTHM paper: circular leq, symmetries, ad hoc
+  decision procedure, ...)
+\item try hard to show how CIC helps (which feature: HO, computation, dependent
+	types \ldots), so that at the end we can sum up and make a synthesis of
+	all that.
+\end{itemize}
+
+Maybe it is simpler to do it in 2 steps:
+1) in this second part one identifies where CIC or the SSR style plays a
+   crucial role
+2) then we advertise these use cases in the first part to motivate
+   the techniques, the complexity of the logic...
 
 \chapter{Numbers}
 

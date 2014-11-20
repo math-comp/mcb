@@ -1,0 +1,101 @@
+\setcounter{chapter}{-1}
+\chapter{The essence of math comp}
+
+\section{challenges faced and tools adopted}
+(tools in a broad sense, the logic is a tool, coq is a tool, the plugin
+is a tool, the ssr style is a tool,...)
+
+Challenges:
+\begin{itemize}
+\item large body (scale up), make proofs small and robust.
+	We need to say that we do use "deterministic automation".
+	Use Laurent's data on de bruijn factor.
+\item model the use of math notations, their role in proofs, model proofs (also
+	it is about reasoning, not just computations). Another way to say that
+	is: model Bourbaki (rationalization of Math via structure/interfaces)
+	but not the first book (set theory) that is replaced by CIC (link with
+	section computational thinking).
+\end{itemize}
+
+We build on Coq and an extension.  The main tools follow (in random order):
+
+\section{Computational Thinking}\label{ch:compthink}
+
+This section should motive the activity of formalizing mathematics
+with the {\bf Coq} proof assistant, emphasizing its computing skills,
+and as opposed to other foundations like HOL. However the challenge is
+to keep mathematicians as the privileged target, while motivating the
+ssr approach to a CS oriented reader.
+
+See \verb+../coq/ch0.v+.
+
+Aim of the chapter:
+\begin{itemize}
+\item should sound natural and easy to a CS person (but with the ssr twist)
+\item should sound different but well motivated to a Coq user (do show, maybe in
+  the exercises, that leqn is 100 times better than "Inductive le").  Try to
+  reproduce the shock we had the first time we used Boolean predicates.  It may
+  help to compare, in the *advanced* section, the approach with the standard
+  one, so that one sees two proof scripts in the same page.
+\end{itemize}
+
+\section{logic programming ... type inference}
+to model proof search, give a meaning to notations, teach coq the
+work an informed reader does (contextualizing otherwise ambiguous
+notations, knowledge of interface/instance of algebraic structures).
+
+relation with proof search: no "blind" proof search (easy, ad-hoc, pervasive
+v.s. advanced, generalistic, potentially expensive and unstable).
+
+\section{automation in tactics}
+the main points:
+\begin{itemize}
+\item 1/3 is rewrite, term selection/search (one does not need to reach a sub
+	formula as a goal in order to make progress for example, no monkey
+	puzzle as in GG terminology).
+\item Create a formula without writing it: some advanced forms of forward
+	reasoning tactics to deal with symmetries, generalizations (boils down
+	to syntesize the cut formula out of the minimum possible user input, as
+	in a text where one says "similarly to that, we can also prove that".
+	(this is not very pervasive, dunno if it is worth putting it here in
+	this chapter).  Also elim does that. (technically also rewrite, but we
+	may want to separate things)
+\end{itemize}
+This section is were one talks about the plugin, and some of the main design
+points of tactics: compositional (a language, not a list of commands),
+predictable (documented!!!), finally compact (symbols for uninteresting steps).
+
+\section{discipline}
+MAKE an howto out of that.
+Maybe one should also add a few notes on the style in scripts? like:
+\begin{itemize}
+\item you must be able to model (at least) 1 proof step in a sentence (line),
+  e.g. "rewrite preparegoal dostep ?cleanup."
+\item uninteresting/recurrent lemmas/steps should be small (short names, easy to
+  gray out)
+\item lemma statements are designed, not just written, having in mind their use
+      (forward, backward, implicit argumets, arguments order)
+      and the class of trivial hypotheses since an extra hyp that is proable
+      triviality (via //, hint resolve, cnaonical) is for free. E.g.
+      "x \\is a toto", "0 <= n", ...
+\item also not every possible lemma, but a few that combine well
+\item proofs/definitions are reworked many times, why (understand recurrent
+  proof schemas, compact, factor, make more stable/robust) and what is needed
+  (like meaningful names, clear structure)
+\end{itemize}
+
+\section{trivial=implicit (for a trained mathematician)}
+The idea is to try to identify what is trivial (mathematically speaking)
+and be sure you can model it as such:
+\begin{itemize}
+\item (level basic) make explicit the trivialities of each theory (what one
+	expects to be proved by //). 
+\item (level advanced) when you do new stuff, you must decide what is
+	trivial/implicitly proved.
+\item (hard) which technique to make Coq prove it automatically (hint resolve,
+	canon, comput... in the type)
+\end{itemize}
+
+This may also be another way present the whole chapter
+
+\mantra{(basic) if you see toto=false you should perform the case analysys via fooP}
