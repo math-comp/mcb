@@ -1,16 +1,125 @@
-
+% vim:set errorformat="":
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+\usepackage{marginnote}
+\usepackage{wrapfig}
+\usepackage{graphicx}
+\usepackage{lipsum}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage[skins,listings]{tcolorbox}
+\usepackage{boolexpr,ifthen}
 \definecolor{dkblue}{rgb}{0,0.1,0.5}
 \definecolor{lightblue}{rgb}{0,0.5,0.5}
 \definecolor{dkgreen}{rgb}{0,0.4,0}
 \definecolor{dk2green}{rgb}{0.4,0,0}
 \definecolor{dkviolet}{rgb}{0.6,0,0.8}
+\definecolor{mantra}{rgb}{1.0,0.5,0}
 
 \def\lstlanguagefiles{defManSSR.tex}
 \lstset{language=SSR}
+\newcommand{\mcbimpl}[1]{\lstinline/?$_{#1}$/}
+\newcommand{\mcbimplm}[1]{\mbox{?}_{#1}}
 
 % Highlights identifiers, |* id *| in underlined red, can we do better?
 \lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
 
-% to be made nice
-\newcommand{\mantra}[1]{\framebox[\width]{\parbox{\textwidth}{mantra: #1}}}
 \newcommand{\gotcha}[1]{\framebox[\width]{\parbox{\textwidth}{gotcha: #1}}}
+
+\newcolumntype{V}{>{\centering\arraybackslash} m{0\linewidth} }
+
+\newcommand{\mantra}[1]{
+\begin{center}
+\begin{tcolorbox}[colframe=mantra,
+	center title,
+	title={\textcolor{white}{\textsf{\Large\textbf{Mantra}}}}]
+\begin{tabular}{lV}
+\begin{minipage}{0.86\textwidth}
+\vspace{1em}
+\large
+#1
+\end{minipage}
+&
+\coqhead{1cm}
+\end{tabular}
+\end{tcolorbox}
+\end{center}}
+
+\newcommand{\coqhead}[1]{\includegraphics[width=#1]{../artwork/smallpantade}}
+
+\newcommand{\mcbpplevel}[1]{
+\switch[#1=]
+\case{1}
+\case{2} \hspace{0.6cm} \coqhead{0.6cm}
+\case{3} \coqhead{0.6cm} \coqhead{0.6cm}
+\otherwise Plase use \textbackslash mcbLEVEL
+\endswitch
+}
+
+\newcommand{\mcbvarreset}{
+\mcbLEARN{Please use \textbackslash mcbLEARN}
+\mcbREQUIRE{Please use \textbackslash mcbREQUIRE}
+\mcbPROVIDE{Please use \textbackslash mcbPROVIDE}
+\mcbNOTES{}
+\mcbLEVEL{4}}
+
+\newcommand{\mcbLEARN}[1]{\def\mcbvarLEARN{#1}}
+\newcommand{\mcbREQUIRE}[1]{\def\mcbvarREQUIRE{#1}}
+\newcommand{\mcbPROVIDE}[1]{\def\mcbvarPROVIDE{#1}}
+\newcounter{mcbvarLEVEL}
+\newcommand{\mcbLEVEL}[1]{\setcounter{mcbvarLEVEL}{#1}}
+\newcommand{\mcbNOTES}[1]{\def\mcbvarNOTES{#1}}
+\newcounter{mcbvarTMP}
+
+\newcommand{\mcbsection}[1]{
+\setcounter{mcbvarTMP}{1}
+\ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
+\section{#1}
+\smash{\raisebox{0.7cm}{\hspace{0.85\textwidth}\mcbpplevel{\value{mcbvarLEVEL}}}}
+\marginnote{\small\begin{tabular}{p{3.8cm}}\hline
+\textbf{Learns} \mcbvarLEARN \\
+\textbf{Requires} \mcbvarREQUIRE \\
+\textbf{Provides} \mcbvarPROVIDE \\
+\textbf{Level} \arabic{mcbvarLEVEL} \\
+\switch[\value{mcbvarTMP}=]
+\case{0}
+\case{1} \textbf{Note} \mcbvarNOTES \\
+\endswitch
+\hline
+\end{tabular}\\~\\
+\mcbvarreset{}
+}}
+
+\mcbvarreset{}
+
+\newtcblisting[auto counter]{coq}[1]{
+	listing engine=listings,
+	listing options={numbers=left,numberstyle=\tiny,
+	                 aboveskip=0mm,belowskip=0mm,
+		         xrightmargin=0mm,xleftmargin=0mm},
+	%on line,
+	before={\noindent},
+	after={\hfill},
+	listing only,
+	fonttitle=\sffamily\bfseries,
+	#1
+}
+\newtcblisting{coqout}[1]{
+	listing engine=listings,
+	listing options={aboveskip=0mm,belowskip=0mm,
+	                 xrightmargin=0mm,xleftmargin=0mm},
+	%on line,
+	before={\noindent},
+	after={\hfill},
+	listing only,
+	fonttitle=\sffamily\bfseries,
+	#1
+}
+

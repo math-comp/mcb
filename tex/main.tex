@@ -1,19 +1,7 @@
 \documentclass{book}
 
-\usepackage{listings}
-\usepackage{xcolor}
-\usepackage{colortbl}
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
-}
-\usepackage{marginnote}
-
-
 \input{mymacros.tex}
+\input{myacronyms.tex}
 
 \title{The Book}
 \author{Assia, Enrico, \ldots (you are welcome)}
@@ -71,14 +59,7 @@ binomial, etc.
 spec? A new vernacular to declare specs without typing coinductive and
 by writing explicitly the equations.
 
-\chapter{Type inference/Genericity}
-
-put here a minimalistic presentation of records.
-
-Implicit arguments (Is it possible to survive without implicit
-argument up to this point? We should probably use them plus forward
-references to here), canonical structures. Combining with
-notations. Now the real $==$. 
+\input{chTypeInference}
 
 \chapter{Mixing data and proofs}
 Boolean sigma types, records, coercions, UIP. Examples: ordinals,
