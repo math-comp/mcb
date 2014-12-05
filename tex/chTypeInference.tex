@@ -7,14 +7,14 @@ how to read Math (step 1)}
 The rules of the \mcbCIC{} are expressed on the syntax on terms and
 are implemented by the kernel of \Coq{}.  Such software component
 performs \emph{type checking}: given a term and type it checks if such
-term has the given type.  Terms are very verbose since a lot of
-information has to be made explicit in order to make type checking
-decidable.  
+term has the given type.  To keep type checking simple and decidable
+the syntax of terms makes all information explicit. As a consequence
+the terms written in such verbose syntax are pretty large.
 
 Luckily the user very rarely interacts directly with the kernel.
-Instead she almost always interact with the refiner, a software
+Instead she almost always interacts with the refiner, a software
 component that is able to accept open terms.  Open terms are in
-general way smaller than regular terms because some information is
+general way smaller than regular terms because some information can be
 left implicit.  In particular one can omit any subterm by writing
 ``\lstinline/_/'' in place of it.
 \marginnote{ I'm a bit uneasy about citations, here I think I want to
@@ -23,7 +23,7 @@ They are good readings but a arbitrary and not easy to find.
 We should define a policy for citations.} 
 Each missing piece of information is either reconstructed
 automatically by the \emph{type inference} algorithm, or provided
-interactive later by means of proof commands.  In this chapter we
+interactively by means of proof commands.  In this chapter we
 focus on type inference.
 
 Type inference is \emph{ubiquitous}: whenever the user inputs a term
@@ -41,7 +41,7 @@ the library of already formalized facts.  In this way one can make the
 type inference algorithm aware of the contents of the library and
 make \Coq{} behave as a trained reader that is able to guess the
 intended meaning of a mathematical expressions from the context
-and thanks to his background knowledge.
+thanks to his background knowledge.
 
 Introducing the reader to the type inference algorithm and helping her
 to make good use of it is the ultimate goal of this chapter.
@@ -58,22 +58,24 @@ The type inference algorithm is quite similar to the type checking
 one: it recursively traverses a term checking that each subterm has a
 type compatible with the type expected by its context.  During type
 checking types are compared taking computation into account.  Terms
-that are compared as equal are said to be \emph{convertible}.
+that compare as equal are said to be \emph{convertible}.
 Termination of reduction and uniqueness of normal forms provide
 guidance for implementing the convertibility test, for which a
 complete and sound algorithm indeed exists.  Unfortunately type
-inference works on open terms, and this turns convertibility into a
-much harder problem called \emph{higher order unification}.  The
+inference works on open terms, and this fact turns convertibility into
+a much harder problem called \emph{higher order unification}.  The
 special placeholder ``\lstinline/_/'', usually called \emph{implicit
 argument}, may occur inside types and stands for one, and only one,
 term that is not explicitly given.  Type inference does not check if
 two types are convertible, it checks if they unify.
 Unification is allowed to assigning values to implicit arguments in order
 to make the resulting terms convertible.  For example unification is
-expected to solve the unification problem comparing \lstinline/(list _)/
-with \lstinline/(list nat)/ by choosing the value \lstinline/nat/
-for the placeholder.  Thanks to this assignment the two types
-become trivially convertible.
+expected find an assignment that makes the type
+\lstinline/(list _)/ convertible to \lstinline/(list nat)/.
+By picking the value \lstinline/nat/ for the placeholder
+the two types become syntactically equal and hence convertible. 
+% Unification shall fix the value of an implicit argument only if it
+% is strictly needed.
 
 Unfortunately it is not hard to come up with classes of examples where
 guessing appropriate values for implicit arguments is, in general, not
@@ -82,11 +84,12 @@ search in presence of higher order constructs.
 For example to unify \lstinline/(prime _)/ with
 \lstinline/true/ one has to guess a prime number. Remember that
 \lstinline/prime/ is a boolean function that fed with a natural
-numbers returns either \lstinline/true/ or \lstinline/false/.
-While \lstinline/2/ would be a perfectly valid solution, it is clear
-that it is not the only one.  Notice that enumerating all possible
-values until one finds a valid one is not a general
-solution, since the good value may not exist.  Just think at the
+number returns either \lstinline/true/ or \lstinline/false/.
+While assigning \lstinline/2/ to the implicit argument
+would be a perfectly valid solution, it is clear
+that it is not the only one.  Enumerating all possible
+values until one finds a valid one is not a good strategy
+either, since the good value may not exist.  Just think at the
 problem \lstinline/(prime (4 * _))/ versus \lstinline/true/.  An even
 harder class of problems is the one of synthesizing programs.
 Take for example the unification problem \lstinline/(_ 17)/ versus
@@ -96,18 +99,17 @@ constructor? Or maybe, is it a factorization algorithm?
 Given that there is no silver bullet for higher order unification
 \Coq{} makes a sensible design choice: provide an (almost)
 heuristic-free algorithm and let the user extend it via an extension
-language.  We will refer to such language as the language of
+language.  We refer to such language as the language of
 \emph{Canonical Structures}.  Despite being a very restrictive language,
-it sufficient to let one program a wide panel of very useful
-functionalities.  The one described in this chapter is notation
-overloading.
+it sufficient to program a wide panel of useful functionalities.  The
+one described in this chapter is notation overloading.
 
 The concrete syntax for implicit arguments, an underscore character,
-does not let one name the missing piece of information\footnote{This
-may change in Coq 8.5}.  If an expression contains multiple occurrence
+does not let one name the missing piece of information.\footnote{This
+may change in Coq 8.5}  If an expression contains multiple occurrence
 of the placeholder ``\lstinline/_/'' they are all considered as
 potentially different by the system, and hence hold (internally)
-unique names.  For the sake of clarity we will take the freedom to
+unique names.  For the sake of clarity we take the freedom to
 use the alternative syntax \mcbimpl{x} for implicit arguments (where
 $x$ is a unique name).
 
@@ -116,11 +118,12 @@ $x$ is a unique name).
 \mcbREQUIRE{have, move, exact}
 \mcbPROVIDE{Arguments (setting implicit)}
 \mcbLEVEL{1}
-\mcbsection{Type inference at work}
+\mcbsection{Type inference by examples}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Lets start with the simplest example: defining the polymorphic identity
-function and checking its application to \lstinline/3/.
+Lets start with the simplest example one could imagine: defining the
+polymorphic identity function and checking its application to
+\lstinline/3/.
 
 \begin{coq}{width=8cm,title=Polymorphic identity}
 Definition id (A : Type) (a : A) : A := a.
@@ -140,21 +143,21 @@ the term.  Type inference found a value for the place holder
 for us by proceeding in the following way:  it traversed the term
 recursively from left to right, ensuring that the type of each
 argument of the application had the type expected by the function.  In
-particular \lstinline/id/ expects two arguments.
+particular \lstinline/id/ takes two arguments.
 The former argument is expected to have type \lstinline/Type/ and the
-user left such argument implicit (we name it \mcbimpl{t}).   Type
-inference imposes that \mcbimpl{t} has type \lstinline/Type/, and this
+user left such argument implicit (we name it \mcbimpl{A}).   Type
+inference imposes that \mcbimpl{A} has type \lstinline/Type/, and this
 constraint is satisfiable.  The algorithm continues checking the
-arguments.  According to the definition of \lstinline/id/ the type of
+remaining argument.  According to the definition of \lstinline/id/ the type of
 the second argument must be the value of the first argument.  Hence
 type inference runs recursively on the argument \lstinline/3/
 discovering it has type \lstinline/nat/ and imposes that it unifies
-with the value of the first argument (that is \mcbimpl{t}).  For this
-to be true \mcbimpl{t} has to be assigned the value \lstinline/nat/.
+with the value of the first argument (that is \mcbimpl{A}).  For this
+to be true \mcbimpl{A} has to be assigned the value \lstinline/nat/.
 As a result the system prints the input term, where the place holder
 has been replaced by the value type inference assigned to it.
 
-At the light of that we see that every time we apply the identity
+At the light of that we observe that every time we apply the identity
 function to a term we can omit to specify its first argument,
 since \Coq{} is able to infer it and complete the input term for us.
 This phenomenon is so frequent that one can ask the system to insert
@@ -175,12 +178,12 @@ id 3 : nat
 
 The \lstinline/Arguments/ directive ``documents'' the constant
 \lstinline/id/.  In this case it just marks then argument that has to
-be marked as implicit by surrounding it with curly braces.
+be considered as implicit by surrounding it with curly braces.
 The declaration of implicit arguments can be locally disabled by
-prefixing the name of the constant with \lstinline/@/.
+prefixing the name of the constant with the \lstinline/@/ symbol.
 
 Another piece of information that if often left implicit is
-the type of abstracted variables.
+the type of abstracted or quantified variables.
 
 \begin{coq}{title=Omitting type annotations,width=7cm}
 Check (fun x => @id nat x).
@@ -209,8 +212,8 @@ of type \lstinline/nat/.
 
 The kind of information filled in by type inference can also be of
 another, more interesting, nature.  So far all place holders were
-standing for types, but an \lstinline/_/ can also be used in place of
-a term.
+standing for types, but the user is also allowed to put \lstinline/_/
+in place of a term.
 
 \begin{coq}{title=Inferring a term,width=7cm}
 Lemma example q : prime q -> 0 < q.
@@ -247,22 +250,21 @@ well typed, its type is \lstinline/(1 < q)/ and the place holder
 has been set to be \lstinline{q}.
 As we did for the identity function we can declare the \lstinline/p/
 argument of \lstinline/prime_gt1/ as implicit.  \marginnote{maybe also
-tell why one does not need two underscores in the last line}.
-Declaring implicit arguments of lemmas is be tricky and requires one
-to think ahead how the lemma will be used.
-Section~\ref{sec:declaringimpl} is dedicated to it.
+tell why one does not need two underscores in the last line}
+Choosing a good  declaration of implicit arguments for lemmas is
+tricky and requires one to think ahead how the lemma is used.
+Section~\ref{sec:declaringimpl} is dedicated to that.
 
 So far type inference and in particular unification has been used in
 its simplest form, and indeed a first order unification algorithm
 incapable of computing or synthesizing functions would have sufficed.
 In the next section we introduce the encoding of the relations that
-will be at the base of the declarative, logic, programs we will use to
-extend the unification in the higher order case.
-
-As of today there is not precise documentation of the type inference
-and unification algorithms implemented in \Coq{}.  For a technical
-presentation of a type inference algorithm close enough to the one
-of \Coq{} we suggest the interested reader to
+is at the base of the declarative programs we write to
+extend unification in the higher order case.
+As of today there is no precise, published, documentation of the type
+inference and unification algorithms implemented in \Coq{}.  For a
+technical presentation of a type inference algorithm close enough to
+the one of \Coq{} we suggest the interested reader to
 consult~\cite{DBLP:journals/corr/abs-1202-4905}.  The reader
 interested in a technical presentation of a simplified version of the
 unification algorithm implemented in \Coq{} can
@@ -285,7 +287,7 @@ The peculiarity of the records we are going to use is that they are
 dependently typed: the type of each field is allowed to depend on
 the values of the fields that precedes it.
 
-\Coq{} provides syntactic sugar for declaring record types:
+\Coq{} provides syntactic sugar for declaring record types.
 
 \begin{coq}{}
 Record eqType : Type := Pack {
@@ -312,10 +314,10 @@ Definition eq_op (c : eqType) : sort c -> sort c -> bool :=
   let: Pack _ f := c in f.
 \end{coq}
 
-Note that the first projection is used in order to define the
-type of the second projection.
+Note that the type dependency between the two fields requires the first
+projection to be used in order to define the type of the second projection.
 
-We think of the \lstinline/eqType/ data type as a relation linking a
+We think of the \lstinline/eqType/ record type as a relation linking a
 data type with a comparison function on that data type.  Before
 putting the \lstinline/eqType/ relation to good use we declare an
 inhabitant of such type, that we call an \emph{instance}, and we
@@ -348,9 +350,10 @@ Eval simpl in eq_op nat_eqType.
 
 \marginnote{Maybe simpl is already explained?}
 Given that \lstinline/(sort nat_eqType)/ and \lstinline/nat/
-are convertible, we can use the two terms interchangeably.
-The same holds for \lstinline/(eq_op nat_eqType)/ and \lstinline/eqn/.
-Thanks to these facts \Coq{} can type check the following term:
+are convertible, equal up to computation, we can use the two terms
+interchangeably.  The same holds for \lstinline/(eq_op nat_eqType)/
+and \lstinline/eqn/.  Thanks to this fact \Coq{} can type check the
+following term:
 
 \begin{coq}{width=5.5cm}
 Check (eq_op nat_eqType 3 4).
@@ -362,9 +365,12 @@ eq_op nat_eqType 3 4 : bool
 This term is well typed, but checking it is not as simple as one may
 expect.
 The \lstinline/eq_op/ function is applied to three arguments.
-The first one is \lstinline/nat_eqType/.  The following ones
-are expected of to be of type \lstinline/(sort nat_eqType)/
-but \lstinline/3/ and \lstinline/4/ are of type \lstinline/nat/.
+The first one is \lstinline/nat_eqType/ and its type,
+\lstinline/eqType/, is trivially equal to the one expected by
+\lstinline/eq_op/.
+The following two arguments are hence expected of to be of type
+\lstinline/(sort nat_eqType)/ but \lstinline/3/ and \lstinline/4/ are
+of type \lstinline/nat/.
 Recall that unification takes computation into account exactly as the
 convertibility relation.  In this case the unification algorithm
 unfolds the definition of \lstinline/nat_eqType/ obtaining
@@ -382,19 +388,30 @@ infix symbol $*$ to denote any ring multiplication.  A typical
 computer science example is the use of the same infix
 \lstinline/==/ symbol to denote the comparison over any data type.
 Of course the underlying operation one intends to use depends on
-the values it is applied to, or better their type\footnote{
+the values it is applied to, or better their type.\footnote{
 Actually the meaning of a symbol in math is even deeper: by writing $a
 * b$ one expects the reader to figure out from the context which ring
 we are talking about, recall its theory, and use this knowledge to
-eventually justify the steps that will follow in a proof.  This very
+eventually justify the steps that follow in a proof.  This very
 same approach let us also model this practice, but we discuss it only
-in the next chapter}.
-Using records as relations will let us model these practices.  In the
-rest of this chapter we will focus on the overloading of the
-\lstinline/==/ symbol.
+in the next chapter}
+Using records lets us model these practices.
+Note that, thanks to its higher order nature, the term \lstinline/eq_op/
+can always be the head symbol denoting a comparison.  This makes
+it possible to recognize, hence print, comparisons in a uniform way
+as well as to input them.  On he contrary, in the simpler expression
+\lstinline/(eqn 3 4)/ the name of the head symbol is very specific to
+the type of the objects we are comparing.  Also note that
+polymorphism, in the sense of the \lstinline/ML/ programming language,
+is not what we are looking for, since it would impose the comparison
+function to behave uniformly on every type.  What we are looking
+for is closer to the ad-hoc polymorphism of the \lstinline/Haskell/
+programming language or the notion of subtyping provided by object
+oriented languages.
 
-To model overloading we first have to define another comparison
-function:
+In the rest of this chapter we focus on the overloading of the
+\lstinline/==/ symbol and we start by defining another comparison
+function, this time for the \lstinline/bool/ data type.
 
 \begin{coq}{}
 Definition eqb (a b : bool) := if a then b else (not b).
@@ -402,8 +419,9 @@ Definition bool_eqType : eqType := Pack bool eqb.
 \end{coq}
 
 \marginnote{I need the reader to know something about Notation}
-Now we can define a notation that applies to any occurrence of
-\lstinline/eq_op/.
+Now the idea is to define a notation that applies to any occurrence
+of the \lstinline/eq_op/ head constant and use such
+notation for both printing and parsing.
 
 \begin{coq}{title=Overloaded notation,width=7cm}
 Notation "x == y" := (eq_op _ x y).
@@ -416,19 +434,19 @@ true == false : bool
 3 == 4 : bool
 \end{coqout}
 
-The notation is used by \Coq{} for both printing and parsing.
-
 As a printing rule, the place holder stands for a wild card: the
-notation will be used no matter the value of the first argument of
-\lstinline/eq_op/.  As a result both occurrences of \lstinline/eq_op/
-are printed with the infix \lstinline/==/ symbol.  Of course the two
-operations are different, they are specific to the type of the
-arguments and the typing we saw above ensures the arguments match the
-type of the function.
+notation be used no matter the value of the first argument of
+\lstinline/eq_op/.  As a result both occurrences of \lstinline/eq_op/,
+line 2 and 3, are printed using the infix \lstinline/==/ syntax.
+Of course the two operations are different, they are specific to the
+type of the arguments and the typing discipline ensures the
+arguments match the type of the comparison function packaged in
+the record.
 
-When interpreted as a parsing rule, the place holder is interpreted
-as a itself: type inference is expected to find a value for it.
-Unfortunately such notation does not work as a parsing rule yet.
+When the notation is used as a parsing rule, the place holder is
+interpreted as a itself: type inference is expected to find a value
+for it.  Unfortunately such notation does not work as a parsing rule
+yet.
 
 \begin{coq}{title=Error,width=6cm}
 Check (3 == 4).
@@ -445,17 +463,19 @@ If we replay the type inference steps seen before, the unification
 step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
 \lstinline/(sort $\mcbimplm{e}$)/ versus \lstinline/nat/.
-
 This problem falls in one of the problematic classes we presented in
-Section~\ref{sec:hounif}.
+Section~\ref{sec:hounif}: the system has to synthesize a comparison
+function.
+
 \Coq{} gives up, leaving to the user the task of extending the
-algorithm with a program able to solve unification problems
-of the form \lstinline/(sort $\mcbimplm{e}$)/ versus \lstinline/T/ for any
-\lstinline/T/.  Given the current context it seems reasonable to
-use write an extension that picks \lstinline/nat_eqType/ when
-\lstinline/T/ is  \lstinline/nat/ and \lstinline/bool_eqType/ when
-\lstinline/T/ is  \lstinline/bool/.  In the language of Canonical
-Structures such program is expressed as follows.
+unification algorithm with a program that is able to solve
+unification problems of the form \lstinline/(sort $\mcbimplm{e}$)/
+versus \lstinline/T/ for any \lstinline/T/.
+Given the current context it seems reasonable to write an
+extension that picks \lstinline/nat_eqType/ when \lstinline/T/ is
+\lstinline/nat/ and \lstinline/bool_eqType/ when \lstinline/T/ is
+\lstinline/bool/.  In the language of Canonical Structures such
+program is expressed as follows.
 
 \begin{coq}{title=Declaring Canonical Structures}
 Canonical nat_eqType.
@@ -463,7 +483,7 @@ Canonical bool_eqType.
 \end{coq}
 
 The keyword \lstinline/Canonical/ was chosen to stress that the
-program is deterministic: each type  \lstinline/T/ will be related to
+program is deterministic: each type  \lstinline/T/ is related to
 (at most) one \emph{canonical} comparison function.
 
 \begin{coq}{title=Testing CS Inference,width=6cm}
@@ -477,33 +497,60 @@ true == false : bool
 = false
 \end{coqout}
 
-More precisely the canonical solutions registers are indexed in
-a table like the following one
+The mechanics of the small program we wrote using the
+\lstinline/Canonical/ keyword can be explained using the
+global table of canonical solutions.
+Whenever a record instance is declared as canonical \Coq{}
+adds to such table an entry for each field of the record type.
 
-\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
-projection & value & solution & rec calls \\ \hline
-\lstinline/sort/ & \lstinline/nat/ & \lstinline/nat_eqType/ & \\
-\lstinline/sort/ & \lstinline/bool/ & \lstinline/bool_eqType/ &  \\
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+projection & value & solution \\ \hline
+\lstinline/sort/ & \lstinline/nat/ & \lstinline/nat_eqType/  \\
+\lstinline/sort/ & \lstinline/bool/ & \lstinline/bool_eqType/   \\
+%\lstinline/eq_op/ & \lstinline/eqn/ & \lstinline/nat_eqType/  \\
+%\lstinline/eq_op/ & \lstinline/eqb/ & \lstinline/bool_eqType/   \\
 \hline
 \end{tcolorbox}
 
-When a unification problem has the shape
-\lstinline/(projection $\mcbimplm{solution}$)/ versus \lstinline/value/
-such table is looked up to find the corresponding solution for
-\mcbimpl{solution}.
+Whenever a unification problem wit the following shape is encountered,
+the table of canonical solution is consulted.
+\begin{center}
+\lstinline/(projection $\mcbimplm{S}$)/ ~~versus~~ \lstinline/value/
+\end{center}
+The table is looked up using as keys the projection name and the
+value.  The corresponding solution is assigned to the implicit
+argument \mcbimpl{S}.
 
-That makes this approach scale well to a large library is that once a
-relation like \lstinline/eqType/ has been defined and a notation
-associated to it one can, a posteriori, hook a new new type in.  For
-example a user defining new data type with a comparison function can
-immediately take advantage of the boilerplate based on
-\lstinline/eqType/ by simply declaring a canonical structure.
-To recognize use extensible stuff we use the \lstinline/Structure/
-keyword instead of \lstinline/Record/: record is just for aggregating
-data type, while structures are for interfaces one can hook a new
-data type in.
+In the table we reported only the relevant entries.  Entries
+corresponding to the \lstinline/eq_op/ projection play no role
+and in the \mcbMC{} library the name of such projections is
+usually omitted to signal that fact.
 
-TODO: explain why first class
+What makes this this approach interesting for a large library is that
+record types can play the role of interfaces.  Once a record type has
+been defined and some functionality associated to it, like a notation,
+one can easily hook a new concept up by defining a corresponding
+record instance and declaring it canonical.  One gets immediately all
+the functionalities tied to such interface work on the new concept.
+For example a user defining new data type with a comparison function
+can immediately take advantage of the overloaded \lstinline/==/
+notation by packing the type and the comparison function in an
+\lstinline/eqType/ instance.
+
+This pattern is so widespread and important that the \mcbMC{}
+consistently uses the synonym keyword \lstinline/Structure/ in place of
+\lstinline/Record/ in order to make record types playing the role
+of interfaces easily recognizable.
+
+Records are first class values in the \mcbCIC{}.  As we have seen
+projections are no special, they are simple functions that pattern
+match on an inductive data type to access the record fields.  Being
+first class citizens means that one can write a term that combines
+the fields of two records and builds a new record.  Thanks to this
+fact the language of Canonical Structures is able to forge
+new record instances by combining the existing ones via a set
+of user definable combinators.  This is the subject of the next
+section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{derived instances}
@@ -515,8 +562,8 @@ TODO: explain why first class
 
 So far we have used the \lstinline/==/ symbol terms whose type is
 atomic, like \lstinline/nat/ or \lstinline/bool/.  If we try for
-example to use it on terms of a compound type like
-\lstinline/(nat * bool)/ we encounter the following error.
+example to use it on terms whose type was built using a type
+constructor like the Cartesian product we encounter an error.
 
 \begin{coq}{title=Error,width=6cm}
 Check ((3,true) == (false,4)).
@@ -527,33 +574,69 @@ Error: complete this
 with the real error
 \end{coqout}
 
-This is not completely unexpected: we taught \Coq{} how to compare
-booleans and natural number, not how to compare pairs.  The obvious
-way to compare pairs is to compare them pairwise.  Let's write a
-comparison function for pairs. \marginnote{Do we have Sections here}
+The term \lstinline/(3,true)/ has type \lstinline/(nat * bool)/ and,
+so far, we only taught \Coq{} how to compare booleans and natural
+numbers, not how to compare pairs.
+Intuitively the way to compare pairs is to compare their components
+\emph{using the appropriate comparison function}.
+Let's write a comparison function for pairs. \marginnote{Do we have
+the Sections mechanism here?}
 
-\begin{coq}{title=Recursive canonical structure}
+\begin{coq}{title=Comparing pairs}
 Definition prod_cmp eqA eqB x y :=
   eq_op eqA x.1 y.1 && eq_op eqB x.2 y.2.
+\end{coq}
+
+What is interesting about this comparison function is that the
+pairs \lstinline/x/ and \lstinline/y/ are not allowed to have
+an arbitrary, product, type here.  The typing constraints imposed
+by the two \lstinline/eq_op/ occurrences forces the type of
+\lstinline/x/ and \lstinline/y/ to be
+\lstinline/(sort eqA * sort eqB)/.  This means
+that the records \lstinline/eqA/ and \lstinline/eqB/ hold
+a sensible comparison function for, respectively, terms of
+type \lstinline/(sort eqA) and \lstinline/(sort eqB)/.
+
+It is not sufficient to pack together the Cartesian product type
+constructor and this comparison function in an \lstinline/eqType/
+instance to extend the canonical structures inference machinery
+with a new combinator.
+
+\begin{coq}{title=Recursive canonical structure}
 Definition prod_eqType (eqA eqB : eqType) : eqType :=
   Pack (sort eqA * sort eqB) (cmp_pair eqA eqB)
 Canonical prod_eqType.
 \end{coq}
 
-Note that the instance \lstinline/prod_eqType/ has two parameter
-of the same nature.  Declaring such instance as canonical generates
-a program with two recursive calls able to tackle the following
-unification problem: \lstinline/(sort ?$_e$)/ versus
-\lstinline/(T1 * T2)/.
-Whenever such problem is faced it is reduced to the two smaller
-problems \lstinline/(sort ?$_{e1}$)/ versus \lstinline/T1/ and
-\lstinline/(sort ?$_{e2}$)/ versus \lstinline/T2/.  If both are solved,
-and hence we have a value $v_1$ for ?$_{e1}$ and
-$v_2$ for ?$_{e2}$, then the original problem is solved too
-by picking \lstinline/(prod_eqType $v_1$ $v_2$)/ for
-\lstinline/?$_e$/.
+The global table of canonical solutions is extended as follows.
 
-Going back to our example:\marginnote{no idea if that output can be
+\noindent
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center title,tabularx={ll|l|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+projection & value & solution & combines solutions for \\ \hline
+\lstinline/sort/ & \lstinline/nat/ & \lstinline/nat_eqType/ & \\
+\lstinline/sort/ & \lstinline/bool/ & \lstinline/bool_eqType/ &  \\
+\lstinline/sort/ & \lstinline/T1 * T2/ & \lstinline/prod_eqType pA pB/
+	& \lstinline/pA/ $\leftarrow$ (\lstinline/sort/,\lstinline/T1/),
+	  \lstinline/pB/ $\leftarrow$ (\lstinline/sort/,\lstinline/T2/)\\
+\hline
+\end{tcolorbox}
+
+The third column is empty for base instances while it contains
+the recursive calls for instance combinators.  With the updated
+table when the unification problem
+\begin{center}
+\lstinline/(sort $\mcbimplm{e}$)/ ~~versus~~ \lstinline/(T1 * T2)/
+\end{center}
+is encountered a solution for \mcbimpl{e} is found by proceeding
+in the following way.  Two new unification problems are generated:
+\lstinline/(sort $\mcbimplm{eqA}$)/ versus \lstinline/T1/ and
+\lstinline/(sort $\mcbimplm{eqB}$)/ versus \lstinline/T2/.  If both
+are successful and \lstinline/v1/ is the solution for
+\mcbimpl{eqA} and \lstinline/v2/ for \mcbimpl{eqB}, the solution for
+\mcbimpl{e} is \lstinline/(prod_eqType v1 v2)/.
+
+After the table of canonical solutions has been extended our example
+is accepted.\marginnote{no idea if that output can be
 produce by \Coq{}}
 
 \begin{coq}{title=Example,width=5.3cm}
@@ -567,25 +650,124 @@ eq_op
  (3,true) (false,4) : bool
 \end{coqout}
 
-The canonical structure index gets updated to
-
-\noindent
-\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center title,tabularx={ll|l|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
-projection & value & solution & rec calls \\ \hline
-\lstinline/sort/ & \lstinline/nat/ & \lstinline/nat_eqType/ & \\
-\lstinline/sort/ & \lstinline/bool/ & \lstinline/bool_eqType/ &  \\
-\lstinline/sort/ & \lstinline/T1 * T2/ & \lstinline/prod_eqType pA pB/
-	& \lstinline/pA/ = rec(\lstinline/sort/,\lstinline/T1/),
-	  \lstinline/pB/ = rec(\lstinline/sort/,\lstinline/T2/)\\
-\hline
-\end{tcolorbox}
-
-
+\marginnote{
 Make other examples? Other overloaded stuff: maybe and example of
-how to hook up to \lstinline/\in/ .
+how to hook up to infix in ? or locked? or whatever?
+In any case a table with ``all'' the interfaces should probably be
+part of the book
+}
 
-Say we can express functions by recursion over the syntax of
-types, but also terms when they are injected into a type.
+In the running example of this chapter we use the canonical structures
+language to express structurally recursive programs on the syntax
+of types.  The \mcbCIC{} allows arbitrary terms to occur inside
+types.  As a consequence the language of canonical structure can
+express also structurally recursive programs on the syntax
+of terms.  This capability is used, for example, in the next
+chapter to related Monoid laws to function symbols to model
+the syntax and theory of iterated, ``big'', operators.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{Coercions}
+\mcbREQUIRE{}
+\mcbPROVIDE{}
+\mcbLEVEL{1}
+\mcbsection{Other aspects of type inference}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Even if the main way to extend the type inference algorithm
+is via Canonical Structures, another mechanism is available
+and used all over the library, even if it plays a minor role.
+The language of Canonical Structures lets one program how the value of
+an implicit argument can be synthesized, but can hardly be used to
+explain \Coq{} how to ``fix'' an ill-typed term written by the user.
+
+When a typing error arises, it always involves three objects:
+a term \lstinline/t/, its type \lstinline/ity/ and the type
+expected by its context \lstinline/ety/.  Of course, for this
+situation to be an error, the two types \lstinline/ity/ and
+\lstinline/ety/ do not compare as equal.
+The simplest way one has to explain \Coq{} how to fix \lstinline/t/,
+is to provide a functional term \lstinline/c/ of type 
+\lstinline/(ity -> ety)/ that is inserted around \lstinline/t/.
+In other words, whenever the user writes \lstinline/t/ in a context
+that expects a term of type \lstinline/ety/, the system instead of
+raising an errors replaces \lstinline/t/ by \lstinline/(c t)/.
+
+A function automatically inserted by \Coq{} to prevent a type
+error is called \emph{coercion}.
+The most pervasive coercion in the \mcbMC{} library is
+\lstinline/is_true/ that lets one write statements using boolean
+predicates.\marginnote{I guess in a way or another is true has
+already been introduced}.
+
+\begin{coq}{title=Coercion \lstinline/is_true/,width=6cm}
+Lemma example : prime 27.
+Proof.
+Set Printing Coercions.
+by [].
+Qed.
+\end{coq}
+\begin{coqout}{title=Goal after line 3,width=6cm}
+==================
+is_true (prime 27)
+\end{coqout}
+
+The statement of the example is processed by type inference,
+it is enforced to be a type, but \lstinline/(prime 27)/ is actually
+a term of type \lstinline/bool/.  Early in the library the
+function \lstinline/is_true/ is declared as a coercion from
+\lstinline/bool/ to \lstinline/Prop/ and hence is it inserted
+by \Coq{} automatically.
+
+\begin{coq}{}
+Definition is_true b := b = true.
+Coercion is_true : bool >-> Sortclass. (* Prop *)
+\end{coq}
+
+Another coercion that is widely used injects booleans into naturals.
+Two examples follow.
+
+\begin{coq}{}
+Fixpoint count (a : pred T) (s : seq T) :=
+  if s is x :: s' then a x + count s' else 0.
+Lemma count_uniq_mem s x : uniq s -> count_mem x s = (x \in s).
+\end{coq}
+
+In line number 2 the term \lstinline/a x/ is a boolean.  The
+\lstinline/nat_of_bool/ function is automatically inserted to turn
+\lstinline/true/ into 1 and \lstinline/false/ into 0.
+Similarly, in the last line the membership test is turned into
+a number, that is shown to be equivalent to the count of any
+element in a list that is duplicate free.
+
+Another example of a coercion that is related to the running example
+of the current chapter is \lstinline/sort/.  Typically the projection
+of a record type extracting the data type is declared as a coercion
+letting one state generic theorems like in the following example.
+
+\begin{coq}{}
+Lemma  (e : eqType) : forall x y : e, x == y -> ...
+\end{coq}
+
+Here the type of \lstinline/x/ and \lstinline/y/ is
+\lstinline/(sort e)/ and \lstinline/e/ as the user initially wrote.
+Indeed \lstinline/e/ is a term (or type \lstinline/eqType/) while
+the \lstinline/forall/ quantification expects a type after the
+colon.  The \lstinline/sort/ function mapping an \lstinline/eqType/
+into a \lstinline/Type/ is inserted automatically.
+
+
+Another device that is used to help type inference is the
+\lstinline/Implicit Types/ directive.
+
+\begin{coq}{}
+Implicit Types m n : nat.
+\end{coq}
+
+Explain.
+
+Concluding remarks about coercions and their positioning w.r.t.
+literature: they don't model sub typing, CS do.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
@@ -597,8 +779,13 @@ types, but also terms when they are injected into a type.
 
 here we describe how to choose which arguments are implicit,
 that one has to think ahead how  a lemma is used and hence
-which data type inference will have at hand.  Also that the order
-of quantifiers is relevant.  Maybe compare with eapply.
+which data type inference has at hand.  Also that the order
+of quantifiers is relevant.
+\begin{itemize}
+\item lemmas: fwd/backward reasoning
+\item equations, look at the concl too, free vars are abstracted
+\item compare with eapply style
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
@@ -608,8 +795,12 @@ of quantifiers is relevant.  Maybe compare with eapply.
 \mcbsection{Declaring overloaded notations}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-I guess nosimpl (or Arguments) goes here, plus a little discussion
-about scopes, the effect \lstinline/%R/ when using a bigop lemma.
+Notations must be stable.
+\begin{itemize}
+\item Arguments nosimpl
+\item + that becomes * with a CS inference
+\item scopes the effect \lstinline/%R/ when using a bigop lemma.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Implement \lstinline/[foo of nat]/}
@@ -622,3 +813,30 @@ about scopes, the effect \lstinline/%R/ when using a bigop lemma.
 One does a minimal presentation of phantoms here, so pave the way to
 the 2 stars section in next chapter where one defines the smart
 constructor of an algebraic structure.
+\begin{itemize}
+\item lifting a term into a type
+\item notations are untyped
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{difference with type classes, limitations}
+\mcbREQUIRE{RecCanonical,Coqercions}
+\mcbPROVIDE{}
+\mcbLEVEL{2}
+\mcbsection{Discussion about type inference}\label{sec:typeinfrelated}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The points I want to make are:
+\begin{itemize}
+\item during type inference, HO infers (morally) the minimum
+	info necessary to make things well typed (if we were 1st order
+	that would really be true).
+	hence we KNOW when CS inference is triggered EXACTLY.
+	this is a big difference w.r.t. type classes. It is like a
+	Prolog program where goals are reordered randomly
+\item I also want to talk about the overlapping instances problem,
+	that is ``easy'' with TC, hard with CS and envisage an
+	extension.
+\item limitation of coercions, from both the usability perspective and
+	the expressive power they offer
+\end{itemize}
