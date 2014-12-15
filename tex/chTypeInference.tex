@@ -233,7 +233,7 @@ pr_q : prime q
 \end{coqout}
 
 The proof begins by giving the name \lstinline/pr_q/ to the assumption
-\lstinline/prime q/.  Then it builds a proof term by hand using
+\lstinline/(prime q)/.  Then it builds a proof term by hand using
 the lemma stated in the previous example and names it \lstinline/q_gt1/.
 In the expression \lstinline/(prime_gt1 _ pr_q)/ the place holder,
 that we name \mcbimpl{p}, stands for a natural number.
@@ -435,7 +435,7 @@ true == false : bool
 \end{coqout}
 
 As a printing rule, the place holder stands for a wild card: the
-notation be used no matter the value of the first argument of
+notation is used no matter the value of the first argument of
 \lstinline/eq_op/.  As a result both occurrences of \lstinline/eq_op/,
 line 2 and 3, are printed using the infix \lstinline/==/ syntax.
 Of course the two operations are different, they are specific to the
@@ -444,7 +444,7 @@ arguments match the type of the comparison function packaged in
 the record.
 
 When the notation is used as a parsing rule, the place holder is
-interpreted as a itself: type inference is expected to find a value
+interpreted as an implicit argument: type inference is expected to find a value
 for it.  Unfortunately such notation does not work as a parsing rule
 yet.
 
@@ -458,14 +458,15 @@ with the real error
 \end{coqout}
 
 If we unravel the notation the input term is really
-\lstinline/(eq_op _ 3 4)/. We name the placeholder \mcbimpl{e}.
+\lstinline/(eq_op _ 3 4)/. We name the place holder \mcbimpl{e}.
 If we replay the type inference steps seen before, the unification
 step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
 \lstinline/(sort $\mcbimplm{e}$)/ versus \lstinline/nat/.
 This problem falls in one of the problematic classes we presented in
 Section~\ref{sec:hounif}: the system has to synthesize a comparison
-function.
+function (or better a record instance containing a comparison
+function).
 
 \Coq{} gives up, leaving to the user the task of extending the
 unification algorithm with a program that is able to solve
@@ -512,7 +513,7 @@ projection & value & solution \\ \hline
 \hline
 \end{tcolorbox}
 
-Whenever a unification problem wit the following shape is encountered,
+Whenever a unification problem with the following shape is encountered,
 the table of canonical solution is consulted.
 \begin{center}
 \lstinline/(projection $\mcbimplm{S}$)/ ~~versus~~ \lstinline/value/
@@ -595,9 +596,9 @@ by the two \lstinline/eq_op/ occurrences forces the type of
 \lstinline/(sort eqA * sort eqB)/.  This means
 that the records \lstinline/eqA/ and \lstinline/eqB/ hold
 a sensible comparison function for, respectively, terms of
-type \lstinline/(sort eqA) and \lstinline/(sort eqB)/.
+type \lstinline/(sort eqA)/ and \lstinline/(sort eqB)/.
 
-It is not sufficient to pack together the Cartesian product type
+It is now sufficient to pack together the Cartesian product type
 constructor and this comparison function in an \lstinline/eqType/
 instance to extend the canonical structures inference machinery
 with a new combinator.
@@ -660,7 +661,7 @@ part of the book
 In the running example of this chapter we use the canonical structures
 language to express structurally recursive programs on the syntax
 of types.  The \mcbCIC{} allows arbitrary terms to occur inside
-types.  As a consequence the language of canonical structure can
+types.  As a consequence the language of canonical structures can
 express also structurally recursive programs on the syntax
 of terms.  This capability is used, for example, in the next
 chapter to related Monoid laws to function symbols to model
