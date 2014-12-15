@@ -1,7 +1,7 @@
 % vim:set tw=70:
 % vim:set spell:
 % vim:set errorformat="":
-\chapter[Type Inference]{Type Inference\\[2ex]\Large\itshape Learning \Coq{}
+\chapter[Type Inference]{Type Inference\\[2ex]\Large\itshape Teaching \Coq{}
 how to read Math (step 1)}
 
 The rules of the \mcbCIC{} are expressed on the syntax on terms and
@@ -733,9 +733,9 @@ Fixpoint count (a : pred T) (s : seq T) :=
 Lemma count_uniq_mem s x : uniq s -> count_mem x s = (x \in s).
 \end{coq}
 
-In line number 2 the term \lstinline/a x/ is a boolean.  The
+In line number 2 the term \lstinline/(a x)/ is a boolean.  The
 \lstinline/nat_of_bool/ function is automatically inserted to turn
-\lstinline/true/ into 1 and \lstinline/false/ into 0.
+\lstinline/true/ into 1 and \lstinline/false/ into \lstinline/0/.
 Similarly, in the last line the membership test is turned into
 a number, that is shown to be equivalent to the count of any
 element in a list that is duplicate free.
@@ -750,27 +750,64 @@ Lemma  (e : eqType) : forall x y : e, x == y -> ...
 \end{coq}
 
 Here the type of \lstinline/x/ and \lstinline/y/ is
-\lstinline/(sort e)/ and \lstinline/e/ as the user initially wrote.
-Indeed \lstinline/e/ is a term (or type \lstinline/eqType/) while
+\lstinline/(sort e)/ and not \lstinline/e/ as the user initially wrote.
+Indeed \lstinline/e/ is a term (of type \lstinline/eqType/) while
 the \lstinline/forall/ quantification expects a type after the
 colon.  The \lstinline/sort/ function mapping an \lstinline/eqType/
 into a \lstinline/Type/ is inserted automatically.
 
-
-Another device that is used to help type inference is the
-\lstinline/Implicit Types/ directive.
+Coercions are composed transitively.
 
 \begin{coq}{}
-Implicit Types m n : nat.
+Check forall b : bool, (b + 3)%Z.
 \end{coq}
 
-Explain.
+For the convenience of the reader we list here the most widely
+used coercions. there are also a bunch on Funclass not listed
+and elimT surely deserves some explanation.
 
-Concluding remarks about coercions and their positioning w.r.t.
-literature: they don't model sub typing, CS do.
+\noindent
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center
+	title,tabularx={l|l|l},fonttitle=\sffamily\bfseries,title=Coercions]
+coercion & source & target \\ \hline
+\lstinline/Posz/ & \lstinline/nat/ & \lstinline/int/ \\
+\lstinline/nat_of_bool/ & \lstinline/bool/ & \lstinline/nat/ \\
+\lstinline/elimT/ & \lstinline/reflect/ & \lstinline/Funclass/ \\
+\lstinline/isSome/ & \lstinline/option/ & \lstinline/bool/ \\
+\lstinline/is_true/ & \lstinline/bool/ & \lstinline/Sortclass/ \\
+\hline
+\end{tcolorbox}
+
+Another device that is used to help type inference is the
+\lstinline/Implicit Types/ directive.  This directive lets
+one attach a default type to variable names.
+
+\begin{coq}{title=Example of \lstinline/Implicit Types/}
+Implicit Types m n : nat.
+Check forall m n, n == m.
+\end{coq}
+
+In the example above the statement we \lstinline/Check/ does not
+contain enough information alone to be well types.  The overloaded
+\lstinline/==/ notation needs the terms to which it is applied to
+have a type for which a \lstinline/Canonical Structure/ is declared.
+Even if we did not annotate \lstinline/n/ and \lstinline/m/ with a
+type, the directive on the first line does it for us.
+
+The reader already familiar with the concept of coercion
+may find the presentation of this chapter nonstandard.
+Indeed coercions are usually presented as a device to model
+subtyping in a theory that, like \mcbCIC{}, does not
+feature subtyping.  As we will see in Chapter~\ref{ch:hierarchy}
+the role played by coercions is in the modelling of the hierarchy
+of algrabraic structure is minor.  Indeed what is hard is not to
+forget some fields of a structure to obtain a simpler one.  What
+is hard is to reconstruct the missing fields of a structure
+or compare two structures finding the minimum super structure.
+These tasks are mainly implemented using canonical structures.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Declaring overloaded notations}
+\mcbLEARN{Declaring implicit arguments}
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{stating lemmas}
 \mcbLEVEL{2}

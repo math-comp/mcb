@@ -1,0 +1,66 @@
+% vim:set tw=70:
+% vim:set spell:
+% vim:set errorformat="":
+\chapter[Mixing data and proofs]{Mixing data and proofs\\[2ex]\Large\itshape What is a sub-type?}
+
+one of the peculiarity of \mcbCIC{} is that proofs are a first
+class entity.  one can use this fact to model the operation of building
+the set of terms of that type that satisfy a given property.
+the idea is to build the type of paris x px.
+it is well known that in TT building sets is problematic,
+proofs are not irrelevant in general.
+hott seems to provide answers to this problem in general
+turning the problem upside down, defining the class of more
+propositions, and then...
+in CIC we don't have a notion of mere proposition as powerful
+as in hott, but thanks to a famour result of heideberg
+we know that the class of decdable eq, hence decidable predicates
+... has uip.  This fits well our framework where all proedicate that
+are decidable are expressed as booleans, and p x = true is
+the usual way to state things.
+this also makes the overloading mechanism we have seen in the prev
+chapter perform proof search. eqtype for pairs. but also more
+interesting
+
+\mcbsection{Types with a decidable equality}
+
+refine eqtype adding the proposition of compatibility with leibnitz
+show that == finds proofs
+
+\mcbsection{Types with an enumeration}
+
+here we cheat, saying that the precise hierarchy is in the next
+chapter.  also the nesting of records will be fake.
+
+\mcbsection{Finite sets}
+
+once we have finite types we can carve sets into them and
+discuss their main property.
+
+\mcbsection{subtype (proof search)}
+
+
+Boolean sigma types, records, coercions, UIP. Examples: ordinals,
+tuples (not their use which requires CS). This chapter might come
+after some presentation of basic canonical structures, i.e. reorganize
+the content between this chapter and the next.
+
+example of tuples here? better ordinals?
+
+GG: makes many points here (not fully understood by Enrico):
+\begin{itemize}
+\item ordinals/tuples are easy to use but hard to build
+\item it is a tradeoff, but is not clear if we can give hints on when
+	a specific datatype like ordinals is better that unpackaged
+	stuff.
+\end{itemize}
+
+UIP is advanced, the basic user should just be told that putting
+bools inside a record is just fine.
+
+\begin{itemize}
+	\item record (flat)
+	
+\end{itemize}
+
+
