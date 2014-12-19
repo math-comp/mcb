@@ -1,0 +1,6 @@
+# To avoid conflicts when merging on text/main.pdf you must type this
+#    git config merge.ours.driver true
+# once and forall (the option is local to this git repo, so if you do a fresh
+# clone you have to do it again)
+# The effect is that we keep our version of the compiled pdf, no conflict.
+tex/main.pdf merge=ours
