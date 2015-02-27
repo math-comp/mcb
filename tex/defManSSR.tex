@@ -18,12 +18,12 @@ Definition, Let, Ltac, Fixpoint, CoFixpoint, Morphism, Relation,
 Implicit, Arguments, Set, Unset, Contextual, Strict, Prenex, Implicits,
 Inductive, CoInductive, Record, Structure, Canonical, Coercion,
 Theorem, Lemma, Corollary, Proposition, Fact, Remark, Example,
-Proof, Goal, Save, Qed, Defined, Hint, Resolve, Rewrite, View,
+Proof, Goal, Save, Qed, Admitted. Defined, Hint, Resolve, Rewrite, View,
 Search, Show, Print, Printing, All, Graph, Projections, inside, outside},
 
 % Gallina
 morekeywords=[2]{forall, exists, exists2, fun, fix, cofix, struct,
-      match, with, end, as, in, return, let, if, is, then, else,
+      match, with, end, as, in, return, let, if, of, is, then, else,
       for, nosimpl},
 % 'of' is removed from this list as it occurs in comments.
 
@@ -56,16 +56,16 @@ morekeywords=[6]{do, last, first, try, idtac, repeat},
  literate=
         {->}{{$\rightarrow\ $}}2
 %       {->}{{\tt ->}}3
-%	{<-}{{$\leftarrow\,$}}2
+	{<-}{{$\leftarrow\,$}}2
 %       {<-}{{\tt <-}}2
 %       {>->}{{$\mapsto$}}3
-        {<}{{$<\;\;$}}1
+%        {<}{{$<\;\;$}}1
         {<=}{{$\leq\;\;$}}1
         {>=}{{$\geq\;\;$}}1
 %       {<>}{{$\neq$}}1
         {/\\}{{$\wedge\;\;$}}2
         {\\/}{{$\vee\;\;$}}2
-        {^~}{{\textvisiblespace$\;\;$}}2
+%        {^~}{{\textvisiblespace$\;\;$}}2
         {~~}{{$\lnot\;\;$}}2
 %       {<->}{{$\leftrightarrow\;$}}3
 %       {<=>}{{$\Leftrightarrow\;$}}3

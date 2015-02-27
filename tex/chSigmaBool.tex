@@ -1,51 +1,807 @@
 % vim:set tw=70:
 % vim:set spell:
 % vim:set errorformat="":
-\chapter[Mixing data and proofs]{Mixing data and proofs\\[2ex]\Large\itshape What is a sub-type?}
+\chapter[Mixing data and proofs]{Mixing data and proofs\\[2ex]\Large\itshape Organizing knowledge}
 
-one of the peculiarity of \mcbCIC{} is that proofs are a first
-class entity.  one can use this fact to model the operation of building
-the set of terms of that type that satisfy a given property.
-the idea is to build the type of paris x px.
-it is well known that in TT building sets is problematic,
-proofs are not irrelevant in general.
-hott seems to provide answers to this problem in general
-turning the problem upside down, defining the class of more
-propositions, and then...
-in CIC we don't have a notion of mere proposition as powerful
-as in hott, but thanks to a famour result of heideberg
-we know that the class of decdable eq, hence decidable predicates
-... has uip.  This fits well our framework where all proedicate that
-are decidable are expressed as booleans, and p x = true is
-the usual way to state things.
-this also makes the overloading mechanism we have seen in the prev
-chapter perform proof search. eqtype for pairs. but also more
-interesting
+Organizing, structuring, knowledge is a delicate task. A successful
+path followed in mathematics is algebraization. The focus shifts
+towards the relations among classes of similar objects and general
+theories that apply to all the objects of a given class.
+An experienced mathematician can use such structured
+knowledge by recognizing that his object of study belongs to a know
+class and hence a string of generic results holds for it.
 
+Given how popular this approach is in modern mathematics we can't
+really avoid modelling it in the \mcbMC{} library.  It is well known that
+modelling structured knowledge, like algebra, inside a proof assistant
+is hard, and in our case an extra problem arises: we need such
+modelling to scale up to a large library. This extra difficulty turns
+out to actually provide good directions for finding the right
+techniques.  Indeed, computer science too tackled the task of
+organizing large libraries of computer code, and did it for decades.
+One of the outcomes is object oriented programming (OOP).
+It is hard to give a comprehensive presentations of all the key
+principles behind OOP, but some of them match pretty well our needs.
+OOP advocates the use of interfaces (typically called classes) to
+organize a complex system into smaller parts, it enables one
+to declare relations between the interfaces to reuse and
+specialize them (inheritance).  Finally OOP language provides some
+magic glue to make all that work together, enabling one to mix and
+match data and code belonging to different but related interfaces, as
+long as it ``makes sense''.  What makes sense really means depends too
+much on the programming language details to be explained in general,
+and if we draw a parallel with mathematics this pretty much
+corresponds to the silent check an expert eye does when reading a text
+mixing different theories.
+When we look at functional programming languages, like the one
+provided in \mcbCIC{}, the aspect of this magic glue that is the most
+relevant here is \emph{sub-type} polymorphism. 
+
+Its intuitive meaning can be explained with an example.  Take the two
+related notions (types) of a simple point \lstinline/P/ on the plane
+and the more refined concept of coloured point \lstinline/CP/.  To
+maximize code reuse we want the function \lstinline/move/, that shifts
+a point, to also work on points that happen to have a color.
+If we assign the type \lstinline/P -> P/ to such function, then we
+can't use it on a coloured point \lstinline/c/, because
+\lstinline/(move c)/ would be ill-typed.  
+We could try to assign to \lstinline/move/ the polymorphic type
+\lstinline/$\alpha$ -> $\alpha$/ (for all $\alpha$), but that would
+fail too. The function \lstinline/move/ really needs to know something
+about its input, like its coordinates, in order to perform.  The
+polymorphic type requires the implementation of \lstinline/move/
+to bee too generic, and
+in practice we can only inhabit the type
+\lstinline/$\alpha$ -> $\alpha$/ with the identity
+function,\footnote{there is even a theory about that, called
+parametricity} that does not exactly move the point as one expects.
+Sub-type polymorphism lets one assign a polymorphic type to
+\lstinline/move/ where the type variable $\alpha$ is constrained to be
+``at least'' a point, a constraint satisfied by all coloured points.
+
+The record data types introduced in the previous chapter played the
+role of expressing a relation between a type and a function (the
+comparison one).  Being records dependently typed, their fields can
+also carry proofs testifying that some property holds on the value of
+the other fields.  This in turns makes it possible to use records to
+model precisely the concept of interface.  Programmable type inference
+can then serve as the glue that links an object with all the
+interfaces it satisfies. 
+
+In this chapter we focus on the tricky construction of
+\emph{dependent pairs packaging data and proofs}.  To take
+full advantage of this construction while doing proofs we
+implement the glue typical of OOP languages by \emph{programming
+type inference}.
+Inheritance among interfaces will be only sketched here: a complete
+treatment of it requires a full chapter, the next one.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{panel of options}
+\mcbREQUIRE{dependent product}
+\mcbPROVIDE{sigma with bool predicate}
+\mcbNOTES{}
+\mcbsection{The many ways to define a ``sub-type''}
+
+% Even if we leave on the side algebraic structures and 
+% just look at modelling simple sets, some difficulties
+% immediately arise.  One of them is that sets play, at least
+% linguistically, two roles.  For example the set of natural numbers
+% $\mathbb{N}$ could be assimilated to the type of natural numbers
+% \mbox{\lstinline/nat/,} and the set of primes $\mathbb{P}$ as
+% a different type.
+% Types' most paradigmatic role is the one of avoiding confusion,
+% and as a result two different types signal different, incompatible,
+% objects.  Here we absolutely need all primes to
+% be numbers too, since we want to reuse on them all the operations and
+% theorems we already have on simple numbers.
+% The simplest approach to this problem comes from the
+% observation that $\mathbb{P}\subset\mathbb{N}$, and that $\mathbb{P}$
+% can be seen as a property, assumed or proved for some elements of
+% $\mathbb{N}$.  In other words model  $\mathbb{N}$ as a type and
+% $\mathbb{P}$ as a predicate.  While this idea is widely used
+% in the \mcbMC{} library it is not the silver bullet.
+% 
+% As the concepts one models become more and more
+% sophisticated the number of properties and operations that
+% characterize them grow, and this very simple approach does not help in
+% organizing and structuring such knowledge.
+% 
+% If we follow this approach the type of prime numbers can be seen
+% as a type that combines a natural number with a proof that such
+% number is prime.  Hence a prime, by forgetting such primality witness,
+% is a simple number and can be used as such.
+% 
+% 
+% This construction, a \emph{dependent pair packing data and proofs}, is
+% tricky to get right in the \mcbCIC{}, and the solution adopted in the
+% \mcbMC{} library is the subject of this chapter.  In the next chapter
+% we will see that such construction scales up surprisingly well, to the
+% point where it is also used to model carefully structured mathematics,
+% like algebra.
+
+First of all, the \mcbCIC{} has no built-in notion of sub-typing and
+what we propose ``implements'' the mechanics of sub-typing on top
+of records and programmable type inference.  We begin by studying a
+simple example of sub-type and reach our proposed encoding by first
+showing some alternatives and discussing their drawbacks.
+
+We pick the sub-type of sequences of a given length as our case study.
+The objective is to ease the reasoning on sequences when manipulated
+by operations that alters the length in a known way, while retaining
+all the theory we already have on general sequences.
+
+An approach to describe such data type that is possible in type
+theories with indexed inductive families like the \mcbCIC{} is to
+craft a new ad-hoc type, the type of vectors.
+
+\begin{coq}{width=\textwidth,title=Vectors}
+Inductive vect T : nat -> Type :=
+| vnil : vect T 0
+| vcons n of T & vect T n : vect T n.+1.
+\end{coq}
+
+In this construction the type carries the extra information we want.
+For example \lstinline/(vect nat 7)/ describes a sequence of natural
+numbers of length 7.
+One can define operations on the \lstinline/vect/ data type that
+signal, in their type, the effect they have on the length of the
+vectors they manipulate.  For example one can read in the type of the
+function that reverses a vector that it preserves the length
+(\lstinline/n/ here).
+
+\begin{coq}{width=\textwidth,title=Vector reversal}
+Fixpoint vrev T n (v : vect T n) : vect T n := ...
+\end{coq}
+
+This means that there will be no need to convince Coq that
+\lstinline/vrev/ preserves the length of the input vector
+each time it is used: we morally prove it once an for all
+when we define the operation.
+
+\begin{coq}{width=\textwidth,title=Vector assisted proof}
+Definition vlength T n (v : vect T n) := n.
+Lemma simple T n v : vlength T n v = vlength T n (vrev T n v).
+Proof. by []. Qed.
+\end{coq}
+
+The drawback of this approach is that the type \lstinline/(vect T n)/
+and \lstinline/(seq T)/ are different and we can't directly apply to a
+vector an operation that is defined on sequences.  For example we
+already have a reversal function for sequences called \lstinline/rev/,
+but writing \lstinline/(rev vnil)/ results in a type error.  And when
+new operations have to be defined, new proofs have to be done. For
+example, even if we already proved that \lstinline/rev/ is an
+involution, we have to prove the same property from scratch for
+\lstinline/vrev/.
+
+Of course one can relate sequences and vectors by means of
+morphisms.  Even if the \mcbMC{} library provides adequate
+infrastructure for dealing with morphisms, its use is generally
+avoided when possible.  GIVE A BETTER INSIGHT.
+
+The conclusion is to drop the idea of defining a completely new data
+type, and try to reuse the one of sequences.  For example by packing a
+sequence with a proof that witnesses that its length is exactly
+\lstinline/n/.  Such construction, a dependent pair packing data
+and proofs, is tricky to get right in the \mcbCIC{}.  We start with
+the following ``naive'' record type \lstinline/(lseq T n)/:
+
+\begin{coq}{width=\textwidth,title=Simple dependent pair}
+Inductive has_len (T : Type) : seq T -> nat -> Prop :=
+| base : has_len T [::] 0
+| step n l a of has_len T l n : has_len T [:: a & l] n.+1.
+
+Record lseq T n := Lseq { lval : seq T; llen : has_len T val n }.
+\end{coq}
+
+The advantage of this approach over the former is that the
+\lstinline/lval/ projection can be used to get a \lstinline/seq/ out
+of an \lstinline/lseq/ directly.  And using the \lstinline/Coercion/
+mechanism the system would even insert it automatically.  Hence
+writing \lstinline/(rev l)/ for \lstinline/(l : lseq T n)/ would
+be accepted by the system.
+
+Note that so far records only contained types and terms, typically
+a function (like the comparison used to implement the overload
+\lstinline/==/ syntax).  Here the record contains \emph{a term and a proof}.
+Proofs are first class citizens in all meanings, and this may lead to
+a somewhat surprising behavior of the type theory.
+When we defined the function to compare pairs we had no
+doubts: both components of the pair play a role and must be taken into
+account.  When comparing two elements of \lstinline/lseq/ we would
+like the second component not to matter.  In other words we want this
+lemma to be provable:
+
+\begin{coq}{width=\textwidth,title=Injectivity of lval}
+Lemma lval_inj T n (l1 l2 : lseq T n) : lval l1 = lval l2 -> l1 = l2.
+\end{coq}
+
+Intuitively it says that two sequence of length \lstinline/n/ are
+equal if they are equal as sequences, it does not matter \emph{how one
+proved} that they have length \lstinline/n/.
+
+Unfortunately this fact is in general not true in \mcbCIC{}: all
+record components are relevant to equality.
+Luckily, for some inductive relations like \lstinline/has_len/, one
+can show that their inhabitants (that are proofs) are canonical.  In
+other words that two proofs of the same statement are equal.
+Unfortunately such proof, when possible, is not only tricky, but
+it also depends on the shape of the inductive relation.  Hence every
+time one wants to form a sub-type expressing a new property, he has to
+prove such lemma again for the new predicate.
+
+To the rescue comes the result of Hedberg~\cite{Hedberg}
+that proves such property for a wide class of predicates.
+In particular he shows that any type with decidable identity
+has unique identity proofs.  If we pick the concrete example
+of \lstinline/bool/, then all proofs that \lstinline/(b = true)/
+for a fixed \lstinline/b/ are the same.
+As a direct application of this result we have that, as long as we can
+express the property defining the sub-type as a boolean predicate,
+we can reuse the same injectivity lemma.
+
+\begin{coq}{width=\textwidth,title=Tuple sub-type of seq}
+Structure tuple_of n T :=  Tuple { tval :> seq T; _ : size tval == n }.
+Notation "n .-tuple T" := (tuple_of n T) (at level 2).
+\end{coq}
+
+Recall the hidden \lstinline/is_true/ coercion.  If we unfold
+its definition we clearly see that the predicate
+\lstinline/(size tval == n)/ is an equality on \lstinline/bool/.
+
+In the \mcbMC{} library, where \emph{all predicates that can} be
+expressed as a boolean function \emph{are expressed as a boolean
+function}, forming sub-types is extremely easy.
+
+% For now we state only two instances of the general result of
+% Hedberg.  They are enough for the following section, were
+% we see how, by programming type inference, one can take
+% full advantage of the tuple subtype.
+% 
+% \begin{coq}{title=Two instances of Hedberg's theorem}
+% Theorem bool_irrelevance (x y : bool) : forall e1 e2 : x = y, e1 = e2.
+% Theorem nat_irrelevance (x y : nat) : forall e1 e2 : x = y, e1 = e2.
+% \end{coq}\marginnote{unkeyed...}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbREQUIRE{records + CS}
+\mcbPROVIDE{working with tuples}
+\mcbLEARN{CS = proof search}
+\mcbsection{Working with sub-types}
+
+For the sake of this section, we will use this, equivalent, definition
+of the tuple type.  Note that we use \lstinline/=/ in place of
+\lstinline/==/.
+
+\begin{coq}{width=\textwidth,title=Tuple sub-type of seq}
+Structure tuple_of n T :=  Tuple { tval :> seq T; _ : size tval = n }.
+\end{coq}
+
+% Such equality relates to natural numbers, hence the
+% \lstinline/nat\_irrelevance/ lemma will come handy later on.
+
+Now we focus on the use of the tuple type.  The key property of this
+type is that it tells us the length of its elements when seen as
+sequences:
+
+\begin{coq}{}
+Lemma size_tuple {T n} (t : n.-tuple T) : size t = n.
+Proof. by case: t. Qed.
+\end{coq}
+
+In other words each inhabitant of the tuple type brings with it,
+in the form of a proof, its length.  As test bench for the notion
+of tuple we pick this simple example: a tuple is processed using
+functions defined on sequences, namely \lstinline/rev/ and
+\lstinline/map/.
+
+\begin{coq}{}
+Example seq_on_tuple n (t : n.-tuple nat) :
+  size (rev [seq 2 * x | x <- rev t]) = size t.
+\end{coq}
+
+There are two ways to prove that lemma.  The first one is
+to ignore the fact that \lstinline/t/ is tuple, consider it
+as a regular sequence, and use only the theory of sequences.
+
+\begin{coq}{}
+Proof. by rewrite map_rev revK size_map. Qed.
+\end{coq}
+
+Mapping a function over the reverse of a list, it equivalent to
+first map the function over the list and then reverse the result
+(\lstinline/map_rev/).  Then, reversing twice a list is a no-op, since
+\lstinline/rev/ is an involution
+(\lstinline/revK/).  Finally, mapping a function over a list does not
+change its size (\lstinline/size_map/).  The sequence of rewritings
+make the left hand side of the conjecture identical to the right hand
+side, and we can conclude.
+
+This simple example shows that the theory of sequences is usable
+on terms of type tuple.  Still we didn't take any advantage of
+the fact that  \lstinline/t/ is tuple.
+
+The second way to prove this theorem is to rely on the rich type
+of \lstinline/t/ to actually compute the length of the sequence.
+
+\begin{coq}{}
+Example just_tuple_attempt n (t : n.-tuple nat) :
+  size (rev [seq 2 * x | x <- rev t]) = size t.
+Proof. rewrite size_tuple. 
+\end{coq}
+
+The rewriting replaces the right hand side with \lstinline/n/ as
+expected, but we can't go any further: the lemma is not replacing
+the right hand side with \lstinline/n/, even if we are working
+with a tuple \lstinline/t/.  Why is that?  In the left hand side
+\lstinline/t/ is processed using functions on sequences.
+The type of \lstinline/rev/ for example is
+\lstinline/(forall T, seq T -> seq T)/.  The coercion \lstinline/tval/
+from \lstinline/tuple_of/ to \lstinline/seq/ make the
+expression \lstinline/(rev (tval t))/ well typed, but the output
+is of type \lstinline/(seq nat)/.  If we go back to our example
+of the \lstinline/move/ function for points in the plane, it is like
+assigning to it the type \lstinline/($\alpha$ -> P)/ for $\alpha$
+being at least a point.  We would like the function to return
+a data as rich as the one it takes in input.
+
+What happens if try to unify the left hand side of the
+\lstinline/size_tuple/ equation with the redex
+\lstinline/(rev t)/ (and we print coercions)?
+
+\begin{coq}{title=Toolkit not belonging here}
+(* toolkit *)
+Notation "X (*...*)" := (let x := X in let y := _ in x)
+  (at level 100, format "X  (*...*)").
+Notation "[LHS 'of' equation ]" :=
+  (let LHS := _ in
+   let _infer_LHS := equation : LHS = _ in LHS)
+  (at level 4).
+Notation "[unify X 'with' Y ]" :=
+  (let unification := erefl _ : X = Y in
+   True).
+\end{coq}
+
+\begin{coq}{title=Simulate rewrite size\_tuple}
+Check forall T n (t : n.-tuple T),
+ let LHS := [LHS of size_tuple _] in
+ let RDX := size (rev t) in
+ [unify LHS with RDX]
+\end{coq}
+
+\begin{coq}{title=Response}
+Error:
+In environment
+T : Type
+n : nat
+t : n .-tuple T
+LHS := size (tval ?94 ?92 ?96) (*...*) : nat
+RDX := size (rev (tval n T t))           : nat
+The term "erefl ?95" has type "?95 = ?95" while
+it is expected to have type "LHS = RDX".
+\end{coq}
+
+Unifying \lstinline/(size (tval ?$_n$ ?$_T$ ?$_t$))/
+with \lstinline/(size (rev (tval n T t)))/ is hard.
+Both term's head symbol is \lstinline/size/, but then
+the projection \lstinline/tval/ applied to unification
+variables has to unified with \lstinline/(rev ...)/,
+and both terms are in normal form.
+
+Such problem is nontrivial because to solve it one has to infer a
+record for \lstinline/?$_t$/ that contains a proof: a
+tuple whose \lstinline/tval/ field
+is \lstinline/rev t/ (and whose other field contains a
+proof that such sequence has length \lstinline/?$_n$/).
+
+This unification problem falls in the class handled by
+canonical Canonical Structures: a record projection
+against a value.  We can declare Canonical Structures
+teaching Coq the effect of list operations over the length
+of their input.
+
+\begin{coq}{}
+Lemma rev_tupleP n A (t : n.-tuple A) : size (rev t) = n.
+Proof. by rewrite size_rev size_tuple. Qed.
+Canonical rev_tuple n A (t : n.-tuple A) := Tuple (rev_tupleP t).
+
+Lemma map_tupleP n A B (f: A -> B) (t : n.-tuple A) : size (map f t) = n.
+Proof. by rewrite size_map size_tuple. Qed.
+Canonical map_tuple n A B f (t : n.-tuple A) : n.-tuple B :=
+  Tuple (map_tupleP f t).
+\end{coq}
+
+Even if it is not needed for the lemma we took as our test bench,
+we add another example where the length is not preserved.
+
+\begin{coq}{}
+Lemma cons_tupleP n A (t : n.-tuple A) x : size (x :: t) = n.+1.
+Proof. by rewrite /= size_tuple. Qed.
+Canonical cons_tuple n A x (t : n.-tuple A) : n.+1 .-tuple A :=
+  Tuple (cons_tupleP t x).
+\end{coq}
+
+The global table of canonical solutions is extended as follows.
+
+\noindent
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center title,tabularx={ll|l|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+projection & value & solution & combines solutions for \\ \hline
+\lstinline/tval N A/ & \lstinline/rev A S/ & \lstinline/rev_tuple N A T/
+	& \lstinline/T/ $\leftarrow$ (\lstinline/tval N A/, \lstinline/S/) \\
+\lstinline/tval N B/ & \lstinline/map A B F S/ & \lstinline/map_tuple N A B F T/
+	& \lstinline/T/ $\leftarrow$ (\lstinline/tval N A/, \lstinline/S/) \\
+\lstinline/tval N.+1 A/ & \lstinline/X :: S/ & \lstinline/cons_tuple N A T X/
+	& \lstinline/T/ $\leftarrow$ (\lstinline/tval N A/, \lstinline/S/) \\
+\end{tcolorbox}
+
+Thanks to the now extended capability of type inference
+we can prove our lemma by just reasoning about tuples.
+
+\begin{coq}{}
+Example just_tuple n (t : n.-tuple nat) :
+  size (rev [seq 2 * x | x <- rev t]) = size t.
+Proof. by rewrite !size_tuple. Qed.
+\end{coq}
+
+The iterated rewriting acts now twice replacing both the left hand
+and the right hand side with \lstinline/n/.  It is worth observing
+that the size of this proof (two rewrite steps) does not depend on the
+complexity of the formula involved, while the one using only the
+theory of lists requires one step per list-manipulating function.
+What depends on the size of the formula is the number of canonical
+structure resolution steps type inference performs.  Another advantage
+of this last approach is that, unlike in the first, one
+is not required to know the names of the lemmas:
+it the new concept of tuple that takes care of the size related
+reasoning.
+
+Going back to the example of (coloured) points, once a coloured point
+is defined as a record embedding a simple point
+
+\begin{coq}{}
+Record CP := Coloured { coords_of :> P; colour_of : color }
+\end{coq}
+
+\noindent 
+the way we implement sub-type polymorphism between \lstinline/CP/
+and \lstinline/P/ is by assigning the typed \lstinline/(P -> P)/ to
+\lstinline/move/ but:
+\begin{itemize}
+\item thanks to the automatically inserted 
+	\emph{forgetful coercion} \lstinline/coords_of/
+	we can apply \lstinline/move/ to a coloured point \lstinline/c/
+	obtaining \lstinline/(move (coords_of c))/
+\item thanks to \emph{programmable type inference} such	expression
+	can be automatically injected back in the type of coloured
+	points by using the color of \lstinline/c/ and obtain
+	\lstinline/(Coloured (move (coords_of c))$~$(colour_of c))/
+\end{itemize}
+That is pretty much what ones expects \lstinline/move/ to do when
+applied to a coloured point: act on its coordinates and leave
+its colour untouched.
+
+We have seen how to implement the glue that links a type (sequences)
+with a sub-type (tuples), but only in a very simple case.
+A tuple is trivially a sequence (by forgetting something), hence the
+theory of sequences ``trivially'' applies to tuples.
+
+We now revise the definition of \lstinline/eqType/, turning it into a
+real interface bringing with it a specific theory.  Later we show that
+since \lstinline/seq/ is an instance of that interfaces and since
+\lstinline/tuple/ is a sub-type of \lstinline/seq/, then the theory
+of \lstinline/eqType/ also applies to tuples.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbREQUIRE{records + CS}
+\mcbPROVIDE{eqType}
+\mcbLEARN{interface to a theory}
 \mcbsection{Types with a decidable equality}
 
-refine eqtype adding the proposition of compatibility with leibnitz
-show that == finds proofs
+The definition of \lstinline/eqType/ actually used in the \mcbMC{}
+library is more complex than the one we saw in
+Section~\ref{eqtype:noproof}.  Indeed there is little point in
+associating to a type a comparison function if that function is
+not ``correct''.
 
-\mcbsection{Types with an enumeration}
+\begin{coq}{title=eqType}
+Definition rel T := T -> T -> bool.
 
-here we cheat, saying that the precise hierarchy is in the next
-chapter.  also the nesting of records will be fake.
+Module Equality.
 
-\mcbsection{Finite sets}
+Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
 
-once we have finite types we can carve sets into them and
-discuss their main property.
+Record class_of T := Mixin {op : rel T; _ : axiom op}.
 
-\mcbsection{subtype (proof search)}
+Structure eqType : Type := Pack {
+  sort : Type;
+  class : class_of sort;
+}.
+
+End Equality.
+
+Definition eq_op T := Equality.op (Equality.class T).
+Notation "x == y" := (@eq_op _ x y).
+\end{coq}
+
+The reason why the operation and the property are packed in
+a record called \lstinline/class_of/ will be described in the next
+chapter.
+Intuitively one could think the construction as flat:
+the relation now links a type, a comparison function and a
+witness that this comparison function actually reflects equality.
+Reflecting equality means that the comparison function returns
+\lstinline/true/ if and only if the two inputs are provably equal, and
+\lstinline/false/ when they are provably different.
+
+\mantra{Whenever we write or read \lstinline/==/, the intended
+meaning is a decidable comparison compatible with \lstinline/=/}
+
+Given the new definition of \lstinline/eqType/,
+when we write \lstinline/(a == b)/ type inference does not only infer
+a function to compare \lstinline/a/ with \lstinline/b/ but also a
+proof that such function is correct.
+
+The simplest application is the \lstinline/eqP/ \emph{generic lemma}
+that can be used in conjunction with any formula involving the
+\lstinline/==/ notation.
+
+\begin{coq}{title=The eqP lemma}
+Lemma eqP (T : eqType) : Equality.axiom (eq_op T).
+Proof. by case: T => ty [op prop]; exact: prop. Qed.
+\end{coq}
+
+The proof is just unpacking the input \lstinline/T/.
+Since type inference can synthesize
+an arbitrary complex value for \lstinline/T/ by composing
+canonical structures instances, this lemma give us a
+access to the proof part of such inferred value.
+
+\begin{coq}{title=Use of eqP}
+Lemma test (x y :nat) (a b : bool) : (a,x) == (b,y) -> fst (a,x) == b.
+Proof. by move/eqP=> def_ax; rewrite def_ax. Qed.
+\end{coq}
+
+The \lstinline/(a,x)$~$== (b,y)/ assumption is reflected to
+\lstinline/(a,x)$~$= (b,y)/ by using the \lstinline/eqP/ view
+specified by the user.  Here we write \lstinline/==/ to have
+all the benefits of a computable function (simplification, reasoning
+by cases), but when we need the underlying logical property of
+substitutivity we access it via the view \lstinline/eqP/.
+
+In such sense,
+\lstinline/==/ has now a precise meaning.  In general overloaded
+notation come with a meaning and an associated theory.
+Note that the proof language silently adjusted the view
+using \lstinline/elimT/.
+
+\begin{coq}{title=The eqtype view,width=5.3cm}
+Check elimT.
+$~$
+\end{coq}
+\begin{coqout}{title=Response,width=6.7cm}
+elimT : forall (P : Prop) (b : bool),
+          reflect P b -> b -> P
+\end{coqout}
+
+It is important to remark that \lstinline/eqP/ works for any
+instance of the \lstinline/eqType/ structure.
+
+Now \lstinline/eqType/ can be seen as an interface to access a
+theory of results.  Indeed we can finally state (and prove) the
+Hedberg theorem in its full generality.
+
+\begin{coq}{title=Hedberg}
+Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
+\end{coq}
+
+Now that the \lstinline/eqType/ structure comes with a well
+specified comparison function we can use it to program new
+functions, and reason about them.  For example by imposing
+that that the type variable of a container types, like \lstinline/seq/,
+is an \lstinline/eqType/ we can code the following function
+that tests membership.
+
+\begin{coq}{title=Functions}
+Fixpoint mem_seq (t : eqType) (s : seq T) x :=
+  if s is y :: s' then (y == x) && mem_seq T s' x else false.
+\end{coq}
+
+Indeed we are allowed to write \lstinline/(x == y)/ because
+\lstinline/T/ is not any type, but a type with a decidable
+equality.
+
+We spare the reader the definition of eqType for seq.
+MAYBE IN THE EXERCISES.
+
+If the elements of a sequence are in an eqType, we can obtain
+the overload the \lstinline/\in/ notation on sequences.
+In turn we can then define new predicates like being duplicate free.
+
+\begin{coq}{}
+Fixpoint uniq s :=
+  if s is x :: s' then (x \notin s') && uniq s' else true.
+Fixpoint undup s :=
+  if s is x :: s' then
+    if x \in s' then undup s' else x :: undup s'
+  else [::].
+\end{coq}
+
+And show properties of these functions
+
+\begin{coq}{title=Functions}
+Lemma undup_uniq s : uniq (undup s).
+\end{coq}
+
+% maybe in the xercises
+% \end{coq}{}
+% Lemma perm_eqP s1 s2 : reflect (count^~ s1 =1 count^~ s2) (perm_eq s1 s2).
+% Lemma perm_rcons x s : perm_eql (rcons s x) (x :: s).
+% \end{coq}
+
+Note that the \mcbMC{} library iterates the construction of
+\lstinline/eqType/ on the container itself:
+if \lstinline/T/ is \lstinline/eqType/ then also \lstinline/seq T/ is.
+
+\begin{coq}{}
+Let s1 := [:: 1; 2 ].
+Let s2 := [:: 3; 5; 7].
+Let ss := [:: s1 ; s2 ].
+Check ss == [::].
+Check uniq ss.
+Check undup_uniq ss.
+\end{coq}
+
+Indeed we can compare sequences of sequences, and apply to them
+the theory of sequences.
+Unfortunately this does not work with tuples (yet).
+
+\begin{coq}{}
+Fail Check forall (t : 3.-tuple nat), [:: t] == [::].
+Fail Check fun t : 3.-tuple nat => uniq [:: t; t].
+Fail Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
+\end{coq}
+
+Tuples are trivially sequences.  Here we need to transport the
+property of being an eqType of sequences on tuples.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbREQUIRE{proof language}
+\mcbPROVIDE{an example of sub-type of eqType}
+\mcbLEARN{it is a schematic process}
+\mcbsection{Building the \lstinline/eqType/ for \lstinline/n.-tuples T/}
+
+We have that \lstinline/(seq T)/ is an \lstinline/eqType/ and
+we want to transport \lstinline/==/ on tuples.  First we need to
+defined a comparison function for tuples.
+
+\begin{coq}{title=Comparison of tuples}
+Definition tcmp n (T : eqType) (t1 t2 : tuple_of T n) :=
+  tval t1 == tval t2.
+\end{coq}
+
+Here we reuse the one on sequences, and we ignore the
+proof part of tuples.
+
+We need now to prove
+
+\begin{coq}{}
+Lemma eqtupleP n (T : eqType) : Equality.axiom (tcmp n T).
+Proof.
+move=> x y; apply: (iffP eqP); last first.
+  by move->.
+case: x; case: y => s1 p1 s2 p2 /= E.
+rewrite E in p2 *.
+by rewrite (eq_irrelevance p1 p2).
+Qed.
+\end{coq}
+
+The first direction is trivial
+
+\begin{coqout}{title=Response line 4,width=5cm}
+T : eqType
+n : nat
+x : tuple_of T n
+y : tuple_of T n
+==================
+x = y -> tval x = tval y	
+\end{coqout}
+
+For the other one the crucial step is the use
+of \lstinline/eq_irrelevance/.
+
+\begin{coqout}{title=Response line 6,width=7cm}
+T : eqType
+n : nat
+s1 : seq T
+p1 : size s1 == n
+s2 : seq T
+p2 : size s2 == n
+E : s2 = s1
+==================
+Tuple T n s2 p2 = Tuple T n s1 p1
+\end{coqout}
+
+We can then declare
+
+\begin{coq}{}
+Canonical tuple_eqType n T :=
+  Equality.Pack (Equality.Mixin (tcmp n T) (eqtupleP n T)).
+\end{coq}
+
+Simple test
+
+\begin{coq}{}
+Check forall (t : 3.-tuple nat), [:: t] == [::].
+Check fun t : 3.-tuple nat => uniq [:: t; t].
+Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
+\end{coq}
+
+We did it by hand, but all that is schematic, any sigma type can be
+dealt with in the very same way.  When one has a base type T and a
+sub-type ST defined as a boolean sigma type, then one can build all
+the canonical instances by just knowing the name of the projection
+going from ST to T.
+
+The lirbary is equipped with all the canonical structures that
+possibly apply.  Only the reader willing to extend the library with
+new concepts is interested by what follows.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{2}
+\mcbLEARN{Declare a new subtype and derive eqType}
+\mcbPROVIDE{usage of \lstinline/[subType for ...]/}
+\mcbREQUIRE{}
+\mcbsection{The toolkit to declare a new sub-type}
+
+As simple as such
+
+\begin{coq}{}
+Canonical tuple_subType := Eval hnf in [subType for tval].
+Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
+Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
+\end{coq}
+
+maybe we can put here the nice trick for encoding a bizarre structure
+into a three and get the eqType out of it.  In such case we need to
+rename the section into: declaring a new eqType (not only for
+subtypes).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{3}
+\mcbLEARN{How sub-type works}
+\mcbPROVIDE{super CS skills}
+\mcbREQUIRE{CS}
+\mcbsection{The \lstinline/subType/ infrastructure}
+
+\begin{coq}{}
+Structure subType : Type := SubType {
+  sub_sort :> Type;
+  val : sub_sort -> T;
+  Sub : forall x, P x -> sub_sort;
+  (* elim rule for the record *)
+  _ : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
+  _ : forall x Px, val (@Sub x Px) = x
+}.
+
+Notation "[ 'subType' 'for' v ]" := (SubType _ v _ inlined_sub_rect vrefl_rect)
+ (at level 0, only parsing) : form_scope.
+\end{coq}
 
 
-Boolean sigma types, records, coercions, UIP. Examples: ordinals,
-tuples (not their use which requires CS). This chapter might come
-after some presentation of basic canonical structures, i.e. reorganize
-the content between this chapter and the next.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{contents}
+\mcbPROVIDE{ord, ...}
+\mcbREQUIRE{}
+\mcbsection{Guided tour of widespread eqtypes and their sub-types}
 
-example of tuples here? better ordinals?
+
+Examples: nat, ordinals, ...
 
 GG: makes many points here (not fully understood by Enrico):
 \begin{itemize}
@@ -55,12 +811,22 @@ GG: makes many points here (not fully understood by Enrico):
 	stuff.
 \end{itemize}
 
-UIP is advanced, the basic user should just be told that putting
-bools inside a record is just fine.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{2}
+\mcbLEARN{curiosity}
+\mcbPROVIDE{}
+\mcbREQUIRE{}
+\mcbsection{Sub-types in HoTT}
 
-\begin{itemize}
-	\item record (flat)
-	
-\end{itemize}
+Recent advances in HoTT identify the class of propositions that have a
+canonical proof, mere propositions, and such class is closed under
+forall quantification, while the one we use is not (only bounded
+forall) but the idea is pretty much the same.  Mere propositions can
+be easily used to form a subtype.
+
+Also Cyril had other arguments on the fact that one can
+ask less (be more general) and recover all required properties later
+on, but I've to ask him again cause I've forgotten the example.
+
 
 
