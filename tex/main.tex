@@ -16,6 +16,72 @@
 
 \part{The art of formalizing}
 
+
+\chapter{Programming}
+
+Find a more catchy title? The motivation is: how to define things:
+objects, operations, (boolean) relations.
+
+Theoretical content:
+\begin{itemize}
+\item Functions with simple types ($\lambda$, $\rightarrow$)
+\item Inductive {\bf datas}
+\item Programs by case analysis and recursion
+\item Compute
+\item Polymorphic datatypes (introduce $\Pi$, and its \Coq{} notation
+  \C{forall}, for quantification over datatypes only)
+\item Everyone has a type : \C{0 : nat : Type : Type}
+\end{itemize}
+This is more or less a standard introduction to (a flavor of)
+functional programming, with two possible difficulties:
+\begin{itemize}
+\item Be precise but not too technical (e.g. on inductive types)
+\item Find a line of speech which does not bore/discourage
+  mathematicians.
+\item Somehow the syntax of (this fragment of the) terms should made
+  be clear and precise.
+\end{itemize}
+
+\Coq{} commands and features:
+\begin{itemize}
+\item Implicit arguments (only to go from system F to ML), \C{@}
+\item Sections and its discharging, implicit types
+\end{itemize}
+
+Comparison with other approaches:
+\begin{itemize}
+\item Compare an axiomatic, equational presentation of arithmetic to
+  its formalization as an inductive type with functions that
+  compute. At this stage, where we do not have conversion yet, we
+  cannot say much about the proofs and may be just point out that
+  computation in \Coq{} is geared toward the reduction of functional
+  programs.
+\end{itemize}
+
+\Coq{} types introduced:
+\begin{itemize}
+\item \C{bool, nat, seq, option, prod}
+\end{itemize}
+
+Programs presented in detailed examples/exercises:
+\begin{itemize}
+\item Elementary programs on \C{option}: \C{odflt, obind,}\dots
+\item Elementary programs on \C{seq} (without the \C{eqType}):
+  \C{size, map, iota,...}
+\item Comparison functions on \C{bool, nat}
+\item Comparison functions on containers, taking the comparison
+  function on the type of stored elements in argument (mind the
+  higher-order)
+\item Boolean connectives, arithmetic operations on \C{nat}
+\item Euclidean division, computation of prime factors, examples from
+  elementary number theory
+\item Examples of Gödel-style encoding from the {\tt choice.v} library.
+\end{itemize}
+If possible give a few context to the exercises, in order not to bore
+the reader not familiar with programming. For instance do not say that
+you encode sequences of nats in nats but give a few hints about the
+use of Gödel encoding.
+
 \chapter{Logics}
 
 From calculability to proofs, hence the CC, and the fact that
@@ -40,15 +106,6 @@ concepts are "computable" hence some principles are problematic: EM,.... we
 mainly stay in the lucky fragment (again no propaganda on intuitionistic logic,
 constructive math; just a mention).
 
-\chapter{Programming}
-
-Presentation of inductive data structures, recursive programs on these
-data.
-Bool, Boolean connectives, Boolean reflection (cf
-ch. \ref{ch:compthink}), views.
-Examples of equality tests ($==$, with a forward reference to
-explain the magic if needed), operations on sequences, nats,
-exercises on prime, div.
 
 \chapter{Proofs}
 
@@ -84,7 +141,7 @@ Explain what the abstraction barrier is (like unfolding a GRing projection)
         to another, less clean and abstract, proof.
 }
 
-Declaring an instance is hard... we need to document the multuiple processes 
+Declaring an instance is hard... we need to document the multuiple processes
 for each structure in each hierarchy and possibily make a program out of it.
 
 \chapter{Larger scale reflection (out of place)}
