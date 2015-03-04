@@ -1,0 +1,65 @@
+\chapter{Computational definitions \\ The syntax of terms \\[2ex]\Large\itshape Defining concepts by writing programs} 
+
+Find a more catchy title? The motivation is: how to define things:
+objects, operations, (boolean) relations.
+
+Theoretical content:
+\begin{itemize}
+\item Functions with simple types ($\lambda$, $\rightarrow$): functions are the primitive concept
+\item Inductive {\bf datas}
+\item Programs by case analysis and recursion
+\item Compute (beta, delta, iota) example of beta (that helps later on to explain a predicate for elim principles
+\item Polymorphic datatypes (introduce $\Pi$, and its \Coq{} notation
+  \C{forall}, for quantification over datatypes only)
+\item Everyone has a type : \C{0 : nat : Type : Type}, types avoid confusion
+\end{itemize}
+This is more or less a standard introduction to (a flavor of)
+functional programming, with two possible difficulties:
+\begin{itemize}
+\item Be precise but not too technical (e.g. on inductive types)
+\item Find a line of speech which does not bore/discourage
+  mathematicians.
+\item Somehow the syntax of (this fragment of the) terms should made
+  be clear and precise.
+\end{itemize}
+
+\Coq{} commands and features:
+\begin{itemize}
+\item Implicit arguments (only to go from system F to ML), \C{@}
+\item Sections and its discharging, implicit types
+\end{itemize}
+
+Comparison with other approaches:
+\begin{itemize}
+\item Compare an axiomatic, equational presentation of arithmetic to
+  its formalization as an inductive type with functions that
+  compute. At this stage, where we do not have conversion yet, we
+  cannot say much about the proofs and may be just point out that
+  computation in \Coq{} is geared toward the reduction of functional
+  programs.
+\end{itemize}
+
+\Coq{} types introduced:
+\begin{itemize}
+\item \C{bool, nat, seq, option, prod}
+\end{itemize}
+
+Programs presented in detailed examples/exercises:
+\begin{itemize}
+\item Elementary programs on \C{option}: \C{odflt, obind,}\dots
+\item Elementary programs on \C{seq} (without the \C{eqType}):
+  \C{size, map, iota,...}
+\item Comparison functions on \C{bool, nat}
+\item Comparison functions on containers, taking the comparison
+  function on the type of stored elements in argument (mind the
+  higher-order)
+\item Boolean connectives, arithmetic operations on \C{nat}
+\item Euclidean division, computation of prime factors, examples from
+  elementary number theory
+\item Examples of G{\"o}del-style encoding from the {\tt choice.v} library.
+\end{itemize}
+If possible give a few context to the exercises, in order not to bore
+the reader not familiar with programming. For instance do not say that
+you encode sequences of nats in nats but give a few hints about the
+use of G{\"o}del encoding.
+

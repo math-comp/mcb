@@ -1,0 +1,87 @@
+\chapter{What is a (Coq) proof\\The syntax of proofs\\[2ex]\Large\itshape Constructing proofs as programs}
+
+% From calculability to proofs, hence the CC, and the fact that
+% reasoning principles without a computational content become axioms.
+% 
+% This is a non technical chapter and message should be:
+% \begin{itemize}
+% \item instantiation of a universal statement is application (also the pair)
+% \item Excluded middle is not available by default (choice?)
+% \item Conversion as a pervasive indistinguishably, what inside
+%   (beta, definition unfolding,...)
+% \item Dependent types: eq, sigma (which example?)
+% \end{itemize}
+% 
+% One options is: avoid relating type theory and other logics. We say:
+% we have a formal game where the basic elements are programs/functions
+% that come with types to avoid confusion. full stop. (no relation with
+% proof theory, set theory). maybe mention that roots are in calculability (hence
+% the choice to pick functions as primitive and not sets). This is lucky because
+% (computable) functions are today executable by a computer.  Still not all
+% concepts are "computable" hence some principles are problematic: EM,.... we
+% mainly stay in the lucky fragment (again no propaganda on intuitionistic logic,
+% constructive math; just a mention).
+% 
+
+running topic: statements and their proofs, as in curry howard and
+tactics
+
+\begin{itemize}
+\item \C{Prop} as the type of statements
+\item forall-lambda, predicates as functions to Prop.  The difference with the forall in the previous chapter is that the type the var ranges in is not "Type" but a datatype line nat.
+\item examples with implicative predicate logic, modus ponens
+\item definition = lemma (proofs of implications are lambdas-app)
+\item tactics to generate the terms in a less pedestrian way (move, apply)
+\item if one calls Show Proof in the middle he sees one is building
+	the proof term incrementally, as one draws a proof tree (in CH style)
+\end{itemize}
+
+Now we make the point of Qed, the kernel checks the term produced via
+tactics (or hand-written).
+
+Examples of predicates: equality
+\begin{itemize}
+\item not to talk about indexes of inductive families we introduce eq as
+	an axiom and refl as another axiom to prove eq and we insist on
+	conversion
+\item examples, among which a beta expansion (to help later on with elimination)
+\item now, what are the proofs of an equality? maybe we start with rewrite
+\item examples are symmetry, transitivity
+\item then we give the elimination principle as an axiom, and explain the
+	work rewrite does in synthesizing the predicate
+\item the job of rewrite is not trivial nor un-ambiguous: to drive the synthesis show occurrence selection (later on we see the same problem for elim)
+\item other exercise on other eq related "commands" like discriminate, injection arrows, congr.
+\end{itemize}
+
+Showing universal properties on inductive data
+\begin{itemize}
+\item first enouce some lemmas on concrete examples, like not true = false,
+	then try to say "froall b : bool, ...".
+\item first on enumerated types (bool) via case
+\item them on nat via case and elim
+\item then show the proof term as an application of nat-rect, again the problem
+	is to write down P and elim does that.
+\item here an additional problem: loading the goal before using it to generate P
+\end{itemize}
+
+We should manage to prove stuff on the concepts defined in chapter 1,
+notably \C{odd(a+b) = xor (odd a) (odd b)}.  But before you need lemmas
+on "odd (S x) = not (odd x)", to make the point that the proof is trivial with
+a library that has all the needed facts.  Also the base case goes away by ssr (in general spell out where the computation saves work).
+
+Another example is set-nth of rcons as done by Florent Hivert, that has not
+developed the theory of set-nth with cat, and hence messes up the proof
+that gets shorter if one does the homework.
+
+Another example could be a proof that requires the induction principle on nat that (strong/course of values induction).
+
+A maybe good example that forces you to do patterns or occ numbers and explain
+that 2  contains syntactically 0 is the proof that code/decode cancel (in
+choice).
+
+We lack example with a mathematical interest, maybe arithmetic is sufficient like binomial.v.
+
+We need also /= and hence Arguments simple never (and we try to omit nosimpl).
+Maybe we should document that nosimpl -> Arguments in the manual.
+Let say that controlling reduction is an important topic when you
+do ssr style.
