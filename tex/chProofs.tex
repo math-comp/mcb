@@ -2,7 +2,7 @@
 
 % From calculability to proofs, hence the CC, and the fact that
 % reasoning principles without a computational content become axioms.
-% 
+%
 % This is a non technical chapter and message should be:
 % \begin{itemize}
 % \item instantiation of a universal statement is application (also the pair)
@@ -11,7 +11,7 @@
 %   (beta, definition unfolding,...)
 % \item Dependent types: eq, sigma (which example?)
 % \end{itemize}
-% 
+%
 % One options is: avoid relating type theory and other logics. We say:
 % we have a formal game where the basic elements are programs/functions
 % that come with types to avoid confusion. full stop. (no relation with
@@ -21,10 +21,10 @@
 % concepts are "computable" hence some principles are problematic: EM,.... we
 % mainly stay in the lucky fragment (again no propaganda on intuitionistic logic,
 % constructive math; just a mention).
-% 
+%
 
 running topic: statements and their proofs, as in curry howard and
-tactics
+tactics.
 
 \begin{itemize}
 \item \C{Prop} as the type of statements
@@ -117,8 +117,8 @@ Lemma  toto : A -> A.
   apply: x.
  Qed.
 \end{coq}
-
-discuss interactive proof construction, other example with a real 
+Note : \C{toto :  A -> A : Prop}
+discuss interactive proof construction, other example with a real
 apply that open subgoals.
 
 \subsection{Qed}
@@ -131,6 +131,8 @@ proof checker, Qed/Defined.
 cons: forall A: Type, A -> (seq A : Type)
 even_no_prime : forall n : nat, even n -> (not (prime n) : Prop)
 \end{coq}
+
+
 
 In CH style we see a proof, where lambdas/apply work too (same tactics)
 
@@ -226,5 +228,3 @@ xor-odd, then cancel encode decode, or something on primes.
 
 Take the occasion to present last/first, bullets, by, syntaxes for
 \C{=> [|IH x xs]} after a case.
-
-

@@ -1,4 +1,4 @@
-\chapter{Computational definitions \\ The syntax of terms \\[2ex]\Large\itshape Defining concepts by writing programs} 
+\chapter{Computational definitions \\ The syntax of terms \\[2ex]\Large\itshape Defining concepts by writing programs}
 
 Find a more catchy title? The motivation is: how to define things:
 objects, operations, (boolean) relations.
@@ -64,13 +64,16 @@ the reader not familiar with programming. For instance do not say that
 you encode sequences of nats in nats but give a few hints about the
 use of G{\"o}del encoding.
 
+Examples and exercises can be executed in an empty context, or
+libraries can be required for the purpose of (re)using and combine existing
+programs (non proofs here).
 \section{basics of functional programming}
 
 \subsection{Functions and simple types}
-functions are the base concept, 
+functions are the base concept,
 anonymous functions \C{(fun x => ...)},
 application,
-substitution (beta), arrow type. 
+substitution (beta), arrow type.
 we assume we have nat here.
 
 \begin{coq}{}
@@ -117,7 +120,7 @@ Infix "+" := addn.
 \end{coq}
 
 \subsection{Polymorphism and HO programming}
-option, seq
+option, seq, pairs.
 
 \begin{coq}{}
 Inductive option A := None | Some of A.
@@ -129,8 +132,26 @@ Fixpoint eq_seq A (eq_A : A -> A -> bool) l := ...
 
 polymorphism as in F
 
+may be also examples of polymorphisms that can be defined in pure
+$\lambda$-calculus (identity, argument swaping).
+
 \section{programming in Coq}
 this contains real programs, and is the excuse to talk about:
+
+\subsection{Sections}
+and Implicit Type, to factor the type parameter of containers like
+sequences.  Write more stupid programs on seq.
+
+\begin{coq}{}
+Section Seq.
+Variable A : Type.
+Variable x0 : A.
+Implicit type l : seq A.
+...
+Fixpoint fold f l := ...
+Fixpoint rev l := ...
+\end{coq}
+
 
 \subsection{Implicit arguments}
 to imitate polymorphism a-la ML, simplest example of type inference
@@ -152,20 +173,6 @@ About is bad because it mention names that are not necessarily displayed.
 Maybe we should tell people to open the document and/or talk about Locate,
 Print.  Or else use Search (that does all that) but in an empty
 file, where no theorems pop up.
-
-\subsection{Sections}
-and Implicit Type, to factor the type parameter of containers like
-sequences.  Write more stupid programs on seq.
-
-\begin{coq}{}
-Section Seq.
-Variable A : Type.
-Variable x0 : A.
-Implicit type l : seq A.
-...
-Fixpoint fold f l := ...
-Fixpoint rev l := ...
-\end{coq}
 
 \subsection{Exercises (explained): arithmetic}
 by now we should have the infrastructure to write program on arithmetic
