@@ -1,4 +1,5 @@
-\chapter{Writing Statements}
+\chapter{Writing Statements/specifications}
+THIS CHAPTER IS ABOUT METHODOLOGY
 
 % Where one learns to do proofs.
 % Boolean reflection in practice, views, discussion on the definition of leq,
@@ -9,16 +10,17 @@
 % spec? A new vernacular to declare specs without typing coinductive and
 % by writing explicitly the equations.
 
-\begin{itemize}
-\item can we use always bool as we did so far? No. Example dvdn needs exists
-        to be specified
-\item exists, and, or, neg, False, True as inductives
-\item related tactics: split, left, right,,exists,case
-\end{itemize}
-
 Discussion prop/bool, intuitionism, extraction (we should be able to avoid talking about impredicativity, but use Prop for computationally irrelevant).
 
-Working with bool
+\begin{itemize}
+\item can we specify all we have written so far using just = and forall? No.
+	Example dvdn needs exists to be specified
+\item exists, and, or, neg, False, True as inductives (again CH style)
+\item related tactics: split, left, right,exists,case
+\end{itemize}
+
+Anyway to take advantage of computation (ssr style) we want to
+work with bool as much as possible:
 
 \begin{itemize}
 \item reflect is the right way to write iff, <->, specialized to bool
@@ -38,7 +40,7 @@ Writing good statements
 \item advanced stuff: classically P instead of not-not P
 \item in general good quantifications and implicit arguments and good library
 	makes it possible to work without evars
-\item ". \C{<=} . ?= iff ."
+\item . \C{<=} . ?= iff .
 \end{itemize}
 
 Statements do also occur in the middle of proofs.  There we have many ways to
@@ -48,3 +50,8 @@ Comparison with other possible ways of writing properties:
 \begin{itemize}
 \item impact of le v.s. leq in a proof
 \end{itemize}
+
+In this chapter we should distill a description of our
+systematic-reactions, reflexes, to typical situations a
+beginner would screw up.
+

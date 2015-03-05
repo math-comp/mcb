@@ -8,7 +8,7 @@ Theoretical content:
 \item Functions with simple types ($\lambda$, $\rightarrow$): functions are the primitive concept
 \item Inductive {\bf datas}
 \item Programs by case analysis and recursion
-\item Compute (beta, delta, iota) example of beta (that helps later on to explain a predicate for elim principles
+\item Compute (beta, delta, iota) example of beta (that helps later on to explain a predicate for elim principles)
 \item Polymorphic datatypes (introduce $\Pi$, and its \Coq{} notation
   \C{forall}, for quantification over datatypes only)
 \item Everyone has a type : \C{0 : nat : Type : Type}, types avoid confusion
@@ -21,6 +21,7 @@ functional programming, with two possible difficulties:
   mathematicians.
 \item Somehow the syntax of (this fragment of the) terms should made
   be clear and precise.
+ \item types depending on terms (matrix x m)
 \end{itemize}
 
 \Coq{} commands and features:
@@ -63,3 +64,137 @@ the reader not familiar with programming. For instance do not say that
 you encode sequences of nats in nats but give a few hints about the
 use of G{\"o}del encoding.
 
+\section{basics of functional programming}
+
+\subsection{Functions and simple types}
+functions are the base concept, 
+anonymous functions \C{(fun x => ...)},
+application,
+substitution (beta), arrow type. 
+we assume we have nat here.
+
+\begin{coq}{}
+Check (fun x :nat => x + x).
+Eval beta in (fun x => x + x) 3. (* 3 + 3 : nat *)
+Definition f := fun x : nat => x + x.
+Definition f (x : nat) := x + x.
+Check f : nat -> nat.
+\end{coq}
+
+TODO: "beta" alone is not a reduction tactic, but we could add it.
+
+maybe also talk about delta here and make example of f.
+
+\subsection{Inductive data, case analysis and recursion}
+bool, nat
+
+\begin{coq}{}
+Inductive bool : Type := true | false.
+Inductive nat :Type := O | S of nat.
+Check true : bool : Type (* on a side note .. : Type : Type *)
+Check (S (S O)). (* 2 : nat *)
+\end{coq}
+
+match, fix, termination.
+
+\begin{coq}{}
+Definition andb := ...
+Fixpoint addn := ..
+Fixpoint eq_nat
+Fixpoint leq
+\end{coq}
+
+discuss example of a real computation, not just beta.
+
+\begin{coq}{}
+Compute (addn 3 4)
+\end{coq}
+
+now simple notation come in to play
+
+\begin{coq}{}
+Infix "+" := addn.
+\end{coq}
+
+\subsection{Polymorphism and HO programming}
+option, seq
+
+\begin{coq}{}
+Inductive option A := None | Some of A.
+Check option. (* Type -> Type *)
+Check Some. (* : forall A : Type, A -> option A *)
+Fixpoint map A B (f : A -> B) := ...
+Fixpoint eq_seq A (eq_A : A -> A -> bool) l := ...
+\end{coq}
+
+polymorphism as in F
+
+\section{programming in Coq}
+this contains real programs, and is the excuse to talk about:
+
+\subsection{Implicit arguments}
+to imitate polymorphism a-la ML, simplest example of type inference
+like \C{Some _ 3}.  Set implicit for inductive types/constructors too,
+and functions on them like the ones on seq we have seen before.
+
+\begin{coq}{}
+Arguments seq {T}.
+Arguments nil {T}
+Arguments cons {T} x xs.
+About seq.
+Check cons 3 nil.
+(* we have notataions *)
+Check [:: 3, 4 ].
+Fixpoint size A l := ...
+\end{coq}
+
+About is bad because it mention names that are not necessarily displayed.
+Maybe we should tell people to open the document and/or talk about Locate,
+Print.  Or else use Search (that does all that) but in an empty
+file, where no theorems pop up.
+
+\subsection{Sections}
+and Implicit Type, to factor the type parameter of containers like
+sequences.  Write more stupid programs on seq.
+
+\begin{coq}{}
+Section Seq.
+Variable A : Type.
+Variable x0 : A.
+Implicit type l : seq A.
+...
+Fixpoint fold f l := ...
+Fixpoint rev l := ...
+\end{coq}
+
+\subsection{Exercises (explained): arithmetic}
+by now we should have the infrastructure to write program on arithmetic
+
+\begin{coq}{}
+divn
+prime  (* an simpler version *)
+\end{coq}
+
+from choice.v
+
+\begin{coq}{}
+encode
+decode
+\end{coq}
+
+\section{Types depending on terms (unclear, maybe too early)}
+
+example could be matrix.
+
+\begin{coq}{}
+matrix: foral A : type, forall n m : nat, matrix n m.
+\end{coq}
+
+hard to show the difficulty without mentioning conversion or dependent match
+it helps next section because you see a forall on nat to define a Type.
+maybe one can revive this item in ch.2 after equality.
+
+
+\section{Definitions versus axioms}
+
+computable plus versus relational plus (Peano versus Coq).

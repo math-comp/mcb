@@ -28,7 +28,7 @@ tactics
 
 \begin{itemize}
 \item \C{Prop} as the type of statements
-\item forall-lambda, predicates as functions to Prop.  The difference with the forall in the previous chapter is that the type the var ranges in is not "Type" but a datatype line nat.
+\item forall-lambda, predicates as functions to Prop.  The difference with the forall in the previous chapter is that the type the var ranges in is not "Type" but a data type like nat.
 \item examples with implicative predicate logic, modus ponens
 \item definition = lemma (proofs of implications are lambdas-app)
 \item tactics to generate the terms in a less pedestrian way (move, apply)
@@ -85,3 +85,146 @@ We need also /= and hence Arguments simple never (and we try to omit nosimpl).
 Maybe we should document that nosimpl -> Arguments in the manual.
 Let say that controlling reduction is an important topic when you
 do ssr style.
+
+In this chapter we present several features of the proof language, but it it is
+not about the proof language itself (reference manual). What one adds to the
+reference manual here is an example of usage in the right context of the
+commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
+discuss all the matching discipline... nor the most advanced syntaxes)
+
+\section{Implication, Forall}
+
+Prop is like Type but for provable things. compare the source and target of
+arrows.
+
+\begin{coq}{}
+list: Type -> Type
+prime : nat -> Prop
+\end{coq}
+
+Ignore impredicativity here.
+
+Implication is arrow, Lemma = Definition.
+Curry-Howard (terms are proofs)
+
+\begin{coq}{}
+Variabl A : Prop.
+Definition toto : A -> A := fun x => x.
+Lemma  toto : A -> A.
+ Proof.
+  move => x.
+  Show Proof.
+  apply: x.
+ Qed.
+\end{coq}
+
+discuss interactive proof construction, other example with a real 
+apply that open subgoals.
+
+\subsection{Qed}
+
+proof checker, Qed/Defined.
+
+\subsection{forall}
+
+\begin{coq}{}
+cons: forall A: Type, A -> (seq A : Type)
+even_no_prime : forall n : nat, even n -> (not (prime n) : Prop)
+\end{coq}
+
+In CH style we see a proof, where lambdas/apply work too (same tactics)
+
+Specialization of an quantified lemma via application (maybe also
+\C{move/(_ x) in H}).
+Soft intro of the work of unification (FO) during application (infer
+arguments of conclusion's predicate symbol \C{prime _}).
+
+\section{Equality}
+
+see eq as an axiom here.
+
+\begin{coq}{}
+Check eq  (* : forall A : Type, A -> A -> Prop *)
+Check refl (* : forall A, forall x : A, x = x. *)
+Notation "x = y" := eq _ x y.
+Lemma toto : 3 + 2 = 5.by exact refl.
+\end{coq}
+
+discussion about conversion
+
+\subsection{use of equality in proofs via rewrite}
+
+soft intro to pattern matching of \C{(_ + _)}
+
+Examples could be to prove trans/symmetry of eq via rewrite (no proof terms
+here)
+
+Show \C{rewrite -H}, plus the idea that one may want to select
+occurrences (with simple patterns).
+
+\subsection{proof term for rewrite (CH)}
+
+The work rewrite does is non trivial (infer P)
+
+\begin{coq}{}
+Check eq_rect (* : forall P : nat -> Prop, .... forall n, P n *)
+\end{coq}
+
+Write a proof term by hand.
+(note that it works because of beta being part of conversion).
+See that rewrite does the verbose part for you (infer P).
+
+An example of ambiguous P from above, driving rewrite means driving the
+synthesis of P.
+
+\subsection{other eq related tactics}
+
+Congr, injection \C{[= ]}, discriminate (//), \C{->}.
+
+\section{Induction}
+
+Start with simple test
+
+\begin{coq}{}
+Lemma l1 : true && false = false
+Lemma l2 : false && false = false
+\end{coq}
+
+But we want
+
+\begin{coq}{}
+Lemma andbF : forall b, b && false = false
+\end{coq}
+
+Reasoning by cases
+
+The do the same for a nat.
+
+\begin{coq}{}
+Lemma addnC x : x + 0 = x.
+\end{coq}
+
+We need induction
+
+We also need ways to control computations of symbolic stuff,
+Arguments simpl, or write the equations or \C{/=} and similar.
+
+\subsection{proof term for induction}
+
+Again show that it boils down to infer P
+
+
+\subsection{proofs by induction in their generality}
+
+Show that even for commutativity of addition one needs to
+"load the goal" (or to help synthesize a more general P).
+
+
+\section{Exercises (explained)}
+
+xor-odd, then cancel encode decode, or something on primes.
+
+Take the occasion to present last/first, bullets, by, syntaxes for
+\C{=> [|IH x xs]} after a case.
+
+
