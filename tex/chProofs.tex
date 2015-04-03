@@ -69,11 +69,20 @@ notably \C{odd(a+b) = xor (odd a) (odd b)}.  But before you need lemmas
 on "odd (S x) = not (odd x)", to make the point that the proof is trivial with
 a library that has all the needed facts.  Also the base case goes away by ssr (in general spell out where the computation saves work).
 
+Comparison with other approaches:
+\begin{itemize}
+\item Compare an axiomatic, equational presentation of arithmetic to
+  its formalization as an inductive type with functions that
+  compute.
+\end{itemize}
+
+
 Another example is set-nth of rcons as done by Florent Hivert, that has not
 developed the theory of set-nth with cat, and hence messes up the proof
 that gets shorter if one does the homework.
 
-Another example could be a proof that requires the induction principle on nat that (strong/course of values induction).
+Another example could be a proof that requires the induction principle
+on nat that (strong/course of values induction).
 
 A maybe good example that forces you to do patterns or occ numbers and explain
 that 2  contains syntactically 0 is the proof that code/decode cancel (in
@@ -91,6 +100,10 @@ not about the proof language itself (reference manual). What one adds to the
 reference manual here is an example of usage in the right context of the
 commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
 discuss all the matching discipline... nor the most advanced syntaxes)
+
+This chapter could discuss the merits of a computable plus versus
+the relational plus (Peano versus Coq).
+
 
 \section{Implication, Forall}
 
