@@ -21,7 +21,7 @@ functional programming, with two possible difficulties:
   mathematicians.
 \item Somehow the syntax of (this fragment of the) terms should made
   be clear and precise.
- \item types depending on terms (matrix x m)
+% \item types depending on terms (matrix x m)
 \end{itemize}
 
 \Coq{} commands and features:
@@ -188,19 +188,6 @@ from choice.v
 encode
 decode
 \end{coq}
-
-\section{Types depending on terms (unclear, maybe too early)}
-
-example could be matrix.
-
-\begin{coq}{}
-matrix: foral A : type, forall n m : nat, matrix n m.
-\end{coq}
-
-hard to show the difficulty without mentioning conversion or dependent match
-it helps next section because you see a forall on nat to define a Type.
-maybe one can revive this item in ch.2 after equality.
-
 
 \section{Definitions versus axioms}
 
