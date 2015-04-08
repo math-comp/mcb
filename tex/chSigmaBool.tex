@@ -2,6 +2,20 @@
 % vim:set spell:
 % vim:set errorformat="":
 \chapter[Mixing data and proofs]{Mixing data and proofs\\[2ex]\Large\itshape Organizing knowledge}
+Wild notes: the purpose of this chapter is to stress what is truely
+important and perennial, as opposed to technicalities too much tied to
+the present technology implemented in Coq... tentative list:
+\begin{itemize}
+\item Organization of classes from mixins
+\item Rationale of instances and heritage
+\item Respective roles of coercions and type inference
+\item Visibility of coercions and notations, which motivate the
+  \C{Module Import Export} discipline.
+\item Slightly advanced readers should be taught Pack, and which edges
+  are to be added to the graph of the hierarchy when a new
+  structure is added.
+\end{itemize}
+
 
 Organizing, structuring, knowledge is a delicate task. A successful
 path followed in mathematics is algebraization. The focus shifts
@@ -35,7 +49,7 @@ corresponds to the silent check an expert eye does when reading a text
 mixing different theories.
 When we look at functional programming languages, like the one
 provided in \mcbCIC{}, the aspect of this magic glue that is the most
-relevant here is \emph{sub-type} polymorphism. 
+relevant here is \emph{sub-type} polymorphism.
 
 Its intuitive meaning can be explained with an example.  Take the two
 related notions (types) of a simple point \lstinline/P/ on the plane
@@ -44,7 +58,7 @@ maximize code reuse we want the function \lstinline/move/, that shifts
 a point, to also work on points that happen to have a color.
 If we assign the type \lstinline/P -> P/ to such function, then we
 can't use it on a coloured point \lstinline/c/, because
-\lstinline/(move c)/ would be ill-typed.  
+\lstinline/(move c)/ would be ill-typed.
 We could try to assign to \lstinline/move/ the polymorphic type
 \lstinline/$\alpha$ -> $\alpha$/ (for all $\alpha$), but that would
 fail too. The function \lstinline/move/ really needs to know something
@@ -66,7 +80,7 @@ also carry proofs testifying that some property holds on the value of
 the other fields.  This in turns makes it possible to use records to
 model precisely the concept of interface.  Programmable type inference
 can then serve as the glue that links an object with all the
-interfaces it satisfies. 
+interfaces it satisfies.
 
 In this chapter we focus on the tricky construction of
 \emph{dependent pairs packaging data and proofs}.  To take
@@ -84,7 +98,7 @@ treatment of it requires a full chapter, the next one.
 \mcbNOTES{}
 \mcbsection{The many ways to define a ``sub-type''}
 
-% Even if we leave on the side algebraic structures and 
+% Even if we leave on the side algebraic structures and
 % just look at modelling simple sets, some difficulties
 % immediately arise.  One of them is that sets play, at least
 % linguistically, two roles.  For example the set of natural numbers
@@ -102,18 +116,18 @@ treatment of it requires a full chapter, the next one.
 % $\mathbb{N}$.  In other words model  $\mathbb{N}$ as a type and
 % $\mathbb{P}$ as a predicate.  While this idea is widely used
 % in the \mcbMC{} library it is not the silver bullet.
-% 
+%
 % As the concepts one models become more and more
 % sophisticated the number of properties and operations that
 % characterize them grow, and this very simple approach does not help in
 % organizing and structuring such knowledge.
-% 
+%
 % If we follow this approach the type of prime numbers can be seen
 % as a type that combines a natural number with a proof that such
 % number is prime.  Hence a prime, by forgetting such primality witness,
 % is a simple number and can be used as such.
-% 
-% 
+%
+%
 % This construction, a \emph{dependent pair packing data and proofs}, is
 % tricky to get right in the \mcbCIC{}, and the solution adopted in the
 % \mcbMC{} library is the subject of this chapter.  In the next chapter
@@ -259,7 +273,7 @@ function}, forming sub-types is extremely easy.
 % Hedberg.  They are enough for the following section, were
 % we see how, by programming type inference, one can take
 % full advantage of the tuple subtype.
-% 
+%
 % \begin{coq}{title=Two instances of Hedberg's theorem}
 % Theorem bool_irrelevance (x y : bool) : forall e1 e2 : x = y, e1 = e2.
 % Theorem nat_irrelevance (x y : nat) : forall e1 e2 : x = y, e1 = e2.
@@ -330,7 +344,7 @@ of \lstinline/t/ to actually compute the length of the sequence.
 \begin{coq}{}
 Example just_tuple_attempt n (t : n.-tuple nat) :
   size (rev [seq 2 * x | x <- rev t]) = size t.
-Proof. rewrite size_tuple. 
+Proof. rewrite size_tuple.
 \end{coq}
 
 The rewriting replaces the right hand side with \lstinline/n/ as
@@ -465,12 +479,12 @@ is defined as a record embedding a simple point
 Record CP := Coloured { coords_of :> P; colour_of : color }
 \end{coq}
 
-\noindent 
+\noindent
 the way we implement sub-type polymorphism between \lstinline/CP/
 and \lstinline/P/ is by assigning the typed \lstinline/(P -> P)/ to
 \lstinline/move/ but:
 \begin{itemize}
-\item thanks to the automatically inserted 
+\item thanks to the automatically inserted
 	\emph{forgetful coercion} \lstinline/coords_of/
 	we can apply \lstinline/move/ to a coloured point \lstinline/c/
 	obtaining \lstinline/(move (coords_of c))/
@@ -708,7 +722,7 @@ n : nat
 x : tuple_of T n
 y : tuple_of T n
 ==================
-x = y -> tval x = tval y	
+x = y -> tval x = tval y
 \end{coqout}
 
 For the other one the crucial step is the use
@@ -827,6 +841,3 @@ be easily used to form a subtype.
 Also Cyril had other arguments on the fact that one can
 ask less (be more general) and recover all required properties later
 on, but I've to ask him again cause I've forgotten the example.
-
-
-
