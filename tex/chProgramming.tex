@@ -70,12 +70,12 @@ application,
 substitution (beta), arrow type.
 we assume we have nat here.
 
+Do use \C{About} for informations (not \C{Check}).
 \begin{coq}{}
-Check (fun x :nat => x + x).
 Eval beta in (fun x => x + x) 3. (* 3 + 3 : nat *)
 Definition f := fun x : nat => x + x.
 Definition f (x : nat) := x + x.
-Check f : nat -> nat.
+About f : nat -> nat.
 \end{coq}
 
 TODO: "beta" alone is not a reduction tactic, but we could add it.
@@ -83,12 +83,12 @@ TODO: "beta" alone is not a reduction tactic, but we could add it.
 maybe also talk about delta here and make example of f.
 
 \subsection{Inductive data, case analysis and recursion}
-bool, nat
+bool, nat.
 
 \begin{coq}{}
 Inductive bool : Type := true | false.
 Inductive nat :Type := O | S of nat.
-Check true : bool : Type (* on a side note .. : Type : Type *)
+Check true : bool : Type. (* on a side note .. : Type : Type *)
 Check (S (S O)). (* 2 : nat *)
 \end{coq}
 
