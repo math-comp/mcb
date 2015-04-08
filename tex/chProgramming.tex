@@ -46,9 +46,12 @@ Programs presented in detailed examples/exercises:
   function on the type of stored elements in argument (mind the
   higher-order)
 \item Boolean connectives, arithmetic operations on \C{nat}
+\item Do not forget to mention \C{if .. then .. else}
 \item Euclidean division, computation of prime factors, examples from
   elementary number theory
 \item Examples of G{\"o}del-style encoding from the {\tt choice.v} library.
+\item Examples/exercises about extended gcd (egcdn), which mix lists
+  and arithmetic.
 \end{itemize}
 If possible give a few context to the exercises, in order not to bore
 the reader not familiar with programming. For instance do not say that
@@ -137,7 +140,7 @@ sequences.  Write more stupid programs on seq.
 Section Seq.
 Variable A : Type.
 Variable x0 : A.
-Implicit type l : seq A.
+Implicit Type l : seq A.
 ...
 Fixpoint fold f l := ...
 Fixpoint rev l := ...
