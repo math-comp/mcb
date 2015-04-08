@@ -16,6 +16,7 @@
 \usepackage{lipsum}
 \usepackage{array}
 \usepackage{tabularx}
+
 \usepackage[skins,listings]{tcolorbox}
 \usepackage{boolexpr,ifthen}
 \definecolor{dkblue}{rgb}{0,0.1,0.5}
@@ -34,6 +35,11 @@
 
 % Highlights identifiers, |* id *| in underlined red, can we do better?
 \lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
+
+\newcommand\Chapter[2]{\chapter
+  [#1\hfil\hbox{}\protect\linebreak{\itshape#2}]
+  {#1\\ [2ex] {\Large \itshape #2}}
+  \markboth{\MakeUppercase{\chaptername\ \thechapter.\ #1}}{}}
 
 \newcommand{\gotcha}[1]{\framebox[\width]{\parbox{\textwidth}{gotcha: #1}}}
 
