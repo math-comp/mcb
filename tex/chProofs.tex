@@ -23,8 +23,15 @@
 % constructive math; just a mention).
 %
 
-running topic: statements and their proofs, as in curry howard and
-tactics.
+running topic: statements and their proofs. This chapter provides a gentle
+introduction to the implicative fragment of the logic and to the
+interactive construction of formal proofs. The reference to
+Curry-Howard should come as late as possible. It should indeed be
+possible to present a substantial amount of example and intuitions
+before explaining this. Specially if we carefully use the automated
+introduction of variables bound before the semi-column. At the tactic
+level, we should be able to avoid the need for Curry Howard related
+constructions like \C{apply: (H x)} in the first part of the chapter.
 
 \begin{itemize}
 \item \C{Prop} as the type of statements
@@ -91,7 +98,8 @@ choice).
 We lack example with a mathematical interest, maybe arithmetic is sufficient like binomial.v.
 
 We need also /= and hence Arguments simple never (and we try to omit nosimpl).
-Maybe we should document that nosimpl -> Arguments in the manual.
+Maybe we should document that nosimpl has been superseeded by
+the option of Arguments in the manual.
 Let say that controlling reduction is an important topic when you
 do ssr style.
 
@@ -100,9 +108,6 @@ not about the proof language itself (reference manual). What one adds to the
 reference manual here is an example of usage in the right context of the
 commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
 discuss all the matching discipline... nor the most advanced syntaxes)
-
-This chapter could discuss the merits of a computable plus versus
-the relational plus (Peano versus Coq).
 
 
 \section{Implication, Forall}
