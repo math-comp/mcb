@@ -1,7 +1,7 @@
 % vim:set tw=70:
 % vim:set spell:
 % vim:set errorformat="":
-\chapter[Type Inference]{Type Inference\\[2ex]\Large\itshape Teaching \Coq{}
+\chapter{Type Inference}{Teaching \Coq{}
 how to read Math (step 1)}
 
 The rules of the \mcbCIC{} are expressed on the syntax on terms and
@@ -19,8 +19,8 @@ left implicit.  In particular one can omit any subterm by writing
 ``\lstinline/_/'' in place of it.
 \marginnote{ I'm a bit uneasy about citations, here I think I want to
 add one\cite{Pollack92implicitsyntax}.
-They are good readings but a arbitrary and not easy to find.  
-We should define a policy for citations.} 
+They are good readings but a arbitrary and not easy to find.
+We should define a policy for citations.}
 Each missing piece of information is either reconstructed
 automatically by the \emph{type inference} algorithm, or provided
 interactively by means of proof commands.  In this chapter we
@@ -73,7 +73,7 @@ to make the resulting terms convertible.  For example unification is
 expected find an assignment that makes the type
 \lstinline/(list _)/ convertible to \lstinline/(list nat)/.
 By picking the value \lstinline/nat/ for the placeholder
-the two types become syntactically equal and hence convertible. 
+the two types become syntactically equal and hence convertible.
 % Unification shall fix the value of an implicit argument only if it
 % is strictly needed.
 
@@ -132,7 +132,7 @@ Check (id _ 3).
 \end{coq}
 \begin{coqout}{title=Response,width=4cm}
 
-id nat 3 : nat 
+id nat 3 : nat
 id nat 3 : nat
 \end{coqout}
 
@@ -197,7 +197,7 @@ $~$
 \end{coqout}
 
 In the first line the syntax (\lstinline/fun x => ...)/ is sugar for
-\lstinline/(fun x : _ => ...)/ where we leave the type of 
+\lstinline/(fun x : _ => ...)/ where we leave the type of
 \lstinline/x/ open.  Type inference fixes it to \lstinline/nat/
 when it reaches the last argument of the identity function.
 It unifies the type of \lstinline/x/ with the value of the first
@@ -688,7 +688,7 @@ expected by its context \lstinline/ety/.  Of course, for this
 situation to be an error, the two types \lstinline/ity/ and
 \lstinline/ety/ do not compare as equal.
 The simplest way one has to explain \Coq{} how to fix \lstinline/t/,
-is to provide a functional term \lstinline/c/ of type 
+is to provide a functional term \lstinline/c/ of type
 \lstinline/(ity -> ety)/ that is inserted around \lstinline/t/.
 In other words, whenever the user writes \lstinline/t/ in a context
 that expects a term of type \lstinline/ety/, the system instead of
