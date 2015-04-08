@@ -109,24 +109,119 @@ reference manual here is an example of usage in the right context of the
 commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
 discuss all the matching discipline... nor the most advanced syntaxes)
 
+\section{Equality, proofs of equality}
 
-\section{Implication, Forall}
-
-Prop is like Type but for provable things. compare the source and target of
-arrows.
+Coq comes with an equality predicate, that we see as axiomatic for the
+moment (in this section). It is called \C{eq} and has an infix
+notation \C{=}. Can we avoid talking about \C{Prop} at this stage?
 
 \begin{coq}{}
-list: Type -> Type
-prime : nat -> Prop
+Check eq  (* : forall A : Type, A -> A -> Prop *)
+Notation "x = y" := eq _ x y.
 \end{coq}
 
-Ignore impredicativity here.
+Now we can state equalities and prove some of them, showing along the way
+that equality is modulo computation (or is it too early?). This could
+be our first interactive proof script:
+
+\begin{coq}{}
+Lemma toto1 : 3 + 2 = 5. by []. Qed.
+\end{coq}
+
+and we comment the different parts of this sentence.  Other examples
+of proofs, this time by rewriting (assumptions stated
+outside of the goal). Soft intro to pattern matching of \C{(_ + _)}
+
+Examples could be to prove trans/symmetry of eq via rewrite (no proof terms
+here).
+
+Show \C{rewrite -H}, plus the idea that one may want to select
+occurrences (with simple patterns).
+
+Proofs can be done by case analysis, like brute force
+proofs of boolean tautologies: Start with simple tests, analogues of
+the example on numbers.
+
+\begin{coq}{}
+Lemma l1 : true && false = false. by []. Qed.
+Lemma l2 : false && false = false. by []. Qed.
+\end{coq}
+
+An other example on nats:
+
+\begin{coq}{}
+Lemma eqn_refl (x : nat) : eqn x x = true.
+\end{coq}
+
+Then show that we also want
+
+\begin{coq}{}
+Lemma andbF b : b && false = false
+\end{coq}
+
+and hence easoning by cases. Now the analogue for nat:
+
+\begin{coq}{}
+Lemma addnC x : x + 0 = x.
+\end{coq}
+
+requires induction.
+
+We also need ways to control computations of symbolic stuff,
+Arguments simpl, or write the equations or \C{/=} and similar.
+
+
+ Can we already show how \C{= true} can be used
+in programs? We can also introduce basic proofs by recurrence like
+\C{addnC}.
+
+At which moment do we start using the coercion \C{is_true}? Anyhow, it
+should be in this chapter.
+
+May be should we say rather early that rewriting under binders is not
+allowed by the system.
+\section{Implication, universal quantification}
+
+\subsection{Implication}
+Here we need to introduce \C{Prop}, which is like \C{Type} but for provable
+things. compare the source and target of arrows.
+
+\begin{coq}{}
+Inductive |*list*| (A : Type) : Type :=
+    nil : list A | cons : A -> list A -> list A
+
+list: Type -> Type
+
+Definition |*is_equal_to_2*| (x : nat) : x = 2.
+
+is_equal_to_2 : nat -> Prop
+\end{coq}
+
+Note: impredicativity is out of topic here.
+
+We then show more examples of interactive proof scripts, introducing
+(simple) \C{apply} and introduction steps. More examples of proofs by
+induction?
+
+\subsection{Universal quantification}
+
+In fact all the statements that we have proved so far with parameters
+are universally quantified statements. They use the same \C{forall} as
+the one we saw on types.
+
+\begin{coq}{}
+nil   : forall A : Type, (seq A : Type)
+andbF : forall b : bool, (b && false = b : Prop)
+\end{coq}
+
+Show the \C{move} tactic. Is this the place were we start talking
+about CH? If so this is were we put:
 
 Implication is arrow, Lemma = Definition.
 Curry-Howard (terms are proofs)
 
 \begin{coq}{}
-Variabl A : Prop.
+Variable A : Prop.
 Definition toto : A -> A := fun x => x.
 Lemma  toto : A -> A.
  Proof.
@@ -135,22 +230,10 @@ Lemma  toto : A -> A.
   apply: x.
  Qed.
 \end{coq}
+
 Note : \C{toto :  A -> A : Prop}
 discuss interactive proof construction, other example with a real
 apply that open subgoals.
-
-\subsection{Qed}
-
-proof checker, Qed/Defined.
-
-\subsection{forall}
-
-\begin{coq}{}
-cons: forall A: Type, A -> (seq A : Type)
-even_no_prime : forall n : nat, even n -> (not (prime n) : Prop)
-\end{coq}
-
-
 
 In CH style we see a proof, where lambdas/apply work too (same tactics)
 
@@ -159,31 +242,14 @@ Specialization of an quantified lemma via application (maybe also
 Soft intro of the work of unification (FO) during application (infer
 arguments of conclusion's predicate symbol \C{prime _}).
 
-\section{Equality}
+We should also display her  HO "predicators": commutative.  Discuss
+order of quantification in transitive and similar, naming conventions
 
-see eq as an axiom here.
-
-\begin{coq}{}
-Check eq  (* : forall A : Type, A -> A -> Prop *)
-Check refl (* : forall A, forall x : A, x = x. *)
-Notation "x = y" := eq _ x y.
-Lemma toto : 3 + 2 = 5.by exact refl.
-\end{coq}
-
-discussion about conversion
-
-\subsection{use of equality in proofs via rewrite}
-
-soft intro to pattern matching of \C{(_ + _)}
-
-Examples could be to prove trans/symmetry of eq via rewrite (no proof terms
-here)
-
-Show \C{rewrite -H}, plus the idea that one may want to select
-occurrences (with simple patterns).
+\section{Curry-Howard for equality proofs}
 
 \subsection{proof term for rewrite (CH)}
 
+There are also proof terms for equality proofs (show \C{refl})
 The work rewrite does is non trivial (infer P)
 
 \begin{coq}{}
@@ -201,33 +267,6 @@ synthesis of P.
 
 Congr, injection \C{[= ]}, discriminate (//), \C{->}.
 
-\section{Induction}
-
-Start with simple test
-
-\begin{coq}{}
-Lemma l1 : true && false = false
-Lemma l2 : false && false = false
-\end{coq}
-
-But we want
-
-\begin{coq}{}
-Lemma andbF : forall b, b && false = false
-\end{coq}
-
-Reasoning by cases
-
-The do the same for a nat.
-
-\begin{coq}{}
-Lemma addnC x : x + 0 = x.
-\end{coq}
-
-We need induction
-
-We also need ways to control computations of symbolic stuff,
-Arguments simpl, or write the equations or \C{/=} and similar.
 
 \subsection{proof term for induction}
 
