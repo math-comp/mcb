@@ -1,68 +1,437 @@
 \Chapter{Statements and proofs}{First steps in formal proofs}
 
-\section{Equality}
+The scope of this chapter is to explain how one states a lemma,
+proves it, finds it.  Focus on simple proof commands, conventions
+and boolean reflextion.  Only later we explain what a proof really is
+in Coq.
 
-\begin{itemize}
-\item Coq comes with an equality predicate, that we see as axiomatic for the
-moment (in this section). It is called \C{eq} and has an infix
-notation \C{=}. Example: \C{Check 3 = 3}, \C{Check 3 = 4}.
-\item Observe that, \C{Check} just checks the well-formedness of the
-  statement, not its truth. Well-formedness here means that \C{=}
-  requires both hand-sides to be of the same type.
-  Example \C{Check 3 = [::4]}. Observe that statement also have a
-  type, called \C{Prop}.
-\item We can give a name to a statement, that we would like to prove
-  formally. Example \C{Lemma foo : 3 = 3}. Observe what happens at the
-  level of the interface (we start a proof).
-\item And now, how to prove equality statements. Observationaly, \C{=}
-  behaves as expected: this is trivally true because \C{=} is
-  reflexive.
-\item End of the proof, \C{Qed}.
-\item Now we have a theorem called \C{foo} at hand in the
-  environement: \C{Check foo}. We can use it but it is useless...
-\item In fact the libraries you load provide theorems that you can use
-  in your proofs. Example:  \C{Check add0n}, \C{Check addnC}. Note the
-  universal quantification.
-\item How to state lemmas like this:
-\C{Example toto a b : 0 + (a + b) = a + b}.
-\item Equality is not just reflexive, it is also substitutive. This is
-  implemented via the \C{rewrite} tactic, that we can use to prove
-  this lemma, using \C{add0n}. Note that the tactic found the right
-  instance of \C{add0n} to be used, with \C{(a + b)}.
-\item \C{Qed}, \C{Check}, observe the universal quantification.
-\item Rewrite steps can be chained, in order. Example:
-\C{Example toto a b : 0 + (a + b) = b + a}. can be proved by rewriting
-\C{add0n} then, \C{addnC}. Note that \C{addnC} then \C{add0n} does
-something different.
-\item In fact reflexivity is more than syntactic equality. Prove
-\C{3 + 1 = 4}, \C{true || false = true}. But also with variables,
-e.g. \C{add0n}, connect with the programs written in the previous
-chapters.
+\mcbLEARN{Lemma, rewrite}
+\mcbREQUIRE{}
+\mcbPROVIDE{eq, rewrite, pattern, quantifiers, is-true, simpl, naming convention}
+\mcbLEVEL{1}
+\mcbsection{Equality}
 
-\item More advanced forms of proofs by the \C{rewrite} tactic allow to
-  select a pattern and to simplify the goal for free by
-  computation. Hence \C{addn0} just does not need to be stated
-  explicitely in the proof script. Warning: simpl is a Pandora
-  box. This should come very early
-  and go with/before boolean reflection style proofs by rewriting.
+Among the many predicates available in \Coq{},
+equality plays a privileged role in the \mcbMC{} library.
 
-\item Special case of equality statements that play a pervasive role
-  throughout the libraries: \C{_ = true}. For instance
-  \C{odd (2 * x + 7) = true}. This is both a 'logical' statement,
-  saying that any expression \C{(2x+7)} is an odd number, and
-  an equation that can be rewriten during the course of a proof. Find
-  an example, like \C{odd (2 * x + 7) || odd (2 * x)}. rewrite and
-  compute.
+In this section we consider it as a primitive notion and we focus on its use to
+state and prove theorems.  The equality predicate is named \C{eq} and
+the infix notation \C{=} is attached to it.
 
-\item Now we should point the coercion, because people will search and
-  check.
-\end{itemize}
+\begin{coq}{width=6cm,title=Equality predicate}
+Check @eq.
+Check 3 = 3.
+Check true = false || true.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+eq : forall A : Type, A -> A -> Prop
+3 = 3 : Prop
+true = false || true : Prop
+\end{coqout}
+
+The first thing to notice is that the equality predicate is polymorphic.
+Exactly as we have seen in the previous chapter then \C{forall} quantifier
+is used to make the variable \C{A} range over types.  By applying  
+\C{eq} to a type and to two extra arguments one obtains a term
+of type \C{Prop}, i.e. a proposition.  A proposition is something
+one typically proves.
+
+\begin{coq}{width=4cm,title=Equality predicate}
+Check 3 = 4.
+Check 3 = [:: 3].
+$~$
+\end{coq}
+\begin{coqout}{title=Response,width=8cm}
+3 = 4 : Prop
+Error: The term "[:: 3]" has type "seq nat"
+ while it is expected to have type "nat".
+\end{coqout}
+
+It is important to remark that the \Coq{} system checks the well typedness of
+statements, i.e. that the two hand sides of an equality have the same type, but
+not the truth.  It is the task of the user to prove it.
+
+\subsection{Stating and proving an equality}
+
+We are ready to state our first lemma by employing the \C{Lemma} keyword,
+followed by the name we chose for the lemma and the lemma statement.
+The \C{Proof} keywords denotes the beginning of the proof.
+
+\begin{coq}{width=6cm,title=Starting a proof}
+Lemma my_first_lemma : 3 = 3.
+Proof.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+1 subgoal
+  
+  ============================
+   3 = 3
+\end{coqout}
+
+Once in proof mode the system outputs the current proof state:
+the list of named hypotheses on top of the horizontal bar (empty here)
+and the current goal below the bar.
+
+\begin{coq}{width=6cm,title=Ending a proof}
+by reflexivity.
+Qed.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+No more subgoals.
+my_first_lemma is defined.
+\end{coqout}
+
+\C{reflexivity} is a proof command that succeeds when the goal is an equality
+and the two sides are equal up to computation.  In this case the two sides
+are syntactically equal, examples involving computation will follow.
+
+The \C{by} terminator is systematically used to prefix any proof sentence
+that terminates a goal.  A proof sentence ends with a dot, and can
+combine more than one proof command via the semi colon punctuation,
+again more examples will follow.
+The use of \C{by} is not limited to asserting no goals are left,
+but is also used to close goals by trivial means.  The notion of triviality
+is an important point we will discuss many times, for now lets just
+say it is extensible by the user and that it includes reflexivity.
+Hence the previous proof can be written as \C{by [].} where \C{[]}
+denotes the empty list of proof commands.
+
+\begin{coq}{title=Same proof}
+Lemma my_first_lemma : 3 = 3.
+Proof. by []. Qed.
+\end{coq}
+
+The \C{Qed} keyword terminates the proofs, checks it, and adds to
+the library the new lemma.  We can hence access
+
+Given that our first lemma is now part of the library as the result
+of the \C{Qed} command we can access it.
+\marginnote{should we use About ?}
+
+\begin{coq}{width=6cm,title=Printing a lemma statement}
+Check my_first_lemma.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+my_first_lemma : 3 = 3
+\end{coqout}
+
+Before stating and proving a more interesting lemma let's look at a simple
+but very important detail: its name.  The name is very badly chosen since
+it is hard to guess what the lemma is about by just reading its name.
+The name of a lemma is used whenever a proof appeals to such result,
+similar to what a standard mathematical text would do by a reference or
+a citation like ``this holds by lemma (7.3.4)''.  Lemmas are given a name,
+and not just a number, because names are easier to remember and are more
+stable (i.e. do not depend on the section where the corresponding lemma
+is proved and don't require a renaming if a lemma is inserted before them).
+The name can, and should, convey as much information as possible wile
+striving to stay short and handy.  A more reasonable name for our
+first lemma would be \C{eq33}: it would clearly remind us it talks about
+an equality.
+
+The \mcbMC{} library follows a naming convention that is documented in
+the reference manual \cite{xxx}.  Here we introduce it by examples.
+
+To get a better feeling on how lemmas are named let's see some other
+lemmas already proved for us.
+
+\begin{coq}{width=5cm,title=Lemmas of the library}
+Check add0n.
+Check addnC.
+\end{coq}
+\begin{coqout}{title=Response,width=7cm}
+add0n : forall n : nat, 0 + n = n
+addnC : forall n m : nat, n + m = m + n
+\end{coqout}
+
+First of all, note the quantification. So far \C{forall} was used to quantify
+over types and describe polymorphic functions.  Now it ranges over terms of
+type \C{nat} and describes generic lemmas, holding for any natural numbers
+\C{n} and \C{m}.
+
+Going back to the naming conventions, note that both names begin with ``add'',
+that is the principal operation involved.  In particular is the head symbol
+(the most external one) in the left hand side of the equation.  The addition
+operation is the one on natural numbers, hence then ``n'' component in
+the suffix.
+
+For the first equation, the other symbol involved in the name is ``0'',
+that indeed plays an important role in the lemma.  The relative position
+of ``0'' and ``n'' is chosen to recall to the user if the neutral element
+is added to the left or to the right.  For example the lemma named
+\C{addn0} would state \C{forall n : nat, n + 0 = n}.
+
+Capital letters in the suffix denote standard properties.
+In particular ``C'' stands for commutativity.  Standard properties are
+always stated with ``macros'' (higher order predicates) to impose
+consistency in their stating (like the order of quantified variables).
+
+The last general remark about naming convention worth making so early is that
+uninteresting and recurrent lemmas must have a short names easy to identify and
+disregard when reading a proof and at the same time easy to remember and short
+to type when writing a proof.
+
+Going to a second example, let's see how quantified lemmas can be stated:
+
+\begin{coq}{width=7cm,title=Stating quantified lemmas}
+Lemma add0nm (a : nat) (b : nat) :
+  0 + (a + b) = a + b.
+\end{coq}
+\begin{coqout}{title=Response,width=5cm}
+1 subgoal
+
+ a : nat
+ b : nat
+ =========================
+  0 + (a + b) = b + a
+\end{coqout}
+
+Note the \C{a} and \C{b} before the colon share the same type.
+Depending on your user interface and \Coq{} version it may be displayed
+in a more compact way, putting  \C{a} and \C{b} on the same line.
+We will use this form when possible.
+
+The following and equivalent form is also accepted.  Note that
+the user has to spell out the type only once.
+
+\begin{coq}{title=Types annotations}
+Lemma add0nm (a b : nat) : 0 + (a + b) = a + b.
+\end{coq}
+
+Finally, since \C{a} and \C{b} are used as arguments to
+the addition of natural numbers, their type can be completely
+omitted and the system will infer it for us.
+
+\begin{coq}{title=Stating quantified lemmas}
+Lemma add0nm a b : 0 + (a + b) = b + a.
+Proof.
+\end{coq}
+
+Now, to prove the lemma we need to use the two already existing
+lemmas \C{add0n} and \C{addnC}.  In particular the equality predicate
+is substitutive: given an equation we can replace any instance of
+its left hand side with the corresponding instance of the right hand side.
+
+The command is called rewrite, and its argument its called rule.
+
+\begin{coq}{title=Pedestrian proof}
+rewrite add0n.
+rewrite addnC.
+by [].
+Qed.
+\end{coq}
+
+\begin{coqout}{title=Response line 1,width=6cm}
+1 subgoal
+
+  a, b : nat
+  ============================
+   a + b = b + a
+\end{coqout}
+\begin{coqout}{title=Response line 2,width=6cm}
+1 subgoal
+
+  a, b : nat
+  ============================
+   b + a = b + a
+\end{coqout}
+
+Explain the job of instantiation rewrite does: picks \C{(a + b)} for
+\C{n} in \C{add0n} and picks \C{a} for \C{n} and \C{b} for \C{m} in
+\C{addnC}.  Explain it is guided by the head symbol \C{+} and traverses
+the goal left to right.  Define "pattern".
+
+\begin{coq}{width=4cm,title=The new lemma}
+Check add0nm.
+\end{coq}
+\begin{coqout}{title=Response,width=8cm}
+add0nm : forall a b : nat, 0 + (a + b) = b + a.
+\end{coqout}
+
+The rewrite proof command is very recurrent, hence a shorter form
+using multiple rules.
+
+\begin{coq}{title=More compact proof}
+Lemma add0nm a b : 0 + (a + b) = b + a.
+Proof. by rewrite add0n addnC. Qed.
+\end{coq}
+
+Note that the equations are used in order, e.g. the script
+
+\begin{coq}{title=Wrong proof}
+Lemma add0nm_bad a b : 0 + (a + b) = b + a.
+Proof. by rewrite addnC add0n. Qed.
+\end{coq}
+
+Fails because \C{addnC} flips \C{0} with \C{(a + b)}, then
+\C{add0n} finds no matching sub term.  In any case the proof
+is wrong, commutativity has to be employed to flip \C{a} and \C{b},
+or \C{b} and \C{a}, but not \C{0}.  If one wants to keep the rules
+in that order he needs to drive \Coq{} by better specifying the
+pattern he infers from \C{addnC}.
+
+\begin{coq}{title=Rewrite pattern}
+Lemma add0nm a b : 0 + (a + b) = b + a.
+Proof. by rewrite [a + _]addnC add0n. Qed.
+\end{coq}
+
+Explain pattern: overrides the pattern inferred.
+Explain underscore: saves space if b is large.
+
+Discuss: stating an equation (LHS is bigger).
+
+\subsection{Equality up to computation}
+
+As we said at the beginning, equality is up to computation.
+Since \C{(0 + 3)} computes to \C{3}, proving the equality among
+the two expressions is trivial.
+
+\begin{coq}{title=Computation in proofs}
+Eval compute in (0 + 3).  (* prints 3 *)
+Eval compute in (true || false).  (* prints true *)
+Lemma example3 : 0 + 3 = 3.
+Proof. by []. Qed.
+\end{coq}
+
+Indeed \C{reflexivity}, and \C{by []} as well, take computation
+into account.
+Note it also works for symbolic expressions.
+
+\begin{coq}{title=Computation in proofs}
+Lemma add0n n : 0 + n = n.
+Proof. by []. Qed.
+\end{coq}
+
+Explain addn0 is different, why, and that it will be shown later,
+when induction will be introduced.
+
+If we go back playing with the previous proof, we see that the
+last rule can be omitted.
+
+\begin{coq}{title=This also works}
+Lemma add0nm_bad a b : 0 + (a + b) = b + a.
+Proof. by rewrite [a + _]addnC. Qed.
+\end{coq}
+
+The reason is that \C{(0 + (b + a))} is equal
+to \C{(b + a)} up to computation.
+Note that add0n  is not only for free (in its proof) but
+also in its use.
+
+Maybe talk about \C{/=} here.
+
+\begin{coq}{title=This also works}
+Lemma add0nm_bad a b : 0 + (a + b) = b + a.
+Proof. by rewrite /= addnC. Qed.
+\end{coq}
+
+Note the pattern can go, since \C{/=} leaves the goal with
+no ambiguity.
+Note that, if we mind computation, the lemma is just an alias
+for \C{addnC} and hence is useless.
+
+\subsection{Truth of a boolean predicate}
+
+Special case of equations
+
+\begin{coq}{title=Stating that a boolean predicate holds}
+Lemma odd2n7 n : odd (2 * n + 7) = true.
+\end{coq}
+
+When we use it:
+
+\begin{coq}{title=Stating that a boolean predicate holds}
+Lemma example x : odd (2 * x + 7) || odd (2 * x) = true.
+Proof. by rewrite odd2n7. Qed.
+\end{coq}
+
+Recall \C{(true || x)} reduces to \C{true}, hence the
+goal becomes trivially \C{(true = true)} after the
+rewriting step.
+
+Also (coq user) remark that here we don't go left/right, or split
+a conjunction, we can simply rewrite and let computation clean up/progress.
+
+This is so frequent that \C{= true} is hidden to the user.
+One can write
+
+\begin{coq}{title=Stating a boolean lemma}
+Lemma odd2n7 n : odd (2 * n + 7).
+\end{coq}
+
+This is not ambiguous: statements must have type Prop, while
+the expression has type bool.  The system hence inserts
+the \C{= true} automatically.  Note that it is also hidden,
+so you have to learn that a lemma not explicitly showing the
+= sign can be used by rewrite.
+
+% \subsection{old}
+% 
+% \begin{itemize}
+% \item Coq comes with an equality prexdicate, that we see as axiomatic for the
+% moment (in this section). It is called \C{eq} and has an infix
+% notation \C{=}. Example: \C{Check 3 = 3}, \C{Check 3 = 4}.
+% \item Observe that, \C{Check} just checks the well-formedness of the
+%   statement, not its truth. Well-formedness here means that \C{=}
+%   requires both hand-sides to be of the same type.
+%   Example \C{Check 3 = [::4]}. Observe that statement also have a
+%   type, called \C{Prop}.
+% \item We can give a name to a statement, that we would like to prove
+%   formally. Example \C{Lemma foo : 3 = 3}. Observe what happens at the
+%   level of the interface (we start a proof).
+% \item And now, how to prove equality statements. Observationaly, \C{=}
+%   behaves as expected: this is trivally true because \C{=} is
+%   reflexive.
+% \item End of the proof, \C{Qed}.
+% \item Now we have a theorem called \C{foo} at hand in the
+%   environement: \C{Check foo}. We can use it but it is useless...
+% \item In fact the libraries you load provide theorems that you can use
+%   in your proofs. Example:  \C{Check add0n}, \C{Check addnC}. Note the
+%   universal quantification.
+% \item How to state lemmas like this:
+% \C{Example toto a b : 0 + (a + b) = a + b}.
+% \item Equality is not just reflexive, it is also substitutive. This is
+%   implemented via the \C{rewrite} tactic, that we can use to prove
+%   this lemma, using \C{add0n}. Note that the tactic found the right
+%   instance of \C{add0n} to be used, with \C{(a + b)}.
+% \item \C{Qed}, \C{Check}, observe the universal quantification.
+% \item Rewrite steps can be chained, in order. Example:
+% \C{Example toto a b : 0 + (a + b) = b + a}. can be proved by rewriting
+% \C{add0n} then, \C{addnC}. Note that \C{addnC} then \C{add0n} does
+% something different.
+% \item In fact reflexivity is more than syntactic equality. Prove
+% \C{3 + 1 = 4}, \C{true || false = true}. But also with variables,
+% e.g. \C{add0n}, connect with the programs written in the previous
+% chapters.
+% 
+% \item More advanced forms of proofs by the \C{rewrite} tactic allow to
+%   select a pattern and to simplify the goal for free by
+%   computation. Hence \C{addn0} just does not need to be stated
+%   explicitely in the proof script. Warning: simpl is a Pandora
+%   box. This should come very early
+%   and go with/before boolean reflection style proofs by rewriting.
+% 
+% \item Special case of equality statements that play a pervasive role
+%   throughout the libraries: \C{_ = true}. For instance
+%   \C{odd (2 * x + 7) = true}. This is both a 'logical' statement,
+%   saying that any expression \C{(2x+7)} is an odd number, and
+%   an equation that can be rewriten during the course of a proof. Find
+%   an example, like \C{odd (2 * x + 7) || odd (2 * x)}. rewrite and
+%   compute.
+% 
+% \item Now we should point the coercion, because people will search and
+%   check.
+% \end{itemize}
 
 
 
-\section{Case analysis}
+\mcbLEARN{case}
+\mcbREQUIRE{}
+\mcbPROVIDE{case}
+\mcbLEVEL{1}
+\mcbsection{Case analysis}
 
-Proofs can be done by case analysis, like brute force
+Proofs can bxe done by case analysis, like brute force
 proofs of boolean tautologies: Start with simple tests, analogues of
 the example on numbers.
 

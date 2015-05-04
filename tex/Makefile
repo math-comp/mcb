@@ -1,3 +1,5 @@
+quick:
+	pdflatex main
 all:
 	pdflatex main
 	bibtex main
