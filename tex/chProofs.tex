@@ -606,14 +606,15 @@ one last example with true=false in the context.
 \section{Proofs by induction}
 
 \begin{coq}{}
-Lemma eqnxx x : eqn x x = true.
+Lemma eqnxx x : eqn x x.
 Proof.
 elim: x=> [|x' IH].
-rewrite /= IH.
+rewrite /=.
+apply: IH.
 by [].
 Qed.
-Lemma eqnxx x : eqn x x = true.
-Proof. elim: x => // x' <-. Qed.
+Lemma eqnxx x : eqn x x.
+Proof. by elim: x. Qed.
 \end{coq}
 
 requires induction.
