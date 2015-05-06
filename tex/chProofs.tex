@@ -164,18 +164,32 @@ is added to the left or to the right.  For example the lemma named
 Capital letters in the suffix denote standard properties.
 In particular ``C'' stands for commutativity.  Standard properties are
 always stated with ``macros'' (higher order predicates) to impose
-consistency in their stating (like the order of quantified variables).
+consistency in their stating.  Indeed the real statement of
+\C{addnC} is \C{(commutative addn)}, where \C{addn} is the
+name of the addition operation and \C{commutative} is the
+following macro.
+
+\begin{coq}{title=Macro for stating commutativity (suffix ``C'')}
+Definition commutative op := forall x y, op x y = op y x.
+\end{coq}
+
+Macros, being standard definitions, are completely transparent for the
+system.\footnote{not yet for \C{Search}, but here I'm describing an ideal
+situation}  Consistency is not only aesthetically, but ease the use of
+lemmas: as we will see later, the order of the quantification may make
+a lemma easier to use under certain circumstances.
 
 The last general remark about naming convention worth making so early is that
 uninteresting and recurrent lemmas must have a short names easy to identify and
 disregard when reading a proof and at the same time easy to remember and short
-to type when writing a proof.
+to type when writing a proof.\marginpar{this is a mantra somewhat}
 
 Going to a second example, let's see how quantified lemmas can be stated:
 
 \begin{coq}{width=7cm,title=Stating quantified lemmas}
-Lemma add0nm (a : nat) (b : nat) :
-  0 + (a + b) = a + b.
+Lemma add0nmC (a : nat) (b : nat) :
+  0 + (a + b) = b + a.
+Proof.
 \end{coq}
 \begin{coqout}{title=Response,width=5cm}
 1 subgoal
@@ -195,7 +209,7 @@ The following and equivalent form is also accepted.  Note that
 the user has to spell out the type only once.
 
 \begin{coq}{title=Types annotations}
-Lemma add0nm (a b : nat) : 0 + (a + b) = a + b.
+Lemma add0nmC (a b : nat) : 0 + (a + b) = a + b.
 \end{coq}
 
 Finally, since \C{a} and \C{b} are used as arguments to
@@ -203,12 +217,12 @@ the addition of natural numbers, their type can be completely
 omitted and the system will infer it for us.
 
 \begin{coq}{title=Stating quantified lemmas}
-Lemma add0nm a b : 0 + (a + b) = b + a.
-Proof.
+Lemma add0nmC a b : 0 + (a + b) = b + a.
 \end{coq}
 
-Now, to prove the lemma we need to use the two already existing
-lemmas \C{add0n} and \C{addnC}.  In particular the equality predicate
+Now that we are satisfied with the statement, we llok into proving it.
+At the current stage we need to use the two already existing
+lemmas \C{add0n} and \C{addnC} and the fact that the equality predicate
 is substitutive: given an equation we can replace any instance of
 its left hand side with the corresponding instance of the right hand side.
 
@@ -242,24 +256,24 @@ Explain the job of instantiation rewrite does: picks \C{(a + b)} for
 the goal left to right.  Define "pattern".
 
 \begin{coq}{width=4cm,title=The new lemma}
-Check add0nm.
+Check add0nmC.
 \end{coq}
 \begin{coqout}{title=Response,width=8cm}
-add0nm : forall a b : nat, 0 + (a + b) = b + a.
+add0nmC : forall a b : nat, 0 + (a + b) = b + a.
 \end{coqout}
 
 The rewrite proof command is very recurrent, hence a shorter form
 using multiple rules.
 
 \begin{coq}{title=More compact proof}
-Lemma add0nm a b : 0 + (a + b) = b + a.
+Lemma add0nmC a b : 0 + (a + b) = b + a.
 Proof. by rewrite add0n addnC. Qed.
 \end{coq}
 
 Note that the equations are used in order, e.g. the script
 
 \begin{coq}{title=Wrong proof}
-Lemma add0nm_bad a b : 0 + (a + b) = b + a.
+Lemma add0nmC_bad a b : 0 + (a + b) = b + a.
 Proof. by rewrite addnC add0n. Qed.
 \end{coq}
 
@@ -271,7 +285,7 @@ in that order he needs to drive \Coq{} by better specifying the
 pattern he infers from \C{addnC}.
 
 \begin{coq}{title=Rewrite pattern}
-Lemma add0nm a b : 0 + (a + b) = b + a.
+Lemma add0nmC a b : 0 + (a + b) = b + a.
 Proof. by rewrite [a + _]addnC add0n. Qed.
 \end{coq}
 
@@ -328,7 +342,10 @@ Proof. by rewrite /= addnC. Qed.
 Note the pattern can go, since \C{/=} leaves the goal with
 no ambiguity.
 Note that, if we mind computation, the lemma is just an alias
-for \C{addnC} and hence is useless.
+for \C{addnC} and hence is useless.  It may feel depressing, but
+it is actually a very important hygiene measure: only useful lemmas
+are kept, trade off between all combinations or few base blocks that
+combine well (harder in principle, requires a language that glues well).
 
 \subsection{Truth of a boolean predicate}
 
@@ -427,44 +444,176 @@ so you have to learn that a lemma not explicitly showing the
 
 \mcbLEARN{case}
 \mcbREQUIRE{}
-\mcbPROVIDE{case}
+\mcbPROVIDE{case, -, indentation, brute force proofs, semicolon, => after case}
 \mcbLEVEL{1}
 \mcbsection{Case analysis}
 
-Proofs can bxe done by case analysis, like brute force
-proofs of boolean tautologies: Start with simple tests, analogues of
-the example on numbers.
+In programming inductive data is matched against to consider all
+possible cases.  In the same way, when we reason on a program
+whose input is symbolic, we can proceed by considering all possible
+cases.
 
-\begin{coq}{}
-Lemma l1 : true && false = false. by []. Qed.
-Lemma l2 : false && false = false. by []. Qed.
+\begin{coq}{title=First De Morgan's law: pedestrian proof}
+Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+Proof.
+case: a.
+- by []
+case: b.
+- by [].
+by [].
+Qed.
+\end{coq}
+\begin{coqout}{title=Response line 3,width=8cm}
+2 subgoals
+  
+  b : bool
+  ============================
+   ~~ (true && b) = ~~ true || ~~ b
+
+subgoal 2 is:
+ ~~ (false && b) = ~~ false || ~~ b
+\end{coqout}
+
+Explain the decorator and the indentation policy.
+Note a removed from context, substituted by true and false.
+Note first goal computes to b=b.
+Note second goal does not, computation blocked, we case b.
+
+\begin{coqout}{title=Response line 5,width=8cm}
+2 subgoals
+  
+  ============================
+   ~~ (false && true) = ~~ false || ~~ true
+
+subgoal 2 is:
+ ~~ (false && false) = ~~ false || ~~ false
+\end{coqout}
+
+Now all computes.  We are not satisfied, we could write
+as the only tactic \C{case: a; case: b.}.
+
+\begin{coqout}{title=Response,width=8cm}
+4 subgoals
+  
+  ============================
+   ~~ (true && true) = ~~ true || ~~ true
+
+subgoal 2 is:
+ ~~ (true && false) = ~~ true || ~~ false
+subgoal 3 is:
+ ~~ (false && true) = ~~ false || ~~ true
+subgoal 4 is:
+ ~~ (false && false) = ~~ false || ~~ false
+\end{coqout}
+
+Explain semicolon.
+Note that all computes. Note that this is always possible
+for finitary data, it amounts to comprehensive testing.
+
+\begin{coq}{title=First De Morgan's law}
+Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+Proof. by case: a; case: b. Qed.
 \end{coq}
 
-An other example on nats:
+other examples, exercises, can be
 
-\begin{coq}{}
-Lemma eqn_refl (x : nat) : eqn x x = true.
+\begin{coq}{title=possible exampels}
+Lemma andbA : associative andb.        Proof. by do 3!case. Qed.
+Lemma orbCA : left_commutative orb.    Proof. by do 3!case. Qed.
+Lemma andbN b : b && ~~ b = false.     Proof. by case: b. Qed.
 \end{coq}
 
-Then show that we also want
+to explain A and N suffixes, plus do iteration, plus stack top.
+
+When data is not finitary, then case is not sufficient.
 
 \begin{coq}{}
-Lemma andbF b : b && false = false
+Lemma eqnxx (x : nat) : eqn x x = true.
+Proof. case: x => [|x'].
 \end{coq}
 
-and hence reasoning by cases.
+Name subterms.
 
+\begin{coqout}{title=Response,width=8cm}
+  x' : nat
+  ============================
+   eqn x'.+1 x'.+1 = true
+\end{coqout}
 
-\section{Hypotheses, implications}
+But before induction we look at implication
 
-Here comes \C{apply}. The ambiguity will be explained later in the CH
-section.
+\mcbLEARN{apply}
+\mcbREQUIRE{}
+\mcbPROVIDE{apply, ->, =>, //}
+\mcbLEVEL{1}
+\mcbsection{Implication and backchaining}
 
+\begin{coq}{width=4cm}
+Check @dvdn_mul.
+\end{coq}
+\begin{coqout}{title=Response,width=8cm}
+dvdn_mul : forall d1 d2 m1 m2 : nat,
+  d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
+\end{coqout}
+
+Explain implication symbol, the ambiguity with function space will
+be explained later on.
+
+\begin{coq}{}
+Lemma stupid x : 3 * x %| 6 * x^2.
+Proof.
+apply: dvdn_mul.
+- by [].
+apply: dvdn_mulr.
+exact: dvdnn.
+Qed.
+Lemma stupid2 x : 3 * x %| 6 * x^2.
+Proof.
+rewrite dvdn_mul // dvdn_mulr // dvdnn.
+Qed.
+\end{coq}
+
+How do we prove this kind of lemmas
+
+\begin{coq}{}
+Lemma stupid3 x y : x %| y -> 3 * x %| 6 * y.
+Proof.
+move=> div_xy.
+by apply: dvdn_mul.
+Qed.
+\end{coq}
+
+by looks in the hyps.
+
+\begin{coq}{}
+Lemma stupid3 x y (div_xy : x %| y) : 3 * x %| 6 * y.
+Proof. exact: dvdn_mul. Qed.
+\end{coq}
+
+equivalent syntax, uncommon.
+
+Make another example working on the stack
+
+\begin{coq}{}
+Lemma andb_idl (a b : bool) : (b -> a) -> a && b = b.
+Proof. by case: a; case: b => // ->. Qed.
+\end{coq}
+
+note // in =>, note -> in =>, note runs on 4 goals.
+
+one last example with true=false in the context.
 
 \section{Proofs by induction}
 
 \begin{coq}{}
-Lemma addnC x : x + 0 = x.
+Lemma eqnxx x : eqn x x = true.
+Proof.
+elim: x=> [|x' IH].
+rewrite /= IH.
+by [].
+Qed.
+Lemma eqnxx x : eqn x x = true.
+Proof. elim: x => // x' <-. Qed.
 \end{coq}
 
 requires induction.
