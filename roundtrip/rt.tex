@@ -1,0 +1,22 @@
+% Example of Macros to be defined in order to have rt work
+
+% Define snippets (hence prints nothing in the tex)
+\newcommand{\rtdef}[2]{}   % #1, #2 are reserved
+
+% Calls Coq on a sequence of snippets (hence prints nothing in the tex)
+\newcommand{\rtrun}[2]{}   % #1, #2 are reserved
+
+% Lets one declare the expected output #3, rt checks it is almost-equal
+% to something produced by a run. #2 are extra args for the macro (not used in
+% the example)
+\newcommand{\rtout}[3]{#3} % #1 is reserved, #2 and #3 to be used
+
+% Lets one present snippets; rt asserts such snippets is almost-equal to
+% the original ones.  One can also define the snippet on the fly
+\newcommand{\rtprt}[3]{#3} % #1 is reserved, #2 and #3 to be used
+
+% As above, but environments
+\newbox{\devnull}
+\newenvironment{rtdefenv}[1]{\savebox{\devnull}\bgroup}{\egroup}
+\newenvironment{rtprtenv}[2]{}{}
+\newenvironment{rtoutenv}[2]{}{}

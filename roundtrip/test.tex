@@ -1,0 +1,41 @@
+\documentclass{article}
+\title{test}
+
+\input{rt.tex}
+
+\begin{document}
+
+% define a snippet named "ctx"
+\rtdef{name=ctx}{Require Import Ssreflect.ssreflect.}
+% another one named "code"
+\begin{rtdefenv}{name=code}
+Lemma a : True = True.
+Proof. Redirect "foo" Show. by []. Qed.
+\end{rtdefenv}
+% last one "pall"
+\rtdef{name=pall}{Set Printing All.}
+
+% runs coq, names all results in the "normal" namespace
+\rtrun{name=normal}{ctx,code}
+% ditto, but in the "verbose" namespace
+\rtrun{name=verbose}{ctx,pall,code}
+
+% Prints the Coq code on the right, asserting it is almost equal to "code"
+\rtprt{def=code}{unused arg}{Lemma a : True = .... Proof. by []. Qed.}
+
+% Prints the output of coq, asserts it is like "foo" in the "verbose" namespace
+\begin{rtoutenv}{run=verbose; out=foo}{unused arg}
+1 subgoal
+  
+  ============================
+   @eq Prop True True
+\end{rtoutenv}
+
+% Prints the Coq code on the right, and defines on the fly the "checkcode"
+% snippet
+\rtprt{name=checkcode}{unused arg}{Check nat.}
+
+% Tricky test, "..." is a wild card
+\rtout{run=normal; out=foo}{yyy}{...}
+
+\end{document}

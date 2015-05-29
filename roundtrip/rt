@@ -1,0 +1,263 @@
+#!/usr/bin/lua5.1
+
+local options = {
+  coqc = "coqc",
+	coqargs = "",
+	def="rtdef",
+	run="rtrun",
+	out="rtout",
+	prt="rtprt",
+	defenv="rtdefenv",
+	runenv="rtrunenv",
+	outenv="rtoutenv",
+	prtenv="rtprtenv",
+}
+
+function hide(fname)
+	if fname:match('/') then return fname:gsub('^(.-)/([^/]*)$','%1/.%2/')
+	else return '.'..fname..'/' end
+end
+assert(hide('a') == '.a/')
+assert(hide('b/a') == 'b/.a/')
+assert(hide('/b/c/a') == '/b/c/.a/')
+
+local prefix = ""
+
+snippets = {}
+
+function def(opts,code)
+	local name = assert(opts.name,"def command with no name option")
+	assert(not(snippets[name]),"Snippet named "..opts.name.." already defined")
+	snippets[name]=code..'\n'
+end
+
+runs = {}
+
+function run(opts,snips)
+	local name = assert(opts.name,"A run must have a name")
+	local opts = opts.opts or ""
+
+	assert(not(runs[name]),"Two runs named "..name)
+	runs[#runs+1]= { name = name, opts = opts, snips = snips }
+	runs[name]=true
+end
+
+function exec(run)
+	local opts = run.opts
+	local snips = run.snips
+	local name = run.name
+	local seen = {}
+	function redirect(data,prefix)
+    return (data:gsub('Redirect (%b"")',function(n)
+		  assert(not(seen[name]),"Redirecting twice on "..n.." on run "..name)
+			seen[n]=true
+			return 'Redirect "'..prefix..n:sub(2,-2)..'"'
+		end))
+	end
+	local prefix = prefix..name
+	local runname = prefix..'.v'
+	local runoname = prefix..'.txt'
+	local cmdline =
+	  options.coqc..' '..options.coqargs..' '..opts..' '..runname..
+			' > '..runoname..' 2>&1'
+  local tmp = assert(io.open(runname,'w'),'Unable to write to '..runname)
+  tmp:write('(* '..cmdline..' *)')
+	for s in snips:gmatch('[^,][^,]*') do
+		tmp:write('(* '..s..' *)')
+	  tmp:write(redirect(assert(snippets[s],"No snippet named "..s),prefix..'_'))
+	end
+	tmp:close()
+
+	print("Running: " .. cmdline)
+	io.flush(io.stdout)
+	assert(os.execute(cmdline))
+end
+
+function strip_space(s)
+  return s:gsub('%s%s*',' '):gsub('^%s*',''):gsub('%s*$','')
+end
+
+function eq_up_to(a,b,i,j)
+  local i, j = i or 1, j or 1
+	local la, lb = a:len(), b:len()
+  while i <= la and j <= lb do
+    if a:byte(i) == b:byte(j) then i = i + 1; j = j + 1
+	  elseif b:match('^%.%.%.',j) then
+			j = j + 3
+      while i <= la do
+        if eq_up_to(a,b,i,j) then return true else i = i + 1 end
+			end
+		else
+			return false
+		end
+	end
+ 
+	return i>la and j>lb
+end
+
+function compare(opts, real, expected, name)
+  local clean = strip_space(real:gsub('Redirect %b""',''):gsub('Show.','')
+		:gsub('File[^:]-:',''))
+	local exp = strip_space(expected)
+	if eq_up_to(clean,exp) then return end
+	local tmp1 = prefix..'compare_real'
+	local tmp2 = prefix..'compare_expected'
+	local h1 = assert(io.open(tmp1,'w'))
+	local h2 = assert(io.open(tmp2,'w'))
+	h1:write(clean)
+	h2:write(exp)
+	h1:close()
+	h2:close()
+	print('\nInconsistency ' .. name) 
+	os.execute('wdiff -3 ' .. tmp1 .. ' ' .. tmp2)
+	print ''
+	os.remove(tmp1)
+	os.remove(tmp2)
+	--print(clean,'\n',exp)
+end
+
+outs = {}
+
+function out(opts, expected)
+  outs[#outs+1] = { opts = opts, expected = expected }
+end
+
+function check_out(r)
+	local opts = r.opts
+	local expected = r.expected
+	local run = assert(opts.run,"Missing run=name to out command")
+
+	local outname = ""
+	if opts.out then
+		outname = prefix..run..'_'..opts.out..'.out'
+	else
+		outname = prefix..run..'.txt'
+	end
+
+	local handle = assert(io.open(outname,'r'))
+	local data = handle:read('*a')
+
+	compare(opts, data, expected, 'in output file: '..outname)
+end
+
+prts = {}
+
+function prt(opts, expected)
+  prts[#prts+1] = { opts = opts, expected = expected }
+	if opts.name then
+		def(opts, expected)
+	  if not opts.def then opts.def = opts.name end
+	end
+end
+
+function check_prt(r)
+	local opts = r.opts
+	local expected = r.expected
+	local data = ""
+	for s in assert(opts.def,"prt needs a def"):gmatch('[^,][^,]*') do
+	  data = data .. snippets[s]
+	end
+  compare(opts, data, expected, 'in snippets: '..opts.def)
+end
+
+function is_comment(s)
+  local prefix = s:match('.?%%')
+	return not(prefix == nil or prefix == "\\%")
+end
+
+function parse(...)
+		local cmd = select(1,...)
+		assert(_G[cmd],"No command "..cmd)
+		local opts = {}
+		for k,v in select(2,...):sub(2,-2):gmatch('%s*([^;=]*)%s*=?([^;]*)%s*') do
+			opts[k] = v or true
+		end
+		_G[cmd](opts, select(3,...):sub(2,-2))
+end
+
+function parse_env(env,data)
+	function line(i)
+		local _, n = data:sub(1,i):gsub('\n','')
+		return fname..':'..(n+1)..': '
+	end
+	local envname = options[env.."env"]
+	local len = data:len()
+  local i = 0
+  while true do
+    local _, start, comment = data:find('\n([^\n]*)\\begin{'..envname..'}',i)
+    if start ~= nil then
+			if is_comment(comment) then
+				i = start
+      else
+  		  local stop, very_end = data:find('\\end{'..envname..'}',i)
+  			assert(stop,
+  			  line(start).."no \\end{"..envname.."}")
+  			local extra = "(%b{})"
+  			if env == "def" then extra = "()" end -- no extra arg
+    	  local args, _, contents =
+  		    data:sub(start+1,stop-1):match('^(%b{})'..extra..'(.*)$')
+  			assert(args and contents,
+  			  line(start).."bad syntax after \\begin{"..envname.."}")
+    		parse(env, args, "{"..contents.."}")
+    	  i = very_end
+      end
+	  else
+		  break
+  	end
+  end
+end
+
+function parse_line(env,data)
+  local envname = options[env]
+	local extra = "(%b{})"
+	if env == "def" or env == "run" then extra = "()" end -- no extra arg
+  data:gsub('\n([^\n]*)\\'..envname..'(%b{})'..extra..'(%b{})',
+		function(comment, arg, _, data)
+			if not(is_comment(comment)) then parse(env, arg, data) end
+		end)
+end
+
+function main()
+  while arg[1]:match('^%-%-') do
+  	local opt = assert(arg[1]:match('^%-%-(.*)$'))
+  	local val = assert(arg[2],"No argument to option "..opt)
+  	table.remove(arg,2)
+  	table.remove(arg,1)
+  	assert(options[opt] ~= nil, "Unknown option "..opt)
+  	options[opt] = val
+  end
+  
+  assert(arg[1],"no file name given")
+  while arg[1] do
+  	fname = arg[1] -- global
+  	print('Processing: '..fname)
+  	table.remove(arg,1)
+  	prefix = hide(fname:gsub('%.tex$','')) -- global
+  	os.execute('mkdir -p '..prefix)
+  	local handle = assert(io.open(fname))
+  	local data = assert(handle:read('*a'), "error reading " .. fname)
+  	handle:close()
+  
+  	-- globals
+  	prts = {}
+  	runs = {}
+  	outs = {}
+  	snippets = {}
+  	
+  	parse_line('def',data)
+  	parse_line('run',data)
+  	parse_line('prt',data)
+  	parse_line('out',data)
+  	parse_env('def',data)
+  	parse_env('out',data)
+  	parse_env('prt',data)
+  	
+  	for _,r in ipairs(runs) do exec(r) end
+  	for _,r in ipairs(outs) do check_out(r) end
+  	for _,r in ipairs(prts) do check_prt(r) end
+  end
+end
+
+xpcall(main,function(s) print((s:gsub('^[^ ]*',''))) end)
+
+-- vim:set ts=2:
