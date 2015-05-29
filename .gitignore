@@ -1,0 +1,12 @@
+*.vo
+*~
+*.log
+*.out
+*.bbl
+*.blg
+*.toc
+*.aux
+*.glob
+**/.*/*.v
+**/.*/*.txt
+*pdf
