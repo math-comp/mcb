@@ -4,6 +4,21 @@
 \chapter{Type Inference}{Teaching \Coq{}
 how to read Math (step 1)}
 
+NOTES: Refactoring needed: try to organize the content of this chapter
+and the two following ones along this line:
+\begin{itemize}
+\item First eqTypes, with their theory (and not only the synthesis of
+  the comparison function) and Big operations: this describes
+  ``algebra'', ie. the design of an interface for a (shared) theory
+  and notations.
+\item Then, hierarchies
+\item Then finally how to relate a concrete type to existing,
+  ``isomorphic'' instances of the structures in the hierachy (subType,
+  tuples, CanMixins,...). Here comes the remarks on UIP. May be use
+  the example of how to equip a type with three constructions with all
+  the structures up to finite in the hierarchy (and plug your
+  own preferred datastructure in the framework).
+\end{itemize}
 The rules of the \mcbCIC{} are expressed on the syntax on terms and
 are implemented by the kernel of \Coq{}.  Such software component
 performs \emph{type checking}: given a term and type it checks if such
