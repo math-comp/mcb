@@ -1,40 +1,109 @@
 \Chapter{Statements and proofs}{First steps in formal proofs}
 
 The scope of this chapter is to explain how one states a lemma,
-proves it, finds it.  Focus on simple proof commands, conventions
-and boolean reflextion.  Only later we explain what a proof really is
-in Coq.
+how to prove it, and how it find it in an existing, loaded library.
+We focus on simple proof commands, conventions and a first taste of
+boolean reflexion. Views and the related tactics are postponed to the
+next chapter.
 
 \mcbLEARN{Lemma, rewrite}
 \mcbREQUIRE{}
 \mcbPROVIDE{eq, rewrite, pattern, quantifiers, is-true, simpl, naming convention}
 \mcbLEVEL{1}
-\mcbsection{Equality}
 
-Among the many predicates available in \Coq{},
-equality plays a privileged role in the \mcbMC{} library.
 
-In this section we consider it as a primitive notion and we focus on its use to
-state and prove theorems.  The equality predicate is named \C{eq} and
-the infix notation \C{=} is attached to it.
+In the previous chapter, we have seen how to define objects, implement
+functions, perfom computations. Now we are going to use the
+expressivity of the \emph{proof assistant} to write simple formal
+statements, and to prove them.
+
+\mcbsection{Simple formal statements}
+
+In this section, we illustrate how to state simple wannabe theorems,
+starting with the simplest, and most pervasive, kind of formal
+sentences we can think of: equalities. Along this section (and
+chapter), we will increase the logical complixity of the
+sentences. Yet we will see along the way that equalities actually play
+a privileged role in the \mcbMC{} library.
+
+\subsection{Ground equalities}
+
+\Coq{} provides a binary predicate, named \C{eq} and equipped with the
+infix notation \C{=}. This predicate is used to write sentences
+expressing that two objects are \emph{equal}. Let us start with
+examples of \emph{ground} equality statements, that is statement that
+do not feature parameter variables. Just like we used the \C{Check}
+vernacular command to query the type of a defined object, we can use
+the same very same command to \emph{check} whether a formal statement
+is well formed:
+
+\marginnote{Ensure we've seen \C{Check} in chapter 1}
 
 \begin{coq}{width=6cm,title=Equality predicate}
-Check @eq.
 Check 3 = 3.
-Check true = false || true.
+Check false || true = true.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+3 = 3 : Prop
+false || true = true : Prop
+\end{coqout}
+Let's anatomize the two above examples. On first important thing to
+keep in mind is that formal statements are themselves \emph{terms}. And
+therefore, they also have a \emph{type}. An equality statement is
+obtained by applying the constant \C{eq} to two arguments, of the same
+type, which results in a well-formed term of type \C{Prop},
+for \emph{proposition}. Throughout this book, we will use the word
+\emph{proposition} for a term of type \C{Prop}, something one
+typically want to prove. The \C{About} vernacular
+command, which allows to obtain informations on a constant, like its
+type and the status of its argument, applies just as well to
+propositions and their components. For instance we can learn more
+about the constant \C{eq}:
+
+\begin{coq}{width=6cm,title=Equality predicate}
+About eq.
 \end{coq}
 \begin{coqout}{title=Response,width=6cm}
 eq : forall A : Type, A -> A -> Prop
-3 = 3 : Prop
-true = false || true : Prop
+Argument A is implicit ...
 \end{coqout}
 
-The first thing to notice is that the equality predicate is polymorphic.
-Exactly as we have seen in the previous chapter then \C{forall} quantifier
-is used to make the variable \C{A} range over types.  By applying  
-\C{eq} to a type and to two extra arguments one obtains a term
-of type \C{Prop}, i.e. a proposition.  A proposition is something
-one typically proves.
+\marginnote{Ensure we've seen \C{About} in chapter 1, with this
+  policy}
+
+We learn here that the constant \C{eq} is a \emph{predicate}, i.e. a
+function having \C{Prop} as return type. Moreover, the equality
+predicate is polymorphic: Exactly as we have seen in the previous
+chapter the \C{forall} quantifier is used to make the variable \C{A}
+range over types. This is why were able to use the same equality
+constant in both our examples, once for equating two terms of type
+\C{nat} and once for equating two terms of type \C{bool}.
+
+Its first argument being implicit, it value is guessed from the type
+of the handsides of the equality we state: \C{3 = 3} unfolds to
+\C{eq _ 3 3} and the missing value is set at \C{nat}, the type of
+\C{3}. Similarily, \C{true = false || true} unfolds to
+\C{eq _ true (false || true)} and the missing value is set at
+\C{bool}, the common type of \C{true} and \C{false || true}.
+
+Just like the type system was preventing
+us from applying functions to arguments of a wrong nature, the same
+type system is going to enforce a certain nature of well-formedness at
+the time we ennunciate sentences that are candidate theorems.
+The \Coq{} system indeed checks the well typedness of statements,
+i.e. in this case that the two hand sides of an equality have the same
+type:
+
+\begin{coq}{width=4cm,title=Equality predicate}
+Check 3 = [:: 3].
+$~$
+\end{coq}
+\begin{coqout}{title=Response,width=8cm}
+Error: The term "[:: 3]" has type "seq nat"
+ while it is expected to have type "nat".
+\end{coqout}
+
+Yet it does not check the provability of the statement!
 
 \begin{coq}{width=4cm,title=Equality predicate}
 Check 3 = 4.
@@ -47,9 +116,314 @@ Error: The term "[:: 3]" has type "seq nat"
  while it is expected to have type "nat".
 \end{coqout}
 
-It is important to remark that the \Coq{} system checks the well typedness of
-statements, i.e. that the two hand sides of an equality have the same type, but
-not the truth.  It is the task of the user to prove it.
+In order to establish that a certain equality holds, the user should
+first announce that she is going to prove a certain sentence, using
+the \C{Lemma} keyword, followed by the name we chose for the lemma and
+the lemma statement. \marginnote{What about the synonyms?}
+The \C{Proof} keywords marks the beginning of the proof and the system
+displays the current state of the formal proof.
+
+\begin{coq}{width=6cm,title=Starting a proof}
+Lemma my_first_lemma : 3 = 3.
+Proof.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+1 subgoal
+
+  ============================
+   3 = 3
+\end{coqout}
+
+Before explaining in section~\ref{} how to proceed with such a proof,
+let us see more examples of (slightly more involved) statements.
+\marginnote{Is is an ok transition? \C{Lemma} is needed to postpone forall...}
+For now, let us just admit this result, using the \C{Admited}
+command.
+
+\begin{coq}{width=6cm,title=Starting a proof}
+Lemma my_first_lemma : 3 = 3.
+Admitted.
+\end{coq}
+
+Although we have not (yet) provided a proof for this lemma, a new
+definition has been added to our environment:
+
+\begin{coq}{width=6cm,title= My first lemma}
+About my_first_lemma
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+my_first_lemma : 3 = 3
+\end{coqout}
+
+\marginnote{I guess it is too early to say that this is a type...}
+
+\subsection{Identities}\label{ssec:id}
+
+
+An \emph{identity} is an equality relation $A = B$, which holds
+regardless of the values that are substituted for the variables in $A$
+and $B$. Such statements can be stated using a variant of the
+\C{Definition} syntax we used in Chapter~\ref{ch:prog}, which also
+applies to the \C{Lemma} keyword (and its siblings):
+
+\marginnote{Here and may be in the next examples, point forward to the
+later section which discusses names.}
+
+Let us state for instance the identity expressing the associativity of
+the \C{addn} addition operation on natural numbers:
+
+\begin{coq}{width=7cm,title=Stating quantified lemmas}
+Lemma addnA (n m k : nat) :
+  n + (m + k) = m + n + k.
+Proof.
+\end{coq}
+\begin{coqout}{title=Response,width=5cm}
+1 subgoal
+
+ n : nat
+ m : nat
+ k : nat
+ =========================
+  n + (m + k) = m + n + k
+\end{coqout}
+
+\marginnote{The previous chapter should make comments on the
+  possibility to gather variables of the same type. Here I cast them
+  for the sake of pedagogy.Also I am cheating here and I do not use the associative
+  predicator... And the display here is related to the tunning of
+  notations, shall we say a word about it at this stage?}
+
+For the next example, our first example of ground
+boolean equality is an instance of the identity \C{orbT}:
+
+\begin{coq}{width=7cm,title=Some boolean identities}
+Lemma orbT b : b || true = true.
+Proof. Admitted.
+
+Lemma implybE a b : (a ==> b) = ~~ a || b.
+Proof. Admitted.
+
+Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+Proof. Admitted.
+\end{coq}
+
+\marginnote{I put examples of classical identity on purpose. What
+  else? may be some very easy first exercises?}
+
+
+\subsection{From boolean predicates to formal statements}
+
+Boolean identities are an important special class of identities. The
+\C{orbT} statement we saw at section~\ref{ssec:id} is a special case
+of statement which expresses that the truth table of two boolean
+formula coincide on any entries, i.e. that they are equivalent. It the
+case of \C{orbT}, the truth table of $b \wedge \top$ is the same as
+the one of the constant formula $\top$. There are more examples:
+
+\begin{coq}{title=Boolean conjunction is associative}
+Lemma orbA b1 b2 b4 :
+  b1 || (b2 || b3) = b1 || b2 || b3.
+
+
+These boolean identity can also involve more generally any boolean
+predicate, which involves variables of an arbitrary
+type.\marginnote{Make sure  ``boolean predicate'' is introduced in the
+  previous chapter.} For instance, we can state that for any term
+\C{n : nat}, the following comparison holds:
+
+\begin{coq}{title=Stating that a boolean predicate holds}
+Lemma leq0n n : 0 <= n = true.
+\end{coq}
+
+We are hence stating here that the statement $0 \leq n$ holds, because
+its truth value is \C{true}, whatever term of type \C{nat} is
+substituted for the parameter \C{n} in the statement.
+
+We can also express that boolean statements are equivalent, like we
+did in the case of \C{orbA}:
+
+\begin{coq}{title=Examples of equivalences}
+Lemma eqn_leq m n : (m == n) = (m <= n) && (n <= m).
+Admitted.
+
+Lemma neq_ltn m n : (m != n) = (m < n) || (n < m).
+Admitted.
+
+Lemma leqn0 n : (n <= 0) = (n == 0).
+Admitted.
+
+Lemma dvdn1 d : (d %| 1) = (d == 1)
+Admitted.
+
+Lemma odd_mul m n : odd (m * n) = odd m && odd n.
+Admitted.
+\end{coq}
+
+And here we should introduce the boolean coercion, which makes the
+statement of \C{leq0n} look like:
+
+\begin{coq}{title=Stating that a boolean predicate holds}
+Lemma leq0n n : 0 <= n.
+\end{coq}
+
+\marginnote{May be show more examples/exercises of statements that
+  equate something to true, to make the reader feel the need for the
+  coercion.}
+
+\subsection{Conditional statements}
+
+Conditions are expressed with an arrow:
+
+\begin{coq}{title=A conditional statement, width=4cm}
+About dvdn_mul.
+\end{coq}
+\begin{coqout}{title=Response,width=8cm}
+dvdn_mul : forall d1 d2 m1 m2 : nat,
+  d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
+\end{coqout}
+
+Giev more examples? more exercises? Shall we say here that a
+conjunction of hypothesis is currified?
+
+\mcbsection{Simple formal proofs}
+
+\subsection{Proofs by computation}
+
+\subsection{Rewriting}
+
+\subsection{Case analysis}
+
+\mcbsection{Universal statements}
+
+\subsection{First examples}
+
+\subsection{Universal conditional statements}
+
+\subsection{Inductive Schemes}
+
+
+END OF THE REVISED ORGANIZATION.
+%--------------- oldies
+
+\mcbsection{First examples}\label{ssec:firstex}
+
+
+\subsection{More statements}
+\subsection{Names}
+Before going further let's pause to
+have look at a seemingly trivial but in fact very important detail:
+its name.  The name \C{my_first_lemma} we chose in
+section~\ref{ssec:firstex} is actually very badly chosen since it is
+hard to guess what the lemma is about by just reading its name.
+This is problematic because we will soon see how the name of a lemma
+is used whenever a proof appeals to such result,
+similar to what a standard mathematical text would do by a reference or
+a citation like ``this holds by lemma (7.3.4)''.  Lemmas are given a name,
+and not just a number, because names are easier to remember and are more
+stable (i.e. do not depend on the section where the corresponding lemma
+is proved and don't require a renaming if a lemma is inserted before them).
+The name can, and should, convey as much information as possible while
+striving to stay short and handy. The
+names used in the next examples are much more meaningful and actually
+follow a systematic design pattern and more generally, the \mcbMC{}
+library follows a naming convention that is documented in the
+reference manual \cite{xxx}. Let's get a flavour of it by examples:
+
+\begin{itemize}
+\item the name of the lemma begins with the name of the main operation
+  involved in the statement: \C{addn} for \C{addnA}, \C{odd} for
+  \C{odd_mul}, \C{leq} in \C{leq0n}.
+\item In \C{leq0n}, he other symbol involved in the name is ``0'',
+that indeed plays an important role in the lemma.  The relative position
+of ``0'' and ``n'' is chosen to recall to the user if the neutral element
+ the left or the right argument of the binary operation \C{leq}.
+\item The capital letter suffix ``A'' stands for associativity.
+\end{itemize}
+
+% To get a better feeling on how lemmas are named let's see some other
+% lemmas already proved for us.
+
+% \begin{coq}{width=5cm,title=Lemmas of the library}
+% Check add0n.
+% Check addnC.
+% \end{coq}
+% \begin{coqout}{title=Response,width=7cm}
+% add0n : forall n : nat, 0 + n = n
+% addnC : forall n m : nat, n + m = m + n
+% \end{coqout}
+
+% First of all, note the quantification. So far \C{forall} was used to quantify
+% over types and describe polymorphic functions.  Now it ranges over terms of
+% type \C{nat} and describes generic lemmas, holding for any natural numbers
+% \C{n} and \C{m}.
+
+% Going back to the naming conventions, note that both names begin with ``add'',
+% that is the principal operation involved.  In particular is the head symbol
+% (the most external one) in the left hand side of the equation.  The addition
+% operation is the one on natural numbers, hence then ``n'' component in
+% the suffix.
+
+% For the first equation, the other symbol involved in the name is ``0'',
+% that indeed plays an important role in the lemma.  The relative position
+% of ``0'' and ``n'' is chosen to recall to the user if the neutral element
+% is added to the left or to the right.  For example the lemma named
+% \C{addn0} would state \C{forall n : nat, n + 0 = n}.
+
+
+
+Capital letters in the suffix denote standard properties.
+In particular ``A'' stands for associativity.  Standard properties are
+always stated with ``macros'' (higher order predicates) to impose
+consistency in their stating.  Indeed the real statement of
+\C{addnC} is \C{(commutative addn)}, where \C{addn} is the
+name of the addition operation and \C{commutative} is the
+following macro.
+
+\begin{coq}{title=Macro for stating commutativity (suffix ``C'')}
+Definition commutative op := forall x y, op x y = op y x.
+\end{coq}
+
+Macros, being standard definitions, are completely transparent for the
+system.\footnote{not yet for \C{Search}, but here I'm describing an ideal
+situation}  Consistency is not only aesthetically, but ease the use of
+lemmas: as we will see later, the order of the quantification may make
+a lemma easier to use under certain circumstances.
+
+The last general remark about naming convention worth making so early is that
+uninteresting and recurrent lemmas must have a short names easy to identify and
+disregard when reading a proof and at the same time easy to remember and short
+to type when writing a proof.\marginpar{this is a mantra somewhat}
+
+
+
+When we use it:
+
+\begin{coq}{title=Stating that a boolean predicate holds}
+Lemma example x : odd (2 * x + 7) || odd (2 * x) = true.
+Proof. by rewrite odd2n7. Qed.
+\end{coq}
+
+Recall \C{(true || x)} reduces to \C{true}, hence the
+goal becomes trivially \C{(true = true)} after the
+rewriting step.
+
+Also (coq user) remark that here we don't go left/right, or split
+a conjunction, we can simply rewrite and let computation clean up/progress.
+
+This is so frequent that \C{= true} is hidden to the user.
+One can write
+
+\begin{coq}{title=Stating a boolean lemma}
+Lemma odd2n7 n : odd (2 * n + 7).
+\end{coq}
+
+This is not ambiguous: statements must have type Prop, while
+the expression has type bool.  The system hence inserts
+the \C{= true} automatically.  Note that it is also hidden,
+so you have to learn that a lemma not explicitly showing the
+= sign can be used by rewrite.
+
+
 
 \subsection{Stating and proving an equality}
 
@@ -63,7 +437,7 @@ Proof.
 \end{coq}
 \begin{coqout}{title=Response,width=6cm}
 1 subgoal
-  
+
   ============================
    3 = 3
 \end{coqout}
@@ -114,111 +488,6 @@ Check my_first_lemma.
 \begin{coqout}{title=Response,width=6cm}
 my_first_lemma : 3 = 3
 \end{coqout}
-
-Before stating and proving a more interesting lemma let's look at a simple
-but very important detail: its name.  The name is very badly chosen since
-it is hard to guess what the lemma is about by just reading its name.
-The name of a lemma is used whenever a proof appeals to such result,
-similar to what a standard mathematical text would do by a reference or
-a citation like ``this holds by lemma (7.3.4)''.  Lemmas are given a name,
-and not just a number, because names are easier to remember and are more
-stable (i.e. do not depend on the section where the corresponding lemma
-is proved and don't require a renaming if a lemma is inserted before them).
-The name can, and should, convey as much information as possible wile
-striving to stay short and handy.  A more reasonable name for our
-first lemma would be \C{eq33}: it would clearly remind us it talks about
-an equality.
-
-The \mcbMC{} library follows a naming convention that is documented in
-the reference manual \cite{xxx}.  Here we introduce it by examples.
-
-To get a better feeling on how lemmas are named let's see some other
-lemmas already proved for us.
-
-\begin{coq}{width=5cm,title=Lemmas of the library}
-Check add0n.
-Check addnC.
-\end{coq}
-\begin{coqout}{title=Response,width=7cm}
-add0n : forall n : nat, 0 + n = n
-addnC : forall n m : nat, n + m = m + n
-\end{coqout}
-
-First of all, note the quantification. So far \C{forall} was used to quantify
-over types and describe polymorphic functions.  Now it ranges over terms of
-type \C{nat} and describes generic lemmas, holding for any natural numbers
-\C{n} and \C{m}.
-
-Going back to the naming conventions, note that both names begin with ``add'',
-that is the principal operation involved.  In particular is the head symbol
-(the most external one) in the left hand side of the equation.  The addition
-operation is the one on natural numbers, hence then ``n'' component in
-the suffix.
-
-For the first equation, the other symbol involved in the name is ``0'',
-that indeed plays an important role in the lemma.  The relative position
-of ``0'' and ``n'' is chosen to recall to the user if the neutral element
-is added to the left or to the right.  For example the lemma named
-\C{addn0} would state \C{forall n : nat, n + 0 = n}.
-
-Capital letters in the suffix denote standard properties.
-In particular ``C'' stands for commutativity.  Standard properties are
-always stated with ``macros'' (higher order predicates) to impose
-consistency in their stating.  Indeed the real statement of
-\C{addnC} is \C{(commutative addn)}, where \C{addn} is the
-name of the addition operation and \C{commutative} is the
-following macro.
-
-\begin{coq}{title=Macro for stating commutativity (suffix ``C'')}
-Definition commutative op := forall x y, op x y = op y x.
-\end{coq}
-
-Macros, being standard definitions, are completely transparent for the
-system.\footnote{not yet for \C{Search}, but here I'm describing an ideal
-situation}  Consistency is not only aesthetically, but ease the use of
-lemmas: as we will see later, the order of the quantification may make
-a lemma easier to use under certain circumstances.
-
-The last general remark about naming convention worth making so early is that
-uninteresting and recurrent lemmas must have a short names easy to identify and
-disregard when reading a proof and at the same time easy to remember and short
-to type when writing a proof.\marginpar{this is a mantra somewhat}
-
-Going to a second example, let's see how quantified lemmas can be stated:
-
-\begin{coq}{width=7cm,title=Stating quantified lemmas}
-Lemma add0nmC (a : nat) (b : nat) :
-  0 + (a + b) = b + a.
-Proof.
-\end{coq}
-\begin{coqout}{title=Response,width=5cm}
-1 subgoal
-
- a : nat
- b : nat
- =========================
-  0 + (a + b) = b + a
-\end{coqout}
-
-Note the \C{a} and \C{b} before the colon share the same type.
-Depending on your user interface and \Coq{} version it may be displayed
-in a more compact way, putting  \C{a} and \C{b} on the same line.
-We will use this form when possible.
-
-The following and equivalent form is also accepted.  Note that
-the user has to spell out the type only once.
-
-\begin{coq}{title=Types annotations}
-Lemma add0nmC (a b : nat) : 0 + (a + b) = a + b.
-\end{coq}
-
-Finally, since \C{a} and \C{b} are used as arguments to
-the addition of natural numbers, their type can be completely
-omitted and the system will infer it for us.
-
-\begin{coq}{title=Stating quantified lemmas}
-Lemma add0nmC a b : 0 + (a + b) = b + a.
-\end{coq}
 
 Now that we are satisfied with the statement, we llok into proving it.
 At the current stage we need to use the two already existing
@@ -347,43 +616,10 @@ it is actually a very important hygiene measure: only useful lemmas
 are kept, trade off between all combinations or few base blocks that
 combine well (harder in principle, requires a language that glues well).
 
-\subsection{Truth of a boolean predicate}
 
-Special case of equations
-
-\begin{coq}{title=Stating that a boolean predicate holds}
-Lemma odd2n7 n : odd (2 * n + 7) = true.
-\end{coq}
-
-When we use it:
-
-\begin{coq}{title=Stating that a boolean predicate holds}
-Lemma example x : odd (2 * x + 7) || odd (2 * x) = true.
-Proof. by rewrite odd2n7. Qed.
-\end{coq}
-
-Recall \C{(true || x)} reduces to \C{true}, hence the
-goal becomes trivially \C{(true = true)} after the
-rewriting step.
-
-Also (coq user) remark that here we don't go left/right, or split
-a conjunction, we can simply rewrite and let computation clean up/progress.
-
-This is so frequent that \C{= true} is hidden to the user.
-One can write
-
-\begin{coq}{title=Stating a boolean lemma}
-Lemma odd2n7 n : odd (2 * n + 7).
-\end{coq}
-
-This is not ambiguous: statements must have type Prop, while
-the expression has type bool.  The system hence inserts
-the \C{= true} automatically.  Note that it is also hidden,
-so you have to learn that a lemma not explicitly showing the
-= sign can be used by rewrite.
 
 % \subsection{old}
-% 
+%
 % \begin{itemize}
 % \item Coq comes with an equality prexdicate, that we see as axiomatic for the
 % moment (in this section). It is called \C{eq} and has an infix
@@ -420,14 +656,14 @@ so you have to learn that a lemma not explicitly showing the
 % \C{3 + 1 = 4}, \C{true || false = true}. But also with variables,
 % e.g. \C{add0n}, connect with the programs written in the previous
 % chapters.
-% 
+%
 % \item More advanced forms of proofs by the \C{rewrite} tactic allow to
 %   select a pattern and to simplify the goal for free by
 %   computation. Hence \C{addn0} just does not need to be stated
 %   explicitely in the proof script. Warning: simpl is a Pandora
 %   box. This should come very early
 %   and go with/before boolean reflection style proofs by rewriting.
-% 
+%
 % \item Special case of equality statements that play a pervasive role
 %   throughout the libraries: \C{_ = true}. For instance
 %   \C{odd (2 * x + 7) = true}. This is both a 'logical' statement,
@@ -435,7 +671,7 @@ so you have to learn that a lemma not explicitly showing the
 %   an equation that can be rewriten during the course of a proof. Find
 %   an example, like \C{odd (2 * x + 7) || odd (2 * x)}. rewrite and
 %   compute.
-% 
+%
 % \item Now we should point the coercion, because people will search and
 %   check.
 % \end{itemize}
@@ -465,7 +701,7 @@ Qed.
 \end{coq}
 \begin{coqout}{title=Response line 3,width=8cm}
 2 subgoals
-  
+
   b : bool
   ============================
    ~~ (true && b) = ~~ true || ~~ b
@@ -481,7 +717,7 @@ Note second goal does not, computation blocked, we case b.
 
 \begin{coqout}{title=Response line 5,width=8cm}
 2 subgoals
-  
+
   ============================
    ~~ (false && true) = ~~ false || ~~ true
 
@@ -494,7 +730,7 @@ as the only tactic \C{case: a; case: b.}.
 
 \begin{coqout}{title=Response,width=8cm}
 4 subgoals
-  
+
   ============================
    ~~ (true && true) = ~~ true || ~~ true
 
