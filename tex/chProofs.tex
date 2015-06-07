@@ -26,14 +26,19 @@ chapter), we will increase the logical complixity of the
 sentences. Yet we will see along the way that equalities actually play
 a privileged role in the \mcbMC{} library.
 
-\subsection{Ground equalities}
+\subsection{Ground equalities}\label{ssec:groundeq}
 
 \Coq{} provides a binary predicate, named \C{eq} and equipped with the
 infix notation \C{=}. This predicate is used to write sentences
 expressing that two objects are \emph{equal}. Let us start with
-examples of \emph{ground} equality statements, that is statement that
-do not feature parameter variables. Just like we used the \C{Check}
-vernacular command to query the type of a defined object, we can use
+examples of \emph{ground} equality statements: \emph{ground} means
+that these statements do not feature parameter variables.
+Just like the type system was preventing
+us from applying functions to arguments of a wrong nature, the same
+type system is going to enforce a certain nature of well-formedness at
+the time we ennunciate sentences that are candidate theorems.
+In Chapter~\ref{ch:prog}, we have used the \C{Check}
+vernacular command to query the type of a defined object: we can use
 the same very same command to \emph{check} whether a formal statement
 is well formed:
 
@@ -86,15 +91,11 @@ of the handsides of the equality we state: \C{3 = 3} unfolds to
 \C{eq _ true (false || true)} and the missing value is set at
 \C{bool}, the common type of \C{true} and \C{false || true}.
 
-Just like the type system was preventing
-us from applying functions to arguments of a wrong nature, the same
-type system is going to enforce a certain nature of well-formedness at
-the time we ennunciate sentences that are candidate theorems.
-The \Coq{} system indeed checks the well typedness of statements,
+The \Coq{} system however checks the well typedness of statements,
 i.e. in this case that the two hand sides of an equality have the same
 type:
 
-\begin{coq}{width=4cm,title=Equality predicate}
+\begin{coq}{width=4cm,title=Ill-typed Equality}
 Check 3 = [:: 3].
 $~$
 \end{coq}
@@ -107,19 +108,16 @@ Yet it does not check the provability of the statement!
 
 \begin{coq}{width=4cm,title=Equality predicate}
 Check 3 = 4.
-Check 3 = [:: 3].
-$~$
 \end{coq}
 \begin{coqout}{title=Response,width=8cm}
 3 = 4 : Prop
-Error: The term "[:: 3]" has type "seq nat"
- while it is expected to have type "nat".
 \end{coqout}
 
 In order to establish that a certain equality holds, the user should
 first announce that she is going to prove a certain sentence, using
 the \C{Lemma} keyword, followed by the name we chose for the lemma and
-the lemma statement. \marginnote{What about the synonyms?}
+the lemma statement. \marginnote{What about the synonyms (theorem,
+  remark, corollary,...)?}
 The \C{Proof} keywords marks the beginning of the proof and the system
 displays the current state of the formal proof.
 
@@ -133,15 +131,20 @@ Proof.
   ============================
    3 = 3
 \end{coqout}
+The system enters in so-called \emph{proof mode} and outputs the
+current proof state: a list of named hypotheses on top of the
+horizontal bar (empty here) and the statement of the current goal
+below the bar.
 
 Before explaining in section~\ref{} how to proceed with such a proof,
 let us see more examples of (slightly more involved) statements.
 \marginnote{Is is an ok transition? \C{Lemma} is needed to postpone forall...}
-For now, let us just admit this result, using the \C{Admited}
+For now, let us just admit this result, using the \C{Admitted}
 command.
 
-\begin{coq}{width=6cm,title=Starting a proof}
+\begin{coq}{width=6cm,title=Aborting a proof}
 Lemma my_first_lemma : 3 = 3.
+Proof.
 Admitted.
 \end{coq}
 
@@ -176,6 +179,7 @@ the \C{addn} addition operation on natural numbers:
 Lemma addnA (n m k : nat) :
   n + (m + k) = m + n + k.
 Proof.
+(* Admitted *)
 \end{coq}
 \begin{coqout}{title=Response,width=5cm}
 1 subgoal
@@ -187,19 +191,40 @@ Proof.
   n + (m + k) = m + n + k
 \end{coqout}
 
-\marginnote{The previous chapter should make comments on the
-  possibility to gather variables of the same type. Here I cast them
-  for the sake of pedagogy.Also I am cheating here and I do not use the associative
+Note that \C{Lemma}, like \C{Definition}, allows for dropping type
+annotations if these types can be inferred from the statement itself:
+
+\begin{coq}{title=Stating quantified lemmas}
+Lemma addnA n m k : n + (m + k) = m + n + k.
+Proof. Admitted.
+\end{coq}
+
+\marginnote{ I am cheating here and I do not use the associative
   predicator... And the display here is related to the tunning of
-  notations, shall we say a word about it at this stage?}
+  notations (wrt associativity) shall we say a word about it at this
+  stage?}
 
-For the next example, our first example of ground
-boolean equality is an instance of the identity \C{orbT}:
+Boolean identities are an important special class of identities. For
+instance, the~\C{orbT} statement:
 
-\begin{coq}{width=7cm,title=Some boolean identities}
+\begin{coq}{title=A boolean identity}
 Lemma orbT b : b || true = true.
 Proof. Admitted.
+\end{coq}
 
+expresses that the truth table of the boolean formula $b \wedge \top$
+coincides with the one of $\top$, for any (boolean) value of the
+variable $b$: otherwise said that the two propositional formulae are
+equivalent, or that $b \wedge \top$ is a propositional tautology.
+We provide below some other examples of boolean
+identities/equivalences:
+
+\begin{coq}{title=Boolean conjunction is associative}
+Lemma orbA b1 b2 b4 :
+  b1 || (b2 || b3) = b1 || b2 || b3.
+\end{coq}
+
+\begin{coq}{title=Some boolean identities}
 Lemma implybE a b : (a ==> b) = ~~ a || b.
 Proof. Admitted.
 
@@ -213,34 +238,35 @@ Proof. Admitted.
 
 \subsection{From boolean predicates to formal statements}
 
-Boolean identities are an important special class of identities. The
-\C{orbT} statement we saw at section~\ref{ssec:id} is a special case
-of statement which expresses that the truth table of two boolean
-formula coincide on any entries, i.e. that they are equivalent. It the
-case of \C{orbT}, the truth table of $b \wedge \top$ is the same as
-the one of the constant formula $\top$. There are more examples:
-
-\begin{coq}{title=Boolean conjunction is associative}
-Lemma orbA b1 b2 b4 :
-  b1 || (b2 || b3) = b1 || b2 || b3.
-
-
-These boolean identity can also involve more generally any boolean
-predicate, which involves variables of an arbitrary
-type.\marginnote{Make sure  ``boolean predicate'' is introduced in the
-  previous chapter.} For instance, we can state that for any term
-\C{n : nat}, the following comparison holds:
+More generally, boolean identities involve arbitrary boolean
+predicates, and feature variables of an arbitrary
+type. \marginnote{Make sure  ``boolean predicate'' is introduced in the
+previous chapter.} For instance, we can state (and very soon prove)
+that for any term \C{n : nat}, the following comparison holds:
 
 \begin{coq}{title=Stating that a boolean predicate holds}
 Lemma leq0n n : 0 <= n = true.
 \end{coq}
-
 We are hence stating here that the statement $0 \leq n$ holds, because
-its truth value is \C{true}, whatever term of type \C{nat} is
+its truth value is \C{true}, whatever term  of type \C{nat} is
 substituted for the parameter \C{n} in the statement.
 
-We can also express that boolean statements are equivalent, like we
-did in the case of \C{orbA}:
+
+And here we should introduce the boolean coercion, which makes the
+statement of \C{leq0n} look like:
+
+\begin{coq}{title=Coercion}
+Lemma leq0n n : 0 <= n.
+\end{coq}
+
+In all what follows, we suppose that the coercion is set.
+\marginnote{May be show more examples/exercises of statements that
+  equate something to true, to make the reader feel the need for the
+  coercion.}
+
+We can express that boolean statements are equivalent using
+identities, generalizing the examples we gave in
+section~\ref{ssec:id}:
 
 \begin{coq}{title=Examples of equivalences}
 Lemma eqn_leq m n : (m == n) = (m <= n) && (n <= m).
@@ -258,40 +284,245 @@ Admitted.
 Lemma odd_mul m n : odd (m * n) = odd m && odd n.
 Admitted.
 \end{coq}
+\marginnote{Also, at this stage, we have two ways of stating
+  equalities between say two natural numbers. It is probably too early
+to discuss this but we should do it somewhere.}
 
-And here we should introduce the boolean coercion, which makes the
-statement of \C{leq0n} look like:
-
-\begin{coq}{title=Stating that a boolean predicate holds}
-Lemma leq0n n : 0 <= n.
-\end{coq}
-
-\marginnote{May be show more examples/exercises of statements that
-  equate something to true, to make the reader feel the need for the
-  coercion.}
 
 \subsection{Conditional statements}
 
-Conditions are expressed with an arrow:
+The examples of statements that we have seen so far are unconditional
+statements, that are either grounds or true for any value of their
+parameters. Logical sentences that hold only under some condition
+feature an implicative connective \C{->}, the \Coq{} syntax for
+$\Rightarrow$.
 
-\begin{coq}{title=A conditional statement, width=4cm}
-About dvdn_mul.
+\begin{coq}{title=Implicative sentences}
+Lemma leq_pmull m n : n > 0 -> m <= n * m.
+Proof. Admitted.
+
+Lemma odd_gt0 n : odd n -> n > 0.
+Proof. Admitted.
 \end{coq}
-\begin{coqout}{title=Response,width=8cm}
-dvdn_mul : forall d1 d2 m1 m2 : nat,
-  d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
-\end{coqout}
 
-Giev more examples? more exercises? Shall we say here that a
-conjunction of hypothesis is currified?
+The attentive reader might have noticed that this arrow \C{->} is the
+same as the one we have used in chapter~\ref{ch:prog} in order to
+represent function types. This is no accident, but we will explain
+this phenomenon later in section~\ref{sec:chi}. For now let us remark
+that \C{->} associates on the right: therefore a succession of arrows
+expressed a conjuction of hypotheses:
+
+\begin{coq}{title=A (multi)conditional statement}
+Lemma dvdn_mul d1 d2 m1 m2 :
+  d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
+Proof. Admitted.
+\end{coq}
+
+\marginnote{Currification deserves more comments but it is probably too
+  early...}
 
 \mcbsection{Simple formal proofs}
 
-\subsection{Proofs by computation}
+We shall now explain how to turn a well-formed statement into a
+machine-checked theorem. Let us come back to our first example, that
+we left unproved:
+\begin{coq}{title=Starting a proof}
+Lemma my_first_lemma : 3 = 3.
+Proof.
+Admitted.
+\end{coq}
+In the \Coq{} system, the user builds a formal proof by providing,
+interactively, instructions to the proof assistant part of the \Coq{}
+system, that describe the proof she has in mind. This list of
+instructions is called a \emph{proof script}, and the instructions it
+is made of are called \emph{tactics}.
 
-\subsection{Rewriting}
+\begin{coq}{title=Starting a proof}
+Lemma my_first_lemma : 3 = 3.
+Proof.
+(* <your proof script comes here> *)
+Admitted.
+\end{coq}
+
+Once the proof is complete, we can replace the \C{Admitted} command by
+the \C{Qed} one. This calls the proof checker part of  the \Coq{}
+system, which validates a posteriori that the formal proof that has
+been built so far is actually hole-free and a proof of the initial
+statement, here \C{3 = 3}.
+
+\begin{coq}{title=Scheme of a complete proof}
+Lemma my_first_lemma : 3 = 3.
+Proof.
+(* <your proof script comes here> *)
+Qed.
+\end{coq}
+
+In this section, we will review different nature of proof steps and
+the corresponding tactics.
+
+\subsection{Proofs by computation}\label{ssec:proofcomp}
+
+Here is now the proof scipt that validates the statement $3 = 3$:
+
+\begin{coq}{width=7cm,title=Reflexivity of equality}
+Lemma my_first_lemma : 3 = 3.
+Proof. by [].
+\end{coq}
+\begin{coqout}{width=5cm,title=Proof finished}
+No more subgoals.
+$~$
+\end{coqout}
+Indeed, this proof holds because the two hand sides of the equality
+are the same, and the tactic \C{by []} is the command that
+implements this nature of proof step. \marginnote{I chose not to
+  expose reflexivity because we never use it but shall we mention this
+for users of plain Coq? Or use done? Finally, \C{by []} is more
+natural for the last examples of the section. Also where comes the
+'dot at the end of the line? }
+The system thus informs the user
+that the proof seems finished. We can hence confidently conclude our
+first proof by the \C{Qed} command:
+
+\begin{coq}{width=7cm,title=Reflexivity of equality}
+Lemma my_first_lemma : 3 = 3.
+Proof. by []. Qed.
+\end{coq}
+\begin{coqout}{width=5cm,title=Lemma registered}
+my_first_lemma is defined
+$~$
+\end{coqout}
+which results in a new definition added in our context, that can hence
+be reused in future proofs under the name \C{my_first_lemma}.
+
+Importantly, the \C{by []} tactic can be used not only when both
+hand side of an equality coincide syntactically but also when they are
+equal \emph{modulo the evaluation of programs}, they we defined at an
+earlier stage of our session, or that where defined in the libraries
+we loaded. For instance, let us prove that $2 + 1 = 3$:
+\begin{coq}{width=7cm,title=Reflexivity of equality}
+Lemma my_second_lemma : 2 + 1 = 3.
+Proof. by []. Qed.
+\end{coq}
+\begin{coqout}{width=5cm,title=Lemma registered}
+my_second_lemma is defined
+$~$
+\end{coqout}
+Indeed, this proof holds because the two hand sides of the equality
+are the same, once the definition of the \C{addn} function, hidden
+behind the infix \C{=} notation, is unfolded, and that the calculation
+is performed. We can prove in a similar way the statement \C{0 <=
+  1}. And finally the statement \C{odd 5} is proved by the very same
+proof script, because \C{odd 5} \emph{computes} to
+\C{true}. \marginnote{Should these be exercises? should we add failure
+  examples?}
+Note that we now have a new result at hand for our future proofs
+(although this one is not a very useful one...)
+
+\begin{coq}{width=6cm,title=Printing a lemma statement}
+Check my_first_lemma.
+\end{coq}
+\begin{coqout}{title=Response,width=6cm}
+my_first_lemma : 3 = 3
+\end{coqout}
+
+Computation is not limited to ground terms, it is really about using
+the rules of the pattern matching describing the code of the
+function. \marginnote{Take some time to describe this in detail, for instance on
+  the example of addition.}
+For instance the proof of the \C{addSn} identity:
+
+
+\begin{coq}{title=Reflexevity by symbolic computation}
+Lemma addSn m n : m.+1 + n = (m + n).+1. Proof. by []. Qed.
+\end{coq}
+is trivial because it is a direct application of one of the branches
+of the definition of the \C{addn} function. Statements like
+\C{0 + n = n} or \C{0 <= n.+1} can be proved in a similar way, but
+also \C{2 + m = n.+2}, which requires a two-step computation.
 
 \subsection{Case analysis}
+%assia : I do not remember why the \C macro does not work here, seems
+%to be a problem with ~~...
+Let us now consider the tautology~\L+~~ (~~ b) = b+. Our previous
+proof technique fails:
+
+\begin{coq}{width=7cm,title=Double negation elimination}
+Lemma negbK (b : bool) : ~~ (~~ b) = b.
+Proof. by [].
+\end{coq}
+\begin{coqout}{width=6cm, title=Failing proof script}
+Error: No applicable tactic.
+\end{coqout}
+Indeed, this identity not only requires unfolding the definition of
+the \C{negb}, but also a \emph{case analysis} on the boolean value of
+the parameter \C{b}. The tactic \C{case} implements this action:
+
+\begin{coq}{width=7cm,title=Double negation elimination}
+Lemma negbK b : ~~ (~~ b) = b.
+Proof.
+case: b.
+$~$
+$~$
+$~$
+\end{coq}
+\begin{coqout}{width=6cm, title=Case analysis}
+2 subgoals
+
+  ============================
+   ~~ ~~ true = true
+subgoal 2 is:
+ ~~ ~~ false = false
+\end{coqout}
+More precisely, the tactic \C{case: b} indicates the we want to
+perform a case analysis (hence the \C{case} command), on \C{b}, whose
+name follows the separator \C{:}. The \Coq{} system displays the state
+of the proof after this command: the proof now has two parallel
+branches, one in which the parameter \C{b} take the value \C{true} and
+one in which the parameter \C{b} take the value \C{false}. And we
+start with the branch associated with the \C{true} value.
+
+Now we are going to provide two disctinct pieces of of script, one per
+each subproof to be constructed. Hence some indentation. We can
+observe that after this case analysis, each proof amounts to a
+reflexivity argument, in the spirit of what we did in
+section~\ref{ssec:proofcomp}. We first close the first branch:
+
+\begin{coq}{width=7cm,title=Double negation elimination}
+Lemma negbK b : ~~ (~~ b) = b.
+Proof.
+case: b.
+  by [].
+\end{coq}
+\begin{coqout}{width=6cm, title=Case analysis}
+1 subgoal
+
+ ============================
+   ~~ ~~ false = false
+\end{coqout}
+and we can see that we now have only one subgoal left, which we solve
+by the very same means.
+
+\begin{coq}{width=7cm,title=Double negation elimination}
+Lemma negbK b : ~~ (~~ b) = b.
+Proof.
+case: b.
+  by [].
+by [].
+(* Qed. *)
+\end{coq}
+\begin{coqout}{width=6cm, title=Case analysis}
+No more subgoals.
+$~$
+$~$
+$~$
+$~$
+$~$
+\end{coqout}
+
+And now we can wrap up explaining \C{by}. And show a second example on
+\C{nat}.
+
+\subsection{Rewriting}
 
 \mcbsection{Universal statements}
 
@@ -301,19 +532,13 @@ conjunction of hypothesis is currified?
 
 \subsection{Inductive Schemes}
 
+\mcbsection{Good Practice}
+It is never too early to adopt good practice and understand the
+rationales behind the MC libraries...
 
-END OF THE REVISED ORGANIZATION.
-%--------------- oldies
-
-\mcbsection{First examples}\label{ssec:firstex}
-
-
-\subsection{More statements}
 \subsection{Names}
-Before going further let's pause to
-have look at a seemingly trivial but in fact very important detail:
-its name.  The name \C{my_first_lemma} we chose in
-section~\ref{ssec:firstex} is actually very badly chosen since it is
+ The name \C{my_first_lemma} we chose in
+section~\ref{ssec:groundeq} is actually very badly chosen since it is
 hard to guess what the lemma is about by just reading its name.
 This is problematic because we will soon see how the name of a lemma
 is used whenever a proof appeals to such result,
@@ -327,7 +552,7 @@ striving to stay short and handy. The
 names used in the next examples are much more meaningful and actually
 follow a systematic design pattern and more generally, the \mcbMC{}
 library follows a naming convention that is documented in the
-reference manual \cite{xxx}. Let's get a flavour of it by examples:
+reference manual~\cite{ssrman}. Let's get a flavour of it by examples:
 
 \begin{itemize}
 \item the name of the lemma begins with the name of the main operation
@@ -394,70 +619,18 @@ uninteresting and recurrent lemmas must have a short names easy to identify and
 disregard when reading a proof and at the same time easy to remember and short
 to type when writing a proof.\marginpar{this is a mantra somewhat}
 
+\marginnote{Tentative table of content for this section. Will be
+  easier to see what is needed here once the exercises are there.}
+
+\subsection{Writing proof scripts}
 
 
-When we use it:
+\subsection{Searching existing content}
 
-\begin{coq}{title=Stating that a boolean predicate holds}
-Lemma example x : odd (2 * x + 7) || odd (2 * x) = true.
-Proof. by rewrite odd2n7. Qed.
-\end{coq}
-
-Recall \C{(true || x)} reduces to \C{true}, hence the
-goal becomes trivially \C{(true = true)} after the
-rewriting step.
-
-Also (coq user) remark that here we don't go left/right, or split
-a conjunction, we can simply rewrite and let computation clean up/progress.
-
-This is so frequent that \C{= true} is hidden to the user.
-One can write
-
-\begin{coq}{title=Stating a boolean lemma}
-Lemma odd2n7 n : odd (2 * n + 7).
-\end{coq}
-
-This is not ambiguous: statements must have type Prop, while
-the expression has type bool.  The system hence inserts
-the \C{= true} automatically.  Note that it is also hidden,
-so you have to learn that a lemma not explicitly showing the
-= sign can be used by rewrite.
-
-
+END OF THE REVISED ORGANIZATION.
+%%%--------------- oldies
 
 \subsection{Stating and proving an equality}
-
-We are ready to state our first lemma by employing the \C{Lemma} keyword,
-followed by the name we chose for the lemma and the lemma statement.
-The \C{Proof} keywords denotes the beginning of the proof.
-
-\begin{coq}{width=6cm,title=Starting a proof}
-Lemma my_first_lemma : 3 = 3.
-Proof.
-\end{coq}
-\begin{coqout}{title=Response,width=6cm}
-1 subgoal
-
-  ============================
-   3 = 3
-\end{coqout}
-
-Once in proof mode the system outputs the current proof state:
-the list of named hypotheses on top of the horizontal bar (empty here)
-and the current goal below the bar.
-
-\begin{coq}{width=6cm,title=Ending a proof}
-by reflexivity.
-Qed.
-\end{coq}
-\begin{coqout}{title=Response,width=6cm}
-No more subgoals.
-my_first_lemma is defined.
-\end{coqout}
-
-\C{reflexivity} is a proof command that succeeds when the goal is an equality
-and the two sides are equal up to computation.  In this case the two sides
-are syntactically equal, examples involving computation will follow.
 
 The \C{by} terminator is systematically used to prefix any proof sentence
 that terminates a goal.  A proof sentence ends with a dot, and can
