@@ -1,7 +1,18 @@
 % vim:set tw=70:
 % vim:set spell:
 % vim:set errorformat="":
-\chapter{Type Inference}{Teaching \Coq{}
+\begin{coqdef}{name=ssr}
+Require Import Ssreflect.ssreflect.
+From Ssreflect Require Import ssrfun ssrbool ssrnat eqtype fintype seq div prime.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+\end{coqdef}
+\begin{coqdef}{name=abort}
+Abort.
+\end{coqdef}
+
+\Chapter{Type Inference}{Teaching \Coq{}
 how to read Math (step 1)}
 
 NOTES: Refactoring needed: try to organize the content of this chapter
@@ -140,12 +151,13 @@ Lets start with the simplest example one could imagine: defining the
 polymorphic identity function and checking its application to
 \lstinline/3/.
 
-\begin{coq}{width=8cm,title=Polymorphic identity}
+\begin{coq}{name=exid}{width=8cm,title=Polymorphic identity}
 Definition id (A : Type) (a : A) : A := a.
 Check (id nat 3).
 Check (id _ 3).
 \end{coq}
-\begin{coqout}{title=Response,width=4cm}
+\coqrun{name=r1}{exid}
+\begin{coqout}{run=r1}{title=Response,width=4cm}
 
 id nat 3 : nat
 id nat 3 : nat
@@ -180,12 +192,13 @@ the right number of \lstinline/_/ for him.  For more details see
 Section~\ref{sec:declaringimpl} or refer to the user manual.  Here
 we only provide a simple example.
 
-\begin{coq}{title=Setting implicit arguments,width=6cm}
+\begin{coq}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
 Arguments id {A} a.
 Check (id 3).
 Check (@id nat 3).
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=iarg}{impl-arg-id}
+\begin{coqout}{run=iarg}{title=Response,width=6cm}
 
 id 3 : nat
 id 3 : nat
@@ -200,12 +213,13 @@ prefixing the name of the constant with the \lstinline/@/ symbol.
 Another piece of information that if often left implicit is
 the type of abstracted or quantified variables.
 
-\begin{coq}{title=Omitting type annotations,width=7cm}
+\begin{coq}{name=infarg}{title=Omitting type annotations,width=7cm}
 Check (fun x => @id nat x).
 
 Lemma prime_gt1 p : prime p -> 1 < p.
 \end{coq}
-\begin{coqout}{title=Response,width=5cm}
+\coqrun{name=inf}{ssr,infarg,abort}
+\begin{coqout}{run=inf}{title=Response,width=5cm}
 fun x : nat => id x :
   nat -> nat
 $~$
@@ -230,20 +244,29 @@ another, more interesting, nature.  So far all place holders were
 standing for types, but the user is also allowed to put \lstinline/_/
 in place of a term.
 
-\begin{coq}{title=Inferring a term,width=7cm}
+\begin{coqdef}{name=infdata}
+Lemma example q : prime q -> 0 < q.
+Proof.
+move=> pr_q. Redirect "g1" Show.
+have q_gt1 := @prime_gt1 _ pr_q.
+exact: ltnW q_gt1.
+Qed.
+\end{coqdef}
+\begin{coq}{def=infdata}{title=Inferring a term,width=7cm}
 Lemma example q : prime q -> 0 < q.
 Proof.
 move=> pr_q.
-have q_gt1 := prime_gt1 _ pr_q.
+have q_gt1 := @prime_gt1 _ pr_q.
 exact: ltnW q_gt1.
 Qed.
 \end{coq}
-\begin{coqout}{title=Goal after line 3,width=5cm}
-
+\coqrun{name=inf2}{ssr,infdata}
+\begin{coqout}{run=inf2;out=g1}{title=Goal after line 3,width=5cm}
+1 subgoal
 
 q : nat
 pr_q : prime q
-==================
+============================
 0 < q
 \end{coqout}
 
@@ -304,12 +327,13 @@ the values of the fields that precedes it.
 
 \Coq{} provides syntactic sugar for declaring record types.
 
-\begin{coq}{}
+\begin{coq}{name=eqtype}{}
 Record eqType : Type := Pack {
   sort : Type;
   eq_op : sort -> sort -> bool
 }.
 \end{coq}\label{eqtype:noproof}
+\coqrun{name=eqtype1}{ssr,eqtype}
 
 The sentence above declares a new inductive type called
 \lstinline/eqType/ with one constructor named
@@ -320,7 +344,7 @@ on terms of type \lstinline/sort/.  What this special syntax
 does is declaring at once the following inductive type plus
 a named projection for each record field:
 
-\begin{coq}{}
+\begin{coq}{name=eqtype2}{}
 Inductive eqType : Type :=
   Pack sort of sort -> sort -> bool.
 Definition sort (c : eqType) : Type :=
@@ -328,6 +352,7 @@ Definition sort (c : eqType) : Type :=
 Definition eq_op (c : eqType) : sort c -> sort c -> bool :=
   let: Pack _ f := c in f.
 \end{coq}
+\coqrun{name=eqtype2}{ssr,eqtype2}
 
 Note that the type dependency between the two fields requires the first
 projection to be used in order to define the type of the second projection.
@@ -341,26 +366,29 @@ examine a crucial property of the two projections just defined.
 We relate the following comparison function with the \lstinline/nat/
 data type: \marginnote{Maybe this function has been shown already}
 
-\begin{coq}{}
+\begin{coq}{name=eqn}{}
  Fixpoint eqn m n {struct m} :=
   match m, n with
-  | 0, 0 ⇒ true
-  | m'.+1, n'.+1 ⇒ eqn m' n'
-  | _, _ ⇒ false
+  | 0, 0 => true
+  | m'.+1, n'.+1 => eqn m' n'
+  | _, _ => false
   end.
-Definition nat_eqType : eqType := Pack nat eqn.
+Definition nat_eqType : eqType := @Pack nat eqn.
 \end{coq}
+\coqrun{name=eqn}{ssr,eqtype,eqn}
 
 Projections, when applied to a record instance like
 \lstinline/nat_eqType/ compute and extract the desired component.
 
-\begin{coq}{title=Computation of projections,width=6cm}
+\begin{coq}{name=redproj}{title=Computation of projections,width=6cm}
 Eval simpl in sort nat_eqType.
-Eval simpl in eq_op nat_eqType.
+Eval simpl in @eq_op nat_eqType.
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
- = nat
- = eqn
+\coqrun{name=r}{ssr,eqtype,eqn,redproj}
+\begin{coqout}{run=r}{title=Response,width=6cm}
+= nat : Type
+= eqn : sort nat_eqType ->
+         sort nat_eqType -> bool
 \end{coqout}
 
 \marginnote{Maybe simpl is already explained?}
@@ -370,11 +398,12 @@ interchangeably.  The same holds for \lstinline/(eq_op nat_eqType)/
 and \lstinline/eqn/.  Thanks to this fact \Coq{} can type check the
 following term:
 
-\begin{coq}{width=5.5cm}
-Check (eq_op nat_eqType 3 4).
+\begin{coq}{name=eqop}{width=5.7cm}
+Check (@eq_op nat_eqType 3 4).
 \end{coq}
-\begin{coqout}{width=6.5cm}
-eq_op nat_eqType 3 4 : bool
+\coqrun{name=e1}{ssr,eqtype,eqn,eqop}
+\begin{coqout}{run=e1}{width=6.3cm}
+eq_op 3 4 : bool
 \end{coqout}
 
 This term is well typed, but checking it is not as simple as one may
@@ -428,9 +457,9 @@ In the rest of this chapter we focus on the overloading of the
 \lstinline/==/ symbol and we start by defining another comparison
 function, this time for the \lstinline/bool/ data type.
 
-\begin{coq}{}
-Definition eqb (a b : bool) := if a then b else (not b).
-Definition bool_eqType : eqType := Pack bool eqb.
+\begin{coq}{name=bety}{}
+Definition eqb (a b : bool) := if a then b else ~~ b.
+Definition bool_eqType : eqType := @Pack bool eqb.
 \end{coq}
 
 \marginnote{I need the reader to know something about Notation}
@@ -438,12 +467,20 @@ Now the idea is to define a notation that applies to any occurrence
 of the \lstinline/eq_op/ head constant and use such
 notation for both printing and parsing.
 
-\begin{coq}{title=Overloaded notation,width=7cm}
-Notation "x == y" := (eq_op _ x y).
-Check (eq_op bool_eqType true false).
-Check (eq_op nat_eqType 3 4).
+\begin{coqdef}{name=infix}
+Notation "x == y" := (@eq_op _ x y).
+\end{coqdef}
+\begin{coqdef}{name=print}
+Check (@eq_op bool_eqType true false).
+Check (@eq_op nat_eqType 3 4).
+\end{coqdef}
+\begin{coq}{name=infix,print}{title=Overloaded notation,width=7cm}
+Notation "x == y" := (@eq_op _ x y).
+Check (@eq_op bool_eqType true false).
+Check (@eq_op nat_eqType 3 4).
 \end{coq}
-\begin{coqout}{title=Response,width=5cm}
+\coqrun{name=r2}{ssr,eqtype,eqn,bety,infix,print}
+\begin{coqout}{run=r2}{title=Response,width=5cm}
 
 true == false : bool
 3 == 4 : bool
@@ -463,13 +500,12 @@ interpreted as an implicit argument: type inference is expected to find a value
 for it.  Unfortunately such notation does not work as a parsing rule
 yet.
 
-\begin{coq}{title=Error,width=6cm}
+\begin{coq}{name=parsenocs}{title=Error,width=6cm}
 Check (3 == 4).
-$~$
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
-Error: complete this
-with the real error
+\coqrun{name=nc;fail}{ssr,eqtype,eqn,infix,parsenocs}
+\begin{coqout}{run=nc}{title=Response,width=6cm}
+Error: The term "3" has type "nat" while it is expected to have type "sort ?e".
 \end{coqout}
 
 If we unravel the notation the input term is really
@@ -493,7 +529,7 @@ extension that picks \lstinline/nat_eqType/ when \lstinline/T/ is
 \lstinline/bool/.  In the language of Canonical Structures such
 program is expressed as follows.
 
-\begin{coq}{title=Declaring Canonical Structures}
+\begin{coq}{name=declcs}{title=Declaring Canonical Structures}
 Canonical nat_eqType.
 Canonical bool_eqType.
 \end{coq}
@@ -502,15 +538,16 @@ The keyword \lstinline/Canonical/ was chosen to stress that the
 program is deterministic: each type  \lstinline/T/ is related to
 (at most) one \emph{canonical} comparison function.
 
-\begin{coq}{title=Testing CS Inference,width=6cm}
+\begin{coq}{name=parse}{title=Testing CS Inference,width=6cm}
 Check (3 == 4).
 Check (true == false).
 Eval compute in (3 == 4).
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=cs}{ssr,eqtype,eqn,bety,infix,declcs,parse}
+\begin{coqout}{run=cs}{title=Response,width=6cm}
 3 == 4 : bool
 true == false : bool
-= false
+= false : bool
 \end{coqout}
 
 The mechanics of the small program we wrote using the
@@ -581,13 +618,13 @@ atomic, like \lstinline/nat/ or \lstinline/bool/.  If we try for
 example to use it on terms whose type was built using a type
 constructor like the Cartesian product we encounter an error.
 
-\begin{coq}{title=Error,width=6cm}
-Check ((3,true) == (false,4)).
+\begin{coq}{name=reccs}{title=Error,width=6cm}
+Check (3, true) == (false, 4).
 $~$
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
-Error: complete this
-with the real error
+\coqrun{name=nc1;fail}{ssr,eqtype,eqn,bety,infix,declcs,reccs}
+\begin{coqout}{run=nc1}{title=Response,width=6cm}
+Error: The term "(3, true)" has type "(nat * bool)%type" while it is expected to have type "sort ?e".
 \end{coqout}
 
 The term \lstinline/(3,true)/ has type \lstinline/(nat * bool)/ and,
@@ -598,9 +635,9 @@ Intuitively the way to compare pairs is to compare their components
 Let's write a comparison function for pairs. \marginnote{Do we have
 the Sections mechanism here?}
 
-\begin{coq}{title=Comparing pairs}
+\begin{coq}{name=paircs}{title=Comparing pairs}
 Definition prod_cmp eqA eqB x y :=
-  eq_op eqA x.1 y.1 && eq_op eqB x.2 y.2.
+  @eq_op eqA x.1 y.1 && @eq_op eqB x.2 y.2.
 \end{coq}
 
 What is interesting about this comparison function is that the
@@ -618,9 +655,9 @@ constructor and this comparison function in an \lstinline/eqType/
 instance to extend the canonical structures inference machinery
 with a new combinator.
 
-\begin{coq}{title=Recursive canonical structure}
+\begin{coq}{name=declcs2}{title=Recursive canonical structure}
 Definition prod_eqType (eqA eqB : eqType) : eqType :=
-  Pack (sort eqA * sort eqB) (cmp_pair eqA eqB)
+  @Pack (sort eqA * sort eqB) (@prod_cmp eqA eqB).
 Canonical prod_eqType.
 \end{coq}
 
@@ -655,16 +692,23 @@ After the table of canonical solutions has been extended our example
 is accepted.\marginnote{no idea if that output can be
 produce by \Coq{}}
 
-\begin{coq}{title=Example,width=5.3cm}
-Check (3,true) == (false,4).
-$~$
-$~$
+\begin{coq}{name=parsecs2}{title=Example,width=5.3cm}
+Check (3, true) == (4, false).
 \end{coq}
-\begin{coqout}{title=Response,width=6.7cm}
-eq_op
- (prod_eqType nat_eqType bool_eqType)
- (3,true) (false,4) : bool
+\coqrun{name=cs2}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs2}
+\begin{coqout}{run=cs2}{title=Response,width=6.7cm}
+(3, true) == (4, false) : bool
 \end{coqout}
+
+Behind the scenese
+
+\begin{coq}{name=parsecs3}{title=Example,width=5.3cm}
+Check
+@eq_op
+ (prod_eqType nat_eqType bool_eqType)
+ (3, true) (4, false).
+\end{coq}
+\coqrun{name=cs3}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs3}
 
 \marginnote{
 Make other examples? Other overloaded stuff: maybe and example of
@@ -716,16 +760,23 @@ The most pervasive coercion in the \mcbMC{} library is
 predicates.\marginnote{I guess in a way or another is true has
 already been introduced}.
 
-\begin{coq}{title=Coercion \lstinline/is_true/,width=6cm}
-Lemma example : prime 27.
+\begin{coqdef}{name=istrue}
+Lemma example : prime 17.
 Proof.
-Set Printing Coercions.
+Set Printing Coercions. Redirect "g1" Show.
 by [].
 Qed.
+\end{coqdef}
+\begin{coq}{def=istrue}{title=Coercion \lstinline/is_true/,width=6cm}
+Lemma example : prime 17.
+Proof.  by [].  Qed.
 \end{coq}
-\begin{coqout}{title=Goal after line 3,width=6cm}
-==================
-is_true (prime 27)
+\coqrun{name=r3}{ssr,istrue}
+\begin{coqout}{run=r3;out=g1}{title=Goal after line 3,width=6cm}
+1 subgoal
+
+============================
+is_true (prime 17)
 \end{coqout}
 
 The statement of the example is processed by type inference,
@@ -735,7 +786,7 @@ function \lstinline/is_true/ is declared as a coercion from
 \lstinline/bool/ to \lstinline/Prop/ and hence is it inserted
 by \Coq{} automatically.
 
-\begin{coq}{}
+\begin{coq}{name=istruedef}{}
 Definition is_true b := b = true.
 Coercion is_true : bool >-> Sortclass. (* Prop *)
 \end{coq}
@@ -743,11 +794,14 @@ Coercion is_true : bool >-> Sortclass. (* Prop *)
 Another coercion that is widely used injects booleans into naturals.
 Two examples follow.
 
-\begin{coq}{}
+\begin{coq}{name=natofbool}{}
+Variable T : eqType.
 Fixpoint count (a : pred T) (s : seq T) :=
-  if s is x :: s' then a x + count s' else 0.
-Lemma count_uniq_mem s x : uniq s -> count_mem x s = (x \in s).
+  if s is x :: s' then a x + count a s' else 0.
+Lemma count_uniq_mem (s : seq T) x :
+  uniq s -> count_mem x s = (x \in s).
 \end{coq}
+\coqrun{name=ex}{ssr,istruedef,natofbool,abort}
 
 In line number 2 the term \lstinline/(a x)/ is a boolean.  The
 \lstinline/nat_of_bool/ function is automatically inserted to turn
@@ -761,9 +815,13 @@ of the current chapter is \lstinline/sort/.  Typically the projection
 of a record type extracting the data type is declared as a coercion
 letting one state generic theorems like in the following example.
 
-\begin{coq}{}
-Lemma  (e : eqType) : forall x y : e, x == y -> ...
+\begin{coqdef}{name=sotc}
+Lemma example (e : eqType) : forall x y : e, x == y -> y == x.
+\end{coqdef}
+\begin{coq}{def=sotc}{}
+Lemma example (e : eqType) : forall x y : e, x == y -> ...
 \end{coq}
+\coqrun{name=r5}{ssr,sotc,abort}
 
 Here the type of \lstinline/x/ and \lstinline/y/ is
 \lstinline/(sort e)/ and not \lstinline/e/ as the user initially wrote.
@@ -774,9 +832,12 @@ into a \lstinline/Type/ is inserted automatically.
 
 Coercions are composed transitively.
 
-\begin{coq}{}
-Check forall b : bool, (b + 3)%Z.
+\begin{coq}{name=b2z}{}
+Definition zerolist n := mkseq (fun _ => 0) n.
+Coercion zerolist : nat >-> seq.
+Check 2 :: true == [:: 2; 0].
 \end{coq}
+\coqrun{name=r6}{ssr,b2z}
 
 For the convenience of the reader we list here the most widely
 used coercions. there are also a bunch on Funclass not listed
@@ -798,10 +859,11 @@ Another device that is used to help type inference is the
 \lstinline/Implicit Types/ directive.  This directive lets
 one attach a default type to variable names.
 
-\begin{coq}{title=Example of \lstinline/Implicit Types/}
+\begin{coq}{name=itype}{title=Example of \lstinline/Implicit Types/}
 Implicit Types m n : nat.
 Check forall m n, n == m.
 \end{coq}
+\coqrun{name=r7}{ssr,itype}
 
 In the example above the statement we \lstinline/Check/ does not
 contain enough information alone to be well types.  The overloaded

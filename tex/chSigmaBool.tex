@@ -1,6 +1,24 @@
 % vim:set tw=70:
 % vim:set spell:
 % vim:set errorformat="":
+\begin{coqdef}{name=ssr}
+Require Import Ssreflect.ssreflect.
+From Ssreflect Require Import ssrfun ssrbool ssrnat eqtype fintype seq div prime.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+Set Asymmetric Patterns.
+\end{coqdef}
+\begin{coqdef}{name=abort}
+Abort.
+\end{coqdef}
+\begin{coqdef}{name=show1}
+Redirect "g1" Show.
+\end{coqdef}
+\begin{coqdef}{name=require-tuple}
+Require Import tuple.
+\end{coqdef}
+
 \Chapter{Mixing data and proofs}{Organizing knowledge}
 Wild notes: the purpose of this chapter is to stress what is truely
 important and perennial, as opposed to technicalities too much tied to
@@ -150,7 +168,7 @@ An approach to describe such data type that is possible in type
 theories with indexed inductive families like the \mcbCIC{} is to
 craft a new ad-hoc type, the type of vectors.
 
-\begin{coq}{width=\textwidth,title=Vectors}
+\begin{coq}{name=vect}{width=\textwidth,title=Vectors}
 Inductive vect T : nat -> Type :=
 | vnil : vect T 0
 | vcons n of T & vect T n : vect T n.+1.
@@ -165,8 +183,14 @@ vectors they manipulate.  For example one can read in the type of the
 function that reverses a vector that it preserves the length
 (\lstinline/n/ here).
 
-\begin{coq}{width=\textwidth,title=Vector reversal}
-Fixpoint vrev T n (v : vect T n) : vect T n := ...
+\begin{coq}{name=vrev}{width=\textwidth,title=Vector reversal}
+Definition vcast {T n w} (e : w = n) (v : vect T n) : vect T w :=
+  let: erefl in _ = w := esym e return vect T w in v.
+  Definition vrev {T n} (v : vect T n) : vect T n :=
+  let fix aux m (acc : vect T m) n (v : vect T n) : vect T (m+n) :=
+    if v isn't vcons n' x xs then vcast (addn0 m) acc
+    else vcast (addnS m n') (aux m.+1 (vcons x acc) n' xs) in
+  aux 0 (vnil T) n v.
 \end{coq}
 
 This means that there will be no need to convince Coq that
@@ -174,11 +198,12 @@ This means that there will be no need to convince Coq that
 each time it is used: we morally prove it once an for all
 when we define the operation.
 
-\begin{coq}{width=\textwidth,title=Vector assisted proof}
-Definition vlength T n (v : vect T n) := n.
-Lemma simple T n v : vlength T n v = vlength T n (vrev T n v).
+\begin{coq}{name=vlen}{width=\textwidth,title=Vector assisted proof}
+Definition vlength {T n} (v : vect T n) := n.
+Lemma simple T n (v : vect T n) : vlength v = vlength (vrev v).
 Proof. by []. Qed.
 \end{coq}
+\coqrun{name=vect2}{ssr,vect,vrev,vlen}
 
 The drawback of this approach is that the type \lstinline/(vect T n)/
 and \lstinline/(seq T)/ are different and we can't directly apply to a
@@ -202,12 +227,12 @@ sequence with a proof that witnesses that its length is exactly
 and proofs, is tricky to get right in the \mcbCIC{}.  We start with
 the following ``naive'' record type \lstinline/(lseq T n)/:
 
-\begin{coq}{width=\textwidth,title=Simple dependent pair}
+\begin{coq}{name=haslen}{width=\textwidth,title=Simple dependent pair}
 Inductive has_len (T : Type) : seq T -> nat -> Prop :=
-| base : has_len T [::] 0
-| step n l a of has_len T l n : has_len T [:: a & l] n.+1.
+| base : has_len [::] 0
+| step n l a of has_len l n : has_len [:: a & l] n.+1.
 
-Record lseq T n := Lseq { lval : seq T; llen : has_len T val n }.
+Record lseq T n := Lseq { lval : seq T; llen : has_len lval n }.
 \end{coq}
 
 The advantage of this approach over the former is that the
@@ -228,9 +253,10 @@ account.  When comparing two elements of \lstinline/lseq/ we would
 like the second component not to matter.  In other words we want this
 lemma to be provable:
 
-\begin{coq}{width=\textwidth,title=Injectivity of lval}
+\begin{coq}{name=lval}{width=\textwidth,title=Injectivity of lval}
 Lemma lval_inj T n (l1 l2 : lseq T n) : lval l1 = lval l2 -> l1 = l2.
 \end{coq}
+\coqrun{name=lval}{ssr,haslen,lval,abort}
 
 Intuitively it says that two sequence of length \lstinline/n/ are
 equal if they are equal as sequences, it does not matter \emph{how one
@@ -256,10 +282,11 @@ As a direct application of this result we have that, as long as we can
 express the property defining the sub-type as a boolean predicate,
 we can reuse the same injectivity lemma.
 
-\begin{coq}{width=\textwidth,title=Tuple sub-type of seq}
+\begin{coq}{name=tupx}{width=\textwidth,title=Tuple sub-type of seq}
 Structure tuple_of n T :=  Tuple { tval :> seq T; _ : size tval == n }.
 Notation "n .-tuple T" := (tuple_of n T) (at level 2).
 \end{coq}
+\coqrun{name=r1}{ssr,tupx}
 
 Recall the hidden \lstinline/is_true/ coercion.  If we unfold
 its definition we clearly see that the predicate
@@ -290,8 +317,9 @@ For the sake of this section, we will use this, equivalent, definition
 of the tuple type.  Note that we use \lstinline/=/ in place of
 \lstinline/==/.
 
-\begin{coq}{width=\textwidth,title=Tuple sub-type of seq}
-Structure tuple_of n T :=  Tuple { tval :> seq T; _ : size tval = n }.
+\begin{coq}{name=tup}{width=\textwidth,title=Tuple sub-type of seq}
+Structure tuple_of n T := Tuple { tval : seq T; _ : size tval = n }.
+Notation "n .-tuple T" := (tuple_of n T) (at level 2).
 \end{coq}
 
 % Such equality relates to natural numbers, hence the
@@ -301,10 +329,12 @@ Now we focus on the use of the tuple type.  The key property of this
 type is that it tells us the length of its elements when seen as
 sequences:
 
-\begin{coq}{}
+\begin{coq}{name=sizetup}{}
+Coercion tval : tuple_of >-> seq.
 Lemma size_tuple {T n} (t : n.-tuple T) : size t = n.
 Proof. by case: t. Qed.
 \end{coq}
+\coqrun{name=r2}{ssr,tup,sizetup}
 
 In other words each inhabitant of the tuple type brings with it,
 in the form of a proof, its length.  As test bench for the notion
@@ -312,7 +342,7 @@ of tuple we pick this simple example: a tuple is processed using
 functions defined on sequences, namely \lstinline/rev/ and
 \lstinline/map/.
 
-\begin{coq}{}
+\begin{coq}{name=p1}{}
 Example seq_on_tuple n (t : n.-tuple nat) :
   size (rev [seq 2 * x | x <- rev t]) = size t.
 \end{coq}
@@ -321,9 +351,10 @@ There are two ways to prove that lemma.  The first one is
 to ignore the fact that \lstinline/t/ is tuple, consider it
 as a regular sequence, and use only the theory of sequences.
 
-\begin{coq}{}
+\begin{coq}{name=p2}{}
 Proof. by rewrite map_rev revK size_map. Qed.
 \end{coq}
+\coqrun{name=r3}{ssr,tup,sizetup,p1,p2}
 
 Mapping a function over the reverse of a list, it equivalent to
 first map the function over the list and then reverse the result
@@ -341,11 +372,20 @@ the fact that  \lstinline/t/ is tuple.
 The second way to prove this theorem is to rely on the rich type
 of \lstinline/t/ to actually compute the length of the sequence.
 
-\begin{coq}{}
+\begin{coq}{name=p3}{}
 Example just_tuple_attempt n (t : n.-tuple nat) :
   size (rev [seq 2 * x | x <- rev t]) = size t.
 Proof. rewrite size_tuple.
 \end{coq}
+\coqrun{name=r4;fail}{ssr,tup,sizetup,p3,show1}
+\begin{coqout}{run=r4;out=g1}{}
+1 subgoal
+
+ n : nat
+ t : n .-tuple nat
+ ============================
+ size (rev [seq 2 * x | x <- rev t]) = n
+\end{coqout}
 
 The rewriting replaces the right hand side with \lstinline/n/ as
 expected, but we can't go any further: the lemma is not replacing
@@ -366,7 +406,7 @@ What happens if try to unify the left hand side of the
 \lstinline/size_tuple/ equation with the redex
 \lstinline/(rev t)/ (and we print coercions)?
 
-\begin{coq}{title=Toolkit not belonging here}
+\begin{coq}{name=infrastructure}{title=Toolkit not belonging here}
 (* toolkit *)
 Notation "X (*...*)" := (let x := X in let y := _ in x)
   (at level 100, format "X  (*...*)").
@@ -379,14 +419,14 @@ Notation "[unify X 'with' Y ]" :=
    True).
 \end{coq}
 
-\begin{coq}{title=Simulate rewrite size\_tuple}
+\begin{coq}{name=showunif}{title=Simulate rewrite size\_tuple}
 Check forall T n (t : n.-tuple T),
  let LHS := [LHS of size_tuple _] in
  let RDX := size (rev t) in
- [unify LHS with RDX]
+ [unify LHS with RDX].
 \end{coq}
-
-\begin{coq}{title=Response}
+\coqrun{name=r5;fail}{ssr,tup,sizetup,infrastructure,showunif}
+\begin{coqout}{run=r5}{title=Response}
 Error:
 In environment
 T : Type
@@ -396,7 +436,7 @@ LHS := size (tval ?94 ?92 ?96) (*...*) : nat
 RDX := size (rev (tval n T t))           : nat
 The term "erefl ?95" has type "?95 = ?95" while
 it is expected to have type "LHS = RDX".
-\end{coq}
+\end{coqout}
 
 Unifying \lstinline/(size (tval ?$_n$ ?$_T$ ?$_t$))/
 with \lstinline/(size (rev (tval n T t)))/ is hard.
@@ -417,7 +457,7 @@ against a value.  We can declare Canonical Structures
 teaching Coq the effect of list operations over the length
 of their input.
 
-\begin{coq}{}
+\begin{coq}{name=t1}{}
 Lemma rev_tupleP n A (t : n.-tuple A) : size (rev t) = n.
 Proof. by rewrite size_rev size_tuple. Qed.
 Canonical rev_tuple n A (t : n.-tuple A) := Tuple (rev_tupleP t).
@@ -431,7 +471,7 @@ Canonical map_tuple n A B f (t : n.-tuple A) : n.-tuple B :=
 Even if it is not needed for the lemma we took as our test bench,
 we add another example where the length is not preserved.
 
-\begin{coq}{}
+\begin{coq}{name=t2}{}
 Lemma cons_tupleP n A (t : n.-tuple A) x : size (x :: t) = n.+1.
 Proof. by rewrite /= size_tuple. Qed.
 Canonical cons_tuple n A x (t : n.-tuple A) : n.+1 .-tuple A :=
@@ -454,11 +494,12 @@ projection & value & solution & combines solutions for \\ \hline
 Thanks to the now extended capability of type inference
 we can prove our lemma by just reasoning about tuples.
 
-\begin{coq}{}
+\begin{coq}{name=t3}{}
 Example just_tuple n (t : n.-tuple nat) :
   size (rev [seq 2 * x | x <- rev t]) = size t.
 Proof. by rewrite !size_tuple. Qed.
 \end{coq}
+\coqrun{name=r6}{ssr,tup,sizetup,t1,t2,t3}
 
 The iterated rewriting acts now twice replacing both the left hand
 and the right hand side with \lstinline/n/.  It is worth observing
@@ -475,7 +516,7 @@ reasoning.
 Going back to the example of (coloured) points, once a coloured point
 is defined as a record embedding a simple point
 
-\begin{coq}{}
+\begin{coq}{name=col}{}
 Record CP := Coloured { coords_of :> P; colour_of : color }
 \end{coq}
 
@@ -521,7 +562,7 @@ Section~\ref{eqtype:noproof}.  Indeed there is little point in
 associating to a type a comparison function if that function is
 not ``correct''.
 
-\begin{coq}{title=eqType}
+\begin{coq}{name=eqtype}{title=eqType}
 Definition rel T := T -> T -> bool.
 
 Module Equality.
@@ -531,8 +572,8 @@ Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
 Record class_of T := Mixin {op : rel T; _ : axiom op}.
 
 Structure eqType : Type := Pack {
-  sort : Type;
-  class : class_of sort;
+  sort :> Type;
+  class : class_of sort
 }.
 
 End Equality.
@@ -563,8 +604,8 @@ The simplest application is the \lstinline/eqP/ \emph{generic lemma}
 that can be used in conjunction with any formula involving the
 \lstinline/==/ notation.
 
-\begin{coq}{title=The eqP lemma}
-Lemma eqP (T : eqType) : Equality.axiom (eq_op T).
+\begin{coq}{name=eqP}{title=The eqP lemma}
+Lemma eqP (T : Equality.eqType) : Equality.axiom (@eq_op T).
 Proof. by case: T => ty [op prop]; exact: prop. Qed.
 \end{coq}
 
@@ -574,10 +615,12 @@ an arbitrary complex value for \lstinline/T/ by composing
 canonical structures instances, this lemma give us a
 access to the proof part of such inferred value.
 
-\begin{coq}{title=Use of eqP}
+\begin{coq}{name=test}{title=Use of eqP}
 Lemma test (x y :nat) (a b : bool) : (a,x) == (b,y) -> fst (a,x) == b.
 Proof. by move/eqP=> def_ax; rewrite def_ax. Qed.
 \end{coq}
+\coqrun{name=r7}{ssr,eqtype,eqP}
+\coqrun{name=r8}{ssr,test}
 
 The \lstinline/(a,x)$~$== (b,y)/ assumption is reflected to
 \lstinline/(a,x)$~$= (b,y)/ by using the \lstinline/eqP/ view
@@ -592,11 +635,12 @@ notation come with a meaning and an associated theory.
 Note that the proof language silently adjusted the view
 using \lstinline/elimT/.
 
-\begin{coq}{title=The eqtype view,width=5.3cm}
+\begin{coq}{name=elimt}{title=The eqtype view,width=5.3cm}
 Check elimT.
-$~$
+
 \end{coq}
-\begin{coqout}{title=Response,width=6.7cm}
+\coqrun{name=et}{ssr,elimt}
+\begin{coqout}{run=et}{title=Response,width=6.7cm}
 elimT : forall (P : Prop) (b : bool),
           reflect P b -> b -> P
 \end{coqout}
@@ -608,9 +652,10 @@ Now \lstinline/eqType/ can be seen as an interface to access a
 theory of results.  Indeed we can finally state (and prove) the
 Hedberg theorem in its full generality.
 
-\begin{coq}{title=Hedberg}
+\begin{coq}{name=hedberg}{title=Hedberg}
 Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
 \end{coq}
+\coqrun{name=hedberg}{ssr,hedberg,abort}
 
 Now that the \lstinline/eqType/ structure comes with a well
 specified comparison function we can use it to program new
@@ -619,10 +664,11 @@ that that the type variable of a container types, like \lstinline/seq/,
 is an \lstinline/eqType/ we can code the following function
 that tests membership.
 
-\begin{coq}{title=Functions}
-Fixpoint mem_seq (t : eqType) (s : seq T) x :=
-  if s is y :: s' then (y == x) && mem_seq T s' x else false.
+\begin{coq}{name=memseq}{title=Functions}
+Fixpoint mem_seq {T : eqType} (s : seq T) x :=
+  if s is y :: s' then (y == x) && mem_seq s' x else false.
 \end{coq}
+\coqrun{name=memseq}{ssr,memseq}
 
 Indeed we are allowed to write \lstinline/(x == y)/ because
 \lstinline/T/ is not any type, but a type with a decidable
@@ -635,7 +681,9 @@ If the elements of a sequence are in an eqType, we can obtain
 the overload the \lstinline/\in/ notation on sequences.
 In turn we can then define new predicates like being duplicate free.
 
-\begin{coq}{}
+\begin{coq}{name=uniq}{}
+Variable T : eqType.
+Implicit Type s : seq T.
 Fixpoint uniq s :=
   if s is x :: s' then (x \notin s') && uniq s' else true.
 Fixpoint undup s :=
@@ -643,12 +691,14 @@ Fixpoint undup s :=
     if x \in s' then undup s' else x :: undup s'
   else [::].
 \end{coq}
+\coqrun{name=uniq}{ssr,uniq}
 
 And show properties of these functions
 
-\begin{coq}{title=Functions}
+\begin{coq}{name=undupuniq}{title=Functions}
 Lemma undup_uniq s : uniq (undup s).
 \end{coq}
+\coqrun{name=uniqp}{ssr,uniq,undupuniq,abort}
 
 % maybe in the xercises
 % \end{coq}{}
@@ -660,7 +710,7 @@ Note that the \mcbMC{} library iterates the construction of
 \lstinline/eqType/ on the container itself:
 if \lstinline/T/ is \lstinline/eqType/ then also \lstinline/seq T/ is.
 
-\begin{coq}{}
+\begin{coq}{name=itereqtype}{}
 Let s1 := [:: 1; 2 ].
 Let s2 := [:: 3; 5; 7].
 Let ss := [:: s1 ; s2 ].
@@ -668,16 +718,18 @@ Check ss == [::].
 Check uniq ss.
 Check undup_uniq ss.
 \end{coq}
+\coqrun{name=uniqp2}{ssr,itereqtype}
 
 Indeed we can compare sequences of sequences, and apply to them
 the theory of sequences.
 Unfortunately this does not work with tuples (yet).
 
-\begin{coq}{}
+\begin{coq}{name=tupeqtypeno}{}
 Fail Check forall (t : 3.-tuple nat), [:: t] == [::].
 Fail Check fun t : 3.-tuple nat => uniq [:: t; t].
 Fail Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
 \end{coq}
+\coqrun{name=tupeqt}{ssr,tup,eqtype,tupeqtypeno}
 
 Tuples are trivially sequences.  Here we need to transport the
 property of being an eqType of sequences on tuples.
@@ -693,18 +745,30 @@ We have that \lstinline/(seq T)/ is an \lstinline/eqType/ and
 we want to transport \lstinline/==/ on tuples.  First we need to
 defined a comparison function for tuples.
 
-\begin{coq}{title=Comparison of tuples}
-Definition tcmp n (T : eqType) (t1 t2 : tuple_of T n) :=
+\begin{coq}{name=tupcmp}{title=Comparison of tuples}
+Definition tcmp n (T : eqType) (t1 t2 : n.-tuple T) :=
   tval t1 == tval t2.
 \end{coq}
+\coqrun{name=tupcmp}{ssr,require-tuple,tupcmp}
 
 Here we reuse the one on sequences, and we ignore the
 proof part of tuples.
 
 We need now to prove
 
-\begin{coq}{}
-Lemma eqtupleP n (T : eqType) : Equality.axiom (tcmp n T).
+\begin{coqdef}{name=eqtupP}
+Lemma eqtupleP n (T : eqType) : Equality.axiom (@tcmp n T).
+Proof.
+move=> x y; apply: (iffP eqP); last first.
+Redirect "g1" Show.
+  by move->.
+case: x; case: y => s1 p1 s2 p2 /= E. Redirect "g2" Show.
+rewrite E in p2 *.
+by rewrite (eq_irrelevance p1 p2).
+Qed.
+\end{coqdef}
+\begin{coq}{def=eqtupP}{}
+Lemma eqtupleP n (T : eqType) : Equality.axiom (@tcmp n T).
 Proof.
 move=> x y; apply: (iffP eqP); last first.
   by move->.
@@ -713,47 +777,55 @@ rewrite E in p2 *.
 by rewrite (eq_irrelevance p1 p2).
 Qed.
 \end{coq}
+\coqrun{name=tupcmpP}{ssr,tup,tupcmp,eqtupP}
 
 The first direction is trivial
 
-\begin{coqout}{title=Response line 4,width=5cm}
-T : eqType
+\begin{coqout}{run=tupcmpP;out=g1}{title=Response line 4,width=5cm}
+2 focused subgoals (shelved: 2)
+
 n : nat
-x : tuple_of T n
-y : tuple_of T n
-==================
+T : eqType
+x, y : n .-tuple T
+============================
 x = y -> tval x = tval y
+
+subgoal 2 is:
+  tval x = tval y -> x = y
 \end{coqout}
 
 For the other one the crucial step is the use
 of \lstinline/eq_irrelevance/.
 
-\begin{coqout}{title=Response line 6,width=7cm}
-T : eqType
+\begin{coqout}{run=tupcmpP;out=g2}{title=Response line 6,width=7cm}
+1 subgoal
+
 n : nat
+T : eqType
 s1 : seq T
-p1 : size s1 == n
+p1 : size s1 = n
 s2 : seq T
-p2 : size s2 == n
+p2 : size s2 = n
 E : s2 = s1
-==================
-Tuple T n s2 p2 = Tuple T n s1 p1
+============================
+Tuple p2 = Tuple p1
 \end{coqout}
 
 We can then declare
 
-\begin{coq}{}
+\begin{coq}{name=canontup}{}
 Canonical tuple_eqType n T :=
-  Equality.Pack (Equality.Mixin (tcmp n T) (eqtupleP n T)).
+  Equality.Pack (Equality.Mixin (@eqtupleP n T)).
 \end{coq}
 
 Simple test
 
-\begin{coq}{}
+\begin{coq}{name=testtup}{}
 Check forall (t : 3.-tuple nat), [:: t] == [::].
 Check fun t : 3.-tuple nat => uniq [:: t; t].
 Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
 \end{coq}
+\coqrun{name=tupc}{ssr,require-tuple,testtup}
 
 We did it by hand, but all that is schematic, any sigma type can be
 dealt with in the very same way.  When one has a base type T and a
@@ -774,7 +846,7 @@ new concepts is interested by what follows.
 
 As simple as such
 
-\begin{coq}{}
+\begin{coq}{name=subt}{}
 Canonical tuple_subType := Eval hnf in [subType for tval].
 Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
 Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
@@ -792,7 +864,7 @@ subtypes).
 \mcbREQUIRE{CS}
 \mcbsection{The \lstinline/subType/ infrastructure}
 
-\begin{coq}{}
+\begin{coq}{name=subtdef}{}
 Structure subType : Type := SubType {
   sub_sort :> Type;
   val : sub_sort -> T;

@@ -1,3 +1,33 @@
+% Some Coq snippets to be used later on
+\begin{coqdef}{name=ssr}
+Require Import Ssreflect.ssreflect.
+From Ssreflect Require Import ssrfun ssrbool ssrnat eqtype seq.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+\end{coqdef}
+\begin{coqdef}{name=abort}
+Abort.
+\end{coqdef}
+\begin{coqdef}{name=qed}
+Qed.
+\end{coqdef}
+\begin{coqdef}{name=done}
+by [].
+\end{coqdef}
+\begin{coqdef}{name=verbose}
+Unset Silent.
+\end{coqdef}
+\begin{coqdef}{name=quiet}
+Set Silent.
+\end{coqdef}
+\begin{coqdef}{name=show1}
+Redirect "g1" Show.
+\end{coqdef}
+\begin{coqdef}{name=show2}
+Redirect "g2" Show.
+\end{coqdef}
+
 \Chapter{Statements and proofs}{First steps in formal proofs}
 
 The scope of this chapter is to explain how one states a lemma,
@@ -44,14 +74,16 @@ is well formed:
 
 \marginnote{Ensure we've seen \C{Check} in chapter 1}
 
-\begin{coq}{width=6cm,title=Equality predicate}
+\begin{coq}{name=check-eq}{width=6cm,title=Equality predicate}
 Check 3 = 3.
 Check false || true = true.
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=r1}{ssr,check-eq}
+\begin{coqout}{run=r1}{title=Response,width=6cm}
 3 = 3 : Prop
 false || true = true : Prop
 \end{coqout}
+
 Let's anatomize the two above examples. On first important thing to
 keep in mind is that formal statements are themselves \emph{terms}. And
 therefore, they also have a \emph{type}. An equality statement is
@@ -65,10 +97,11 @@ type and the status of its argument, applies just as well to
 propositions and their components. For instance we can learn more
 about the constant \C{eq}:
 
-\begin{coq}{width=6cm,title=Equality predicate}
+\begin{coq}{name=about}{width=6cm,title=Equality predicate}
 About eq.
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=abouteq}{about}
+\begin{coqout}{run=abouteq}{title=Response,width=6cm}
 eq : forall A : Type, A -> A -> Prop
 Argument A is implicit ...
 \end{coqout}
@@ -95,37 +128,45 @@ The \Coq{} system however checks the well typedness of statements,
 i.e. in this case that the two hand sides of an equality have the same
 type:
 
-\begin{coq}{width=4cm,title=Ill-typed Equality}
+\begin{coq}{name=check-eq2}{width=4cm,title=Ill-typed Equality}
 Check 3 = [:: 3].
 $~$
 \end{coq}
-\begin{coqout}{title=Response,width=8cm}
+\coqrun{name=r2;fail}{ssr,check-eq2}
+\begin{coqout}{run=r2}{title=Response,width=8cm}
 Error: The term "[:: 3]" has type "seq nat"
  while it is expected to have type "nat".
 \end{coqout}
 
 Yet it does not check the provability of the statement!
 
-\begin{coq}{width=4cm,title=Equality predicate}
+\begin{coq}{name=false-statement}{width=4cm,title=Equality predicate}
 Check 3 = 4.
 \end{coq}
-\begin{coqout}{title=Response,width=8cm}
+\coqrun{name=check34}{false-statement}
+\begin{coqout}{run=check34}{title=Response,width=8cm}
 3 = 4 : Prop
 \end{coqout}
 
 In order to establish that a certain equality holds, the user should
 first announce that she is going to prove a certain sentence, using
 the \C{Lemma} keyword, followed by the name we chose for the lemma and
-the lemma statement. \marginnote{What about the synonyms (theorem,
+the lemma statement. 
+\marginnote{What about the synonyms (theorem,
   remark, corollary,...)?}
 The \C{Proof} keywords marks the beginning of the proof and the system
 displays the current state of the formal proof.
 
-\begin{coq}{width=6cm,title=Starting a proof}
+\begin{coqdef}{name=first-lemma}
+Lemma my_first_lemma : 3 = 3.
+Proof. Redirect "goal" Show.
+\end{coqdef}
+\begin{coq}{def=first-lemma}{width=6cm,title=Starting a proof}
 Lemma my_first_lemma : 3 = 3.
 Proof.
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=r3}{ssr,first-lemma,abort}
+\begin{coqout}{run=r3;out=goal}{title=Response,width=6cm}
 1 subgoal
 
   ============================
@@ -136,26 +177,27 @@ current proof state: a list of named hypotheses on top of the
 horizontal bar (empty here) and the statement of the current goal
 below the bar.
 
+\marginnote{Is is an ok transition? Lemma is needed to postpone forall...}
 Before explaining in section~\ref{} how to proceed with such a proof,
 let us see more examples of (slightly more involved) statements.
-\marginnote{Is is an ok transition? \C{Lemma} is needed to postpone forall...}
 For now, let us just admit this result, using the \C{Admitted}
 command.
 
-\begin{coq}{width=6cm,title=Aborting a proof}
+\begin{coq}{name=first-lemma-admitted}{width=6cm,title=Aborting a proof}
 Lemma my_first_lemma : 3 = 3.
-Proof.
 Admitted.
 \end{coq}
 
 Although we have not (yet) provided a proof for this lemma, a new
 definition has been added to our environment:
 
-\begin{coq}{width=6cm,title= My first lemma}
-About my_first_lemma
+\begin{coq}{name=about-first-lemma}{width=6cm,title= My first lemma}
+About my_first_lemma.
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=about}{ssr,first-lemma-admitted,about-first-lemma}
+\begin{coqout}{run=about}{title=Response,width=6cm}
 my_first_lemma : 3 = 3
+...
 \end{coqout}
 
 \marginnote{I guess it is too early to say that this is a type...}
@@ -175,28 +217,31 @@ later section which discusses names.}
 Let us state for instance the identity expressing the associativity of
 the \C{addn} addition operation on natural numbers:
 
-\begin{coq}{width=7cm,title=Stating quantified lemmas}
+\begin{coqdef}{name=addnA}
 Lemma addnA (n m k : nat) :
   n + (m + k) = m + n + k.
 Proof.
-(* Admitted *)
+\end{coqdef}
+\begin{coq}{def=addnA}{width=6cm,title=Stating quantified lemmas}
+Lemma addnA (n m k : nat) :
+  n + (m + k) = m + n + k.
+Proof.
 \end{coq}
-\begin{coqout}{title=Response,width=5cm}
+\coqrun{name=addnA}{ssr,addnA,show1,abort}
+\begin{coqout}{run=addnA;out=g1}{title=Response,width=6cm}
 1 subgoal
 
- n : nat
- m : nat
- k : nat
- =========================
+ n, m, k : nat
+ ============================
   n + (m + k) = m + n + k
 \end{coqout}
 
 Note that \C{Lemma}, like \C{Definition}, allows for dropping type
 annotations if these types can be inferred from the statement itself:
 
-\begin{coq}{title=Stating quantified lemmas}
+\begin{coq}{name=addnA2}{title=Stating quantified lemmas}
 Lemma addnA n m k : n + (m + k) = m + n + k.
-Proof. Admitted.
+Admitted.
 \end{coq}
 
 \marginnote{ I am cheating here and I do not use the associative
@@ -207,9 +252,9 @@ Proof. Admitted.
 Boolean identities are an important special class of identities. For
 instance, the~\C{orbT} statement:
 
-\begin{coq}{title=A boolean identity}
+\begin{coq}{name=orbT}{title=A boolean identity}
 Lemma orbT b : b || true = true.
-Proof. Admitted.
+Admitted.
 \end{coq}
 
 expresses that the truth table of the boolean formula $b \wedge \top$
@@ -219,17 +264,17 @@ equivalent, or that $b \wedge \top$ is a propositional tautology.
 We provide below some other examples of boolean
 identities/equivalences:
 
-\begin{coq}{title=Boolean conjunction is associative}
+\begin{coq}{name=orbA}{title=Boolean conjunction is associative}
 Lemma orbA b1 b2 b4 :
   b1 || (b2 || b3) = b1 || b2 || b3.
 \end{coq}
 
-\begin{coq}{title=Some boolean identities}
+\begin{coq}{name=implybE}{title=Some boolean identities}
 Lemma implybE a b : (a ==> b) = ~~ a || b.
-Proof. Admitted.
+Admitted.
 
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
-Proof. Admitted.
+Admitted.
 \end{coq}
 
 \marginnote{I put examples of classical identity on purpose. What
@@ -240,11 +285,12 @@ Proof. Admitted.
 
 More generally, boolean identities involve arbitrary boolean
 predicates, and feature variables of an arbitrary
-type. \marginnote{Make sure  ``boolean predicate'' is introduced in the
+type. 
+\marginnote{Make sure  ``boolean predicate'' is introduced in the
 previous chapter.} For instance, we can state (and very soon prove)
 that for any term \C{n : nat}, the following comparison holds:
 
-\begin{coq}{title=Stating that a boolean predicate holds}
+\begin{coq}{name=leq0n}{title=Stating that a boolean predicate holds}
 Lemma leq0n n : 0 <= n = true.
 \end{coq}
 We are hence stating here that the statement $0 \leq n$ holds, because
@@ -255,7 +301,7 @@ substituted for the parameter \C{n} in the statement.
 And here we should introduce the boolean coercion, which makes the
 statement of \C{leq0n} look like:
 
-\begin{coq}{title=Coercion}
+\begin{coq}{name=coqercion}{title=Coercion}
 Lemma leq0n n : 0 <= n.
 \end{coq}
 
@@ -268,7 +314,7 @@ We can express that boolean statements are equivalent using
 identities, generalizing the examples we gave in
 section~\ref{ssec:id}:
 
-\begin{coq}{title=Examples of equivalences}
+\begin{coq}{name=equivalences}{title=Examples of equivalences}
 Lemma eqn_leq m n : (m == n) = (m <= n) && (n <= m).
 Admitted.
 
@@ -297,12 +343,12 @@ parameters. Logical sentences that hold only under some condition
 feature an implicative connective \C{->}, the \Coq{} syntax for
 $\Rightarrow$.
 
-\begin{coq}{title=Implicative sentences}
+\begin{coq}{name=implication}{title=Implicative sentences}
 Lemma leq_pmull m n : n > 0 -> m <= n * m.
-Proof. Admitted.
+Admitted.
 
 Lemma odd_gt0 n : odd n -> n > 0.
-Proof. Admitted.
+Admitted.
 \end{coq}
 
 The attentive reader might have noticed that this arrow \C{->} is the
@@ -312,10 +358,10 @@ this phenomenon later in section~\ref{sec:chi}. For now let us remark
 that \C{->} associates on the right: therefore a succession of arrows
 expressed a conjuction of hypotheses:
 
-\begin{coq}{title=A (multi)conditional statement}
+\begin{coq}{name=dvdn-mul}{title=A (multi)conditional statement}
 Lemma dvdn_mul d1 d2 m1 m2 :
   d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
-Proof. Admitted.
+Admitted.
 \end{coq}
 
 \marginnote{Currification deserves more comments but it is probably too
@@ -326,9 +372,8 @@ Proof. Admitted.
 We shall now explain how to turn a well-formed statement into a
 machine-checked theorem. Let us come back to our first example, that
 we left unproved:
-\begin{coq}{title=Starting a proof}
+\begin{coq}{name=my-first-proof1}{title=Starting a proof}
 Lemma my_first_lemma : 3 = 3.
-Proof.
 Admitted.
 \end{coq}
 In the \Coq{} system, the user builds a formal proof by providing,
@@ -337,7 +382,7 @@ system, that describe the proof she has in mind. This list of
 instructions is called a \emph{proof script}, and the instructions it
 is made of are called \emph{tactics}.
 
-\begin{coq}{title=Starting a proof}
+\begin{coq}{name=my-first-proof2}{title=Starting a proof}
 Lemma my_first_lemma : 3 = 3.
 Proof.
 (* <your proof script comes here> *)
@@ -350,10 +395,10 @@ system, which validates a posteriori that the formal proof that has
 been built so far is actually hole-free and a proof of the initial
 statement, here \C{3 = 3}.
 
-\begin{coq}{title=Scheme of a complete proof}
+\begin{coq}{name=my-first-proof3}{title=Scheme of a complete proof}
 Lemma my_first_lemma : 3 = 3.
 Proof.
-(* <your proof script comes here> *)
+(* <your finished proof script comes here> *)
 Qed.
 \end{coq}
 
@@ -364,17 +409,24 @@ the corresponding tactics.
 
 Here is now the proof scipt that validates the statement $3 = 3$:
 
-\begin{coq}{width=7cm,title=Reflexivity of equality}
+\begin{coqdef}{name=my-first-proof4}
+Lemma my_first_lemma : 3 = 3.
+Proof.
+\end{coqdef}
+\begin{coq}{def=my-first-proof4,done}{width=7cm,title=Reflexivity of equality}
 Lemma my_first_lemma : 3 = 3.
 Proof. by [].
 \end{coq}
-\begin{coqout}{width=5cm,title=Proof finished}
+\coqrun{name=firstp4}{ssr,my-first-proof4,verbose,done,abort}
+\begin{coqout}{run=firstp4}{width=5cm,title=Proof finished}
 No more subgoals.
 $~$
 \end{coqout}
+
 Indeed, this proof holds because the two hand sides of the equality
 are the same, and the tactic \C{by []} is the command that
-implements this nature of proof step. \marginnote{I chose not to
+implements this nature of proof step. 
+\marginnote{I chose not to
   expose reflexivity because we never use it but shall we mention this
 for users of plain Coq? Or use done? Finally, \C{by []} is more
 natural for the last examples of the section. Also where comes the
@@ -383,14 +435,15 @@ The system thus informs the user
 that the proof seems finished. We can hence confidently conclude our
 first proof by the \C{Qed} command:
 
-\begin{coq}{width=7cm,title=Reflexivity of equality}
+\begin{coq}{def=my-first-proof4,done,qed}{width=6cm,title=Reflexivity of equality}
 Lemma my_first_lemma : 3 = 3.
 Proof. by []. Qed.
 \end{coq}
-\begin{coqout}{width=5cm,title=Lemma registered}
+\coqrun{name=firstp5}{ssr,my-first-proof4,done,verbose,qed}
+\begin{coqout}{run=firstp5}{title=Response,width=6cm}
 my_first_lemma is defined
-$~$
 \end{coqout}
+
 which results in a new definition added in our context, that can hence
 be reused in future proofs under the name \C{my_first_lemma}.
 
@@ -399,29 +452,38 @@ hand side of an equality coincide syntactically but also when they are
 equal \emph{modulo the evaluation of programs}, they we defined at an
 earlier stage of our session, or that where defined in the libraries
 we loaded. For instance, let us prove that $2 + 1 = 3$:
-\begin{coq}{width=7cm,title=Reflexivity of equality}
+
+\begin{coqdef}{name=secondp}
+Lemma my_second_lemma : 2 + 1 = 3.
+Proof. by [].
+\end{coqdef}
+\begin{coq}{def=secondp,qed}{width=6.5cm,title=Reflexivity of equality}
 Lemma my_second_lemma : 2 + 1 = 3.
 Proof. by []. Qed.
 \end{coq}
-\begin{coqout}{width=5cm,title=Lemma registered}
+\coqrun{name=secondp}{ssr,secondp,verbose,qed}
+\begin{coqout}{run=secondp}{title=Response,width=5.5cm}
 my_second_lemma is defined
-$~$
 \end{coqout}
+
+
 Indeed, this proof holds because the two hand sides of the equality
 are the same, once the definition of the \C{addn} function, hidden
 behind the infix \C{=} notation, is unfolded, and that the calculation
 is performed. We can prove in a similar way the statement \C{0 <=
   1}. And finally the statement \C{odd 5} is proved by the very same
 proof script, because \C{odd 5} \emph{computes} to
-\C{true}. \marginnote{Should these be exercises? should we add failure
+\C{true}. 
+\marginnote{Should these be exercises? should we add failure
   examples?}
 Note that we now have a new result at hand for our future proofs
 (although this one is not a very useful one...)
 
-\begin{coq}{width=6cm,title=Printing a lemma statement}
+\begin{coq}{name=check1}{width=6cm,title=Printing a lemma statement}
 Check my_first_lemma.
 \end{coq}
-\begin{coqout}{title=Response,width=6cm}
+\coqrun{name=c1}{ssr,my-first-proof4,done,qed,check1}
+\begin{coqout}{run=c1}{title=Response,width=6cm}
 my_first_lemma : 3 = 3
 \end{coqout}
 
@@ -432,7 +494,7 @@ function. \marginnote{Take some time to describe this in detail, for instance on
 For instance the proof of the \C{addSn} identity:
 
 
-\begin{coq}{title=Reflexevity by symbolic computation}
+\begin{coq}{name=addSn}{title=Reflexevity by symbolic computation}
 Lemma addSn m n : m.+1 + n = (m + n).+1. Proof. by []. Qed.
 \end{coq}
 is trivial because it is a direct application of one of the branches
@@ -446,18 +508,30 @@ also \C{2 + m = n.+2}, which requires a two-step computation.
 Let us now consider the tautology~\L+~~ (~~ b) = b+. Our previous
 proof technique fails:
 
-\begin{coq}{width=7cm,title=Double negation elimination}
+\begin{coqdef}{name=negbK}
+Lemma negbK (b : bool) : ~~ (~~ b) = b.
+Proof. 
+\end{coqdef}
+\begin{coq}{name=negbK,done}{width=7cm,title=Double negation elimination}
 Lemma negbK (b : bool) : ~~ (~~ b) = b.
 Proof. by [].
 \end{coq}
-\begin{coqout}{width=6cm, title=Failing proof script}
+\coqrun{name=negbKerr;fail}{ssr,negbK,done}
+\begin{coqout}{run=negbKerr}{width=5cm, title=Failing proof script}
 Error: No applicable tactic.
 \end{coqout}
+
 Indeed, this identity not only requires unfolding the definition of
 the \C{negb}, but also a \emph{case analysis} on the boolean value of
 the parameter \C{b}. The tactic \C{case} implements this action:
 
-\begin{coq}{width=7cm,title=Double negation elimination}
+\begin{coqdef}{name=negbkt2}
+Lemma negbK b : ~~ (~~ b) = b.
+Proof.
+case: b.
+\end{coqdef}
+\coqrun{name=negbkt2}{ssr,negbkt2,show1,done,show2,verbose,done,qed}
+\begin{coq}{def=negbkt2}{width=6cm,title=Double negation elimination}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
@@ -465,7 +539,7 @@ $~$
 $~$
 $~$
 \end{coq}
-\begin{coqout}{width=6cm, title=Case analysis}
+\begin{coqout}{run=negbkt2;out=g1}{width=6cm, title=Case analysis}
 2 subgoals
 
   ============================
@@ -473,6 +547,7 @@ $~$
 subgoal 2 is:
  ~~ ~~ false = false
 \end{coqout}
+
 More precisely, the tactic \C{case: b} indicates the we want to
 perform a case analysis (hence the \C{case} command), on \C{b}, whose
 name follows the separator \C{:}. The \Coq{} system displays the state
@@ -487,32 +562,33 @@ observe that after this case analysis, each proof amounts to a
 reflexivity argument, in the spirit of what we did in
 section~\ref{ssec:proofcomp}. We first close the first branch:
 
-\begin{coq}{width=7cm,title=Double negation elimination}
+\begin{coq}{def=negbkt2,done}{width=6cm,title=Double negation elimination}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
   by [].
 \end{coq}
-\begin{coqout}{width=6cm, title=Case analysis}
+\begin{coqout}{run=negbkt2;out=g2}{width=6cm, title=Case analysis}
 1 subgoal
 
  ============================
    ~~ ~~ false = false
 \end{coqout}
+
 and we can see that we now have only one subgoal left, which we solve
 by the very same means.
 
-\begin{coq}{width=7cm,title=Double negation elimination}
+\begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Double negation elimination}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
   by [].
 by [].
-(* Qed. *)
+Qed.
 \end{coq}
-\begin{coqout}{width=6cm, title=Case analysis}
+\begin{coqout}{run=negbkt2}{width=6cm, title=Case analysis}
 No more subgoals.
-$~$
+negbK is defined
 $~$
 $~$
 $~$
@@ -568,11 +644,11 @@ of ``0'' and ``n'' is chosen to recall to the user if the neutral element
 % To get a better feeling on how lemmas are named let's see some other
 % lemmas already proved for us.
 
-% \begin{coq}{width=5cm,title=Lemmas of the library}
+% \begin{coq}{}{width=5cm,title=Lemmas of the library}
 % Check add0n.
 % Check addnC.
 % \end{coq}
-% \begin{coqout}{title=Response,width=7cm}
+% \begin{coqout}{}{title=Response,width=7cm}
 % add0n : forall n : nat, 0 + n = n
 % addnC : forall n m : nat, n + m = m + n
 % \end{coqout}
@@ -604,7 +680,7 @@ consistency in their stating.  Indeed the real statement of
 name of the addition operation and \C{commutative} is the
 following macro.
 
-\begin{coq}{title=Macro for stating commutativity (suffix ``C'')}
+\begin{coq}{name=macro}{title=Macro for stating commutativity (suffix ``C'')}
 Definition commutative op := forall x y, op x y = op y x.
 \end{coq}
 
@@ -630,614 +706,614 @@ to type when writing a proof.\marginpar{this is a mantra somewhat}
 END OF THE REVISED ORGANIZATION.
 %%%--------------- oldies
 
-\subsection{Stating and proving an equality}
-
-The \C{by} terminator is systematically used to prefix any proof sentence
-that terminates a goal.  A proof sentence ends with a dot, and can
-combine more than one proof command via the semi colon punctuation,
-again more examples will follow.
-The use of \C{by} is not limited to asserting no goals are left,
-but is also used to close goals by trivial means.  The notion of triviality
-is an important point we will discuss many times, for now lets just
-say it is extensible by the user and that it includes reflexivity.
-Hence the previous proof can be written as \C{by [].} where \C{[]}
-denotes the empty list of proof commands.
-
-\begin{coq}{title=Same proof}
-Lemma my_first_lemma : 3 = 3.
-Proof. by []. Qed.
-\end{coq}
-
-The \C{Qed} keyword terminates the proofs, checks it, and adds to
-the library the new lemma.  We can hence access
-
-Given that our first lemma is now part of the library as the result
-of the \C{Qed} command we can access it.
-\marginnote{should we use About ?}
-
-\begin{coq}{width=6cm,title=Printing a lemma statement}
-Check my_first_lemma.
-\end{coq}
-\begin{coqout}{title=Response,width=6cm}
-my_first_lemma : 3 = 3
-\end{coqout}
-
-Now that we are satisfied with the statement, we llok into proving it.
-At the current stage we need to use the two already existing
-lemmas \C{add0n} and \C{addnC} and the fact that the equality predicate
-is substitutive: given an equation we can replace any instance of
-its left hand side with the corresponding instance of the right hand side.
-
-The command is called rewrite, and its argument its called rule.
-
-\begin{coq}{title=Pedestrian proof}
-rewrite add0n.
-rewrite addnC.
-by [].
-Qed.
-\end{coq}
-
-\begin{coqout}{title=Response line 1,width=6cm}
-1 subgoal
-
-  a, b : nat
-  ============================
-   a + b = b + a
-\end{coqout}
-\begin{coqout}{title=Response line 2,width=6cm}
-1 subgoal
-
-  a, b : nat
-  ============================
-   b + a = b + a
-\end{coqout}
-
-Explain the job of instantiation rewrite does: picks \C{(a + b)} for
-\C{n} in \C{add0n} and picks \C{a} for \C{n} and \C{b} for \C{m} in
-\C{addnC}.  Explain it is guided by the head symbol \C{+} and traverses
-the goal left to right.  Define "pattern".
-
-\begin{coq}{width=4cm,title=The new lemma}
-Check add0nmC.
-\end{coq}
-\begin{coqout}{title=Response,width=8cm}
-add0nmC : forall a b : nat, 0 + (a + b) = b + a.
-\end{coqout}
-
-The rewrite proof command is very recurrent, hence a shorter form
-using multiple rules.
-
-\begin{coq}{title=More compact proof}
-Lemma add0nmC a b : 0 + (a + b) = b + a.
-Proof. by rewrite add0n addnC. Qed.
-\end{coq}
-
-Note that the equations are used in order, e.g. the script
-
-\begin{coq}{title=Wrong proof}
-Lemma add0nmC_bad a b : 0 + (a + b) = b + a.
-Proof. by rewrite addnC add0n. Qed.
-\end{coq}
-
-Fails because \C{addnC} flips \C{0} with \C{(a + b)}, then
-\C{add0n} finds no matching sub term.  In any case the proof
-is wrong, commutativity has to be employed to flip \C{a} and \C{b},
-or \C{b} and \C{a}, but not \C{0}.  If one wants to keep the rules
-in that order he needs to drive \Coq{} by better specifying the
-pattern he infers from \C{addnC}.
-
-\begin{coq}{title=Rewrite pattern}
-Lemma add0nmC a b : 0 + (a + b) = b + a.
-Proof. by rewrite [a + _]addnC add0n. Qed.
-\end{coq}
-
-Explain pattern: overrides the pattern inferred.
-Explain underscore: saves space if b is large.
-
-Discuss: stating an equation (LHS is bigger).
-
-\subsection{Equality up to computation}
-
-As we said at the beginning, equality is up to computation.
-Since \C{(0 + 3)} computes to \C{3}, proving the equality among
-the two expressions is trivial.
-
-\begin{coq}{title=Computation in proofs}
-Eval compute in (0 + 3).  (* prints 3 *)
-Eval compute in (true || false).  (* prints true *)
-Lemma example3 : 0 + 3 = 3.
-Proof. by []. Qed.
-\end{coq}
-
-Indeed \C{reflexivity}, and \C{by []} as well, take computation
-into account.
-Note it also works for symbolic expressions.
-
-\begin{coq}{title=Computation in proofs}
-Lemma add0n n : 0 + n = n.
-Proof. by []. Qed.
-\end{coq}
-
-Explain addn0 is different, why, and that it will be shown later,
-when induction will be introduced.
-
-If we go back playing with the previous proof, we see that the
-last rule can be omitted.
-
-\begin{coq}{title=This also works}
-Lemma add0nm_bad a b : 0 + (a + b) = b + a.
-Proof. by rewrite [a + _]addnC. Qed.
-\end{coq}
-
-The reason is that \C{(0 + (b + a))} is equal
-to \C{(b + a)} up to computation.
-Note that add0n  is not only for free (in its proof) but
-also in its use.
-
-Maybe talk about \C{/=} here.
-
-\begin{coq}{title=This also works}
-Lemma add0nm_bad a b : 0 + (a + b) = b + a.
-Proof. by rewrite /= addnC. Qed.
-\end{coq}
-
-Note the pattern can go, since \C{/=} leaves the goal with
-no ambiguity.
-Note that, if we mind computation, the lemma is just an alias
-for \C{addnC} and hence is useless.  It may feel depressing, but
-it is actually a very important hygiene measure: only useful lemmas
-are kept, trade off between all combinations or few base blocks that
-combine well (harder in principle, requires a language that glues well).
-
-
-
-% \subsection{old}
-%
+% \subsection{Stating and proving an equality}
+% 
+% The \C{by} terminator is systematically used to prefix any proof sentence
+% that terminates a goal.  A proof sentence ends with a dot, and can
+% combine more than one proof command via the semi colon punctuation,
+% again more examples will follow.
+% The use of \C{by} is not limited to asserting no goals are left,
+% but is also used to close goals by trivial means.  The notion of triviality
+% is an important point we will discuss many times, for now lets just
+% say it is extensible by the user and that it includes reflexivity.
+% Hence the previous proof can be written as \C{by [].} where \C{[]}
+% denotes the empty list of proof commands.
+% 
+% \begin{coq}{title=Same proof}
+% Lemma my_first_lemma : 3 = 3.
+% Proof. by []. Qed.
+% \end{coq}
+% 
+% The \C{Qed} keyword terminates the proofs, checks it, and adds to
+% the library the new lemma.  We can hence access
+% 
+% Given that our first lemma is now part of the library as the result
+% of the \C{Qed} command we can access it.
+% \marginnote{should we use About ?}
+% 
+% \begin{coq}{width=6cm,title=Printing a lemma statement}
+% Check my_first_lemma.
+% \end{coq}
+% \begin{coqout}{title=Response,width=6cm}
+% my_first_lemma : 3 = 3
+% \end{coqout}
+% 
+% Now that we are satisfied with the statement, we llok into proving it.
+% At the current stage we need to use the two already existing
+% lemmas \C{add0n} and \C{addnC} and the fact that the equality predicate
+% is substitutive: given an equation we can replace any instance of
+% its left hand side with the corresponding instance of the right hand side.
+% 
+% The command is called rewrite, and its argument its called rule.
+% 
+% \begin{coq}{title=Pedestrian proof}
+% rewrite add0n.
+% rewrite addnC.
+% by [].
+% Qed.
+% \end{coq}
+% 
+% \begin{coqout}{title=Response line 1,width=6cm}
+% 1 subgoal
+% 
+%   a, b : nat
+%   ============================
+%    a + b = b + a
+% \end{coqout}
+% \begin{coqout}{title=Response line 2,width=6cm}
+% 1 subgoal
+% 
+%   a, b : nat
+%   ============================
+%    b + a = b + a
+% \end{coqout}
+% 
+% Explain the job of instantiation rewrite does: picks \C{(a + b)} for
+% \C{n} in \C{add0n} and picks \C{a} for \C{n} and \C{b} for \C{m} in
+% \C{addnC}.  Explain it is guided by the head symbol \C{+} and traverses
+% the goal left to right.  Define "pattern".
+% 
+% \begin{coq}{width=4cm,title=The new lemma}
+% Check add0nmC.
+% \end{coq}
+% \begin{coqout}{title=Response,width=8cm}
+% add0nmC : forall a b : nat, 0 + (a + b) = b + a.
+% \end{coqout}
+% 
+% The rewrite proof command is very recurrent, hence a shorter form
+% using multiple rules.
+% 
+% \begin{coq}{title=More compact proof}
+% Lemma add0nmC a b : 0 + (a + b) = b + a.
+% Proof. by rewrite add0n addnC. Qed.
+% \end{coq}
+% 
+% Note that the equations are used in order, e.g. the script
+% 
+% \begin{coq}{title=Wrong proof}
+% Lemma add0nmC_bad a b : 0 + (a + b) = b + a.
+% Proof. by rewrite addnC add0n. Qed.
+% \end{coq}
+% 
+% Fails because \C{addnC} flips \C{0} with \C{(a + b)}, then
+% \C{add0n} finds no matching sub term.  In any case the proof
+% is wrong, commutativity has to be employed to flip \C{a} and \C{b},
+% or \C{b} and \C{a}, but not \C{0}.  If one wants to keep the rules
+% in that order he needs to drive \Coq{} by better specifying the
+% pattern he infers from \C{addnC}.
+% 
+% \begin{coq}{title=Rewrite pattern}
+% Lemma add0nmC a b : 0 + (a + b) = b + a.
+% Proof. by rewrite [a + _]addnC add0n. Qed.
+% \end{coq}
+% 
+% Explain pattern: overrides the pattern inferred.
+% Explain underscore: saves space if b is large.
+% 
+% Discuss: stating an equation (LHS is bigger).
+% 
+% \subsection{Equality up to computation}
+% 
+% As we said at the beginning, equality is up to computation.
+% Since \C{(0 + 3)} computes to \C{3}, proving the equality among
+% the two expressions is trivial.
+% 
+% \begin{coq}{title=Computation in proofs}
+% Eval compute in (0 + 3).  (* prints 3 *)
+% Eval compute in (true || false).  (* prints true *)
+% Lemma example3 : 0 + 3 = 3.
+% Proof. by []. Qed.
+% \end{coq}
+% 
+% Indeed \C{reflexivity}, and \C{by []} as well, take computation
+% into account.
+% Note it also works for symbolic expressions.
+% 
+% \begin{coq}{title=Computation in proofs}
+% Lemma add0n n : 0 + n = n.
+% Proof. by []. Qed.
+% \end{coq}
+% 
+% Explain addn0 is different, why, and that it will be shown later,
+% when induction will be introduced.
+% 
+% If we go back playing with the previous proof, we see that the
+% last rule can be omitted.
+% 
+% \begin{coq}{title=This also works}
+% Lemma add0nm_bad a b : 0 + (a + b) = b + a.
+% Proof. by rewrite [a + _]addnC. Qed.
+% \end{coq}
+% 
+% The reason is that \C{(0 + (b + a))} is equal
+% to \C{(b + a)} up to computation.
+% Note that add0n  is not only for free (in its proof) but
+% also in its use.
+% 
+% Maybe talk about \C{/=} here.
+% 
+% \begin{coq}{title=This also works}
+% Lemma add0nm_bad a b : 0 + (a + b) = b + a.
+% Proof. by rewrite /= addnC. Qed.
+% \end{coq}
+% 
+% Note the pattern can go, since \C{/=} leaves the goal with
+% no ambiguity.
+% Note that, if we mind computation, the lemma is just an alias
+% for \C{addnC} and hence is useless.  It may feel depressing, but
+% it is actually a very important hygiene measure: only useful lemmas
+% are kept, trade off between all combinations or few base blocks that
+% combine well (harder in principle, requires a language that glues well).
+% 
+% 
+% 
+% % \subsection{old}
+% %
+% % \begin{itemize}
+% % \item Coq comes with an equality prexdicate, that we see as axiomatic for the
+% % moment (in this section). It is called \C{eq} and has an infix
+% % notation \C{=}. Example: \C{Check 3 = 3}, \C{Check 3 = 4}.
+% % \item Observe that, \C{Check} just checks the well-formedness of the
+% %   statement, not its truth. Well-formedness here means that \C{=}
+% %   requires both hand-sides to be of the same type.
+% %   Example \C{Check 3 = [::4]}. Observe that statement also have a
+% %   type, called \C{Prop}.
+% % \item We can give a name to a statement, that we would like to prove
+% %   formally. Example \C{Lemma foo : 3 = 3}. Observe what happens at the
+% %   level of the interface (we start a proof).
+% % \item And now, how to prove equality statements. Observationaly, \C{=}
+% %   behaves as expected: this is trivally true because \C{=} is
+% %   reflexive.
+% % \item End of the proof, \C{Qed}.
+% % \item Now we have a theorem called \C{foo} at hand in the
+% %   environement: \C{Check foo}. We can use it but it is useless...
+% % \item In fact the libraries you load provide theorems that you can use
+% %   in your proofs. Example:  \C{Check add0n}, \C{Check addnC}. Note the
+% %   universal quantification.
+% % \item How to state lemmas like this:
+% % \C{Example toto a b : 0 + (a + b) = a + b}.
+% % \item Equality is not just reflexive, it is also substitutive. This is
+% %   implemented via the \C{rewrite} tactic, that we can use to prove
+% %   this lemma, using \C{add0n}. Note that the tactic found the right
+% %   instance of \C{add0n} to be used, with \C{(a + b)}.
+% % \item \C{Qed}, \C{Check}, observe the universal quantification.
+% % \item Rewrite steps can be chained, in order. Example:
+% % \C{Example toto a b : 0 + (a + b) = b + a}. can be proved by rewriting
+% % \C{add0n} then, \C{addnC}. Note that \C{addnC} then \C{add0n} does
+% % something different.
+% % \item In fact reflexivity is more than syntactic equality. Prove
+% % \C{3 + 1 = 4}, \C{true || false = true}. But also with variables,
+% % e.g. \C{add0n}, connect with the programs written in the previous
+% % chapters.
+% %
+% % \item More advanced forms of proofs by the \C{rewrite} tactic allow to
+% %   select a pattern and to simplify the goal for free by
+% %   computation. Hence \C{addn0} just does not need to be stated
+% %   explicitely in the proof script. Warning: simpl is a Pandora
+% %   box. This should come very early
+% %   and go with/before boolean reflection style proofs by rewriting.
+% %
+% % \item Special case of equality statements that play a pervasive role
+% %   throughout the libraries: \C{_ = true}. For instance
+% %   \C{odd (2 * x + 7) = true}. This is both a 'logical' statement,
+% %   saying that any expression \C{(2x+7)} is an odd number, and
+% %   an equation that can be rewriten during the course of a proof. Find
+% %   an example, like \C{odd (2 * x + 7) || odd (2 * x)}. rewrite and
+% %   compute.
+% %
+% % \item Now we should point the coercion, because people will search and
+% %   check.
+% % \end{itemize}
+% 
+% 
+% 
+% \mcbLEARN{case}
+% \mcbREQUIRE{}
+% \mcbPROVIDE{case, -, indentation, brute force proofs, semicolon, => after case}
+% \mcbLEVEL{1}
+% \mcbsection{Case analysis}
+% 
+% In programming inductive data is matched against to consider all
+% possible cases.  In the same way, when we reason on a program
+% whose input is symbolic, we can proceed by considering all possible
+% cases.
+% 
+% \begin{coq}{title=First De Morgan's law: pedestrian proof}
+% Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+% Proof.
+% case: a.
+% - by []
+% case: b.
+% - by [].
+% by [].
+% Qed.
+% \end{coq}
+% \begin{coqout}{title=Response line 3,width=8cm}
+% 2 subgoals
+% 
+%   b : bool
+%   ============================
+%    ~~ (true && b) = ~~ true || ~~ b
+% 
+% subgoal 2 is:
+%  ~~ (false && b) = ~~ false || ~~ b
+% \end{coqout}
+% 
+% Explain the decorator and the indentation policy.
+% Note a removed from context, substituted by true and false.
+% Note first goal computes to b=b.
+% Note second goal does not, computation blocked, we case b.
+% 
+% \begin{coqout}{title=Response line 5,width=8cm}
+% 2 subgoals
+% 
+%   ============================
+%    ~~ (false && true) = ~~ false || ~~ true
+% 
+% subgoal 2 is:
+%  ~~ (false && false) = ~~ false || ~~ false
+% \end{coqout}
+% 
+% Now all computes.  We are not satisfied, we could write
+% as the only tactic \C{case: a; case: b.}.
+% 
+% \begin{coqout}{title=Response,width=8cm}
+% 4 subgoals
+% 
+%   ============================
+%    ~~ (true && true) = ~~ true || ~~ true
+% 
+% subgoal 2 is:
+%  ~~ (true && false) = ~~ true || ~~ false
+% subgoal 3 is:
+%  ~~ (false && true) = ~~ false || ~~ true
+% subgoal 4 is:
+%  ~~ (false && false) = ~~ false || ~~ false
+% \end{coqout}
+% 
+% Explain semicolon.
+% Note that all computes. Note that this is always possible
+% for finitary data, it amounts to comprehensive testing.
+% 
+% \begin{coq}{title=First De Morgan's law}
+% Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+% Proof. by case: a; case: b. Qed.
+% \end{coq}
+% 
+% other examples, exercises, can be
+% 
+% \begin{coq}{title=possible exampels}
+% Lemma andbA : associative andb.        Proof. by do 3!case. Qed.
+% Lemma orbCA : left_commutative orb.    Proof. by do 3!case. Qed.
+% Lemma andbN b : b && ~~ b = false.     Proof. by case: b. Qed.
+% \end{coq}
+% 
+% to explain A and N suffixes, plus do iteration, plus stack top.
+% 
+% When data is not finitary, then case is not sufficient.
+% 
+% \begin{coq}{}
+% Lemma eqnxx (x : nat) : eqn x x = true.
+% Proof. case: x => [|x'].
+% \end{coq}
+% 
+% Name subterms.
+% 
+% \begin{coqout}{title=Response,width=8cm}
+%   x' : nat
+%   ============================
+%    eqn x'.+1 x'.+1 = true
+% \end{coqout}
+% 
+% But before induction we look at implication
+% 
+% \mcbLEARN{apply}
+% \mcbREQUIRE{}
+% \mcbPROVIDE{apply, ->, =>, //}
+% \mcbLEVEL{1}
+% \mcbsection{Implication and backchaining}
+% 
+% \begin{coq}{width=4cm}
+% Check @dvdn_mul.
+% \end{coq}
+% \begin{coqout}{title=Response,width=8cm}
+% dvdn_mul : forall d1 d2 m1 m2 : nat,
+%   d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
+% \end{coqout}
+% 
+% Explain implication symbol, the ambiguity with function space will
+% be explained later on.
+% 
+% \begin{coq}{}
+% Lemma stupid x : 3 * x %| 6 * x^2.
+% Proof.
+% apply: dvdn_mul.
+% - by [].
+% apply: dvdn_mulr.
+% exact: dvdnn.
+% Qed.
+% Lemma stupid2 x : 3 * x %| 6 * x^2.
+% Proof.
+% rewrite dvdn_mul // dvdn_mulr // dvdnn.
+% Qed.
+% \end{coq}
+% 
+% How do we prove this kind of lemmas
+% 
+% \begin{coq}{}
+% Lemma stupid3 x y : x %| y -> 3 * x %| 6 * y.
+% Proof.
+% move=> div_xy.
+% by apply: dvdn_mul.
+% Qed.
+% \end{coq}
+% 
+% by looks in the hyps.
+% 
+% \begin{coq}{}
+% Lemma stupid3 x y (div_xy : x %| y) : 3 * x %| 6 * y.
+% Proof. exact: dvdn_mul. Qed.
+% \end{coq}
+% 
+% equivalent syntax, uncommon.
+% 
+% Make another example working on the stack
+% 
+% \begin{coq}{}
+% Lemma andb_idl (a b : bool) : (b -> a) -> a && b = b.
+% Proof. by case: a; case: b => // ->. Qed.
+% \end{coq}
+% 
+% note // in =>, note -> in =>, note runs on 4 goals.
+% 
+% one last example with true=false in the context.
+% 
+% \section{Proofs by induction}
+% 
+% \begin{coq}{}
+% Lemma eqnxx x : eqn x x.
+% Proof.
+% elim: x=> [|x' IH].
+% rewrite /=.
+% apply: IH.
+% by [].
+% Qed.
+% Lemma eqnxx x : eqn x x.
+% Proof. by elim: x. Qed.
+% \end{coq}
+% 
+% requires induction.
+% 
+% \section{Curry-Howard}
+% 
+% Explain CH for arrows, foralls, equality and induction. Show Proof for
+% some examples of proofs.
+% 
+% First implication, start with comparing the source and target of the
+% arrows that are common to this chapter and the preceeding.
+% 
+% \begin{coq}{}
+% Inductive |*list*| (A : Type) : Type :=
+%     nil : list A | cons : A -> list A -> list A
+% 
+% list: Type -> Type
+% 
+% Definition |*is_equal_to_2*| (x : nat) : x = 2.
+% 
+% is_equal_to_2 : nat -> Prop
+% \end{coq}
+% 
+% 
+% 
+% 
+% 
+% 
+% \section{To be sorted}
+% 
+% \subsection{Universal quantification}
+% 
+% \begin{coq}{}
+% Variable A : Prop.
+% Definition toto : A -> A := fun x => x.
+% Lemma  toto : A -> A.
+%  Proof.
+%   move => x.
+%   Show Proof.
+%   apply: x.
+%  Qed.
+% \end{coq}
+% 
+% Note : \C{toto :  A -> A : Prop}
+% discuss interactive proof construction, other example with a real
+% apply that open subgoals.
+% 
+% In CH style we see a proof, where lambdas/apply work too (same tactics)
+% 
+% Specialization of an quantified lemma via application (maybe also
+% \C{move/(_ x) in H}).
+% Soft intro of the work of unification (FO) during application (infer
+% arguments of conclusion's predicate symbol \C{prime _}).
+% 
+% We should also display her  HO "predicators": commutative.  Discuss
+% order of quantification in transitive and similar, naming conventions
+% 
+% \subsection{Curry-Howard for equality proofs}
+% 
+% 
+% Show \C{rewrite -H}, plus the idea that one may want to select
+% occurrences (with simple patterns).
+% 
+% 
+% May be should we say rather early that rewriting under binders is not
+% allowed by the system.
+% 
+% \subsection{proof term for rewrite (CH)}
+% 
+% There are also proof terms for equality proofs (show \C{refl})
+% The work rewrite does is non trivial (infer P)
+% 
+% \begin{coq}{}
+% Check eq_rect (* : forall P : nat -> Prop, .... forall n, P n *)
+% \end{coq}
+% 
+% Write a proof term by hand.
+% (note that it works because of beta being part of conversion).
+% See that rewrite does the verbose part for you (infer P).
+% 
+% An example of ambiguous P from above, driving rewrite means driving the
+% synthesis of P.
+% 
+% \subsection{other eq related tactics}
+% 
+% Congr, injection \C{[= ]}, discriminate (//), \C{->}.
+% 
+% 
+% \subsection{proof term for induction}
+% 
+% Again show that it boils down to infer P
+% 
+% 
+% \subsection{proofs by induction in their generality}
+% 
+% Show that even for commutativity of addition one needs to
+% "load the goal" (or to help synthesize a more general P).
+% 
+% 
+% \section{Exercises (explained)}
+% 
+% xor-odd, then cancel encode decode, or something on primes.
+% 
+% Take the occasion to present last/first, bullets, by, syntaxes for
+% \C{=> [|IH x xs]} after a case.
+% 
+% 
+% \section{Notes}
+% 
+% % From calculability to proofs, hence the CC, and the fact that
+% % reasoning principles without a computational content become axioms.
+% %
+% % This is a non technical chapter and message should be:
+% % \begin{itemize}
+% % \item instantiation of a universal statement is application (also the pair)
+% % \item Excluded middle is not available by default (choice?)
+% % \item Conversion as a pervasive indistinguishably, what inside
+% %   (beta, definition unfolding,...)
+% % \item Dependent types: eq, sigma (which example?)
+% % \end{itemize}
+% %
+% % One options is: avoid relating type theory and other logics. We say:
+% % we have a formal game where the basic elements are programs/functions
+% % that come with types to avoid confusion. full stop. (no relation with
+% % proof theory, set theory). maybe mention that roots are in calculability (hence
+% % the choice to pick functions as primitive and not sets). This is lucky because
+% % (computable) functions are today executable by a computer.  Still not all
+% % concepts are "computable" hence some principles are problematic: EM,.... we
+% % mainly stay in the lucky fragment (again no propaganda on intuitionistic logic,
+% % constructive math; just a mention).
+% %
+% 
+% running topic: statements and their proofs. This chapter provides a gentle
+% introduction to the implicative fragment of the logic and to the
+% interactive construction of formal proofs. The reference to
+% Curry-Howard should come as late as possible. It should indeed be
+% possible to present a substantial amount of example and intuitions
+% before explaining this. Specially if we carefully use the automated
+% introduction of variables bound before the semi-column. At the tactic
+% level, we should be able to avoid the need for Curry Howard related
+% constructions like \C{apply: (H x)} in the first part of the chapter.
+% 
 % \begin{itemize}
-% \item Coq comes with an equality prexdicate, that we see as axiomatic for the
-% moment (in this section). It is called \C{eq} and has an infix
-% notation \C{=}. Example: \C{Check 3 = 3}, \C{Check 3 = 4}.
-% \item Observe that, \C{Check} just checks the well-formedness of the
-%   statement, not its truth. Well-formedness here means that \C{=}
-%   requires both hand-sides to be of the same type.
-%   Example \C{Check 3 = [::4]}. Observe that statement also have a
-%   type, called \C{Prop}.
-% \item We can give a name to a statement, that we would like to prove
-%   formally. Example \C{Lemma foo : 3 = 3}. Observe what happens at the
-%   level of the interface (we start a proof).
-% \item And now, how to prove equality statements. Observationaly, \C{=}
-%   behaves as expected: this is trivally true because \C{=} is
-%   reflexive.
-% \item End of the proof, \C{Qed}.
-% \item Now we have a theorem called \C{foo} at hand in the
-%   environement: \C{Check foo}. We can use it but it is useless...
-% \item In fact the libraries you load provide theorems that you can use
-%   in your proofs. Example:  \C{Check add0n}, \C{Check addnC}. Note the
-%   universal quantification.
-% \item How to state lemmas like this:
-% \C{Example toto a b : 0 + (a + b) = a + b}.
-% \item Equality is not just reflexive, it is also substitutive. This is
-%   implemented via the \C{rewrite} tactic, that we can use to prove
-%   this lemma, using \C{add0n}. Note that the tactic found the right
-%   instance of \C{add0n} to be used, with \C{(a + b)}.
-% \item \C{Qed}, \C{Check}, observe the universal quantification.
-% \item Rewrite steps can be chained, in order. Example:
-% \C{Example toto a b : 0 + (a + b) = b + a}. can be proved by rewriting
-% \C{add0n} then, \C{addnC}. Note that \C{addnC} then \C{add0n} does
-% something different.
-% \item In fact reflexivity is more than syntactic equality. Prove
-% \C{3 + 1 = 4}, \C{true || false = true}. But also with variables,
-% e.g. \C{add0n}, connect with the programs written in the previous
-% chapters.
-%
-% \item More advanced forms of proofs by the \C{rewrite} tactic allow to
-%   select a pattern and to simplify the goal for free by
-%   computation. Hence \C{addn0} just does not need to be stated
-%   explicitely in the proof script. Warning: simpl is a Pandora
-%   box. This should come very early
-%   and go with/before boolean reflection style proofs by rewriting.
-%
-% \item Special case of equality statements that play a pervasive role
-%   throughout the libraries: \C{_ = true}. For instance
-%   \C{odd (2 * x + 7) = true}. This is both a 'logical' statement,
-%   saying that any expression \C{(2x+7)} is an odd number, and
-%   an equation that can be rewriten during the course of a proof. Find
-%   an example, like \C{odd (2 * x + 7) || odd (2 * x)}. rewrite and
+% \item \C{Prop} as the type of statements
+% \item forall-lambda, predicates as functions to Prop.  The difference with the forall in the previous chapter is that the type the var ranges in is not "Type" but a data type like nat.
+% \item examples with implicative predicate logic, modus ponens
+% \item definition = lemma (proofs of implications are lambdas-app)
+% \item tactics to generate the terms in a less pedestrian way (move, apply)
+% \item if one calls Show Proof in the middle he sees one is building
+% 	the proof term incrementally, as one draws a proof tree (in CH style)
+% \end{itemize}
+% 
+% Now we make the point of Qed, the kernel checks the term produced via
+% tactics (or hand-written).
+% 
+% Examples of predicates: equality
+% \begin{itemize}
+% \item not to talk about indexes of inductive families we introduce eq as
+% 	an axiom and refl as another axiom to prove eq and we insist on
+% 	conversion
+% \item examples, among which a beta expansion (to help later on with elimination)
+% \item now, what are the proofs of an equality? maybe we start with rewrite
+% \item examples are symmetry, transitivity
+% \item then we give the elimination principle as an axiom, and explain the
+% 	work rewrite does in synthesizing the predicate
+% \item the job of rewrite is not trivial nor un-ambiguous: to drive the synthesis show occurrence selection (later on we see the same problem for elim)
+% \item other exercise on other eq related "commands" like discriminate, injection arrows, congr.
+% \end{itemize}
+% 
+% Showing universal properties on inductive data
+% \begin{itemize}
+% \item first enouce some lemmas on concrete examples, like not true = false,
+% 	then try to say "froall b : bool, ...".
+% \item first on enumerated types (bool) via case
+% \item them on nat via case and elim
+% \item then show the proof term as an application of nat-rect, again the problem
+% 	is to write down P and elim does that.
+% \item here an additional problem: loading the goal before using it to generate P
+% \end{itemize}
+% 
+% We should manage to prove stuff on the concepts defined in chapter 1,
+% notably \C{odd(a+b) = xor (odd a) (odd b)}.  But before you need lemmas
+% on "odd (S x) = not (odd x)", to make the point that the proof is trivial with
+% a library that has all the needed facts.  Also the base case goes away by ssr (in general spell out where the computation saves work).
+% 
+% Comparison with other approaches:
+% \begin{itemize}
+% \item Compare an axiomatic, equational presentation of arithmetic to
+%   its formalization as an inductive type with functions that
 %   compute.
-%
-% \item Now we should point the coercion, because people will search and
-%   check.
 % \end{itemize}
-
-
-
-\mcbLEARN{case}
-\mcbREQUIRE{}
-\mcbPROVIDE{case, -, indentation, brute force proofs, semicolon, => after case}
-\mcbLEVEL{1}
-\mcbsection{Case analysis}
-
-In programming inductive data is matched against to consider all
-possible cases.  In the same way, when we reason on a program
-whose input is symbolic, we can proceed by considering all possible
-cases.
-
-\begin{coq}{title=First De Morgan's law: pedestrian proof}
-Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
-Proof.
-case: a.
-- by []
-case: b.
-- by [].
-by [].
-Qed.
-\end{coq}
-\begin{coqout}{title=Response line 3,width=8cm}
-2 subgoals
-
-  b : bool
-  ============================
-   ~~ (true && b) = ~~ true || ~~ b
-
-subgoal 2 is:
- ~~ (false && b) = ~~ false || ~~ b
-\end{coqout}
-
-Explain the decorator and the indentation policy.
-Note a removed from context, substituted by true and false.
-Note first goal computes to b=b.
-Note second goal does not, computation blocked, we case b.
-
-\begin{coqout}{title=Response line 5,width=8cm}
-2 subgoals
-
-  ============================
-   ~~ (false && true) = ~~ false || ~~ true
-
-subgoal 2 is:
- ~~ (false && false) = ~~ false || ~~ false
-\end{coqout}
-
-Now all computes.  We are not satisfied, we could write
-as the only tactic \C{case: a; case: b.}.
-
-\begin{coqout}{title=Response,width=8cm}
-4 subgoals
-
-  ============================
-   ~~ (true && true) = ~~ true || ~~ true
-
-subgoal 2 is:
- ~~ (true && false) = ~~ true || ~~ false
-subgoal 3 is:
- ~~ (false && true) = ~~ false || ~~ true
-subgoal 4 is:
- ~~ (false && false) = ~~ false || ~~ false
-\end{coqout}
-
-Explain semicolon.
-Note that all computes. Note that this is always possible
-for finitary data, it amounts to comprehensive testing.
-
-\begin{coq}{title=First De Morgan's law}
-Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
-Proof. by case: a; case: b. Qed.
-\end{coq}
-
-other examples, exercises, can be
-
-\begin{coq}{title=possible exampels}
-Lemma andbA : associative andb.        Proof. by do 3!case. Qed.
-Lemma orbCA : left_commutative orb.    Proof. by do 3!case. Qed.
-Lemma andbN b : b && ~~ b = false.     Proof. by case: b. Qed.
-\end{coq}
-
-to explain A and N suffixes, plus do iteration, plus stack top.
-
-When data is not finitary, then case is not sufficient.
-
-\begin{coq}{}
-Lemma eqnxx (x : nat) : eqn x x = true.
-Proof. case: x => [|x'].
-\end{coq}
-
-Name subterms.
-
-\begin{coqout}{title=Response,width=8cm}
-  x' : nat
-  ============================
-   eqn x'.+1 x'.+1 = true
-\end{coqout}
-
-But before induction we look at implication
-
-\mcbLEARN{apply}
-\mcbREQUIRE{}
-\mcbPROVIDE{apply, ->, =>, //}
-\mcbLEVEL{1}
-\mcbsection{Implication and backchaining}
-
-\begin{coq}{width=4cm}
-Check @dvdn_mul.
-\end{coq}
-\begin{coqout}{title=Response,width=8cm}
-dvdn_mul : forall d1 d2 m1 m2 : nat,
-  d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
-\end{coqout}
-
-Explain implication symbol, the ambiguity with function space will
-be explained later on.
-
-\begin{coq}{}
-Lemma stupid x : 3 * x %| 6 * x^2.
-Proof.
-apply: dvdn_mul.
-- by [].
-apply: dvdn_mulr.
-exact: dvdnn.
-Qed.
-Lemma stupid2 x : 3 * x %| 6 * x^2.
-Proof.
-rewrite dvdn_mul // dvdn_mulr // dvdnn.
-Qed.
-\end{coq}
-
-How do we prove this kind of lemmas
-
-\begin{coq}{}
-Lemma stupid3 x y : x %| y -> 3 * x %| 6 * y.
-Proof.
-move=> div_xy.
-by apply: dvdn_mul.
-Qed.
-\end{coq}
-
-by looks in the hyps.
-
-\begin{coq}{}
-Lemma stupid3 x y (div_xy : x %| y) : 3 * x %| 6 * y.
-Proof. exact: dvdn_mul. Qed.
-\end{coq}
-
-equivalent syntax, uncommon.
-
-Make another example working on the stack
-
-\begin{coq}{}
-Lemma andb_idl (a b : bool) : (b -> a) -> a && b = b.
-Proof. by case: a; case: b => // ->. Qed.
-\end{coq}
-
-note // in =>, note -> in =>, note runs on 4 goals.
-
-one last example with true=false in the context.
-
-\section{Proofs by induction}
-
-\begin{coq}{}
-Lemma eqnxx x : eqn x x.
-Proof.
-elim: x=> [|x' IH].
-rewrite /=.
-apply: IH.
-by [].
-Qed.
-Lemma eqnxx x : eqn x x.
-Proof. by elim: x. Qed.
-\end{coq}
-
-requires induction.
-
-\section{Curry-Howard}
-
-Explain CH for arrows, foralls, equality and induction. Show Proof for
-some examples of proofs.
-
-First implication, start with comparing the source and target of the
-arrows that are common to this chapter and the preceeding.
-
-\begin{coq}{}
-Inductive |*list*| (A : Type) : Type :=
-    nil : list A | cons : A -> list A -> list A
-
-list: Type -> Type
-
-Definition |*is_equal_to_2*| (x : nat) : x = 2.
-
-is_equal_to_2 : nat -> Prop
-\end{coq}
-
-
-
-
-
-
-\section{To be sorted}
-
-\subsection{Universal quantification}
-
-\begin{coq}{}
-Variable A : Prop.
-Definition toto : A -> A := fun x => x.
-Lemma  toto : A -> A.
- Proof.
-  move => x.
-  Show Proof.
-  apply: x.
- Qed.
-\end{coq}
-
-Note : \C{toto :  A -> A : Prop}
-discuss interactive proof construction, other example with a real
-apply that open subgoals.
-
-In CH style we see a proof, where lambdas/apply work too (same tactics)
-
-Specialization of an quantified lemma via application (maybe also
-\C{move/(_ x) in H}).
-Soft intro of the work of unification (FO) during application (infer
-arguments of conclusion's predicate symbol \C{prime _}).
-
-We should also display her  HO "predicators": commutative.  Discuss
-order of quantification in transitive and similar, naming conventions
-
-\subsection{Curry-Howard for equality proofs}
-
-
-Show \C{rewrite -H}, plus the idea that one may want to select
-occurrences (with simple patterns).
-
-
-May be should we say rather early that rewriting under binders is not
-allowed by the system.
-
-\subsection{proof term for rewrite (CH)}
-
-There are also proof terms for equality proofs (show \C{refl})
-The work rewrite does is non trivial (infer P)
-
-\begin{coq}{}
-Check eq_rect (* : forall P : nat -> Prop, .... forall n, P n *)
-\end{coq}
-
-Write a proof term by hand.
-(note that it works because of beta being part of conversion).
-See that rewrite does the verbose part for you (infer P).
-
-An example of ambiguous P from above, driving rewrite means driving the
-synthesis of P.
-
-\subsection{other eq related tactics}
-
-Congr, injection \C{[= ]}, discriminate (//), \C{->}.
-
-
-\subsection{proof term for induction}
-
-Again show that it boils down to infer P
-
-
-\subsection{proofs by induction in their generality}
-
-Show that even for commutativity of addition one needs to
-"load the goal" (or to help synthesize a more general P).
-
-
-\section{Exercises (explained)}
-
-xor-odd, then cancel encode decode, or something on primes.
-
-Take the occasion to present last/first, bullets, by, syntaxes for
-\C{=> [|IH x xs]} after a case.
-
-
-\section{Notes}
-
-% From calculability to proofs, hence the CC, and the fact that
-% reasoning principles without a computational content become axioms.
-%
-% This is a non technical chapter and message should be:
-% \begin{itemize}
-% \item instantiation of a universal statement is application (also the pair)
-% \item Excluded middle is not available by default (choice?)
-% \item Conversion as a pervasive indistinguishably, what inside
-%   (beta, definition unfolding,...)
-% \item Dependent types: eq, sigma (which example?)
-% \end{itemize}
-%
-% One options is: avoid relating type theory and other logics. We say:
-% we have a formal game where the basic elements are programs/functions
-% that come with types to avoid confusion. full stop. (no relation with
-% proof theory, set theory). maybe mention that roots are in calculability (hence
-% the choice to pick functions as primitive and not sets). This is lucky because
-% (computable) functions are today executable by a computer.  Still not all
-% concepts are "computable" hence some principles are problematic: EM,.... we
-% mainly stay in the lucky fragment (again no propaganda on intuitionistic logic,
-% constructive math; just a mention).
-%
-
-running topic: statements and their proofs. This chapter provides a gentle
-introduction to the implicative fragment of the logic and to the
-interactive construction of formal proofs. The reference to
-Curry-Howard should come as late as possible. It should indeed be
-possible to present a substantial amount of example and intuitions
-before explaining this. Specially if we carefully use the automated
-introduction of variables bound before the semi-column. At the tactic
-level, we should be able to avoid the need for Curry Howard related
-constructions like \C{apply: (H x)} in the first part of the chapter.
-
-\begin{itemize}
-\item \C{Prop} as the type of statements
-\item forall-lambda, predicates as functions to Prop.  The difference with the forall in the previous chapter is that the type the var ranges in is not "Type" but a data type like nat.
-\item examples with implicative predicate logic, modus ponens
-\item definition = lemma (proofs of implications are lambdas-app)
-\item tactics to generate the terms in a less pedestrian way (move, apply)
-\item if one calls Show Proof in the middle he sees one is building
-	the proof term incrementally, as one draws a proof tree (in CH style)
-\end{itemize}
-
-Now we make the point of Qed, the kernel checks the term produced via
-tactics (or hand-written).
-
-Examples of predicates: equality
-\begin{itemize}
-\item not to talk about indexes of inductive families we introduce eq as
-	an axiom and refl as another axiom to prove eq and we insist on
-	conversion
-\item examples, among which a beta expansion (to help later on with elimination)
-\item now, what are the proofs of an equality? maybe we start with rewrite
-\item examples are symmetry, transitivity
-\item then we give the elimination principle as an axiom, and explain the
-	work rewrite does in synthesizing the predicate
-\item the job of rewrite is not trivial nor un-ambiguous: to drive the synthesis show occurrence selection (later on we see the same problem for elim)
-\item other exercise on other eq related "commands" like discriminate, injection arrows, congr.
-\end{itemize}
-
-Showing universal properties on inductive data
-\begin{itemize}
-\item first enouce some lemmas on concrete examples, like not true = false,
-	then try to say "froall b : bool, ...".
-\item first on enumerated types (bool) via case
-\item them on nat via case and elim
-\item then show the proof term as an application of nat-rect, again the problem
-	is to write down P and elim does that.
-\item here an additional problem: loading the goal before using it to generate P
-\end{itemize}
-
-We should manage to prove stuff on the concepts defined in chapter 1,
-notably \C{odd(a+b) = xor (odd a) (odd b)}.  But before you need lemmas
-on "odd (S x) = not (odd x)", to make the point that the proof is trivial with
-a library that has all the needed facts.  Also the base case goes away by ssr (in general spell out where the computation saves work).
-
-Comparison with other approaches:
-\begin{itemize}
-\item Compare an axiomatic, equational presentation of arithmetic to
-  its formalization as an inductive type with functions that
-  compute.
-\end{itemize}
-
-
-Another example is set-nth of rcons as done by Florent Hivert, that has not
-developed the theory of set-nth with cat, and hence messes up the proof
-that gets shorter if one does the homework.
-
-Another example could be a proof that requires the induction principle
-on nat that (strong/course of values induction).
-
-A maybe good example that forces you to do patterns or occ numbers and explain
-that 2  contains syntactically 0 is the proof that code/decode cancel (in
-choice).
-
-We lack example with a mathematical interest, maybe arithmetic is sufficient like binomial.v.
-
-We need also /= and hence Arguments simple never (and we try to omit nosimpl).
-Maybe we should document that nosimpl has been superseeded by
-the option of Arguments in the manual.
-Let say that controlling reduction is an important topic when you
-do ssr style.
-
-In this chapter we present several features of the proof language, but it it is
-not about the proof language itself (reference manual). What one adds to the
-reference manual here is an example of usage in the right context of the
-commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
-discuss all the matching discipline... nor the most advanced syntaxes)
+% 
+% 
+% Another example is set-nth of rcons as done by Florent Hivert, that has not
+% developed the theory of set-nth with cat, and hence messes up the proof
+% that gets shorter if one does the homework.
+% 
+% Another example could be a proof that requires the induction principle
+% on nat that (strong/course of values induction).
+% 
+% A maybe good example that forces you to do patterns or occ numbers and explain
+% that 2  contains syntactically 0 is the proof that code/decode cancel (in
+% choice).
+% 
+% We lack example with a mathematical interest, maybe arithmetic is sufficient like binomial.v.
+% 
+% We need also /= and hence Arguments simple never (and we try to omit nosimpl).
+% Maybe we should document that nosimpl has been superseeded by
+% the option of Arguments in the manual.
+% Let say that controlling reduction is an important topic when you
+% do ssr style.
+% 
+% In this chapter we present several features of the proof language, but it it is
+% not about the proof language itself (reference manual). What one adds to the
+% reference manual here is an example of usage in the right context of the
+% commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
+% discuss all the matching discipline... nor the most advanced syntaxes)

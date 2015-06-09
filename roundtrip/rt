@@ -1,4 +1,4 @@
-#!/usr/bin/lua5.1
+#!/usr/bin/lua5.2
 
 local options = {
   coqc = "coqc",
@@ -27,18 +27,22 @@ snippets = {}
 
 function def(opts,code)
 	local name = assert(opts.name,"def command with no name option")
-	assert(not(snippets[name]),"Snippet named "..opts.name.." already defined")
-	snippets[name]=code..'\n'
+	assert(not(snippets[name]),
+	  "Snippet named "..opts.name.." already defined at "..
+		  (snippets[name] or { line ="" }).line)
+	--print('snippet '..name,code)
+	snippets[name]={ code = code..'\n', line = opts.line }
 end
 
 runs = {}
 
 function run(opts,snips)
 	local name = assert(opts.name,"A run must have a name")
+	local fail = opts.fail
 	local opts = opts.opts or ""
 
 	assert(not(runs[name]),"Two runs named "..name)
-	runs[#runs+1]= { name = name, opts = opts, snips = snips }
+	runs[#runs+1]= { name = name, opts = opts, snips = snips, fail = fail }
 	runs[name]=true
 end
 
@@ -46,6 +50,7 @@ function exec(run)
 	local opts = run.opts
 	local snips = run.snips
 	local name = run.name
+	local fails = run.fail
 	local seen = {}
 	function redirect(data,prefix)
     return (data:gsub('Redirect (%b"")',function(n)
@@ -64,17 +69,28 @@ function exec(run)
   tmp:write('(* '..cmdline..' *)')
 	for s in snips:gmatch('[^,][^,]*') do
 		tmp:write('(* '..s..' *)')
-	  tmp:write(redirect(assert(snippets[s],"No snippet named "..s),prefix..'_'))
+	  tmp:write(redirect(assert(snippets[s],"No snippet named "..s).code,prefix..'_'))
+		snippets[s].used=true
 	end
 	tmp:close()
 
-	print("Running: " .. cmdline)
+	print("Executing run " .. name..' ('..snips..')')
 	io.flush(io.stdout)
-	assert(os.execute(cmdline))
+	local _,_,rc = os.execute(cmdline)
+	if rc ~= 0 and not fails then
+		print('Execution of run '..name..' ('..snips..') failed:')
+		os.execute('tail ' .. runoname)
+		print()
+	end
+	if rc == 0 and fails then
+		print('Execution of run '..name..' ('..snips..') succeeded:')
+		os.execute('tail ' .. runoname)
+		print()
+	end
 end
 
 function strip_space(s)
-  return s:gsub('%s%s*',' '):gsub('^%s*',''):gsub('%s*$','')
+  return s:gsub('%s%s*',' '):gsub('^%s*',''):gsub('%$~%$',''):gsub('%s*$','')
 end
 
 function eq_up_to(a,b,i,j)
@@ -97,7 +113,8 @@ end
 
 function compare(opts, real, expected, name)
   local clean = strip_space(real:gsub('Redirect %b""',''):gsub('Show.','')
-		:gsub('File[^:]-:',''))
+		:gsub('File[^:]-:',''):gsub('Set Printing [^%s]+%.',''))
+	clean = clean:gsub('The command has indeed failed with message','Error')
 	local exp = strip_space(expected)
 	if eq_up_to(clean,exp) then return end
 	local tmp1 = prefix..'compare_real'
@@ -119,13 +136,15 @@ end
 outs = {}
 
 function out(opts, expected)
-  outs[#outs+1] = { opts = opts, expected = expected }
+  outs[#outs+1] = { opts = opts, expected = expected, line=opts.line }
 end
 
 function check_out(r)
 	local opts = r.opts
+	local line = r.line
 	local expected = r.expected
-	local run = assert(opts.run,"Missing run=name to out command")
+	local run = assert(opts.run,line.."Missing run=name to out command")
+	assert(runs[run],"Run " .. run .. " not defined (but its output is used)")
 
 	local outname = ""
 	if opts.out then
@@ -134,16 +153,17 @@ function check_out(r)
 		outname = prefix..run..'.txt'
 	end
 
-	local handle = assert(io.open(outname,'r'))
+	local handle = assert(io.open(outname,'r'),
+	   "Unable to open "..outname.." (part of run "..run..")")
 	local data = handle:read('*a')
 
-	compare(opts, data, expected, 'in output file: '..outname)
+	compare(opts,data,expected,'in output of run '..run..' (file '..outname..')')
 end
 
 prts = {}
 
 function prt(opts, expected)
-  prts[#prts+1] = { opts = opts, expected = expected }
+  prts[#prts+1] = { opts = opts, expected = expected, line = opts.line }
 	if opts.name then
 		def(opts, expected)
 	  if not opts.def then opts.def = opts.name end
@@ -155,9 +175,10 @@ function check_prt(r)
 	local expected = r.expected
 	local data = ""
 	for s in assert(opts.def,"prt needs a def"):gmatch('[^,][^,]*') do
-	  data = data .. snippets[s]
+		assert(snippets[s],r.line.."no snippet called "..s)
+	  data = data .. snippets[s].code
 	end
-  compare(opts, data, expected, 'in snippets: '..opts.def)
+  compare(opts, data, expected, 'in input snippets at '..r.line..opts.def)
 end
 
 function is_comment(s)
@@ -166,13 +187,15 @@ function is_comment(s)
 end
 
 function parse(...)
-		local cmd = select(1,...)
+		local cmd, line = select(1,...) , select(4,...) or ""
 		assert(_G[cmd],"No command "..cmd)
-		local opts = {}
+		--print("parsed "..cmd.." at "..line)
+		local opts = { line = line }
 		for k,v in select(2,...):sub(2,-2):gmatch('%s*([^;=]*)%s*=?([^;]*)%s*') do
 			opts[k] = v or true
 		end
-		_G[cmd](opts, select(3,...):sub(2,-2))
+		local arg = select(3,...):sub(2,-2)
+		xpcall(function() _G[cmd](opts, arg) end, function(e) print(line .. e) end)
 end
 
 function parse_env(env,data)
@@ -189,16 +212,19 @@ function parse_env(env,data)
 			if is_comment(comment) then
 				i = start
       else
-  		  local stop, very_end = data:find('\\end{'..envname..'}',i)
+  		  local stop, very_end = data:find('\\end{'..envname..'}',start)
   			assert(stop,
   			  line(start).."no \\end{"..envname.."}")
+				--print(i,start,stop,very_end)
   			local extra = "(%b{})"
   			if env == "def" then extra = "()" end -- no extra arg
     	  local args, _, contents =
   		    data:sub(start+1,stop-1):match('^(%b{})'..extra..'(.*)$')
-  			assert(args and contents,
+  			assert(args,
   			  line(start).."bad syntax after \\begin{"..envname.."}")
-    		parse(env, args, "{"..contents.."}")
+  			assert(contents,
+  			  line(start).."bad syntax after \\begin{"..envname.."}{"..args.."}")
+    		parse(env, args, "{"..contents.."}",line(start))
     	  i = very_end
       end
 	  else
@@ -213,7 +239,7 @@ function parse_line(env,data)
 	if env == "def" or env == "run" then extra = "()" end -- no extra arg
   data:gsub('\n([^\n]*)\\'..envname..'(%b{})'..extra..'(%b{})',
 		function(comment, arg, _, data)
-			if not(is_comment(comment)) then parse(env, arg, data) end
+			if not(is_comment(comment)) then parse(env, arg, data, "?") end
 		end)
 end
 
@@ -252,12 +278,14 @@ function main()
   	parse_env('out',data)
   	parse_env('prt',data)
   	
-  	for _,r in ipairs(runs) do exec(r) end
+  	for i = #runs,1,-1 do exec(runs[i]) end
   	for _,r in ipairs(outs) do check_out(r) end
   	for _,r in ipairs(prts) do check_prt(r) end
+		for n,s in pairs(snippets) do
+		  if not s.used then print("Warning: untested snippet "..n) end
+	  end
   end
 end
-
-xpcall(main,function(s) print((s:gsub('^[^ ]*',''))) end)
+main()
 
 -- vim:set ts=2:

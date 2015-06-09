@@ -1,15 +1,60 @@
 roundtrip
 =========
 
+A dirty hack to run Coq on the verbatim code in the book.
+
 Principles:
-- you can compile the tex without Coq, so all the expected output is there,
+-----------
+
+- You can compile the tex without Coq, so all the expected output is there,
   in the tex
-- you can reuse snippets behind the scenes (like Require Import ....)
+- You can reuse snippets behind the scenes (like Require Import ....)
 
 Commands:
-- you can *define* a *snippet* in your tex (ignored by tex)
-- you can *define* a Coq *run* on a combination of snippets (ignored by tex)
-- you can *print* a cleaned up version of a *snippet* (printed by tex) asserting
+---------
+
+- You can *define* a *snippet* in your tex (ignored by tex)
+
+  \begin{coqdef}{name=snippetname} ... \end{coqdef}
+
+- You can *define* a Coq *run* on a combination of snippets (ignored by tex)
+
+  \coqrun{name=nameoftherun}{snip1,snip2,snip3}
+
+  A run that is expected to fail: \coqrun{name=r1;fail}{...}
+  A run that with extra Coq flags: \coqrun{name=r1;opts=-verbose}{...}
+
+- You can *print* a cleaned up version of a *snippet* (printed by tex) asserting
   it is equal to a more "instrumented" snippet
-- you can *print* a cleaned up version of the *output* of Coq (printed by tex)
+
+  \begin{coq}{def=snip1,snip2} somthing like snip1 + snip2 \end{coq}
+
+  A frequent exception is when a print is equal to a def.  In such case you
+  can omit the coqdef block and name directly the coq block as in
+
+  \begin{coq}{name=snip} snip code \end{coq}
+
+- You can *print* a cleaned up version of the *output* of Coq (printed by tex)
   asserting it is equal the real one
+
+  \begin{coqout}{run=nameoftherun} expected output \end{coqout}
+
+  If the run is running code containing 'Redirect "foo" Show.' then
+  one can select this specific output with
+
+  \begin{coqout}{run=nameoftherun;out=foo} expected output \end{coqout}
+
+Comparison between actual and expected output/snippet is up to spaces
+and '...' that is a wild card to be used in the expected output/snippet.
+
+Example:
+--------
+
+  \begin{coqdef}{name=ssr} Require Import ssreflect eqtype ssrnat. \end{coqdef}
+
+  \begin{coq}{name=check33}{title=my first check} Check 3 == 3. \end{coq}
+
+  \coqrun{name=run1}{ssr,check33}
+
+  \begin{coqout}{run=run1}{title=the output} 3 == 3 : bool \end{coqout}
+

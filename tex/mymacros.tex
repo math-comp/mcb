@@ -16,6 +16,7 @@
 \usepackage{lipsum}
 \usepackage{array}
 \usepackage{tabularx}
+\usepackage{environ}
 
 \usepackage[skins,listings]{tcolorbox}
 \usepackage{boolexpr,ifthen}
@@ -110,7 +111,12 @@
 
 \mcbvarreset{}
 
-\newtcblisting[auto counter]{coq}[1]{
+\newbox{\devnull}
+\NewEnviron{coqdef}[1]{}
+
+\newcommand{\coqrun}[2]{}
+
+\newtcblisting[auto counter]{coq}[2]{
 	listing engine=listings,
 	listing options={numbers=left,numberstyle=\tiny,
 	                 aboveskip=0mm,belowskip=0mm,
@@ -120,9 +126,9 @@
 	after={\hfill},
 	listing only,
 	fonttitle=\sffamily\bfseries,
-	#1
+	#2
 }
-\newtcblisting{coqout}[1]{
+\newtcblisting{coqout}[2]{
 	listing engine=listings,
 	listing options={aboveskip=0mm,belowskip=0mm,
 	                 xrightmargin=0mm,xleftmargin=0mm},
@@ -131,5 +137,5 @@
 	after={\hfill},
 	listing only,
 	fonttitle=\sffamily\bfseries,
-	#1
+	#2
 }

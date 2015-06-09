@@ -71,7 +71,7 @@ substitution (beta), arrow type.
 we assume we have nat here.
 
 Do use \C{About} for informations (not \C{Check}).
-\begin{coq}{}
+\begin{coq}{name=beta}{}
 Eval beta in (fun x => x + x) 3. (* 3 + 3 : nat *)
 Definition f := fun x : nat => x + x.
 Definition f (x : nat) := x + x.
@@ -85,16 +85,19 @@ maybe also talk about delta here and make example of f.
 \subsection{Inductive data, case analysis and recursion}
 bool, nat.
 
-\begin{coq}{}
+\begin{coq}{name=ind-data}{}
 Inductive bool : Type := true | false.
 Inductive nat :Type := O | S of nat.
 Check true : bool : Type. (* on a side note .. : Type : Type *)
 Check (S (S O)). (* 2 : nat *)
 \end{coq}
 
+
+
+
 match, fix, termination.
 
-\begin{coq}{}
+\begin{coq}{name=bool-conn}{}
 Definition andb := ...
 Fixpoint addn := ..
 Fixpoint eq_nat
@@ -103,20 +106,20 @@ Fixpoint leq
 
 discuss example of a real computation, not just beta.
 
-\begin{coq}{}
+\begin{coq}{name=compute}{}
 Compute (addn 3 4)
 \end{coq}
 
 now simple notation come in to play
 
-\begin{coq}{}
+\begin{coq}{name=notation-infix}{}
 Infix "+" := addn.
 \end{coq}
 
 \subsection{Polymorphism and HO programming}
 option, seq, pairs.
 
-\begin{coq}{}
+\begin{coq}{name=option}{}
 Inductive option A := None | Some of A.
 Check option. (* Type -> Type *)
 Check Some. (* : forall A : Type, A -> option A *)
@@ -136,7 +139,7 @@ this contains real programs, and is the excuse to talk about:
 and Implicit Type, to factor the type parameter of containers like
 sequences.  Write more stupid programs on seq.
 
-\begin{coq}{}
+\begin{coq}{name=seq}{}
 Section Seq.
 Variable A : Type.
 Variable x0 : A.
@@ -152,7 +155,7 @@ to imitate polymorphism a-la ML, simplest example of type inference
 like \C{Some _ 3}.  Set implicit for inductive types/constructors too,
 and functions on them like the ones on seq we have seen before.
 
-\begin{coq}{}
+\begin{coq}{name=Arguments}{}
 Arguments seq {T}.
 Arguments nil {T}
 Arguments cons {T} x xs.
@@ -171,14 +174,16 @@ file, where no theorems pop up.
 \subsection{Exercises (explained): arithmetic}
 by now we should have the infrastructure to write program on arithmetic
 
-\begin{coq}{}
+\begin{coq}{name=stuff}{}
 divn
 prime  (* an simpler version *)
 \end{coq}
 
 from choice.v
 
-\begin{coq}{}
+\begin{coq}{name=smart}{}
 encode
 decode
 \end{coq}
+
+
