@@ -3,6 +3,12 @@ roundtrip
 
 A dirty hack to run Coq on the verbatim code in the book.
 
+Requirements:
+------------
+- lua5.2
+- wdiff
+- coq8.5
+
 Principles:
 -----------
 
@@ -57,4 +63,3 @@ Example:
   \coqrun{name=run1}{ssr,check33}
 
   \begin{coqout}{run=run1}{title=the output} 3 == 3 : bool \end{coqout}
-
