@@ -603,9 +603,46 @@ negbK is defined
 
 \subsection{Rewriting}
 
-\mcbsection{Universal statements}
+So far we have seen in section~\ref{ssec:proofcomp} that statements
+relating two similar terms using the \C{=} infix predicate are \emph{proved}
+correct, because they are trivial.
+\marginnote{At some point we should be more formal but when?} In this
+section we are going to \emph{use} equality statements to substitute
+some terms for others.
+
+And here we should find a way to introduce, illustrate and explain:
+\begin{itemize}
+\item Simple rewrite (substitution)
+\item Rewrite of a parametric equality (with matching)
+\item Unfold as a rewrite command
+\item Simpl as a rewrite command?
+\item Control via patterns
+\item Mention the possibility of chaining rewrites?
+\end{itemize}
+
+Here we have to assume some results for the purpose of the
+explainations, because in fact we usually rewrite statements proved by
+an induction...
+\section{Universal statements}
 
 \subsection{First examples}
+The curious reader might already have tested the answer of the
+\C{About} command on the parametric lemmas we have proved in the
+previous sections, like for instance:
+
+\begin{coq}{def=negbktAbout}{width=6cm,title=Inspecting the negbK lemma}
+About negbk.
+\end{coq}
+\begin{coqout}{run=negbktAbout,ssr}{width=6cm, title=Universal quantification}
+negbK : forall b : bool, ~~ ~~ b = b
+\end{coqout}
+
+And she has thus observed the prenex \C{forall} quantifier. This
+quantifier binds a boolean, and expresses --as expected-- that that
+the equation holds for any boolean. In fact statements like \C{negbK}
+are better stated using generic patterns like:
+\marginnote{negbK is not a good first example: use right id or
+  commutative instead.}
 
 \subsection{Universal conditional statements}
 
