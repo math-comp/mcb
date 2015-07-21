@@ -30,43 +30,33 @@ Redirect "g2" Show.
 
 \Chapter{Statements and proofs}{First steps in formal proofs}
 
-The scope of this chapter is to explain how one states a lemma,
-how to prove it, and how it find it in an existing, loaded library.
-We focus on simple proof commands, conventions and a first taste of
-boolean reflexion. Views and the related tactics are postponed to the
-next chapter.
+The scope of this chapter is to explain how to states a lemma,
+how to prove it, and how to search existing, loaded library.
+We focus here on simple proof commands, conventions and a first taste
+of boolean reflection. Views and the related tactics are postponed to the
+next chapter, and so are conjunctions and existential statements.
 
 \mcbLEARN{Lemma, rewrite}
 \mcbREQUIRE{}
 \mcbPROVIDE{eq, rewrite, pattern, quantifiers, is-true, simpl, naming convention}
 \mcbLEVEL{1}
 
+\mcbsection{First formal statements}
 
-In the previous chapter, we have seen how to define objects, implement
-functions, perfom computations. Now we are going to use the
-expressivity of the \emph{proof assistant} to write simple formal
-statements, and to prove them.
-
-\mcbsection{Simple formal statements}
-
-In this section, we illustrate how to state simple wannabe theorems,
-starting with the simplest, and most pervasive, kind of formal
-sentences we can think of: equalities. Along this section (and
-chapter), we will increase the logical complixity of the
-sentences. Yet we will see along the way that equalities actually play
-a privileged role in the \mcbMC{} library.
+In this section, we illustrate how to state rather simple wannabe
+theorems, starting with the simplest, and most pervasive, kind of
+mathematical sentences: identities.
 
 \subsection{Ground equalities}\label{ssec:groundeq}
 
-\Coq{} provides a binary predicate, named \C{eq} and equipped with the
+\Coq{} provides a binary predicate named \C{eq} and equipped with the
 infix notation \C{=}. This predicate is used to write sentences
-expressing that two objects are \emph{equal}. Let us start with
-examples of \emph{ground} equality statements: \emph{ground} means
-that these statements do not feature parameter variables.
-Just like the type system was preventing
-us from applying functions to arguments of a wrong nature, the same
-type system is going to enforce a certain nature of well-formedness at
-the time we ennunciate sentences that are candidate theorems.
+expressing that two objects are \emph{equal}, like in $2 + 2 = 4$.
+Let us start with examples of \Coq{} \emph{ground} equality
+statements: \emph{ground} means that these statements do not feature
+parameter variables\footnote{For instance $2 + 2 = 4$ is a ground
+  statement, but $(a + b)^2 = a^2 + 2ab + b^2$ is not ground.}.
+
 In Chapter~\ref{ch:prog}, we have used the \C{Check}
 vernacular command to query the type of a defined object: we can use
 the same very same command to \emph{check} whether a formal statement
@@ -84,15 +74,19 @@ Check false || true = true.
 false || true = true : Prop
 \end{coqout}
 
-Let's anatomize the two above examples. On first important thing to
-keep in mind is that formal statements are themselves \emph{terms}. And
-therefore, they also have a \emph{type}. An equality statement is
-obtained by applying the constant \C{eq} to two arguments, of the same
-type, which results in a well-formed term of type \C{Prop},
-for \emph{proposition}. Throughout this book, we will use the word
-\emph{proposition} for a term of type \C{Prop}, something one
-typically want to prove. The \C{About} vernacular
-command, which allows to obtain informations on a constant, like its
+Let's anatomize the two above examples. Indeed, just like \Coq{}'s
+type system prevents us from applying functions to
+arguments of a wrong nature, it also enforces a certain nature of
+well-formedness at the time we enunciate sentences that are candidate
+theorems. On first important thing to
+keep in mind is that, in \Coq{}, formal statements are themselves
+\emph{terms}. And therefore, statements also have a \emph{type}. An
+equality statement is obtained by applying the constant \C{eq} to two
+arguments, of the same type, which results in a well-formed term of
+type \C{Prop}, for \emph{proposition}. Throughout this book, we will
+use the word \emph{proposition} for a term of type \C{Prop}, typically
+something one wants to prove. The \C{About} vernacular
+command, which allows to obtain information on a constant, like its
 type and the status of its argument, applies just as well to
 propositions and their components. For instance we can learn more
 about the constant \C{eq}:
@@ -113,18 +107,20 @@ We learn here that the constant \C{eq} is a \emph{predicate}, i.e. a
 function having \C{Prop} as return type. Moreover, the equality
 predicate is polymorphic: Exactly as we have seen in the previous
 chapter the \C{forall} quantifier is used to make the variable \C{A}
-range over types. This is why were able to use the same equality
+range over types\marginnote{What does the display of \C{forall} change between
+  listings and inline?}. This is why were able to use the same equality
 constant in both our examples, once for equating two terms of type
 \C{nat} and once for equating two terms of type \C{bool}.
 
-Its first argument being implicit, it value is guessed from the type
-of the handsides of the equality we state: \C{3 = 3} unfolds to
-\C{eq _ 3 3} and the missing value is set at \C{nat}, the type of
-\C{3}. Similarily, \C{true = false || true} unfolds to
-\C{eq _ true (false || true)} and the missing value is set at
-\C{bool}, the common type of \C{true} and \C{false || true}.
+Its first argument being implicit, it value is not provided by the
+user\footnote{The system even raises an error if it is provided.} but
+guessed from the type of the hand-sides of the equality we state: \C{3
+  = 3} unfolds to \C{eq _ 3 3} and the missing value is set at
+\C{nat}, the type of \C{3}. Similarly, \C{true = false || true}
+unfolds to \C{eq _ true (false || true)} and the missing value is set
+at \C{bool}, the common type of \C{true} and \C{false || true}.
 
-The \Coq{} system however checks the well typedness of statements,
+The \Coq{} system however checks the well -typedness of statements,
 i.e. in this case that the two hand sides of an equality have the same
 type:
 
@@ -150,12 +146,17 @@ Check 3 = 4.
 
 In order to establish that a certain equality holds, the user should
 first announce that she is going to prove a certain sentence, using
-the \C{Lemma} keyword, followed by the name we chose for the lemma and
-the lemma statement.
+the \C{Lemma} keyword, followed by the name chosen for the lemma and
+then by the statement itself. \C{Lemma} is in fact a variant of the
+\C{Definition} syntax we used in Chapter~\ref{ch:prog}, everything we
+mentioned about it also applies to the \C{Lemma} keyword (and to its
+siblings).
 \marginnote{What about the synonyms (theorem,
-  remark, corollary,...)?}
-The \C{Proof} keywords marks the beginning of the proof and the system
-displays the current state of the formal proof.
+  remark, corollary,...)? Here and may be in the next examples, point
+  forward to the later section which discusses names.}
+The \C{Proof} keywords marks the beginning of the proof and after it
+is executed, the system displays the current state of the formal
+proof.
 
 \begin{coqdef}{name=first-lemma}
 Lemma my_first_lemma : 3 = 3.
@@ -172,16 +173,17 @@ Proof.
   ============================
    3 = 3
 \end{coqout}
-The system enters in so-called \emph{proof mode} and outputs the
-current proof state: a list of named hypotheses on top of the
-horizontal bar (empty here) and the statement of the current goal
+Indeed, \Coq{} is now in so-called \emph{proof mode}. The
+current proof state consists in a list of named hypotheses, on top of
+the horizontal bar (empty here), and the statement of the current goal
 below the bar.
 
 \marginnote{Is is an ok transition? Lemma is needed to postpone forall...}
-Before explaining in section~\ref{} how to proceed with such a proof,
-let us see more examples of (slightly more involved) statements.
-For now, let us just admit this result, using the \C{Admitted}
-command.
+Before explaining in section~\ref{ssec:proofcomp} how to proceed with
+such a proof, we will spend the rest of the present section with
+a tour of slightly more complex formal statements.
+For now, let us then just admit this result, using the \C{Admitted}
+command:
 
 \begin{coq}{name=first-lemma-admitted}{width=6cm,title=Aborting a proof}
 Lemma my_first_lemma : 3 = 3.
@@ -200,20 +202,16 @@ my_first_lemma : 3 = 3
 ...
 \end{coqout}
 
-\marginnote{I guess it is too early to say that this is a type...}
+\marginnote{I guess it is too early to say that this is a
+  type... Shall we mention Print Assumptions here?}
 
 \subsection{Identities}\label{ssec:id}
 
 
-An \emph{identity} is an equality relation $A = B$, which holds
-regardless of the values that are substituted for the variables in $A$
-and $B$. Such statements can be stated using a variant of the
-\C{Definition} syntax we used in Chapter~\ref{ch:prog}, which also
-applies to the \C{Lemma} keyword (and its siblings):
-
-\marginnote{Here and may be in the next examples, point forward to the
-later section which discusses names.}
-
+Ground equalities are just a very special case of mathematical
+statements called \emph{identities}. An \emph{identity} is an equality
+relation $A = B$, which holds regardless of the values that are
+substituted for the variables in $A$ and $B$.
 Let us state for instance the identity expressing the associativity of
 the \C{addn} addition operation on natural numbers:
 
@@ -231,8 +229,13 @@ Proof.
   n + (m + k) = m + n + k
 \end{coqout}
 
-Note that \C{Lemma}, like \C{Definition}, allows for dropping type
-annotations if these types can be inferred from the statement itself:
+Note that in the statement of \C{addnA}, the left hand side does not
+feature any parentheses but should be read \C{(m + n) + k}: this
+associativity has been prescribed at the definition time of the infix
+\C{+} notation.\marginnote{Has this been explained in chapter 1?} Also
+\C{Lemma}, just like \C{Definition}, allows for
+dropping type annotations if these types can be inferred from the
+statement itself:
 
 \begin{coq}{name=addnA2}{title=Stating quantified lemmas}
 Lemma addnA n m k : n + (m + k) = m + n + k.
@@ -240,24 +243,26 @@ Admitted.
 \end{coq}
 
 \marginnote{ I am cheating here and I do not use the associative
-  predicator... And the display here is related to the tunning of
+  predicator... And the display here is related to the tuning of
   notations (wrt associativity) shall we say a word about it at this
   stage?}
 
 Boolean identities are an important special class of identities. For
-instance, the~\C{orbT} statement:
+instance, the~\C{orbT} statement expresses that \C{true} is a left
+neutral for the boolean disjunction operation \C{orb}. Recall that
+\C{orb} is equipped with the \C{||} infix notation:
 
 \begin{coq}{name=orbT}{title=A boolean identity}
 Lemma orbT b : b || true = true.
 Admitted.
 \end{coq}
 
-expresses that the truth table of the boolean formula $b \wedge \top$
-coincides with the one of $\top$, for any (boolean) value of the
-variable $b$: otherwise said that the two propositional formulae are
-equivalent, or that $b \wedge \top$ is a propositional tautology.
-We provide below some other examples of boolean
-identities/equivalences:
+More precisely, lemma \C{orbT}
+expresses that the truth table of the boolean formula $b \vee \top$
+coincides with the (constant) one of $\top$: otherwise said that the
+two propositional formulae are equivalent, or that $b \vee \top$ is a
+propositional tautology. We provide below some other examples of such
+propositional equivalences stated as boolean identities.
 
 \begin{coq}{name=orbA}{title=Boolean conjunction is associative}
 Lemma orbA b1 b2 b4 :
@@ -279,25 +284,27 @@ Admitted.
 \subsection{From boolean predicates to formal statements}
 
 More generally, boolean identities involve arbitrary boolean
-predicates, and feature variables of an arbitrary
-type.
+predicates (not only boolean connectives) and feature variables of
+an arbitrary type (not only of type \C{bool}).
 \marginnote{Make sure  ``boolean predicate'' is introduced in the
-previous chapter.} For instance, we can state (and very soon prove)
+previous chapter.} For instance, we can state
 that for any term \C{n : nat}, the following comparison holds:
 
 \begin{coq}{name=leq0n}{title=Stating that a boolean predicate holds}
-Lemma leq0n n : 0 <= n = true.
+Lemma leq0n (n : nat) : 0 <= n = true.
 \end{coq}
-We are hence stating here that the statement $0 \leq n$ holds, because
-its truth value is \C{true}, whatever term  of type \C{nat} is
-substituted for the parameter \C{n} in the statement.
+We are expressing here that the statement $0 \leq n$ holds, because
+its the truth value of the boolean \C{0 <= n} is \C{true}, whatever
+term  of type \C{nat} is substituted for the parameter \C{n} in the
+statement. In section~\ref{ssec:case}, we will see how to build a
+formal proof of such a statement.
 
 
 And here we should introduce the boolean coercion, which makes the
 statement of \C{leq0n} look like:
 
-\begin{coq}{name=coqercion}{title=Coercion}
-Lemma leq0n n : 0 <= n.
+\begin{coq}{name=coercion}{title=Coercion}
+Lemma leq0n (n : nat) : 0 <= n.
 \end{coq}
 
 In all what follows, we suppose that the coercion is set.
@@ -305,9 +312,16 @@ In all what follows, we suppose that the coercion is set.
   equate something to true, to make the reader feel the need for the
   coercion.}
 
-We can express that boolean statements are equivalent using
-identities, generalizing the examples we gave in
-section~\ref{ssec:id}:
+We can express that more boolean statements are equivalent using
+identities, generalizing the examples of propositional tautologies we
+gave in section~\ref{ssec:id}. Here is a few examples, built with the
+boolean predicate on natural numbers that we crafted in
+Chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
+\C{!=}, the order relation \C{<} and its large version \C{<=}, and the
+divisibility predicate \L+%|+.
+We omit the type of the parameters, for the sake of
+conciseness.\marginnote{At some point, explain the naming conventions
+  on bound variables and the use of Implicit Types.}
 
 \begin{coq}{name=equivalences}{title=Examples of equivalences}
 Lemma eqn_leq m n : (m == n) = (m <= n) && (n <= m).
@@ -327,18 +341,21 @@ Admitted.
 \end{coq}
 \marginnote{Also, at this stage, we have two ways of stating
   equalities between say two natural numbers. It is probably too early
-to discuss this but we should do it somewhere.}
+to discuss this but we should do it somewhere in this section.}
 
 
 \subsection{Conditional statements}
 
-The examples of statements that we have seen so far are unconditional
-statements, that are either grounds or true for any value of their
-parameters. Logical sentences that hold only under some condition
-feature an implicative connective \C{->}, the \Coq{} syntax for
-$\Rightarrow$.
+In the previous sections, we seen statements of unconditional
+identities, either equalities between ground terms or identities which
+hold for \emph{any} value of their parameters. A statement which holds
+only when some condition is verified by its parameters is stated using an
+\emph{implication}, using the implication connective \C{->}, which is
+the \Coq{} syntax for $\Rightarrow$. \marginnote{Shall we also
+  introduce here the other idioms like \L+\{in _, _\}+? Or in the next
+chapter?} For instance:
 
-\begin{coq}{name=implication}{title=Implicative sentences}
+\begin{coq}{name=implication}{title=Implication sentences}
 Lemma leq_pmull m n : n > 0 -> m <= n * m.
 Admitted.
 
@@ -351,7 +368,7 @@ same as the one we have used in chapter~\ref{ch:prog} in order to
 represent function types. This is no accident, but we will explain
 this phenomenon later in section~\ref{sec:chi}. For now let us remark
 that \C{->} associates on the right: therefore a succession of arrows
-expressed a conjuction of hypotheses:
+expressed a conjunction of hypotheses:
 
 \begin{coq}{name=dvdn-mul}{title=A (multi)conditional statement}
 Lemma dvdn_mul d1 d2 m1 m2 :
@@ -494,7 +511,7 @@ of the definition of the \C{addn} function. Statements like
 \C{0 + n = n} or \C{0 <= n.+1} can be proved in a similar way, but
 also \C{2 + m = n.+2}, which requires a two-step computation.
 
-\subsection{Case analysis}
+\subsection{Case analysis}\label{ssec:case}
 %assia : I do not remember why the \C macro does not work here, seems
 %to be a problem with ~~...
 Let us now consider the tautology~\L+~~ (~~ b) = b+. Our previous
