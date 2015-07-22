@@ -36,9 +36,13 @@ We focus here on simple proof commands, conventions and a first taste
 of boolean reflection. Views and the related tactics are postponed to the
 next chapter, and so are conjunctions and existential statements.
 
-\mcbLEARN{Lemma, rewrite}
-\mcbREQUIRE{}
-\mcbPROVIDE{eq, rewrite, pattern, quantifiers, is-true, simpl, naming convention}
+\mcbLEARN{Stating basic theorems involving boolean statements,
+  equalities, and arrows. Universal quantification is presented via
+  parameters.}
+\mcbREQUIRE{About, Check, implicit arguments, notations for the
+  constants defined at chapter 1, principles of notations
+  (associativity,...), definition of 'boolean predicate', sections}
+\mcbPROVIDE{\C{Lemma},\C{Admitted}, eq, is-true, Lemma, \C{Prop}, \C{->}}
 \mcbLEVEL{1}
 
 \mcbsection{First formal statements}
@@ -377,9 +381,17 @@ Admitted.
 \end{coq}
 
 \marginnote{Currification deserves more comments but it is probably too
-  early...}
+  early... Also I think it is a good place to talk about sections here
+as well, but it has probably been introduced somewhere in the previous
+chapter?}
 
 \mcbsection{Simple formal proofs}
+
+\mcbLEARN{Commands to build and check formal proofs: trivial ones,
+  case analysis, rewriting}
+\mcbREQUIRE{computation, equality}
+\mcbPROVIDE{eq, is-true, \C{rewrite, case, by []}}
+\mcbLEVEL{1}
 
 We shall now explain how to turn a well-formed statement into a
 machine-checked theorem. Let us come back to our first example, that
