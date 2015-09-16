@@ -36,6 +36,7 @@ We focus here on simple proof commands, conventions and a first taste
 of boolean reflection. Views and the related tactics are postponed to the
 next chapter, and so are conjunctions and existential statements.
 
+
 \mcbLEARN{Stating basic theorems involving boolean statements,
   equalities, and arrows. Universal quantification is presented via
   parameters.}
@@ -46,6 +47,7 @@ next chapter, and so are conjunctions and existential statements.
 \mcbLEVEL{1}
 
 \mcbsection{First formal statements}
+
 
 In this section, we illustrate how to state rather simple wannabe
 theorems, starting with the simplest, and most pervasive, kind of
@@ -65,8 +67,6 @@ In Chapter~\ref{ch:prog}, we have used the \C{Check}
 vernacular command to query the type of a defined object: we can use
 the same very same command to \emph{check} whether a formal statement
 is well formed:
-
-\marginnote{Ensure we've seen \C{Check} in chapter 1}
 
 \begin{coq}{name=check-eq}{width=6cm,title=Equality predicate}
 Check 3 = 3.
@@ -103,9 +103,6 @@ About eq.
 eq : forall A : Type, A -> A -> Prop
 Argument A is implicit ...
 \end{coqout}
-
-\marginnote{Ensure we've seen \C{About} in chapter 1, with this
-  policy}
 
 We learn here that the constant \C{eq} is a \emph{predicate}, i.e. a
 function having \C{Prop} as return type. Moreover, the equality
@@ -350,7 +347,7 @@ to discuss this but we should do it somewhere in this section.}
 
 \subsection{Conditional statements}
 
-In the previous sections, we seen statements of unconditional
+In the previous sections, we have seen statements of unconditional
 identities, either equalities between ground terms or identities which
 hold for \emph{any} value of their parameters. A statement which holds
 only when some condition is verified by its parameters is stated using an
@@ -385,13 +382,19 @@ Admitted.
 as well, but it has probably been introduced somewhere in the previous
 chapter?}
 
-\mcbsection{Simple formal proofs}
+The \C{Section} mechanism we saw in Chapter~\ref{ch:prog} is also
+convenient in order to factor the parameters and the hypotheses shared
+by a handful of lemmas. Yet beware, all the parameters are then fixed
+inside the section (as well as hypotheses but that's less often
+problematic). However we cannot really make sense from this remark as
+long as we do not explain formal proofs in more details...
 
 \mcbLEARN{Commands to build and check formal proofs: trivial ones,
   case analysis, rewriting}
 \mcbREQUIRE{computation, equality}
 \mcbPROVIDE{eq, is-true, \C{rewrite, case, by []}}
 \mcbLEVEL{1}
+\mcbsection{Formal proofs}
 
 We shall now explain how to turn a well-formed statement into a
 machine-checked theorem. Let us come back to our first example, that
