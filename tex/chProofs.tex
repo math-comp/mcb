@@ -258,6 +258,7 @@ Lemma orbT b : b || true = true.
 Admitted.
 \end{coq}
 
+
 More precisely, lemma \C{orbT}
 expresses that the truth table of the boolean formula $b \vee \top$
 coincides with the (constant) one of $\top$: otherwise said that the
@@ -454,6 +455,8 @@ Indeed, this statement trivially holds, because the two hand sides of
 the equality are the same. The tactic \C{by []} is the command that
 implements this nature of \emph{trivial} proof step: the \C{by} prefix
 checks that after the next tactic, the proof will be a trivial
+\marginnote{Placeholder means really that this is emptylist, otherwise
+said we could provide a tactic here.}
 one, and \C{[]} is a placeholder because really there is nothing more
 to explain to the system. The system thus informs the user
 that the proof seems finished. We can hence confidently conclude our
@@ -572,6 +575,9 @@ subgoal 2 is:
  ~~ ~~ false = false
 \end{coqout}
 
+\marginnote{ Say somewhere later that this substitution only happens
+  in the goal and not in the hypotheses. BTW Ssr fails if the
+  hypotheses feature b. But it is probably too early now.}
 More precisely, the tactic \C{case: b} indicates the we want to
 perform a case analysis (hence the \C{case} command), on \C{b}, whose
 name follows the separator \C{:}. The \Coq{} system displays the state
@@ -633,27 +639,78 @@ No more subgoals.
 negbK is defined
 \end{coqout}
 
+TODO: case analysis on nat, syntax => [| n] presented as a block,
+there to name the 'recursive' guy. Mention the check on the number of
+branches. Show case analysis on list?
+
+Would be nice to finish this part on this example:
+
+\begin{coq}{def=almostMulnEq0, done, qed}
+  {width=6cm,title=A double case analysis}
+Lemma |*my_muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m].
+  by [].
+case: n => [|n].
+  (* by rewrite muln0. *) admit.
+by [].
+Qed.
+\end{coq}
+
+And next section does the rewrite. Insist here on the fact that muln0
+is not provable by computation only. May be already before?
+
+TODO : case analysis on a subterm, keeping the equation. Hence put
+here a pointer forward.
 \subsection{Rewriting}
 
 So far we have seen in section~\ref{ssec:proofcomp} that statements
 relating two similar terms using the \C{=} infix predicate are \emph{proved}
-correct, because they are trivial.
+correct, because they are trivial: their proof is only by
+computation, possibly symbolic, via case analysis.
 \marginnote{At some point we should be more formal but when?} In this
 section we are going to \emph{use} equality statements to substitute
-some terms for others.
+some terms for others. The tactic for replacing a subterm of the
+current goal by another, equal, one is called \C{rewrite}. The
+\C{rewrite} tactic really is a kind of Swiss Army kife and comes in
+several flavours.
+
+
+% Now this introduces a simple rewrite, with matching.
+% Lemma my_muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
+% Proof.
+% case: m => [|m].
+%   by [].
+% case: n => [|n].
+%   by rewrite muln0.
+% by [].
+% Qed.
+
+
+
+% This introduces unfolding and left-to-right rewrite, plus chaining.
+% Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+% Proof. rewrite /leq -mulnBr muln_eq0. Qed.
+
 
 And here we should find a way to introduce, illustrate and explain:
 \begin{itemize}
-\item Simple rewrite (substitution)
+\item Simple rewrite (substitution). May be not so usefull.
 \item Rewrite of a parametric equality (with matching)
 \item Unfold as a rewrite command
-\item Simpl as a rewrite command?
-\item Control via patterns
-\item Mention the possibility of chaining rewrites?
+\item Simpl as a rewrite command? Well, may be not, and better in
+  elim's intro patterns, followed by the remark that it also applies
+  to case (and then show the library's script for \C{my_muln_eq0}.
+\item Control via patterns (e.g. rw \C{leq_mul2l} on
+\C{m * n1 <= n2 * m}, the use of \C{mulnC} is ambigious). At this
+stage at least, show patterns for redex selection but only show RHS
+(and no the full power of \C{[X in _ <= X]}-like patterns).
+\item Mention the possibility of chaining rewrites, but simple chaining.
+\item \C{rewrite \\} comes later and allows to discuss chaining more.
 \end{itemize}
 
 Here we have to assume some results for the purpose of the
-explainations, because in fact we usually rewrite statements proved by
+explanations, because in fact we usually rewrite statements proved by
 an induction...
 \section{Universal statements}
 
