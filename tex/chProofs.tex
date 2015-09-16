@@ -712,9 +712,10 @@ stage at least, show patterns for redex selection but only show RHS
 Here we have to assume some results for the purpose of the
 explanations, because in fact we usually rewrite statements proved by
 an induction...
-\section{Universal statements}
 
-\subsection{First examples}
+\section{More complex statements and proofs}
+
+\subsection{Universal quantification, first examples}
 The curious reader might already have tested the answer of the
 \C{About} command on the parametric lemmas we have proved in the
 previous sections, like for instance:
@@ -733,11 +734,42 @@ are better stated using generic patterns like:
 \marginnote{negbK is not a good first example: use right id or
   commutative instead.}
 
-\subsection{Universal conditional statements}
+Do other examples, with an implication.
 
-\subsection{Inductive Schemes}
+\subsection{Higher order quantification}
 
-\mcbsection{Good Practice}
+Inductive schemes come here.
+
+\subsection{Proofs by instanciation}
+
+Just like in Chapter 1, universal quantification codes for places for
+arguments. One can obtain instances of an identity, like
+\C{(negbK true)} useful for instance in the case of \C{(addnC a)}. The
+\C{apply} tactic does the job of finding the right instance from the
+goal.
+
+\subsection{Proving conditional/universal statements}
+
+Conversely, proving an implication (or a universal statement) requires
+\emph{introduction} (is it the right place to speak about this?). This
+is what \C{move=>} does (same as in \C{case}, but no branch).
+
+\subsection{Proofs by induction}
+
+This amounts to applying an induction scheme. Observe that the
+unification problem is more difficult. The \C{elim}
+tactic can be decomposed into: finding the elimination predicate from
+the type of the term, and applying it with a suitable heuristic to
+find the predicate. Examples, examples of loaded inductions, examples
+with alternate, crafted induction schemes. For the braves, rewriting
+is an instance of this.
+
+
+
+\section{Good Practice}
+\marginnote{There might be enough remarks on good practice to deserve
+  a dedicated section at the end of each of the (at least three) first
+chapters...}
 It is never too early to adopt good practice and understand the
 rationales behind the MC libraries...
 
@@ -829,6 +861,7 @@ to type when writing a proof.\marginpar{this is a mantra somewhat}
 
 \subsection{Writing proof scripts}
 
+indentation, naming, using closing tactics.
 
 \subsection{Searching existing content}
 
