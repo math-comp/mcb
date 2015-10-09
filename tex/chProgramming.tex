@@ -61,14 +61,370 @@ use of G{\"o}del encoding.
 Examples and exercises can be executed in an empty context, or
 libraries can be required for the purpose of (re)using and combine existing
 programs (non proofs here).
-\section{basics of functional programming}
 
-\subsection{Functions and simple types}
-functions are the base concept,
-anonymous functions \C{(fun x => ...)},
-application,
-substitution (beta), arrow type.
-we assume we have nat here.
+The current contents are organized like the tutorial at ITP15 I gave (Enrico).
+It was on standard Coq and was intended not to be difficult class ;-)
+It is a possible plan, no strong opinions.
+
+\section{Functional programming in a nutshell}
+Only intuitions here.
+
+For a mathematician this is perfectly natural, the main problem is the syntax.  E.g.
+$$f(x) = x * 2\qquad\qquad f(7)$$
+here we define a function named f that doubles its input.  Then we denote f(7) the value of f
+when the input is 7. The novelty is that:
+\begin{enumerate}
+\item functions are anonymous, and the names. \verb+(fun x => x * 2)+ is the function that
+	doubles.  We can name it: \verb+Definition f := fun x => x * 2.+.  We don't need to
+	name a function in order to use it in an expression. (there is something like
+	\verb+x |-> x * 2+, but this is always attached to a name somehow).
+\item function application is \verb+(f 7)+.
+\end{enumerate}
+
+For a computer scientist used to imperative languages, these are the main weird points:
+\begin{enumerate}
+\item there is no return statement, AKA expressions are already programs.  e.g.
+	4 is a program, and 2+2 as well.  Programs then evaluate like a mathematical expression
+	can be simplified
+\begin{verbatim}
+        if (false || true) then 2 + 2 else 7
+        if true then 2 + 2 else 7
+        2 + 2
+        4
+\end{verbatim}
+also
+\begin{verbatim}
+        2 + (if 7 == 2 then 4 else 2)
+        2 + (if false then 4 else 2)
+        2 + 2
+        4
+\end{verbatim}
+\item programs are really first class data (HO programming, not reasonably popular even outside
+	the functional world). E.g. 
+    This program takes in input a function f and uses it twice
+\begin{verbatim}
+      (fun f => f 3 + f 4)
+\end{verbatim}
+hence this is a valid program computing 14
+\begin{verbatim}
+      (fun f => f 3 + f 4) (fun x => x + x)
+\end{verbatim}
+\end{enumerate}
+
+
+\subsection{Build and destruct simple data}
+Simplest data is bool.
+
+\begin{coq}{name=bool}{}
+Inductive bool : Type := true | false.
+Check bool : Type.
+Check true : bool.
+Check false.
+Check 3 : bool. (* boom *)
+\end{coq}
+
+This tells you that one can construct a boolean using true or false but not a number.
+Types tells you how your values are (in normal form, since (true || false) is also of type bool, recall the example before).
+Hence it makes sense to consider only true and false when one inspects a bool.
+
+\begin{coq}{name=negb}{}
+Definition negb (b : bool) : bool :=
+  match b with
+  | true => false
+  | false => true
+  end.
+
+Check negb.
+Check negb true.
+Check negb (negb true).
+Check negb 3. (* boom *)
+
+Eval compute in negb true.
+Eval compute in negb false.
+\end{coq}
+We see the function type (arrow) and how typing works in this simple case.
+Also that functions compute in Coq.
+Sugar:
+
+\begin{coq}{name=negb}{}
+Definition another_negb (b : bool) : bool :=
+  if b then false else true.
+Definition yet_another_negb :=
+  (fun b : bool =>
+      if b then false else true).
+Definition andb (b1 : bool) (b2 : bool) :=
+  if b1 then b2 else false.
+Notation "x && y" := (andb x y).
+Eval compute in true && false.
+Eval compute in true && true.
+\end{coq}
+
+\subsection{Polymorphic containers and binding in match}
+
+This is not the syntax used in ssr I guess.
+
+\begin{coq}{name=option}{}
+ Inductive option (A : Type) : Type :=
+ | None
+ | Some (a : A).
+Check option.
+Check option bool : Type.
+Check Some true. (* Implicit argument *)
+\end{coq}
+
+Talk about implicit arguments here.
+
+\begin{coq}{name=implicits}{}
+About Some.
+(* The @ locally disables the implicit arguments *)
+Check @Some bool true.
+Check @Some _ true.
+\end{coq}
+
+Inspecting a container
+
+\begin{coq}{name=matchopt}{}
+Definition is_empty A (box : option A) : bool :=
+  match box with
+  | None => true
+  | Some _ => false  (* Here _ means discard the little a *)
+  end.
+Eval compute in is_empty None.
+Eval compute in is_empty (Some true).
+(* Note: the function is polymorphic! *)
+Eval compute in is_empty (Some 4).
+\end{coq}
+
+Two words about polymorphism.
+
+Now binding in a match.
+
+\begin{coq}{name=matchopt2}{}
+Definition get_default A (box: option A) (a : A) : A :=
+  match box with
+  | None => a
+  | Some x => x  (* this x is a name on the left bound to the contents *)
+  end.
+
+Eval compute in get_default None 3.
+Eval compute in get_default (Some 4) 3.
+\end{coq}
+
+More containers
+
+\begin{coq}{name=pair}{}
+ Inductive prod (A B : Type) : Type :=
+ | pair (a : A) (b : B).
+
+ Notation "A * B" := (prod A B).
+ Notation "( a , b )" := (pair a b).
+
+Check (true, Some false).
+
+Definition fst A B (p : A * B) :=
+  match p with
+  | ( x , _ ) => x
+  end.
+
+Eval compute in fst (true, None).
+
+Definition snd A B (p : A * B) :=
+  match p with (_, y) => y end.
+\end{coq}
+
+\subsection{Recursive data}
+
+Nat, with a special syntactic sugar
+
+\begin{coq}{name=nat}{}
+   Inductive nat : Type :=
+   | O
+   | S (n : nat).
+
+Check S (S O).
+Check 2.
+Check 1.
+\end{coq}
+
+Recursive functions
+
+\begin{coq}{name=plus}{}
+Fixpoint plus (n : nat) (m : nat) : nat :=
+  match n with
+  | O => m
+  | S w => S (plus w m)
+  end.
+Infix "+" := plus.
+
+Check 2 + 3.
+Eval compute in 2 + 3.
+\end{coq}
+
+execution step by step
+
+\begin{coq}{name=execplus}{}
+   S (S 0) + 3
+   S ((S O) + 3)
+   S (S (O + 3))
+   S (S 3)
+   5
+\end{coq}
+
+Here I was also showing
+
+\begin{coq}{name=plusrec}{}
+Fixpoint fast_plus (n : nat) (m : nat) : nat :=
+  match n with
+  | O => m
+  | S w => fast_plus w (S m)
+  end.
+
+    S (S O) + 3
+    S O + 4
+    O + 5
+    5
+\end{coq}
+
+and making the point that reasoning about these two plus is not equally easy (short parenthesis on symbolic computation).
+
+\begin{coq}{name=plusrec}{}
+Eval simpl in
+  (fun n => fast_plus (S n) 3).  (* no progress *)
+Eval simpl in
+  (fun n => plus (S n) 3).  (* some output already, we can prove that it is not 0 *)
+\end{coq}
+
+Lists
+
+\begin{coq}{name=list}{}
+Inductive list (A : Type) : Type :=
+| nil
+| cons (x : A) (xs : list A).
+
+Infix "::" := cons.
+Arguments nil {A}.
+Arguments cons {A} x xs.
+
+(* The type of lists imposes all the elements to
+    be in the same type! *)
+Check true :: false :: nil.
+Fail Check 1 :: false :: nil.
+
+(* A non recursive function on lists *)
+Definition tl A (l : list A) : list A :=
+  match l with
+  | nil => nil
+  | _ :: xs => xs
+  end.
+
+Eval compute in tl (6 :: 99 :: nil).
+
+(* The most popular function on lists *)
+Fixpoint len A (l : list A) : nat :=
+  match l with
+  | nil => O
+  | x :: xs => 1 + (len xs)
+  end.
+
+Eval compute in len (1 :: 2 :: 3 :: nil).
+Fixpoint split A B (l : list (A * B)) : list A * list B :=
+  match l with
+  | nil => (nil, nil)
+  | (x,y) :: rest =>
+      let xs_ys := split rest in
+      (x :: fst xs_ys, y :: snd xs_ys)
+  end.
+
+Eval compute in
+  split ((1,2) :: (3,4) :: nil).
+
+Fixpoint zip A B (la : list A) (lb : list B) : list (A * B) :=
+  match la, lb with
+  | nil, nil => nil
+  | x::xs, y::ys => (x,y) :: zip xs ys
+  | _, _ => nil
+  end.
+
+Eval compute in
+  zip (1 :: 2 :: nil) (true :: false :: nil).
+
+Eval compute in
+  let xs_ys := split ((1,2) :: (3,4) :: nil) in
+  zip (fst xs_ys) (snd xs_ys).
+\end{coq}
+
+\subsection{termination}
+
+Here we say how termination is checked, which are the alternative when the
+heuristic fails (not very relevant for mathcomp I guess) and relate that to
+logical inconsistency (maybe too early here, needs curry howard).
+
+\begin{coq}{name=paradoxes}{}
+Fail
+Fixpoint wrong A (l : list A) {struct l} :=
+  match l with
+  | nil => 0
+  | x :: xs => 1 + wrong (x :: nil)
+  end.
+
+Fixpoint loop (n : nat) : False := loop n.
+
+Check loop 3.
+Fail Timeout 2 Eval compute in loop 3.
+\end{coq}
+
+Also data must be checked.
+
+\begin{coq}{name=paradoxes2}{}
+Inductive non_positive : Type :=
+| Call (f : non_positive -> False)
+
+Definition self (t : non_positive) : False :=
+  match t with
+  | Call f => f t
+  end.
+
+Definition loop2 : False := self (Call self).
+
+Fail Timeout 2 Eval compute in loop2.
+\end{coq}
+
+\subsection{HO programming}
+
+A function can be abstracted over another
+   function.  It is a useful mechanism to write
+   code that can be reused, especially in the context
+   of polymorphic containers.
+
+\begin{coq}{name=map}{}
+Fixpoint map A B (f : A -> B) (l : list A) : list B :=
+  match l with
+  | nil => nil
+  | x :: xs => f x :: map f xs
+  end.
+
+Eval compute in
+  map (fun x => x + 2) (3 :: 4 :: 7 :: nil).
+Eval compute in
+  map negb (true :: false :: nil).
+
+(* fold f (x1 :: x2 :: .. xn :: nil) a
+     =
+            (f xn (.. (f x2 (f x1 a))))
+*)
+Fixpoint fold A B (f : B -> A -> A) (l : list B) (a : A) : A :=
+  match l with
+  | nil => a
+  | x :: xs => fold f xs (f x a)
+  end.
+
+(* what does this do? *)
+Eval compute in fold cons (1 :: 2 :: 3 :: nil) nil.
+\end{coq}
+
+Here one could use a section for A B and talk about all that.
+
+\section{old contents (before Enrico's tutorial)}
 
 Do use \C{About} for informations (not \C{Check}).
 \begin{coq}{name=beta}{}
