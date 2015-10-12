@@ -84,6 +84,7 @@ arguments of a wrong nature, it also enforces a certain nature of
 well-formedness at the time we enunciate sentences that are candidate
 theorems. On first important thing to
 keep in mind is that, in \Coq{}, formal statements are themselves
+\marginnote{Where do we define what are terms and what are types...}
 \emph{terms}. And therefore, statements also have a \emph{type}. An
 equality statement is obtained by applying the constant \C{eq} to two
 arguments, of the same type, which results in a well-formed term of
@@ -113,16 +114,18 @@ range over types\marginnote{What does the display of \C{forall} change between
 constant in both our examples, once for equating two terms of type
 \C{nat} and once for equating two terms of type \C{bool}.
 
+\marginnote{Did we say earlier that implicit arguments should not be
+  provided?}
 Its first argument being implicit, it value is not provided by the
 user\footnote{The system even raises an error if it is provided.} but
 guessed from the type of the hand-sides of the equality we state: \C{3
   = 3} unfolds to \C{eq _ 3 3} and the missing value is set at
 \C{nat}, the type of \C{3}. Similarly, \C{true = false || true}
 unfolds to \C{eq _ true (false || true)} and the missing value is set
-at \C{bool}, the common type of \C{true} and \C{false || true}.
+at \C{bool}, the common type of \C{true} and \C{(false || true)}.
 
-The \Coq{} system however checks the well -typedness of statements,
-i.e. in this case that the two hand sides of an equality have the same
+As the \Coq{} system checks the well -typedness of statements,
+the two hand sides of a well-formed equality should have the same
 type:
 
 \begin{coq}{name=check-eq2}{width=4cm,title=Ill-typed Equality}
@@ -146,18 +149,16 @@ Check 3 = 4.
 \end{coqout}
 
 In order to establish that a certain equality holds, the user should
-first announce that she is going to prove a certain sentence, using
-the \C{Lemma} keyword, followed by the name chosen for the lemma and
-then by the statement itself. \C{Lemma} is in fact a variant of the
-\C{Definition} syntax we used in Chapter~\ref{ch:prog}, everything we
-mentioned about it also applies to the \C{Lemma} keyword (and to its
-siblings).
-\marginnote{What about the synonyms (theorem,
-  remark, corollary,...)? Here and may be in the next examples, point
-  forward to the later section which discusses names.}
-The \C{Proof} keywords marks the beginning of the proof and after it
-is executed, the system displays the current state of the formal
-proof.
+first announce that she is going to prove a sentence, using a special
+command like \C{Lemma} (or \C{Theorem}, \C{Remark},
+\C{Corollary},\dots which are all synonyms for what matters here).
+The \C{Lemma} keyword is followed by the name chosen for the lemma and
+then by the statement itself. \C{Lemma} (and its siblings) is in fact
+a variant of the \C{Definition} syntax we used in
+Chapter~\ref{ch:prog}: everything we mentioned about it also applies
+here. The \C{Proof} keywords marks the beginning of the proof and
+after it is executed, the system displays the current state of the
+formal proof in a separated windows.
 
 \begin{coqdef}{name=first-lemma}
 Lemma my_first_lemma : 3 = 3.
@@ -214,7 +215,7 @@ statements called \emph{identities}. An \emph{identity} is an equality
 relation $A = B$, which holds regardless of the values that are
 substituted for the variables in $A$ and $B$.
 Let us state for instance the identity expressing the associativity of
-the \C{addn} addition operation on natural numbers:
+the addition operation \C{addn} on natural numbers:
 
 \begin{coq}{name=addnA}{width=6cm,title=Stating quantified lemmas}
 Lemma addnA (n m k : nat) :
@@ -271,7 +272,7 @@ Lemma orbA b1 b2 b4 :
   b1 || (b2 || b3) = b1 || b2 || b3.
 \end{coq}
 
-\begin{coq}{name=implybE}{title=Some boolean identities}
+\begin{coq}{name=implybE}{title=Examples of boolean identities}
 Lemma implybE a b : (a ==> b) = ~~ a || b.
 Admitted.
 
@@ -350,8 +351,11 @@ to discuss this but we should do it somewhere in this section.}
 
 In the previous sections, we have seen statements of unconditional
 identities, either equalities between ground terms or identities which
-hold for \emph{any} value of their parameters. A statement which holds
+hold for \emph{any} value of their parameters. A property which holds
 only when some condition is verified by its parameters is stated using an
+\marginnote{This might conflit with the boolean \C{==>} seen on an
+  example two sections ago... Shall we discuss this? and say that the
+  present one opens a subgoal for instance?}
 \emph{implication}, using the implication connective \C{->}, which is
 the \Coq{} syntax for $\Rightarrow$. \marginnote{Shall we also
   introduce here the other idioms like \L+\{in _, _\}+? Or in the next
@@ -406,9 +410,9 @@ Admitted.
 \end{coq}
 In the \Coq{} system, the user builds a formal proof by providing,
 interactively, instructions to the proof assistant part of the \Coq{}
-system, that describe the proof she has in mind. This list of
-instructions is called a \emph{proof script}, and the instructions it
-is made of are called \emph{tactics}.
+system, that describe the gradual construction of the proof she has in
+mind. This list of instructions is called a \emph{proof script}, and
+the instructions it is made of are called \emph{tactics}.
 
 \begin{coq}{name=my-first-proof2}{title=Starting a proof}
 Lemma my_first_lemma : 3 = 3.
@@ -459,7 +463,7 @@ checks that after the next tactic, the proof will be a trivial
 said we could provide a tactic here.}
 one, and \C{[]} is a placeholder because really there is nothing more
 to explain to the system. The system thus informs the user
-that the proof seems finished. We can hence confidently conclude our
+that the proof looks complete. We can hence confidently conclude our
 first proof by the \C{Qed} command:
 
 \begin{coq}{def=my-first-proof4,done,qed}{width=6cm,title=Reflexivity of equality}
@@ -662,6 +666,7 @@ is not provable by computation only. May be already before?
 
 TODO : case analysis on a subterm, keeping the equation. Hence put
 here a pointer forward.
+
 \subsection{Rewriting}
 
 So far we have seen in section~\ref{ssec:proofcomp} that statements
