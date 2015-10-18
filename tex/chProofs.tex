@@ -856,7 +856,8 @@ m : nat
 \end{coqout}
 \marginnote{We should make the remark somewhere explicitly that
   reflexivity for 0
-or successor or any closed values is by computation but not for a variable.}
+or successor or any closed values is by computation but not
+reflexivity for a variable.}
 Now in the last remaining case, the right hand side evaluates to
 \C{true}, as the left argument of the disjunction is \C{false} (modulo
 computation) and the right one is \C{true}. However we need
@@ -872,17 +873,49 @@ case analysis on a subterm and how to keep the equation?}
 
 \subsection{Rewriting}
 
-So far we have seen in section~\ref{ssec:proofcomp} that statements
-relating two similar terms using the \C{=} infix predicate are \emph{proved}
-correct, because they are trivial: their proof is only by
-computation, possibly symbolic, via case analysis.
-\marginnote{At some point we should be more formal but when?} In this
-section we are going to \emph{use} equality statements to substitute
-some terms for others. The tactic for replacing a subterm of the
-current goal by another, equal, one is called \C{rewrite}. The
-\C{rewrite} tactic really is a kind of Swiss Army kife and comes in
-several flavours.
+In this section, we explain how to use known identities, ones that have
+for instance already been proved formally,
+in order to replace subterms of a goal with other terms during the
+course of a formal proof. In other words, we explain how to perform a
+\emph{rewrite} proof step, thanks to the eponym \C{rewrite} tactic.
 
+Let us come back to the proof that we left unfished at the end of the
+previous section:
+
+\begin{coq}{def=almostMulnEq3}{title=First case analysis,width=7cm}
+Lemma |*muln_eq0*| m n :
+  (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m].
+  by [].
+case: n => [|k]; last first.
+  by [].
+\end{coq}
+\begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=6cm}
+1 subgoals
+
+m : nat
+============================
+(m.+1 * 0 == 0) =
+(m.+1 == 0) || (0 == 0)
+\end{coqout}
+At this stage, if we replace subterm \C{m.+1 * 0} by \C{0}, the
+subgoal becomes:
+
+\centerline{ \C{(0 == 0) = (m.+1 == 0) || (0 == 0)},}
+which is equal
+modulo computation to \C{true = true}. But because of the definition
+of \C{muln} by case analysis on its \emph{first} argument,
+\C{m.+1 * 0} does not evalute symbolically to \C{0}: this equality
+holds but requires a proof by induction, as explained in
+Section~\ref{ssec:ind}. We hence need to resort to a lemma, called
+\C{muln0}:
+
+\marginnote{But this is not the way the lemma is stated in the library...}
+
+\begin{coq}{def=muln0}{title=Multiplying by zero on the left}
+Lemma |*muln0*| n : n * 0 = 0.
+\end{coq}
 
 % Now this introduces a simple rewrite, with matching.
 % Lemma my_muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
@@ -962,7 +995,7 @@ Conversely, proving an implication (or a universal statement) requires
 \emph{introduction} (is it the right place to speak about this?). This
 is what \C{move=>} does (same as in \C{case}, but no branch).
 
-\subsection{Proofs by induction}
+\subsection{Proofs by induction}\label{ssec:ind}
 
 This amounts to applying an induction scheme. Observe that the
 unification problem is more difficult. The \C{elim}
