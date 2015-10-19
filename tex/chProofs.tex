@@ -1078,12 +1078,29 @@ Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
 \end{coq}
 
-Note, we 
+Why is the unfold important/needed here?  We need to expose the pattern of the
+RHS of \C{mulnBr} to factor out m.  Such step being just computation has no
+logical content, but helps driving the following rewrite.
+By looking at the RHS of \C{mulnBr} rewrite infers the pattern
+\C{(_ * (_ - _))}.  Rewrite traverses the entire goal looking for the
+head symbol *, but both occurrences don't have a - in their RHS.
+No goal subterm matches such pattern, hence /leq is really needed.
 
-The entire proof only manipulates the LHS but for the unfolding
-that
+One frequently needs to drive rewrite, here an explain in which we explain
+patterns.
 
-by rewrite [in RHS]/leq -muln_eq0 mulnBr.
+\C{in RHS, [_ + a]addnC} and maybe \C{[_ + _]mulnC}.
+
+Explain: first find the first instance of the pattern, then replace all
+occurrences.  As a last tuning, \C{{2}}.
+
+Take a goal with many wrong parentheses and normalize it? Or many \C{+0}.
+Explain \C{!}.
+
+\begin{coq}{def=LeqMul2lproof}{title=}
+Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
+\end{coq}
 
 
 
