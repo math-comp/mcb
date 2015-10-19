@@ -668,7 +668,7 @@ Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 \end{coq}
 \begin{coqout}{def=leqn0,done}{width=6cm,title=Negative natural
     number}
-1 subgoals
+1 subgoal
 
 n : nat
 =====================
@@ -726,7 +726,7 @@ case: n => [| k].
   by [].
 \end{coq}
 \begin{coqout}{run=leqn02}{width=6cm, title=Negative natural numbers}
-1 subgoals
+1 subgoal
 
   k : nat
   ============================
@@ -793,7 +793,7 @@ case: m => [|m].
   by [].
 \end{coq}
 \begin{coqout}{def=almostMulnEq1}{title=First case analysis,width=6cm}
-1 subgoals
+1 subgoal
 
 n : nat
 m : nat
@@ -808,7 +808,7 @@ In order to let us treat first the successor case,
 despite it corresponds by default to the second subgoal, we are going
 to use the \C{last first} tactic:
 
-\begin{coq}{def=almostMulnEq2}{title=First case analysis,width=7cm}
+\begin{coq}{def=almostMulnEq2}{title=Second case analysis,width=7cm}
 Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
@@ -816,7 +816,7 @@ case: m => [|m].
   by [].
 case: n => [|k]; last first.
 \end{coq}
-\begin{coqout}{def=almostMulnEq2}{title=First case analysis,width=6cm}
+\begin{coqout}{def=almostMulnEq2}{title=Second case analysis,width=6cm}
 2 subgoals, subgoal 1 (ID 72)
 
 m : nat
@@ -840,7 +840,7 @@ definition of the addition \C{addn}, this in turn reduces to
 reduces to false. To conclude, this branch of the case analysis is
 also solved by computation.
 
-\begin{coq}{def=almostMulnEq3}{title=First case analysis,width=7cm}
+\begin{coq}{def=almostMulnEq3}{title=Second case analysis,width=7cm}
 Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
@@ -849,8 +849,8 @@ case: m => [|m].
 case: n => [|k]; last first.
   by [].
 \end{coq}
-\begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=almostMulnEq3}{title=Second case analysis,width=6cm}
+1 subgoal
 
 m : nat
 ============================
@@ -861,26 +861,22 @@ m : nat
   reflexivity for 0
 or successor or any closed values is by computation but not
 reflexivity for a variable.}
-Now in the last remaining case, the right hand side evaluates to
-\C{true}, as the left argument of the disjunction is \C{false} (modulo
-computation) and the right one is \C{true}. However we need
-more than symbolic computation to show that the the left hand side is
-\C{true} as well, as the fact that \C{0} is a left zero for
-multiplication requires reasoning by induction on the code of the
-multiplication. The next sections illustrate in particular how to
-complete this proof.
 
-Before moving on we introduce an optional part of an intruction pattern
-that tells the system to try to solve all goal by mean of \C{by[]}.
+This proof script can be made more compact and more linear by using an
+optional part of the introduction pattern, which makes \Coq{}
+inspect the subgoals created by the case analysis and solve the
+trivial ones using the \C{by []} tactic. For instance in our case,
+let us add the optional \C{//} \emph{simplifying} switch to the
+introduction pattern of the first case analysis:
 
-\begin{coq}{def=almostMulnEq3}{title=First case analysis,width=7cm}
+\begin{coq}{def=almostMulnEq3}{title=A simplify intro pattern,width=7cm}
 Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
 \end{coq}
 \begin{coqout}{def=almostMulnEq11}{title=A simplify intro pattern,width=6cm}
-1 subgoals
+1 subgoal
 
 n : nat
 m : nat
@@ -889,20 +885,19 @@ m : nat
 (m.+1 == 0) || (n == 0)
 \end{coqout}
 
-Observe that the \C{//} intro pattern has been tried on both goals:
-it solved only the first one so we are left with the second one.
-Similarly, we can get rid of the second goal produced by the case
-analysis on \C{n}.
+Only the first generated subgoal is trivial, and has been closed, so
+we are left with the second one. Similarly, we can get rid of the
+second goal produced by the case analysis on \C{n}:
 
-\begin{coq}{def=almostMulnEq31}{title=Some other lysis,width=7cm}
+\begin{coq}{def=almostMulnEq31}{title=A simplify intro pattern,width=7cm}
 Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
 case: n => [|k] //.
 \end{coq}
-\begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=almostMulnEq3}{title=A simplify intro pattern,width=6cm}
+1 subgoal
 
 m : nat
 ============================
@@ -910,25 +905,39 @@ m : nat
 (m.+1 == 0) || (0 == 0)
 \end{coqout}
 
-We will see that \C{//} (is like a speech filler) can be placed 
-in the middle of other combined tactics, and not only in introduction
-pattern.
+We will see in Section~\ref{} that this \C{//} switch can be used in
+more general contexts than just this special case of introduction patterns:
+it can actually punctuate more complex combinations of tactics,
+avoiding spurious branching in proofs in a similar manner.
+
+Now in the last remaining case, the right hand side evaluates to
+\C{true}, as the left argument of the disjunction is \C{false} (modulo
+computation) and the right one is \C{true}. However we need
+more than symbolic computation to show that the left hand side is
+\C{true} as well: the fact that \C{0} is a left zero for
+multiplication indeed requires reasoning by induction on the code of the
+multiplication. Section~\ref{ssec:rw} explains how to complete this
+proof.
+
 
 \marginnote{What to say here to conclude? And shall we show here
 case analysis on a subterm and how to keep the equation?
 The choice of k and m for the sub terms may help recalling where
 the goal comes from. Also, equation generation can serve this purpose}
 
-\subsection{Rewriting}
+\subsection{Rewriting}\label{ssec:rw}
 
-In this section, we explain how to use known identities, ones that have
-for instance already been proved formally,
-in order to replace subterms of a goal with other terms during the
-course of a formal proof. In other words, we explain how to perform a
+This section explains how to perform local replacements of certain
+subterms of a goal with other terms during the course of a formal
+proof. In other words, we explain how to perform a
 \emph{rewrite} proof step, thanks to the eponym \C{rewrite} tactic.
+Such a replacement is licit when the original subterm is equal
+to the final one, up to computation or because of a proved
+identity. The \C{rewrite} tactic comes with several options for
+an accurate specification of the operation to be performed.
 
-Let us come back to the proof that we left unfished at the end of the
-previous section:
+Let us start with a simple example and come back to the proof that we
+left unfinished at the end of the previous section:
 
 \begin{coq}{def=almostMulnEq3}{title=First case analysis,width=7cm}
 Lemma |*muln_eq0*| m n :
@@ -937,11 +946,11 @@ Proof.
 case: m => [|m] //.
 case: n => [|k] //.
 \end{coq}
-\begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=5cm}
+1 subgoal
 
 m : nat
-============================
+=======================
 (m.+1 * 0 == 0) =
 (m.+1 == 0) || (0 == 0)
 \end{coqout}
@@ -949,23 +958,20 @@ At this stage, if we replace subterm \C{m.+1 * 0} by \C{0}, the
 subgoal becomes:
 
 \centerline{ \C{(0 == 0) = (m.+1 == 0) || (0 == 0)},}
-which is equal
-modulo computation to \C{true = true}. But because of the definition
-of \C{muln} by case analysis on its \emph{first} argument,
-\C{m.+1 * 0} does not evaluate symbolically to \C{0}: this equality
-holds but requires a proof by induction, as explained in
-Section~\ref{ssec:ind}. 
+which is equal modulo computation to \C{true = true}. But because of
+the definition of \C{muln} by case analysis on its \emph{first}
+argument, \C{m.+1 * 0} does not evaluate symbolically to \C{0}: this
+equality holds but requires a proof by induction, as explained in
+Section~\ref{ssec:ind}.
 \marginnote{We could also use Eval ... to ask Coq how an expression normalizes}
 We resort to an auxiliary lemma, called
 \C{muln0}:
 
-\marginnote{But this is not the way the lemma is stated in the library...}
-
 \begin{coq}{def=muln0}{title=Multiplying by zero on the left}
 Lemma |*muln0*| n : n * 0 = 0.
 \end{coq}
-
-and we call the \C{rewrite} tactic:
+\marginnote{But this is not the way lemma \C{muln0} is stated in the library...}
+and we call the \C{rewrite} tactic which preforms the desired replacement:
 
 \begin{coq}{def=almostMulnEq4}{title=First case analysis,width=7cm}
 Lemma |*muln_eq0*| m n :
@@ -975,31 +981,29 @@ case: m => [|m] //.
 case: n => [|k] //.
 rewrite muln0.
 \end{coq}
-\begin{coqout}{def=almostMulnEq4}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=almostMulnEq4}{title=First case analysis,width=5cm}
+1 subgoal
 
 m : nat
-============================
+=======================
 (0 == 0) =
 (m.+1 == 0) || (0 == 0)
 \end{coqout}
-which preforms the desired replacement.
 
-The \C{rewrite} tactic takes in input an equation and replaces
-instancea of its LHR with its corresponding RHS and vice versa.
-For example the LHS of muln0 can be read as a \emph{pattern}
-\C{(_ * 0)} where we use \_ to denote a wildcard. Indeed the
-identity is valid for any value of its parameter n.
-In this particular case the RHS does not depend on the parameter n.
-The tactic find automatically where the replacement takes place by
-searching the goal for a subterm matching the pattern \C{(_ * 0)}.
-There is only one such subterm, namely \C{(m.+1 * 0)}, that is
-hence the replaced by \C{0}, the RHS of \C{muln0}.
-\marginnote{Patterns are also needed by Search and are a quite
-pervasive concept.  Maybe hint that here.}
-
-
-We can now conclude the proof script, using the
+In this case, we have provided the \C{rewrite} tactic with the name
+\C{muln0} of a lemma stating a parametric identity: the tactic has
+replaced an instance of the left hand side of this identity with the
+corresponding instance of the right hand side. The left hand side of
+\C{muln0} can be read as a \emph{pattern} \C{(_ * 0)} where we use \_
+to denote a wild-card, which reflects the fact that the identity is
+valid for any value of its parameter \C{n}. The tactic
+automatically  finds  where in the goal the replacement should take
+place, by searching for a subterm matching the pattern \C{(_ * 0)}.
+In the present case, there is only one such subterm,
+\C{(m.+1 * 0)}, for which the parameter (or the wild-card) takes the
+value \C{m.+1}. This subterm is hence the replaced by \C{0}, the right
+hand side of \C{muln0}, which does not depend on the value of the
+pattern. We can now conclude the proof script, using the
 prenex \C{by} tactical:
 
 \begin{coq}{def=almostMulnEq5}{title=First case analysis}
@@ -1011,69 +1015,106 @@ by rewrite muln0.
 Qed.
 \end{coq}
 
-Now let us consider the case of lemma \C{|*leq_mul2l*|}, which
-provides a necessary and sufficient condition for the comparison
-\C{m * n1 <= m * n2} to hold:
+% Patterns are more generally useful both for subterm selection (in
+% proof mode) and for searching existing results in the current context.
+% This is the purpose of the \C{Search} command, which can for instance
+% be used to (FIND AN EXAMPLE WHICH IS NOT muln0...)
 
-\begin{coq}{def=LeqMul2l}{title=}
+\marginnote{Patterns are also needed by Search and are a quite
+pervasive concept. But have not yet provided the syntax.}
+
+The boolean identity \C{muln_eq0} that we just established expresses a
+logical equivalence that can in turn be used in proofs via the
+\C{rewrite} tactic. For instance, let us consider the case of lemma
+\C{|*leq_mul2l*|}, which provides a necessary and sufficient condition
+for the comparison \C{m * n1 <= m * n2} to hold:
+
+\begin{coq}{def=LeqMul2l}{title=Ordered products}
 Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 \end{coq}
 
-The proof uses the following three ingredients: the definition of leq,
-the distributivity of multiplication over subtraction and finally
-the lemma we just proved \C{muln_eq0}.
+The proof goes as follows: by definition of the order \C{<=}, the left
+hand side can be written as \C{m * n1 - m * n2}, which in turns
+factors into \C{m * (n1 - n2)}. We then conclude using
+lemma \C{muln_eq0}.
 
-The first step is to unfold the definition of leq to unravel subtraction.
-This can be performed using the rewrite tactic and the following syntax.
+The first step hence consists in unfolding the definition of leq, in order to
+reveal the hidden subtraction. This can be performed using the rewrite
+tactic with the following syntax:
 
-\begin{coq}{def=LeqMul2lproof}{title=}
+\begin{coq}{def=LeqMul2lproof1}{title=Ordered products,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
 rewrite /leq.
 \end{coq}
-\begin{coqout}{def=LeqMul2lx}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=LeqMul2lproof1}{title=Ordered products,width=5cm}
+1 subgoal
 
 m, n1, n2 : nat
-============================
+==========================
 (m * n1 - m * n2 == 0) =
-  (m == 0) || (n1 - n2 == 0).
+(m == 0) || (n1 - n2 == 0)
 \end{coqout}
 
-We now factor m on the left.
+Observe that the definition of \C{<=} has been exposed
+\emph{everywhere} in the goal, i.e. at both initial occurrences.
+We can now factor \C{m} on the left, using the appropriate
+distributivity property:
+\marginnote{Here again we cheat and do not use predicators}
 
-\begin{coq}{def=LeqMul2lproof}{title=}
+\begin{coq}{def=mulnBr}{title=Distributivity of multiplication over subtraction}
+Lemma |*mulnBr*| n m p : n * (m - p) = n * m - n * p.
+\end{coq}
+This time we need to perform a right-to-left rewriting (instead of the
+default left-to-right) that finds in the goal an instance of pattern
+\C{(_ * _ - _ * _)} where the terms matched by the first and the third
+wild-cards coincide. The syntax for right-to-left rewriting adds a
+minus \C{-} to the name of the rewrite rule:
+
+\begin{coq}{def=LeqMul2lproof2}{title=Ordered products,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
 rewrite /leq.
 rewrite -mulnBr.
 \end{coq}
-\begin{coqout}{def=LeqMul2lx}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=LeqMul2lproof2}{title=First case analysis,width=5cm}
+1 subgoal
 
 m, n1, n2 : nat
-============================
+==========================
 (m * (n1 - n2) == 0) =
-  (m == 0) || (n1 - n2 == 0).
+(m == 0) || (n1 - n2 == 0)
 \end{coqout}
 
-Note the statement of \C{mulnBr}.  We use it right to left hence the - sign.
-Finally we use \C{muln_eq0}.
+The last step of the proof uses lemma \C{muln_eq0} to align the left
+and the right hand sides of the identity.
 
-\begin{coq}{def=LeqMul2lproof}{title=}
+\begin{coq}{def=LeqMul2lproof3}{title=Ordered products, width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
 rewrite /leq.
 rewrite -mulnBr.
 rewrite muln_eq0.
 \end{coq}
-\begin{coqout}{def=LeqMul2lx}{title=First case analysis,width=6cm}
-1 subgoals
+\begin{coqout}{def=LeqMul2lproof3}{title=First case analysis,width=5cm}
+1 subgoal
 
 m, n1, n2 : nat
 ============================
-(m  == 0) || (n1 - n2 == 0) =
-  (m == 0) || (n1 - n2 == 0).
+(m == 0) || (n1 - n2 == 0) =
+(m == 0) || (n1 - n2 == 0)
 \end{coqout}
 
-The proof can be completed with \C{by[]}.  Subsequent rewriting steps can be
-combined into a single tactic invocation.
+The proof could now be completed by prefixing the last tactic with the
+\C{by} command, which concludes the proof by reflexively. However we
+can obtain a much more compact proof script by chaining the three
+tactics into a single one: several consecutive rewriting steps can
+indeed be performed by a single invocation of the \C{rewrite} tactic.
 
-\begin{coq}{def=LeqMul2lproof}{title=}
+\begin{coq}{def=LeqMul2lproof}{title=Ordered products}
 Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
 \end{coq}
