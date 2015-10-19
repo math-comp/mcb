@@ -906,9 +906,9 @@ subgoal becomes:
 which is equal
 modulo computation to \C{true = true}. But because of the definition
 of \C{muln} by case analysis on its \emph{first} argument,
-\C{m.+1 * 0} does not evalute symbolically to \C{0}: this equality
+\C{m.+1 * 0} does not evaluate symbolically to \C{0}: this equality
 holds but requires a proof by induction, as explained in
-Section~\ref{ssec:ind}. We hence need to resort to a lemma, called
+Section~\ref{ssec:ind}. We resort to an auxiliary lemma, called
 \C{muln0}:
 
 \marginnote{But this is not the way the lemma is stated in the library...}
@@ -917,20 +917,53 @@ Section~\ref{ssec:ind}. We hence need to resort to a lemma, called
 Lemma |*muln0*| n : n * 0 = 0.
 \end{coq}
 
-% Now this introduces a simple rewrite, with matching.
-% Lemma my_muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
-% Proof.
-% case: m => [|m].
-%   by [].
-% case: n => [|n].
-%   by rewrite muln0.
-% by [].
-% Qed.
+and we call the \C{rewrite} tactic:
 
+\begin{coq}{def=almostMulnEq4}{title=First case analysis,width=7cm}
+Lemma |*muln_eq0*| m n :
+  (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m].
+  by [].
+case: n => [|k]; last first.
+  by [].
+rewrite muln0.
+\end{coq}
+\begin{coqout}{def=almostMulnEq4}{title=First case analysis,width=6cm}
+1 subgoals
 
+m : nat
+============================
+(0 == 0) =
+(m.+1 == 0) || (0 == 0)
+\end{coqout}
+which preforms the desired replacement. Note that we did not provide
+the value of the parameter \C{n} used in the statement of \C{muln0}:
+the single possible occurrence of a subterm matching the left-hand
+\marginnote{Put the pattern, and use this word.}
+side of the identity has been found by the matching algorithm of the
+\C{rewrite} tactic. We can now conclude the proof script, using the
+prenex \C{by} tactical:
 
-% This introduces unfolding and left-to-right rewrite, plus chaining.
-% Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+\marginnote{Where do we introduce the \C{//} intro pattern?}
+\begin{coq}{def=almostMulnEq5}{title=First case analysis}
+Lemma my_muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m].
+  by [].
+case: n => [|k]; last first.
+  by [].
+by rewrite muln0.
+Qed.
+\end{coq}
+
+Now let us consider the case of lemma \C{|*leq_mul2l*|}, which
+provides a necessary and sufficient condition for the comparison
+\C{m * n1 <= m * n2} to hold:
+
+\begin{coq}{def=LeqMul2l}{title=}
+Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+\end{coq}
 % Proof. rewrite /leq -mulnBr muln_eq0. Qed.
 
 
