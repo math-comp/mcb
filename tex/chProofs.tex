@@ -537,6 +537,9 @@ of the definition of the \C{addn} function. Statements like
 \C{0 + n = n} or \C{0 <= n.+1} can be proved in a similar way, but
 also \C{2 + m = n.+2}, which requires a two-step computation.
 
+HERE: many examnples of what by[] can and cannot do.
+Say it is a terminating tactic.
+
 \subsection{Case analysis}\label{ssec:case}
 %assia : I do not remember why the \C macro does not work here, seems
 %to be a problem with ~~...
@@ -867,9 +870,54 @@ multiplication requires reasoning by induction on the code of the
 multiplication. The next sections illustrate in particular how to
 complete this proof.
 
+Before moving on we introduce an optional part of an intruction pattern
+that tells the system to try to solve all goal by mean of \C{by[]}.
+
+\begin{coq}{def=almostMulnEq3}{title=First case analysis,width=7cm}
+Lemma |*muln_eq0*| m n :
+  (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m] //.
+\end{coq}
+\begin{coqout}{def=almostMulnEq11}{title=A simplify intro pattern,width=6cm}
+1 subgoals
+
+n : nat
+m : nat
+============================
+(m.+1 * n == 0) =
+(m.+1 == 0) || (n == 0)
+\end{coqout}
+
+Observe that the \C{//} intro pattern has been tried on both goals:
+it solved only the first one so we are left with the second one.
+Similarly, we can get rid of the second goal produced by the case
+analysis on \C{n}.
+
+\begin{coq}{def=almostMulnEq31}{title=Some other lysis,width=7cm}
+Lemma |*muln_eq0*| m n :
+  (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m] //.
+case: n => [|k] //.
+\end{coq}
+\begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=6cm}
+1 subgoals
+
+m : nat
+============================
+(m.+1 * 0 == 0) =
+(m.+1 == 0) || (0 == 0)
+\end{coqout}
+
+We will see that \C{//} (is like a speech filler) can be placed 
+in the middle of other combined tactics, and not only in introduction
+pattern.
 
 \marginnote{What to say here to conclude? And shall we show here
-case analysis on a subterm and how to keep the equation?}
+case analysis on a subterm and how to keep the equation?
+The choice of k and m for the sub terms may help recalling where
+the goal comes from. Also, equation generation can serve this purpose}
 
 \subsection{Rewriting}
 
@@ -886,10 +934,8 @@ previous section:
 Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
-case: m => [|m].
-  by [].
-case: n => [|k]; last first.
-  by [].
+case: m => [|m] //.
+case: n => [|k] //.
 \end{coq}
 \begin{coqout}{def=almostMulnEq3}{title=First case analysis,width=6cm}
 1 subgoals
@@ -908,7 +954,9 @@ modulo computation to \C{true = true}. But because of the definition
 of \C{muln} by case analysis on its \emph{first} argument,
 \C{m.+1 * 0} does not evaluate symbolically to \C{0}: this equality
 holds but requires a proof by induction, as explained in
-Section~\ref{ssec:ind}. We resort to an auxiliary lemma, called
+Section~\ref{ssec:ind}. 
+\marginnote{We could also use Eval ... to ask Coq how an expression normalizes}
+We resort to an auxiliary lemma, called
 \C{muln0}:
 
 \marginnote{But this is not the way the lemma is stated in the library...}
@@ -923,10 +971,8 @@ and we call the \C{rewrite} tactic:
 Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
-case: m => [|m].
-  by [].
-case: n => [|k]; last first.
-  by [].
+case: m => [|m] //.
+case: n => [|k] //.
 rewrite muln0.
 \end{coq}
 \begin{coqout}{def=almostMulnEq4}{title=First case analysis,width=6cm}
@@ -937,22 +983,30 @@ m : nat
 (0 == 0) =
 (m.+1 == 0) || (0 == 0)
 \end{coqout}
-which preforms the desired replacement. Note that we did not provide
-the value of the parameter \C{n} used in the statement of \C{muln0}:
-the single possible occurrence of a subterm matching the left-hand
-\marginnote{Put the pattern, and use this word.}
-side of the identity has been found by the matching algorithm of the
-\C{rewrite} tactic. We can now conclude the proof script, using the
+which preforms the desired replacement.
+
+The \C{rewrite} tactic takes in input an equation and replaces
+instancea of its LHR with its corresponding RHS and vice versa.
+For example the LHS of muln0 can be read as a \emph{pattern}
+\C{(_ * 0)} where we use \_ to denote a wildcard. Indeed the
+identity is valid for any value of its parameter n.
+In this particular case the RHS does not depend on the parameter n.
+The tactic find automatically where the replacement takes place by
+searching the goal for a subterm matching the pattern \C{(_ * 0)}.
+There is only one such subterm, namely \C{(m.+1 * 0)}, that is
+hence the replaced by \C{0}, the RHS of \C{muln0}.
+\marginnote{Patterns are also needed by Search and are a quite
+pervasive concept.  Maybe hint that here.}
+
+
+We can now conclude the proof script, using the
 prenex \C{by} tactical:
 
-\marginnote{Where do we introduce the \C{//} intro pattern?}
 \begin{coq}{def=almostMulnEq5}{title=First case analysis}
-Lemma my_muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
+Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
 Proof.
-case: m => [|m].
-  by [].
-case: n => [|k]; last first.
-  by [].
+case: m => [|m] //.
+case: n => [|k] //.
 by rewrite muln0.
 Qed.
 \end{coq}
@@ -964,7 +1018,73 @@ provides a necessary and sufficient condition for the comparison
 \begin{coq}{def=LeqMul2l}{title=}
 Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 \end{coq}
-% Proof. rewrite /leq -mulnBr muln_eq0. Qed.
+
+The proof uses the following three ingredients: the definition of leq,
+the distributivity of multiplication over subtraction and finally
+the lemma we just proved \C{muln_eq0}.
+
+The first step is to unfold the definition of leq to unravel subtraction.
+This can be performed using the rewrite tactic and the following syntax.
+
+\begin{coq}{def=LeqMul2lproof}{title=}
+rewrite /leq.
+\end{coq}
+\begin{coqout}{def=LeqMul2lx}{title=First case analysis,width=6cm}
+1 subgoals
+
+m, n1, n2 : nat
+============================
+(m * n1 - m * n2 == 0) =
+  (m == 0) || (n1 - n2 == 0).
+\end{coqout}
+
+We now factor m on the left.
+
+\begin{coq}{def=LeqMul2lproof}{title=}
+rewrite /leq.
+rewrite -mulnBr.
+\end{coq}
+\begin{coqout}{def=LeqMul2lx}{title=First case analysis,width=6cm}
+1 subgoals
+
+m, n1, n2 : nat
+============================
+(m * (n1 - n2) == 0) =
+  (m == 0) || (n1 - n2 == 0).
+\end{coqout}
+
+Note the statement of \C{mulnBr}.  We use it right to left hence the - sign.
+Finally we use \C{muln_eq0}.
+
+\begin{coq}{def=LeqMul2lproof}{title=}
+rewrite /leq.
+rewrite -mulnBr.
+rewrite muln_eq0.
+\end{coq}
+\begin{coqout}{def=LeqMul2lx}{title=First case analysis,width=6cm}
+1 subgoals
+
+m, n1, n2 : nat
+============================
+(m  == 0) || (n1 - n2 == 0) =
+  (m == 0) || (n1 - n2 == 0).
+\end{coqout}
+
+The proof can be completed with \C{by[]}.  Subsequent rewriting steps can be
+combined into a single tactic invocation.
+
+\begin{coq}{def=LeqMul2lproof}{title=}
+Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
+\end{coq}
+
+Note, we 
+
+The entire proof only manipulates the LHS but for the unfolding
+that
+
+by rewrite [in RHS]/leq -muln_eq0 mulnBr.
+
 
 
 And here we should find a way to introduce, illustrate and explain:
