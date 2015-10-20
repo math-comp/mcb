@@ -1,4 +1,220 @@
 \chapter{More statements, more proofs}{Advanced specifications}
+
+\section{Type Theory}
+
+In TT proofs are terms terms and statements are types.
+In particular inductive data types like the ones we programmed with in
+the previous chapters can be used to describe the usual logical
+connectives and atomic predicates.  
+
+First, A -> B, then forall x : A, Bx.  \C{fun x : A => b} as the constructor
+of the function space.
+
+\begin{center}
+\AxiomC{$A$}
+\noLine
+\UnaryInfC{$B$}
+\RightLabel{$\to_I$}
+\UnaryInfC{$A \to B$}
+\DisplayProof
+\end{center}
+
+\begin{center}
+\AxiomC{$B$}
+\RightLabel{$\forall_I$ ($x$ fresh)}
+\UnaryInfC{$\forall x, B$}
+\DisplayProof
+\end{center}
+
+
+For example the connective and is usually described by the introduction rule
+
+\begin{center}
+\AxiomC{$A$} \AxiomC{$B$}
+\RightLabel{Conj}
+\BinaryInfC{$A \wedge B$}
+\DisplayProof
+\end{center}
+
+We call such rule Conj.  In Coq
+
+\begin{coq}{name=And}{}
+Inductive And (A B : Prop) : Prop :=
+| Conj (pa : A) (pb : B)
+\end{coq}
+
+Here A and B are parameters ranging over logical propositions (Prop),
+exactly as the rule above is a schema (on A and B). The single constructor
+of And plays the role of the intro rule: to create a term of type And
+you must use Conj, exactly as to Create a term of type A*B you must use
+pair.  Indeed
+
+\begin{coq}{name=And}{}
+Infix "/\" := And.
+About Conj : forall A B : Prop, A -> B -> A /\ B.
+\end{coq}
+
+Repeat that argument passing is like instantiation.
+
+We have seen how to inspect pairs and extract the components. Given that
+also the proofs of And are data we can do the same.
+
+\begin{coq}{name=Ande1}{}
+Definition elimAndleft A B (ab : A /\ B) : A :=
+match ab with
+| Conj a _ => a
+end.
+About elimAndleft : forall A B, A /\ B -> A.
+\end{coq}
+
+Pattern matching implements elimination
+
+$$
+\frac{A \wedge B}{A}elim\_left
+$$
+
+We do the same with Or.
+
+What are tactics?  Tactics are commands that build proofs, hence
+they construct terms.  E.g. intro, apply, case on nat, split, left, right, for
+intro rules.  case tactic as the only elim rule (for all inductives, since it
+is always a match).
+
+A simple exercise to show "curryfication" and take that as an excuse
+to prefer the curryfied form.
+
+CH for exists, like conj but dependent.
+
+\begin{coq}{name=Ex}{}
+Inductive Ex A (P : A -> Prop) : Prop :=
+| exI (a : A) (pa : P a).
+About exI.
+\end{coq}
+
+Again case as the eliminator.  exists tactic.
+
+Inductives for True, False. Definition of Not.
+
+What is missing from the previous chapter?
+
+how is elim?
+CH: how to inhabit the type of induction on nat.
+elim applies such principle.
+
+\subsection{Constructivism}
+
+TT is constructive.  As for nat and bool the \emph{only} way
+to ... also for proposition. Eg. exists can only be proved
+by exhibiting the witness and a proof that is satisfies the predicate.
+
+It is pretty clear that our proofs are programs, we used match and fix
+to prove exactly as we used them to program.
+
+\section{What is bool then}
+
+It is the fragment of decidable stuff (EM as case).
+It is a concrete data type on which you can program (SSR), automation by
+computation.
+
+% \begin{coq}{name=Ex}{}
+% Lemma muln_eq0 m n :
+%   ((m * n = 0) -> (m = 0) \/ (n = 0)) /\
+%   ((m = 0) \/ (n = 0) -> (m * n = 0))
+% Proof.
+% Qed.
+% 
+% Lemma leq_mul2l m n1 n2 :
+%   (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+% Proof.
+% Qed.
+% \end{coq}
+
+
+We need a way to relate Prop and bool.
+
+First, illusion that we can prove (inhabit) a bool predicate.
+Coercion is\_true adds = true to our statements.
+
+\begin{coq}{name=Ex}{}
+Lemma leq0n n : (0 <= n) (* = true *).
+\end{coq}
+
+NOt everything can be in bool, e.g. exists or a real reasoning by cases
+on a disjunction. Inductives give you the tree structure in natural
+deduction, not bools.
+
+\begin{coq}{name=Ex}{}
+Lemma ...
+case/orbP : (leq_total n m)
+\end{coq}
+
+We need lemmas to relate
+
+\begin{coq}{name=Meaning of reflect}{}
+Definition reflect P b : Prop :=  b -> P /\ P -> b
+
+Lemma orbP p q : reflect (p \/ q) (p || q).
+\end{coq}
+
+so frequent and so many variations that we have proper infrastructure like
+being able to invoke views everywhere and have 1 view per connective (negate or
+not...).
+
+\begin{coq}{}{}
+Lemma introT  : P -> b.            Proof using Pb. exact: introTF true _. Qed.
+Lemma introF  : ~ P -> b = false.  Proof using Pb. exact: introTF false _. Qed.
+Lemma introN  : ~ P -> ~~ b.       Proof using Pb. exact: introNTF true _. Qed.
+Lemma introNf : P -> ~~ b = false. Proof using Pb. exact: introNTF false _. Qed.
+Lemma introTn : ~ P -> b'.         Proof using Pb'. exact: introTFn true _. Qed.
+Lemma introFn : P -> b' = false.   Proof using Pb'. exact: introTFn false _. Qed.
+\end{coq}
+
+\subsection{how to use reflect lemmas as tactic decorators}
+
+we make examples with andP orP negP in move/P, apply/P, case/P.
+
+we explain the hint view, plus the extra impl arguments.
+
+some view can be partial, A -> B -> reflect B c.
+
+\subsubsection{The view mechanism in intro pattern}
+
+  a == b \&\& bb
+
+views applied to top, inline destructuring and subst:
+  => /andP[/eqP-> pb] ->.
+
+\section{Structuring a proof (FWD tactics)}
+
+Fwd and backward declarative steps.
+have : P x := ... H ...
+suff.
+
+Handling symmetries:
+gen have: x Hx / P x.
+
+managing large goals and contexts: set, -/x /x 
+
+help the reader with typographical comments, like leaving an empty
+line in latex (here we use bullets).
+
+Not everything needs to be a tactic, the logic is powerful
+enough to express special connectives that induce a line of
+reasoning.
+
+\section{Technical lemmas to drive a proof}
+
+indexes to have automatic subst
+put reflect in type to be used while programming to cast.
+
+classically
+
+iff
+
+and3
+
+\section{STOP HERE}
+
 THIS CHAPTER IS ABOUT METHODOLOGY, plus introduces the other logical
 connectives. May be merged into the previous chapter.
 
