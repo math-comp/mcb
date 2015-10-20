@@ -24,6 +24,14 @@ functional programming, with two possible difficulties:
 % \item types depending on terms (matrix x m)
 \end{itemize}
 
+
+\begin{itemize}
+\item Use monomorphic instances/compatible versions of the notations
+  that will later be generalized using canonical structures;
+\item For instance the infix \C{==} is the comparison on \C{nat}
+\item Further examples: \C{\sum_(i <- l) F i}, \C{\sum_(a <= b <) F i}
+in order to illustrate \C{foldr}.
+\end{itemize}
 \Coq{} commands and features:
 \begin{itemize}
 \item Implicit arguments (only to go from system F to ML), \C{@}
@@ -110,7 +118,7 @@ also
         4
 \end{verbatim}
 \item programs are really first class data (HO programming, not reasonably popular even outside
-	the functional world). E.g. 
+	the functional world). E.g.
     This program takes in input a function f and uses it twice
 \begin{verbatim}
       (fun f => f 3 + f 4)
@@ -551,5 +559,3 @@ from choice.v
 encode
 decode
 \end{coq}
-
-
