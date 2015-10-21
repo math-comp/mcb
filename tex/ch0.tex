@@ -26,7 +26,7 @@ In particular, this might lead the user to let the
 proof assistant impose a certain, usually more pedestrian proof, which
 we want to prevent as much as possible.
 (Another way to explain this could be to imagine how to explain some math
-to a kid that did receive no education, or trying to imagine that kid
+to a kid that received no education, or trying to imagine that kid
 inventing new math... the cultural backround is important to be up to
 speed. Maybe the aim of mathcomp is to implement that background at the
 quality of today's math).
@@ -34,7 +34,7 @@ quality of today's math).
 There are several important issues that have to be solved in order to
 come up with a library that has a chance to be reusable. The most
 pervasive one is the line drawn between what is trivial and what is
-logged in the proofs (for humans). Some are obvious (reflexively of
+logged in the proofs (for humans). Some are obvious (reflexivity of
 relations, ...) but in general this should be analyzed by
 \marginnote{Lost in the ...}
 ... learning the maths and reading the literature in the domain of
@@ -49,28 +49,28 @@ of this document.
 One of the great achievements attributed to Bourbaki is the
 generalization of the so-called axiomatic method, that promotes the
 design and use of abstract mathematical structures that factor theory
-and notations. This not only make maths more readable, but also more
+and notations. This not only makes maths more readable, but also more
 understandable and you need to play with the concepts for some times
 to come up with the right abstractions. Incidentally, notations are
 not only overloading of symbols, but also carry inference of
 properties. We should be able to do this and find a way to capture this
-inference, which is fact a (Prolog like) program run by the trained
+inference, which is in fact a (Prolog like) program run by the trained
 reader. And in general we would like the user to provide as much, but
 no more information in his statement/proof as he would in a proof,
 avoiding redundant information (where redundant covers inferable).
 
-Another kind of implicit is behind reasoning patterns that should also
+Another kind of implicit information is behind reasoning patterns that should also
 be modeled in a convenient way for the user. For instance,
 \emph{mutatis mutandis}, wlog, etc. These rely on the fact that the
 reader is able both to infer the mathematical statement involved in a
 cut formula and to run rather easily the simple piece of proof that
-justify it. This is modeled by techniques based on formula generation
-by subterm selection. This also overcome an unwanted behaviors that
+justifies it. This is modeled by techniques based on formula generation
+by subterm selection. This also overcomes an unwanted behavior that
 accessing to a subterm depends on the depth at which it occurs in the
 formula (usual bureaucracy in naive formalization).
 
 The techniques that make this possible are adapted from standard
-methods in computer science/programming languages. We stand on the
+methods in computer science and programming language research. We stand on the
 shoulders of a foundational system based on a type theory, which
 promotes functions as the initial concept of the formalism (as opposed
 to sets). In particular computations plays a privileged role there,
@@ -79,8 +79,8 @@ computations. Things that are equal up to computations can be
 substituted one by the other in a transparent way. This is central to
 the way things are modeled and at the heart of (small) scale
 reflection. Computer science engineering techniques are also useful
-to organize the infrastructure content that make possible to work with
-some comfort in upper layers of the library, in order to configured
+to organize the infrastructure content that make it possible to work with
+some comfort in upper layers of the library, in order to configure
 the content so that the machine can use it (order of arguments,
 implicit status, naming policy...).
 
@@ -108,7 +108,7 @@ We build on Coq and an extension.  The main tools follow (in random order):
 
 \section{Computational Thinking}\label{ch:compthink}
 
-This section should motive the activity of formalizing mathematics
+This section should motivate the activity of formalizing mathematics
 with the {\bf Coq} proof assistant, emphasizing its computing skills,
 and as opposed to other foundations like HOL. However the challenge is
 to keep mathematicians as the privileged target, while motivating the
