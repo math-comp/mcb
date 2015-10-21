@@ -1,4 +1,7 @@
-RT=./rt --coqc /home/gares/COQ/coq/bin/coqc --coqargs '-I /home/gares/INRIA/MathComp/coqfinitgroup/ssreflect/v8.5/src -R /home/gares/INRIA/MathComp/coqfinitgroup/theories Ssreflect'
+COQBIN=/home/gares/COQ/coq/bin/
+COQARGS="--coqargs '-I /home/gares/INRIA/MathComp/coqfinitgroup/ssreflect/v8.5/src -R /home/gares/INRIA/MathComp/coqfinitgroup/theories Ssreflect'"
+
+RT=./rt --coqc $(COQBIN)coqc $(COQARGS)
 
 H=@
 
