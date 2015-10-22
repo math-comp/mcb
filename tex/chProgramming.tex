@@ -16,6 +16,7 @@ in this chapter, we describe how some objects are described with the intent
 that they are {\em inert}, that is, they are meant to be
 manipulated by operations.  We also show how operations are described.
 
+\section{Functions}
 We start by considering the expression
 \[ 2 + 1 \]
 We can read this expression as an object, but also as the result of an
@@ -60,7 +61,7 @@ When using Coq and ssreflect, the step of giving a name can also be
 performed, in the following manner:
 
 \begin{coq}{name=exdef}{}
-Definition f := fun x => x + 1
+Definition f := fun x => x + 1.
 \end{coq}
 An alternative syntax for exactly the same definition is as follows,
 this alternative syntax is actually preferred.
@@ -173,6 +174,8 @@ to \C{nat}, which is then applied to \C{2}.  The intermediate function
 actually is \C{fun x => f (f x)}, so the result expression is \C{f (f
   2)}.  Remembering the definition of \C{f}, this expression can also
 be read as \C{(2 + 1) + 1}.  Thus, after computation, the result is \C{4}.
+
+\section{Data: cases and induction}
 
 Theoretical content:
 \begin{itemize}
