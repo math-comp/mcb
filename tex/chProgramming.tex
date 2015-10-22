@@ -80,12 +80,99 @@ Definition f (x : nat) : nat := x + 1.
 \end{coq}
 
 Once a definition was made, the Coq system provides a command to
-verify if an expression is well formed and obtain the type
-information, concerning the domain and codomain of the function.
-After executing one of the previous definition commands, we can check
-the function {\tt f} in the following manner:
-\begin{coq}{name=toto}{}
+describe the relevant information about the constant that is defined:
+
+\begin{coq}{name=about_f}{width=6cm,title=A function}
+About f.
 \end{coq}
+\coqrun{name=about_f_run}{about_f}
+\begin{coqout}{run=about_f_run}{title=Response,width=6cm}
+f : nat -> nat
+Argument scope is [nat_scope] ...
+\end{coqout}
+This response confirms that \C{f} is a function from
+\({\mathbb{N}}\) to \({\mathbb{N}}\).  We also learn that  \C{f}
+will interact with the parser in such a way that overloaded notations
+will be interpreted as notations for operations on natural number.
+
+We can be more inquisitive in our requests for information about
+\C{f}, we can also require to know what is the value.  This is done in
+the following manner:
+
+\begin{coq}{name=print_f}{width=6cm,title=A function's value}
+Print f.
+\end{coq}
+\coqrun{name=print_f_run}{print_f}
+\begin{coqout}{run=print_f_run}{title=Response,width=6cm}
+f =- fun x : nat -> x + 1
+       : nat -> nat
+\end{coqout}
+
+We see in this example that {\em type information} is an important
+feature of the language.  Type information is given twice in the
+result of the \C{Print} command, once in the fragment \C{fun x : nat
+  =>} and once in the second line, behind the colon \C{:}.  The first
+time, what we get is that the input of the function is expected to be
+a value of type \C{nat}.  The second time, what we get is that the
+type of \C{f} itself is the function type \C{nat -> nat}.  In fact,
+the colon character (when surrounded by spaces) will always be used to
+give type information.
+
+The function \C{f} operates on natural numbers, of type \C{nat}, but
+we can also define functions that operate on functions.  For instance,
+the following definition introduces a function that takes a function
+from \C{nat} to \C{nat} and returns a new function from \C{nat} to
+\C{nat}.
+
+\begin{coq}{name=repeat_twice_def}{}
+Definition repeat_twice (g : nat -> nat) :=
+  fun x => g (g x).
+\end{coq}
+Reading the first line of this statement, we see that a new object is
+being defined, called \C{repeat_twice}.  We also see that this object
+is a function argument the argument of which is a function of
+type \C{nat -> nat}.  For later reference in the definition of
+\C{repeat_twice}, the argument is given the name \C{g}.
+
+Reading the second line of this statement, we see that the value
+returned by \C{repeat_twice} when applied to its argument is a new
+function, described using the \C{fun .. => ..} construct.  The
+argument to that function is called \C{x}.  After the \C{=>} sign, we
+find the ultimate value of this function.  This fragment of text, \C{g
+  (g x)}, also deserves some explanation.  This fragment describes the
+application of function \C{g} to an expression \C{(g x)}.  In turn,
+the fragment \C{g x} describes the application of function \C{g} to
+\C{x}.  The lesson here is that the application of a function to an
+argument is not systematically written using parentheses, as is
+customary in mathematics, but it is usually only written by
+juxtaposing the function (on the left) and the argument (on the
+right).  Parentheses are only added when they are needed to resolve
+ambiguity.  Also expressions written with several subexpressions side
+by side should be read as if there were parentheses around the
+subgroups on the left.  We will illustrate this in the next few
+examples.
+
+When we want to apply the function \C{repeat_twice} to the function
+\C{f} and the number \C{2} and perform the computation, this can be
+written as follows:
+\begin{coq}{name=eval_repeat_twice_f_two}{width=6cm,title=Evaluating
+    an expression}
+Compute repeat_twice f 2
+\end{coq}
+\coqrun{name=eval_run}{eval_repeat_twice_f_two}
+\begin{coqout}{run=eval_f_run}{title=Response,width=6cm}
+  = 4 : nat
+\end{coqout}
+From the syntax point of view, we wrote three subexpressions only
+separated by space.  By default, the parser understands this as
+\C{(repeat_twice f) 2}, so we actually have a first subexpression
+which is \C{repeat_twice} applied to \C{f}.  According to the
+definition of the first function, this returns an intermediate
+function from \C{nat}
+to \C{nat}, which is then applied to \C{2}.  The intermediate function
+actually is \C{fun x => f (f x)}, so the result expression is \C{f (f
+  2)}.  Remembering the definition of \C{f}, this expression can also
+be read as \C{(2 + 1) + 1}.  Thus, after computation, the result is \C{4}.
 
 Theoretical content:
 \begin{itemize}
@@ -113,7 +200,7 @@ functional programming, with two possible difficulties:
 \item Use monomorphic instances/compatible versions of the notations
   that will later be generalized using canonical structures;
 \item For instance the infix \C{==} is the comparison on \C{nat}
-\item Further examples: \C{\sum_(i <- l) F i}, \C{\sum_(a <= b <) F i}
+\item Further examples: \verb+\sum_(i <- l) F i+, \verb+\sum_(a <= b <) F i+
 in order to illustrate \C{foldr}.
 \end{itemize}
 \Coq{} commands and features:
