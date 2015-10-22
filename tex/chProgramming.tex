@@ -17,6 +17,13 @@ that they are {\em inert}, that is, they are meant to be
 manipulated by operations.  We also show how operations are described.
 
 \section{Functions}
+In this section, we expect readers to get acquainted with the notion
+of function and the associated syntax.  We rely on a type of natural
+numbers that will only be described fully a few pages later.  There is an
+addition operation associated to this type and noted with the \C{+}
+symbol, and this operation will also be described a few pages later in
+the text.
+
 We start by considering the expression
 \[ 2 + 1 \]
 We can read this expression as an object, but also as the result of an
@@ -176,6 +183,196 @@ actually is \C{fun x => f (f x)}, so the result expression is \C{f (f
 be read as \C{(2 + 1) + 1}.  Thus, after computation, the result is \C{4}.
 
 \section{Data: cases and induction}
+It is also possible to define a datatype by giving in one declaration
+the type, methods to build elements of this type, and methods to
+use elements of the type while computing.  This approach is used
+systematically in Coq to define a variety of basic datatypes among
+which boolean values, natural numbers, pairs and sequences of values
+are the most prominents examples.  We will study these examples in
+turn.
+\subsection{Boolean values}
+The type \C{bool} of boolean values contains two values that can be
+distinguished in computations.  The declaration of this type happens
+in one of the first files to be automatically loaded when Coq starts.
+We can recover this declaration by using the \C{Print} command.
+
+\begin{coq}{name=print_bool}{width=6cm,title=Type bool}
+Print bool.
+\end{coq}
+\coqrun{name=print_bool_run}{print_bool}
+\begin{coqout}{run=print_bool_run}{width=6cm,title=Response}
+Inductive bool : Set := true : bool | false : bool
+\end{coqout}
+This declaration states explicitely that there are only two cases for
+elements of type \C{bool}.  the first case is given by the constant
+\C{true}, the second case by constant \C{false}.  Thus, the
+declaration of the type gives in an obvious manner the type, \C{bool},
+and ways to build elements, \C{true}, and \C{false}.  All definitions
+in Coq, like this one, which define a type by providing at the same
+time the only ways to build elements of the type are called {\em
+  inductive} definitions.  The two objects \C{true} and \C{false} are
+called constructors.
+
+In practice, this means that we can build a well-formed expression of
+type \C{bool} by using either \C{true} or \C{false}.  Coq provides a
+command to check that an expression is well-formed.  We can use this
+command here to illustrate a use of the constructors.
+
+\begin{coq}{name=check_true}{width=6cm}
+Check true.
+\end{coq}
+\coqrun{name=check_true_run}{check_true}
+\begin{coqout}{run=check_true_run}{width=6cm,title=Response}
+true : bool
+\end{coqout}
+
+To use boolean values in computations, we need a construct that makes
+it possible to return different values depending on whether some
+boolean input is \C{true} or \C{false}.  This is provided by an \C{if
+  .. then .. else} construct, as illustrated here:
+
+\begin{coq}{name=if_example}{}
+ if true then 3 else 2
+\end{coq}
+More generally, we can define a function that takes a boolean value as
+input and returns one of two possible natural numbers in the following
+manner:
+
+\begin{coq}{name=definef23}{}
+Definition f23 b := if b then 2 else 3.
+\end{coq}
+\coqrun{name=definef23_run}{definef23}
+Readers are invited to test this function using the \C{Compute} command.
+
+\subsection{natural numbers}
+The description of natural numbers in the Coq system is inspired from
+the work of Peano at the beginning of the twentieth century.  Natural
+numbers fit in two cases: either a natural number is zero or it is the
+successor of another natural number.  This is expresses by a
+declaration of \C{nat} as an inductive type with two cases.  This can
+be obtained from the Coq system by using the \C{Print} command.
+
+\begin{coq}{name=print_nat}{width=6cm,title=Type nat}
+Print nat.
+
+\end{coq}
+\coqrun{name=print_nat_run}{print_nat}
+\begin{coqout}{run=print_nat_run}{width=6cm,title=Response}
+Inductive nat : Set :=  O : nat | S : nat -> nat
+\end{coqout}
+
+This declaration states that \C{O} is a natural number, \C{S O}, is a
+natural number, \C{S (S O)}, and so on, and these are the only natural
+numbers.  This may take some effort to understand, but the decimal
+notation that we are accustomed to is only a parsing and display
+facility provided to the user for readability, but when manipulating
+the natural number \C{2}, the Coq system actually manipulates the
+object \C{S (S O)}.
+
+Although there are only two cases in the ways of constructing elements
+of type \C{nat}, there are infinitely many elements in the type.  This
+comes from the fact that the constructor \C{S} actually implements an
+injective function from \C{nat} to \C{nat} and \C{O} is a constant
+that is never output by the \C{S} function.
+
+The ssreflect library provides a few notations to make uses of the
+constructor {\tt S} more intuitive to read.  In particular, if \C{x}
+is a value of type \C{nat}, \C{x.+1} is a different notation for \C{S
+  x}.  The \C{.+1} notation binds more strongly than function
+application, so that this notation makes it possible to avoid some
+needs for parentheses.
+Similar notations are provided for up to 4 uses of the \C{S}
+constructor.  This can be illustrated by the following dialog (where
+we assume that \C{f} is a function of type \C{nat -> nat}).
+  For instance, we can write the following
+expression, when \C{f} is already defined with type \C{nat -> nat}.
+
+\begin{coq}{name=f_plus_one}{width=6cm}
+Check fun x => f x.+1.
+
+Locate ".+4".
+$~$
+$~$
+$~$
+\end{coq}
+\coqrun{name=f_plus_one_run}{f_plus_one}
+\begin{coqout}{f_plus_one_run}{width=6cm,title=Response}
+fun x => f x.+1 : nat -> nat
+
+Notation        Scope
+"n.+4" := S (S (S (S n)))  : nat_scope
+    (default interpretation)
+\end{coqout}
+
+When writing functions that compute on natural numbers, we can also
+proceed by cases, as was done in the previous section for boolean
+values.  Again, there are two cases, either the natural number used in
+the computation is \C{O} (also written \C{0}) or it is \C{n.+1} for
+some \C{n}, but in the latter case, it is often useful to also be able
+to use \C{n} for further computations.  The usual approach in this
+case is to describe the two cases as patterns: if the data fits one of
+the patterns, the computation proceeds with the corresponding
+computation.  Here is an example:
+
+\begin{coq}{name=pattern_on_nat}{}
+match n with | 0 => true | p.+1 => false end
+\end{coq}
+In this expression we describe a computation where some decision is
+taken depending on the value of the number \C{n}.  The fragment 
+\C{| 0 => true} expresses that when \C{n} is \C{0}, the final value is
+\C{true}.  In this expression, \C{0} is a pattern and the computation
+checks whether \C{n} matches this pattern.  The fragment
+\C{| p.+1 => false}  expresses that when \C{n} is the successor of the
+some number \C{p} the final value is \C{false}.  In other words, when
+\C{n} is the successor of somebody, then the returned value is
+\C{false}.  The value \C{p} mentioned in this pattern is not known in
+advance, it is actually computed at the moment the \C{n} is matched
+against the pattern.  For instance, if \C{n} is \C{5}, then the value
+computed for \C{p} is \C{4}.  In this particular instance, \C{p} is
+not used, so that we can also write as follows:
+
+\begin{coq}{name=pattern_on_nat}{}
+match n with | 0 => true | _.+1 => false end
+\end{coq}
+The symbole \C{_} is to represent a pattern whose value will never be
+used.
+
+For an example where the pattern variable is actually used, we can
+observe the function that returns the predecessor of a natural number
+when it exists.  This function is called \C{Nat.pred}.
+
+\begin{coq}{name=nat_pred}{width=6cm}
+Print Nat.pred.
+$~$
+$~$
+$~$
+\end{coq}
+\coqrun{name=nat_pred_run}{nat_pred}
+\begin{coqout}{nat_pred_run}{width=6cm,title=Response}
+fun n : nat =>
+  match n with
+   | 0 => n
+   | u.+1 => u
+  end : nat -> nat
+\end{coqout}
+Reading this function in detail, we see at the third line that when
+the input \C{n} is \C{O}, the result is \C{n} (so it is \C{0}) and
+when the input has the form \C{u.+1}, then the result is the value
+\C{u} that was found when matching \C{n} against the pattern \C{u.+1}.
+Assume for instance that \C{n} is C{2}, in other words \C{n} is
+\C{0.+1.+1}.  When matching \C{0.+1.+1} against the pattern \C{u.+1}
+the value of \C{u} is found to be \C{0.+1}, in other words \C{1}.
+
+The ssreflect library introduces a specific notation for pattern
+matching constructs like the one in \C{Nat.pred}, where only one of
+the alternatives needs to give a name to a subterm.  In this case,
+the same function value can be written as follows:
+\begin{coq}{}{}
+fun n : nat => if n is u.+1 then u else n
+\end{coq}
+This is a different way of expressing the same pattern-matching
+operation, but the actual computation is the same.
+
 
 Theoretical content:
 \begin{itemize}
