@@ -1,7 +1,91 @@
 \Chapter{Computational definitions \\ The syntax of terms}{Defining concepts by writing programs}\label{ch:prog}
 
-Find a more catchy title? The motivation is: how to define things:
-objects, operations, (boolean) relations.
+\textcolor{blue}{Find a more catchy title? The motivation is: how to define things:
+objects, operations, (boolean) relations.}
+
+We will take the point of view that mathematics can be understood as
+the study of objects, operations on these objects, and abstractions.  
+Children start learning mathematics by counting, where the objects are
+numbers and the operations are enumerating and adding.  In fact
+numbers are already the result of an abstraction process.
+
+What are the objects, the operations, and the abstractions in a given
+mathematical corpus is quite fluctuant.  The objects of group theory
+may sometimes be viewed as operations in another context.  Nevertheless,
+in this chapter, we describe how some objects are described with the intent
+that they are {\em inert}, that is, they are meant to be
+manipulated by operations.  We also show how operations are described.
+
+We start by considering the expression
+\[ 2 + 1 \]
+We can read this expression as an object, but also as the result of an
+operation on an object, or as the result of an operation on two
+objects.  Let us first consider the operation of {\em adding one to
+  natural number}.  This operation is written in the following manner.
+
+\begin{coq}{name=exfun}{}
+  fun n => n + 1
+\end{coq}
+To write such an operation, we can start from the expression {\tt 2 +
+  1} and isolate the object in this expression that is considered a
+variable component for the operation, here {\tt 2}, we then replace
+this object with a symbolic name, here {\tt n}.  We then encapsulate
+the expression {\tt n + 2} with the prefix {\tt fun n =>} to express
+that the operation produces a certain result {\tt n + 1} when given an
+input {\tt n}.
+
+So we have an expression which represents the operation of adding 1.
+Applying this operation to the object {\tt 2} will be written this
+way:
+
+\begin{coq}{name=exapp}{}
+  (fun n => n + 1) 2
+\end{coq}
+From the point of view of mathematical syntax, this object {\tt
+  fun n => n + 1} is unusual.  When defining an operation, we usually
+rely on a sentence {\em consider the function \(f\) from {\(\mathbb{N}\)}
+to {\(\mathbb{N}\)} which maps \(n\) to \(n + 1\)}.  This would also be
+written without natural language as follows:
+
+\[f : 
+\begin{array}{ccc}
+{\mathbb{N}} &\rightarrow& {\mathbb{N}}\\
+n &\mapsto& n + 1
+\end{array}\]
+
+The main difference is that the usual mathematical practice includes
+the step of giving a name, here \(f\) to the operation.
+
+When using Coq and ssreflect, the step of giving a name can also be
+performed, in the following manner:
+
+\begin{coq}{name=exdef}{}
+Definition f := fun x => x + 1
+\end{coq}
+An alternative syntax for exactly the same definition is as follows,
+this alternative syntax is actually preferred.
+
+\begin{coq}{name=exdef-pref}{}
+Definition f x := x + 1.
+\end{coq}
+As was obvious in the mathematical formulation, operations are mainly
+described by functions and mathematical practice is also to give
+information about the domain and the codomain of functions at
+definition time, as we did when writing
+\({\mathbb{N}}\rightarrow{\mathbb{N}}\).  In Coq syntax, we will write
+the same information as follows:
+
+\begin{coq}{name=exdef-type}{}
+Definition f (x : nat) : nat := x + 1.
+\end{coq}
+
+Once a definition was made, the Coq system provides a command to
+verify if an expression is well formed and obtain the type
+information, concerning the domain and codomain of the function.
+After executing one of the previous definition commands, we can check
+the function {\tt f} in the following manner:
+\begin{coq}{name=toto}{}
+\end{coq}
 
 Theoretical content:
 \begin{itemize}
