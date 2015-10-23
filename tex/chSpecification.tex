@@ -273,3 +273,181 @@ systematic-reactions, reflexes, to typical situations a
 beginner would screw up. In fact it would be great to explain here the
 mix of Gallina (unless, classically, etc.) and of tactics (wlog,
 have,...) that lead to a convenient modelling of the math prose.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{Declaring implicit arguments}
+\mcbREQUIRE{Canonical}
+\mcbPROVIDE{stating lemmas}
+\mcbLEVEL{2}
+\mcbsection{Declaring implicit arguments}\label{sec:declaringimpl}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+here we describe how to choose which arguments are implicit,
+that one has to think ahead how  a lemma is used and hence
+which data type inference has at hand.  Also that the order
+of quantifiers is relevant.
+\begin{itemize}
+\item lemmas: fwd/backward reasoning
+\item equations, look at the concl too, free vars are abstracted
+\item compare with eapply style
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{Coercions}
+\mcbREQUIRE{}
+\mcbPROVIDE{}
+\mcbLEVEL{1}
+\mcbsection{Notational aspects of specifications}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Even if the main way to extend the type inference algorithm
+% is via Canonical Structures, another mechanism is available
+% and used all over the library, even if it plays a minor role.
+% The language of Canonical Structures lets one program how the value of
+% an implicit argument can be synthesized, but can hardly be used to
+% explain \Coq{} how to ``fix'' an ill-typed term written by the user.
+
+When a typing error arises, it always involves three objects:
+a term \lstinline/t/, its type \lstinline/ity/ and the type
+expected by its context \lstinline/ety/.  Of course, for this
+situation to be an error, the two types \lstinline/ity/ and
+\lstinline/ety/ do not compare as equal.
+The simplest way one has to explain \Coq{} how to fix \lstinline/t/,
+is to provide a functional term \lstinline/c/ of type
+\lstinline/(ity -> ety)/ that is inserted around \lstinline/t/.
+In other words, whenever the user writes \lstinline/t/ in a context
+that expects a term of type \lstinline/ety/, the system instead of
+raising an errors replaces \lstinline/t/ by \lstinline/(c t)/.
+
+A function automatically inserted by \Coq{} to prevent a type
+error is called \emph{coercion}.
+The most pervasive coercion in the \mcbMC{} library is
+\lstinline/is_true/ that lets one write statements using boolean
+predicates.\marginnote{I guess in a way or another is true has
+already been introduced}.
+
+\begin{coqdef}{name=istrue}
+Lemma example : prime 17.
+Proof.
+Set Printing Coercions. Redirect "g1" Show.
+by [].
+Qed.
+\end{coqdef}
+\begin{coq}{def=istrue}{title=Coercion \lstinline/is_true/,width=6cm}
+Lemma example : prime 17.
+Proof.  by [].  Qed.
+\end{coq}
+\coqrun{name=r3}{ssr,istrue}
+\begin{coqout}{run=r3;out=g1}{title=Goal after line 3,width=6cm}
+1 subgoal
+
+============================
+is_true (prime 17)
+\end{coqout}
+
+The statement of the example is processed by type inference,
+it is enforced to be a type, but \lstinline/(prime 27)/ is actually
+a term of type \lstinline/bool/.  Early in the library the
+function \lstinline/is_true/ is declared as a coercion from
+\lstinline/bool/ to \lstinline/Prop/ and hence is it inserted
+by \Coq{} automatically.
+
+\begin{coq}{name=istruedef}{}
+Definition is_true b := b = true.
+Coercion is_true : bool >-> Sortclass. (* Prop *)
+\end{coq}
+
+Another coercion that is widely used injects booleans into naturals.
+Two examples follow.
+\marginnote{Mention Kronecker delta as a math example of the same hack}
+
+\begin{coq}{name=natofbool}{}
+Variable T : eqType.
+Fixpoint count (a : pred T) (s : seq T) :=
+  if s is x :: s' then a x + count a s' else 0.
+Lemma count_uniq_mem (s : seq T) x :
+  uniq s -> count_mem x s = (x \in s).
+\end{coq}
+\coqrun{name=ex}{ssr,istruedef,natofbool,abort}
+
+In line number 2 the term \lstinline/(a x)/ is a boolean.  The
+\lstinline/nat_of_bool/ function is automatically inserted to turn
+\lstinline/true/ into 1 and \lstinline/false/ into \lstinline/0/.
+Similarly, in the last line the membership test is turned into
+a number, that is shown to be equivalent to the count of any
+element in a list that is duplicate free.
+
+Another example of a coercion that is related to the running example
+of the current chapter is \lstinline/sort/.  Typically the projection
+of a record type extracting the data type is declared as a coercion
+letting one state generic theorems like in the following example.
+
+\begin{coqdef}{name=sotc}
+Lemma example (e : eqType) : forall x y : e, x == y -> y == x.
+\end{coqdef}
+\begin{coq}{def=sotc}{}
+Lemma example (e : eqType) : forall x y : e, x == y -> ...
+\end{coq}
+\coqrun{name=r5}{ssr,sotc,abort}
+
+Here the type of \lstinline/x/ and \lstinline/y/ is
+\lstinline/(sort e)/ and not \lstinline/e/ as the user initially wrote.
+Indeed \lstinline/e/ is a term (of type \lstinline/eqType/) while
+the \lstinline/forall/ quantification expects a type after the
+colon.  The \lstinline/sort/ function mapping an \lstinline/eqType/
+into a \lstinline/Type/ is inserted automatically.
+
+Coercions are composed transitively.
+
+\begin{coq}{name=b2z}{}
+Definition zerolist n := mkseq (fun _ => 0) n.
+Coercion zerolist : nat >-> seq.
+Check 2 :: true == [:: 2; 0].
+\end{coq}
+\coqrun{name=r6}{ssr,b2z}
+
+For the convenience of the reader we list here the most widely
+used coercions. there are also a bunch on Funclass not listed
+and elimT surely deserves some explanation.
+
+\noindent
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center
+	title,tabularx={l|l|l},fonttitle=\sffamily\bfseries,title=Coercions]
+coercion & source & target \\ \hline
+\lstinline/Posz/ & \lstinline/nat/ & \lstinline/int/ \\
+\lstinline/nat_of_bool/ & \lstinline/bool/ & \lstinline/nat/ \\
+\lstinline/elimT/ & \lstinline/reflect/ & \lstinline/Funclass/ \\
+\lstinline/isSome/ & \lstinline/option/ & \lstinline/bool/ \\
+\lstinline/is_true/ & \lstinline/bool/ & \lstinline/Sortclass/ \\
+\hline
+\end{tcolorbox}
+
+\marginnote{This may go in Chapter 1}
+Another device that is used to help type inference is the
+\lstinline/Implicit Types/ directive.  This directive lets
+one attach a default type to variable names.
+
+\begin{coq}{name=itype}{title=Example of \lstinline/Implicit Types/}
+Implicit Types m n : nat.
+Check forall m n, n == m.
+\end{coq}
+\coqrun{name=r7}{ssr,itype}
+
+In the example above the statement we \lstinline/Check/ does not
+contain enough information alone to be well types.  The overloaded
+\lstinline/==/ notation needs the terms to which it is applied to
+have a type for which a \lstinline/Canonical Structure/ is declared.
+Even if we did not annotate \lstinline/n/ and \lstinline/m/ with a
+type, the directive on the first line does it for us.
+
+The reader already familiar with the concept of coercion
+may find the presentation of this chapter nonstandard.
+Indeed coercions are usually presented as a device to model
+subtyping in a theory that, like \mcbCIC{}, does not
+feature subtyping.  As we will see in Chapter~\ref{ch:hierarchy}
+the role played by coercions is in the modelling of the hierarchy
+of algrabraic structure is minor.  Indeed what is hard is not to
+forget some fields of a structure to obtain a simpler one.  What
+is hard is to reconstruct the missing fields of a structure
+or compare two structures finding the minimum super structure.
+These tasks are mainly implemented using canonical structures.
+

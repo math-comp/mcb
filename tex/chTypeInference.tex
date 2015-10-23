@@ -12,8 +12,7 @@ Unset Printing Implicit Defensive.
 Abort.
 \end{coqdef}
 
-\Chapter{Type Inference}{Teaching \Coq{}
-how to read Math (step 1)}
+\Chapter{Type Inference}{Teaching \Coq{} how to read Math}
 
 NOTES: Refactoring needed: try to organize the content of this chapter
 and the two following ones along this line:
@@ -726,181 +725,190 @@ of terms.  This capability is used, for example, in the next
 chapter to related Monoid laws to function symbols to model
 the syntax and theory of iterated, ``big'', operators.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Coercions}
-\mcbREQUIRE{}
-\mcbPROVIDE{}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
-\mcbsection{Other aspects of type inference}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbREQUIRE{records + CS}
+\mcbPROVIDE{eqType}
+\mcbLEARN{interface to a theory}
+\mcbsection{Refining the meaning of ==\\Types with a decidable equality}
 
-Even if the main way to extend the type inference algorithm
-is via Canonical Structures, another mechanism is available
-and used all over the library, even if it plays a minor role.
-The language of Canonical Structures lets one program how the value of
-an implicit argument can be synthesized, but can hardly be used to
-explain \Coq{} how to ``fix'' an ill-typed term written by the user.
+The definition of \lstinline/eqType/ actually used in the \mcbMC{}
+library is more complex than the one we saw in
+Section~\ref{eqtype:noproof}.  Indeed there is little point in
+associating to a type a comparison function if that function is
+not ``correct''.
 
-When a typing error arises, it always involves three objects:
-a term \lstinline/t/, its type \lstinline/ity/ and the type
-expected by its context \lstinline/ety/.  Of course, for this
-situation to be an error, the two types \lstinline/ity/ and
-\lstinline/ety/ do not compare as equal.
-The simplest way one has to explain \Coq{} how to fix \lstinline/t/,
-is to provide a functional term \lstinline/c/ of type
-\lstinline/(ity -> ety)/ that is inserted around \lstinline/t/.
-In other words, whenever the user writes \lstinline/t/ in a context
-that expects a term of type \lstinline/ety/, the system instead of
-raising an errors replaces \lstinline/t/ by \lstinline/(c t)/.
+\begin{coq}{name=eqtype}{title=eqType}
+Definition rel T := T -> T -> bool.
 
-A function automatically inserted by \Coq{} to prevent a type
-error is called \emph{coercion}.
-The most pervasive coercion in the \mcbMC{} library is
-\lstinline/is_true/ that lets one write statements using boolean
-predicates.\marginnote{I guess in a way or another is true has
-already been introduced}.
+Module Equality.
 
-\begin{coqdef}{name=istrue}
-Lemma example : prime 17.
-Proof.
-Set Printing Coercions. Redirect "g1" Show.
-by [].
-Qed.
-\end{coqdef}
-\begin{coq}{def=istrue}{title=Coercion \lstinline/is_true/,width=6cm}
-Lemma example : prime 17.
-Proof.  by [].  Qed.
+Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
+
+Record class_of T := Mixin {op : rel T; _ : axiom op}.
+
+Structure eqType : Type := Pack {
+  sort :> Type;
+  class : class_of sort
+}.
+
+End Equality.
+
+Definition eq_op T := Equality.op (Equality.class T).
+Notation "x == y" := (@eq_op _ x y).
 \end{coq}
-\coqrun{name=r3}{ssr,istrue}
-\begin{coqout}{run=r3;out=g1}{title=Goal after line 3,width=6cm}
-1 subgoal
 
-============================
-is_true (prime 17)
+The reason why the operation and the property are packed in
+a record called \lstinline/class_of/ will be described in the next
+chapter.
+Intuitively one could think the construction as flat:
+the relation now links a type, a comparison function and a
+witness that this comparison function actually reflects equality.
+Reflecting equality means that the comparison function returns
+\lstinline/true/ if and only if the two inputs are provably equal, and
+\lstinline/false/ when they are provably different.
+
+\mantra{Whenever we write or read \lstinline/==/, the intended
+meaning is a decidable comparison compatible with \lstinline/=/}
+
+Given the new definition of \lstinline/eqType/,
+when we write \lstinline/(a == b)/ type inference does not only infer
+a function to compare \lstinline/a/ with \lstinline/b/ but also a
+proof that such function is correct.
+
+The simplest application is the \lstinline/eqP/ \emph{generic lemma}
+that can be used in conjunction with any formula involving the
+\lstinline/==/ notation.
+
+\begin{coq}{name=eqP}{title=The eqP lemma}
+Lemma eqP (T : Equality.eqType) : Equality.axiom (@eq_op T).
+Proof. by case: T => ty [op prop]; exact: prop. Qed.
+\end{coq}
+
+The proof is just unpacking the input \lstinline/T/.
+Since type inference can synthesize
+an arbitrary complex value for \lstinline/T/ by composing
+canonical structures instances, this lemma give us a
+access to the proof part of such inferred value.
+
+\begin{coq}{name=test}{title=Use of eqP}
+Lemma test (x y :nat) (a b : bool) : (a,x) == (b,y) -> fst (a,x) == b.
+Proof. by move/eqP=> def_ax; rewrite def_ax. Qed.
+\end{coq}
+\coqrun{name=r7}{ssr,eqtype,eqP}
+\coqrun{name=r8}{ssr,test}
+
+The \lstinline/(a,x)$~$== (b,y)/ assumption is reflected to
+\lstinline/(a,x)$~$= (b,y)/ by using the \lstinline/eqP/ view
+specified by the user.  Here we write \lstinline/==/ to have
+all the benefits of a computable function (simplification, reasoning
+by cases), but when we need the underlying logical property of
+substitutivity we access it via the view \lstinline/eqP/.
+
+In such sense,
+\lstinline/==/ has now a precise meaning.  In general overloaded
+notation come with a meaning and an associated theory.
+Note that the proof language silently adjusted the view
+using \lstinline/elimT/.
+
+\begin{coq}{name=elimt}{title=The eqtype view,width=5.3cm}
+Check elimT.
+
+\end{coq}
+\coqrun{name=et}{ssr,elimt}
+\begin{coqout}{run=et}{title=Response,width=6.7cm}
+elimT : forall (P : Prop) (b : bool),
+          reflect P b -> b -> P
 \end{coqout}
 
-The statement of the example is processed by type inference,
-it is enforced to be a type, but \lstinline/(prime 27)/ is actually
-a term of type \lstinline/bool/.  Early in the library the
-function \lstinline/is_true/ is declared as a coercion from
-\lstinline/bool/ to \lstinline/Prop/ and hence is it inserted
-by \Coq{} automatically.
+It is important to remark that \lstinline/eqP/ works for any
+instance of the \lstinline/eqType/ structure.
 
-\begin{coq}{name=istruedef}{}
-Definition is_true b := b = true.
-Coercion is_true : bool >-> Sortclass. (* Prop *)
+Now \lstinline/eqType/ can be seen as an interface to access a
+theory of results.  Indeed we can finally state (and prove) the
+Hedberg theorem in its full generality.
+
+\begin{coq}{name=hedberg}{title=Hedberg}
+Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
 \end{coq}
+\coqrun{name=hedberg}{ssr,hedberg,abort}
 
-Another coercion that is widely used injects booleans into naturals.
-Two examples follow.
+Now that the \lstinline/eqType/ structure comes with a well
+specified comparison function we can use it to program new
+functions, and reason about them.  For example by imposing
+that that the type variable of a container types, like \lstinline/seq/,
+is an \lstinline/eqType/ we can code the following function
+that tests membership.
 
-\begin{coq}{name=natofbool}{}
+\begin{coq}{name=memseq}{title=Functions}
+Fixpoint mem_seq {T : eqType} (s : seq T) x :=
+  if s is y :: s' then (y == x) && mem_seq s' x else false.
+\end{coq}
+\coqrun{name=memseq}{ssr,memseq}
+
+Indeed we are allowed to write \lstinline/(x == y)/ because
+\lstinline/T/ is not any type, but a type with a decidable
+equality.
+
+We spare the reader the definition of eqType for seq.
+MAYBE IN THE EXERCISES.
+
+If the elements of a sequence are in an eqType, we can obtain
+the overload the \lstinline/\in/ notation on sequences.
+In turn we can then define new predicates like being duplicate free.
+
+\begin{coq}{name=uniq}{}
 Variable T : eqType.
-Fixpoint count (a : pred T) (s : seq T) :=
-  if s is x :: s' then a x + count a s' else 0.
-Lemma count_uniq_mem (s : seq T) x :
-  uniq s -> count_mem x s = (x \in s).
+Implicit Type s : seq T.
+Fixpoint uniq s :=
+  if s is x :: s' then (x \notin s') && uniq s' else true.
+Fixpoint undup s :=
+  if s is x :: s' then
+    if x \in s' then undup s' else x :: undup s'
+  else [::].
 \end{coq}
-\coqrun{name=ex}{ssr,istruedef,natofbool,abort}
+\coqrun{name=uniq}{ssr,uniq}
 
-In line number 2 the term \lstinline/(a x)/ is a boolean.  The
-\lstinline/nat_of_bool/ function is automatically inserted to turn
-\lstinline/true/ into 1 and \lstinline/false/ into \lstinline/0/.
-Similarly, in the last line the membership test is turned into
-a number, that is shown to be equivalent to the count of any
-element in a list that is duplicate free.
+And show properties of these functions
 
-Another example of a coercion that is related to the running example
-of the current chapter is \lstinline/sort/.  Typically the projection
-of a record type extracting the data type is declared as a coercion
-letting one state generic theorems like in the following example.
-
-\begin{coqdef}{name=sotc}
-Lemma example (e : eqType) : forall x y : e, x == y -> y == x.
-\end{coqdef}
-\begin{coq}{def=sotc}{}
-Lemma example (e : eqType) : forall x y : e, x == y -> ...
+\begin{coq}{name=undupuniq}{title=Functions}
+Lemma undup_uniq s : uniq (undup s).
 \end{coq}
-\coqrun{name=r5}{ssr,sotc,abort}
+\coqrun{name=uniqp}{ssr,uniq,undupuniq,abort}
 
-Here the type of \lstinline/x/ and \lstinline/y/ is
-\lstinline/(sort e)/ and not \lstinline/e/ as the user initially wrote.
-Indeed \lstinline/e/ is a term (of type \lstinline/eqType/) while
-the \lstinline/forall/ quantification expects a type after the
-colon.  The \lstinline/sort/ function mapping an \lstinline/eqType/
-into a \lstinline/Type/ is inserted automatically.
+% maybe in the xercises
+% \end{coq}{}
+% Lemma perm_eqP s1 s2 : reflect (count^~ s1 =1 count^~ s2) (perm_eq s1 s2).
+% Lemma perm_rcons x s : perm_eql (rcons s x) (x :: s).
+% \end{coq}
 
-Coercions are composed transitively.
+Note that the \mcbMC{} library iterates the construction of
+\lstinline/eqType/ on the container itself:
+if \lstinline/T/ is \lstinline/eqType/ then also \lstinline/seq T/ is.
 
-\begin{coq}{name=b2z}{}
-Definition zerolist n := mkseq (fun _ => 0) n.
-Coercion zerolist : nat >-> seq.
-Check 2 :: true == [:: 2; 0].
+\begin{coq}{name=itereqtype}{}
+Let s1 := [:: 1; 2 ].
+Let s2 := [:: 3; 5; 7].
+Let ss := [:: s1 ; s2 ].
+Check ss == [::].
+Check uniq ss.
+Check undup_uniq ss.
 \end{coq}
-\coqrun{name=r6}{ssr,b2z}
+\coqrun{name=uniqp2}{ssr,itereqtype}
 
-For the convenience of the reader we list here the most widely
-used coercions. there are also a bunch on Funclass not listed
-and elimT surely deserves some explanation.
+Indeed we can compare sequences of sequences, and apply to them
+the theory of sequences.
+Unfortunately this does not work with tuples (yet).
 
-\noindent
-\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center
-	title,tabularx={l|l|l},fonttitle=\sffamily\bfseries,title=Coercions]
-coercion & source & target \\ \hline
-\lstinline/Posz/ & \lstinline/nat/ & \lstinline/int/ \\
-\lstinline/nat_of_bool/ & \lstinline/bool/ & \lstinline/nat/ \\
-\lstinline/elimT/ & \lstinline/reflect/ & \lstinline/Funclass/ \\
-\lstinline/isSome/ & \lstinline/option/ & \lstinline/bool/ \\
-\lstinline/is_true/ & \lstinline/bool/ & \lstinline/Sortclass/ \\
-\hline
-\end{tcolorbox}
-
-Another device that is used to help type inference is the
-\lstinline/Implicit Types/ directive.  This directive lets
-one attach a default type to variable names.
-
-\begin{coq}{name=itype}{title=Example of \lstinline/Implicit Types/}
-Implicit Types m n : nat.
-Check forall m n, n == m.
+\begin{coq}{name=tupeqtypeno}{}
+Fail Check forall (t : 3.-tuple nat), [:: t] == [::].
+Fail Check fun t : 3.-tuple nat => uniq [:: t; t].
+Fail Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
 \end{coq}
-\coqrun{name=r7}{ssr,itype}
+\coqrun{name=tupeqt}{ssr,tup,eqtype,tupeqtypeno}
 
-In the example above the statement we \lstinline/Check/ does not
-contain enough information alone to be well types.  The overloaded
-\lstinline/==/ notation needs the terms to which it is applied to
-have a type for which a \lstinline/Canonical Structure/ is declared.
-Even if we did not annotate \lstinline/n/ and \lstinline/m/ with a
-type, the directive on the first line does it for us.
-
-The reader already familiar with the concept of coercion
-may find the presentation of this chapter nonstandard.
-Indeed coercions are usually presented as a device to model
-subtyping in a theory that, like \mcbCIC{}, does not
-feature subtyping.  As we will see in Chapter~\ref{ch:hierarchy}
-the role played by coercions is in the modelling of the hierarchy
-of algrabraic structure is minor.  Indeed what is hard is not to
-forget some fields of a structure to obtain a simpler one.  What
-is hard is to reconstruct the missing fields of a structure
-or compare two structures finding the minimum super structure.
-These tasks are mainly implemented using canonical structures.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Declaring implicit arguments}
-\mcbREQUIRE{Canonical}
-\mcbPROVIDE{stating lemmas}
-\mcbLEVEL{2}
-\mcbsection{Declaring implicit arguments}\label{sec:declaringimpl}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-here we describe how to choose which arguments are implicit,
-that one has to think ahead how  a lemma is used and hence
-which data type inference has at hand.  Also that the order
-of quantifiers is relevant.
-\begin{itemize}
-\item lemmas: fwd/backward reasoning
-\item equations, look at the concl too, free vars are abstracted
-\item compare with eapply style
-\end{itemize}
+Tuples are trivially sequences.  Here we need to transport the
+property of being an eqType of sequences on tuples.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
@@ -940,6 +948,8 @@ constructor of an algebraic structure.
 \mcbLEVEL{2}
 \mcbsection{Discussion about type inference}\label{sec:typeinfrelated}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+NOT sure I want to keep that discussion.
 
 The points I want to make are:
 \begin{itemize}
