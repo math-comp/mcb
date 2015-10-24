@@ -11,10 +11,12 @@ equations.
 
 \section{Type Theory}
 
+\subsection{Curry-Howard correspondance for propositional logic}
+
 In TT proofs are terms terms and statements are types.
 In particular inductive data types like the ones we programmed with in
 the previous chapters can be used to describe the usual logical
-connectives and atomic predicates.  
+connectives and atomic predicates.
 
 First, A -> B, then forall x : A, Bx.  \C{fun x : A => b} as the constructor
 of the function space.
@@ -34,7 +36,6 @@ of the function space.
 \UnaryInfC{$\forall x, B$}
 \DisplayProof
 \end{center}
-
 
 For example the connective and is usually described by the introduction rule
 
@@ -85,12 +86,18 @@ $$
 We do the same with Or.
 
 What are tactics?  Tactics are commands that build proofs, hence
-they construct terms.  E.g. intro, apply, case on nat, split, left, right, for
-intro rules.  case tactic as the only elim rule (for all inductives, since it
-is always a match).
+they construct terms.  E.g. \C{apply}, \C{case} on \C{nat},
+\C{split}, \C{left}, \C{right}, for intro rules.  \C{case} tactic as
+the only elim rule (for all inductives, since it is always a match).
 
 A simple exercise to show "curryfication" and take that as an excuse
 to prefer the curryfied form.
+
+Inductives for \C{True}, \C{False} (elimination principle is ex falso
+quod libet). Definition of \C{not}.
+
+\subsection{Curry-Howard for quantifiers}
+Dependent types and CH for forall.
 
 CH for exists, like conj but dependent.
 
@@ -100,16 +107,25 @@ Inductive Ex A (P : A -> Prop) : Prop :=
 About exI.
 \end{coq}
 
-Again case as the eliminator.  exists tactic.
+\begin{itemize}
+\item Again \C{case} as the eliminator and the  \C{exists} tactic.
 
-Inductives for True, False. Definition of Not.
+\item Her come the more complex the explaination of \C{=>} and
+\C{:}. Warning the \C{:} of \C{apply:} is of a different nature (but
+not the one of \C{apply/view:})...
 
-What is missing from the previous chapter?
+\item General intro patterns: casing brackets \C{[]}, \C{/(_ x), ->, _}
+\end{itemize}
 
-how is elim?
+\subsection{Curry-Howard correspondance for inductive reasoning}
+
 CH: how to inhabit the type of induction on nat.
 elim applies such principle.
-
+\begin{itemize}
+\item  This is recursive programming.
+\item Mention case analysis as match.
+\item Complex \C{elim} like \C{elim: {2}n (leqnn n)}.
+\end{itemize}
 \subsection{Constructivism}
 
 TT is constructive.  As for nat and bool the \emph{only} way
@@ -119,108 +135,150 @@ by exhibiting the witness and a proof that is satisfies the predicate.
 It is pretty clear that our proofs are programs, we used match and fix
 to prove exactly as we used them to program.
 
-\section{What is bool then}
+\section{Boolean reasoning, \C{Prop} reasoning, going back and forth}
 
-It is the fragment of decidable stuff (EM as case).
-It is a concrete data type on which you can program (SSR), automation by
-computation.
+\begin{itemize}
+\item Comparison between \C{bool} and \C{Prop} (the usual diagram,
+  cf. slides)
+\item Boolean reflection.
+\item We want to navigate bewteen the possible representations of a
+  statements.
+\item \C{is_true} coercion, which gives the illusion of inhabiting a \C{bool}
+\item \C{reflect} as the specialized ``if and only if'' equivalence
+  relation (the real definition comes in section 4, as a spec
+  inductive. Plus we need more to explain it is in Type and talk about
+  \C{insub}
+\item The litany of lemmas needed ($\Leftarrow$, $\Rightarrow$,
+  negations, etc (these are the hint views in fact).
+\item This goind back and forth is going to happen all the time, so we
+  need infrastructure to save us the bureaucracy: this is the view
+  mechanism.
+\item Hint views remove the names of the lemmas in the previous
+  litany, slash removes the name of the tactic applying the view.
+\item Use of views: in intro patterns (like in \C{=> /v [-> ]}), in
+  \C{case/view: t}.
+\item Proving views (\C{apply/v1/v2}, \C{iffP}, ...)
+
+\end{itemize}
+
+
+% It is the fragment of decidable stuff (EM as case).
+% It is a concrete data type on which you can program (SSR), automation by
+% computation.
+
+% % \begin{coq}{name=Ex}{}
+% % Lemma muln_eq0 m n :
+% %   ((m * n = 0) -> (m = 0) \/ (n = 0)) /\
+% %   ((m = 0) \/ (n = 0) -> (m * n = 0))
+% % Proof.
+% % Qed.
+% %
+% % Lemma leq_mul2l m n1 n2 :
+% %   (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+% % Proof.
+% % Qed.
+% % \end{coq}
+
+
 
 % \begin{coq}{name=Ex}{}
-% Lemma muln_eq0 m n :
-%   ((m * n = 0) -> (m = 0) \/ (n = 0)) /\
-%   ((m = 0) \/ (n = 0) -> (m * n = 0))
-% Proof.
-% Qed.
-% 
-% Lemma leq_mul2l m n1 n2 :
-%   (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
-% Proof.
-% Qed.
+% Lemma leq0n n : (0 <= n) (* = true *).
 % \end{coq}
 
+% NOt everything can be in bool, e.g. exists or a real reasoning by cases
+% on a disjunction. Inductives give you the tree structure in natural
+% deduction, not bools.
 
-We need a way to relate Prop and bool.
+% \begin{coq}{name=Ex}{}
+% Lemma ...
+% case/orbP : (leq_total n m)
+% \end{coq}
 
-First, illusion that we can prove (inhabit) a bool predicate.
-Coercion is\_true adds = true to our statements.
+% We need lemmas to relate
 
-\begin{coq}{name=Ex}{}
-Lemma leq0n n : (0 <= n) (* = true *).
-\end{coq}
+% \begin{coq}{name=Meaning of reflect}{}
+% Definition reflect P b : Prop :=  b -> P /\ P -> b
 
-NOt everything can be in bool, e.g. exists or a real reasoning by cases
-on a disjunction. Inductives give you the tree structure in natural
-deduction, not bools.
+% Lemma orbP p q : reflect (p \/ q) (p || q).
+% \end{coq}
 
-\begin{coq}{name=Ex}{}
-Lemma ...
-case/orbP : (leq_total n m)
-\end{coq}
+% so frequent and so many variations that we have proper infrastructure like
+% being able to invoke views everywhere and have 1 view per connective (negate or
+% not...).
 
-We need lemmas to relate
+% \begin{coq}{}{}
+% Lemma introT  : P -> b.            Proof using Pb. exact: introTF true _. Qed.
+% Lemma introF  : ~ P -> b = false.  Proof using Pb. exact: introTF false _. Qed.
+% Lemma introN  : ~ P -> ~~ b.       Proof using Pb. exact: introNTF true _. Qed.
+% Lemma introNf : P -> ~~ b = false. Proof using Pb. exact: introNTF false _. Qed.
+% Lemma introTn : ~ P -> b'.         Proof using Pb'. exact: introTFn true _. Qed.
+% Lemma introFn : P -> b' = false.   Proof using Pb'. exact: introTFn false _. Qed.
+% \end{coq}
 
-\begin{coq}{name=Meaning of reflect}{}
-Definition reflect P b : Prop :=  b -> P /\ P -> b
+% \subsection{how to use reflect lemmas as tactic decorators}
 
-Lemma orbP p q : reflect (p \/ q) (p || q).
-\end{coq}
+% we make examples with andP orP negP in move/P, apply/P, case/P.
 
-so frequent and so many variations that we have proper infrastructure like
-being able to invoke views everywhere and have 1 view per connective (negate or
-not...).
+% we explain the hint view, plus the extra impl arguments.
 
-\begin{coq}{}{}
-Lemma introT  : P -> b.            Proof using Pb. exact: introTF true _. Qed.
-Lemma introF  : ~ P -> b = false.  Proof using Pb. exact: introTF false _. Qed.
-Lemma introN  : ~ P -> ~~ b.       Proof using Pb. exact: introNTF true _. Qed.
-Lemma introNf : P -> ~~ b = false. Proof using Pb. exact: introNTF false _. Qed.
-Lemma introTn : ~ P -> b'.         Proof using Pb'. exact: introTFn true _. Qed.
-Lemma introFn : P -> b' = false.   Proof using Pb'. exact: introTFn false _. Qed.
-\end{coq}
+% some view can be partial, A -> B -> reflect B c.
 
-\subsection{how to use reflect lemmas as tactic decorators}
+% \subsubsection{The view mechanism in intro pattern}
 
-we make examples with andP orP negP in move/P, apply/P, case/P.
+%   a == b \&\& bb
 
-we explain the hint view, plus the extra impl arguments.
+% views applied to top, inline destructuring and subst:
+%   => /andP[/eqP-> pb] ->.
 
-some view can be partial, A -> B -> reflect B c.
+\section{Structuring proofs}
 
-\subsubsection{The view mechanism in intro pattern}
+May be a real 10 lines proofs would help here. Lemmas about Euclidean
+division?
+ \begin{itemize}
+\item Proofs have a structure, to ensure readability (in a certain
+  sense) and maintenance; we list here some tools and good practice.
+\item Declare intermediate steps: forward (\C{have}), backward
+  (\C{suff}), symmetries (\C{gen have} and mention \C{wlog}),
+abbreviations \C{set}
+\item: Punctuation to help the reader: bullets, indentation,
+  terminating tactics.
+\item Good practices: local/early error detection, checkpoints via
+  \C{have}, naming policies (lemmas, but also hypotheses and bound
+  variables), robust rewrite.
+\end{itemize}
 
-  a == b \&\& bb
+% Fwd and backward declarative steps.
+% have : P x := ... H ...
+% suff.
 
-views applied to top, inline destructuring and subst:
-  => /andP[/eqP-> pb] ->.
+% Handling symmetries:
+% gen have: x Hx / P x.
 
-\section{Structuring a proof (FWD tactics)}
+% managing large goals and contexts: set, -/x /x
 
-Fwd and backward declarative steps.
-have : P x := ... H ...
-suff.
-
-Handling symmetries:
-gen have: x Hx / P x.
-
-managing large goals and contexts: set, -/x /x 
-
-help the reader with typographical comments, like leaving an empty
-line in latex (here we use bullets).
+% help the reader with typographical comments, like leaving an empty
+% line in latex (here we use bullets).
 
 Not everything needs to be a tactic, the logic is powerful
 enough to express special connectives that induce a line of
-reasoning.
+reasoning. Hence the next section.
 
-\section{Technical lemmas to drive a proof}
+\section{Advanced statements}
 
-indexes to have automatic subst
-put reflect in type to be used while programming to cast.
+\begin{itemize}
+\item Use macros (\C{left_commutative} or notations like
+\C{\{in A, bijective f\}}, and3, ...)
+\item Use naming conventions
+\item Classically (do not insist too much)
+\item iff (\C{AGM}): find examples?
+\item Tuning of implicit arguments
+\item Spec lemmas in order: to implement the most appropriate
+  branching, to chose the extra hypotheses (like equations) that pop
+  up in each branch, to have automatic substitution (via
+  indexes). Explain (finally) the \C{reflect} predicate in the light
+  of these. But we cannot yet explain sort \C{Type}.
 
-classically
-
-iff
-
-and3
+\end{itemize}
 
 \section{STOP HERE}
 
@@ -237,7 +295,10 @@ connectives. May be merged into the previous chapter.
 % spec? A new vernacular to declare specs without typing coinductive and
 % by writing explicitly the equations.
 
-Discussion prop/bool, intuitionism, extraction (we should be able to avoid talking about impredicativity, but use Prop for computationally irrelevant).
+Discussion prop/bool, intuitionism, extraction (we should be able to
+avoid talking about impredicativity, but use Prop for computationally
+irrelevant).
+
 
 \begin{itemize}
 \item can we specify all we have written so far using just = and forall? No.
