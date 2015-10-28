@@ -337,11 +337,12 @@ not used, so that we can also write as follows:
 \begin{coq}{name=pattern_on_nat}{}
 match n with | 0 => true | _.+1 => false end
 \end{coq}
-The symbole \C{_} is to represent a pattern whose value will never be
+The symbol \C{_} is used to represent a pattern whose value will never be
 used.
 
 This pattern can also be written using an ``\C{if .. then .. else}''
 syntax:
+
 \begin{coq}{name=pattern_on_nat_0}{}
 if n is 0 then true else false
 \end{coq}
@@ -411,7 +412,7 @@ natural number, when it comes to the second rule \C{0.+1.+1} matches
 the \C{.+1} part in the pattern and \C{0.+1} matches the \C{v} part in
 the pattern.
 
-
+\subsection{Recursion for integers}
 With only pattern-matching, we do not cope well with the fact that the
 type \C{nat} of natural numbers actually contains an infinity of
 elements.  To really handle infinity, the Coq system provides another
@@ -427,23 +428,15 @@ following manner:
 
 \begin{coq}{name=redefine_add}{}
 Fixpoint my_add n m :=
-  match n with
-  | 0 => m
-  | p.+1 => (my_add p m).+1
-  end.
+  if n is p.+1 then (my_add p m).+1 else m
 \end{coq}
 In this line, we learn that the keyword for defining a recursive
 function is \C{Fixpoint}.  We see also that the function being
 defined, here called \C{my_add}, is used in the definition of the
 function \C{my_add} itself.  This text expresses that the value of
-\C{my_add 0 m} is \C{m} and that the value \C{my_add p.+1 m} is
-\C{(my_add p m).+1}.
-
-Each of the pattern matching rules in this definition expresses an
-expected behavior of the addition function.  The first pattern
-matching rule expresses that \C{my_add 0 m = m}; as expected adding 0
-to any number \C{m} returns \C{m}.  The second pattern matching rule
-expresses that \C{my_add p.+1 m = (my_add p m).+1}.  This equality may
+\C{my_add p.+1 m} is
+\C{(my_add p m).+1} and that the value \C{my_add 0 m} is \C{m}.
+This first equality may
 seem redundant, but there is progress when reading this equality from
 left to right: addition of \C{p.+1} is explained with the help of
 addition of \C{p}, which is a smaller number.  When considering the
@@ -455,6 +448,309 @@ expression \C{my_add 2 3}, the computation progresses as follows
 \C{(my_add 0 3).+1.+1} \> use the first pattern matching rule\\
 \C{3.+1.+1}\> remember that \C{5 = 3.+1.+1}\\
 \end{tabbing}
+When the computation finishes, the symbol \C{my_add} disappears.  In
+this sense, the recursive definition is really a definition.
+
+An alternative way of writing \C{my_add} relies explicitely on
+pattern-matching rules instead of relying on an \C{if} statement.
+This can be written as follows:
+
+\begin{coq}{name=my_add_redef}{}
+Fixpoint my_add n m :=
+  match n with
+  | 0 => m
+  | p.+1 => (my_add p m).+1
+  end.
+\end{coq}
+With this way of writing the recursive function, it becomes obvious
+pattern-matching rule describes an equality between two symbolic
+expression, but this equality is always used from left to right during
+computations.
+
+When writing recursive functions, the Coq systems imposes the
+constraint that the described computation must be guaranteed to
+terminate.  This guarantee relies on an analysis of the function's
+description, to make sure that recursive calls always happen with a
+given argument that decreases.  The most frequent technique to
+establish this guarantee is that recursive calls happen on a variable
+and this variable was introduced by a pattern in a pattern-matching
+construct or in an \C{if} statement, with the additional constraint
+that the pattern-matching construct observes a variable that was one
+of the function's inputs.
+
+For instance, in the case of \C{my_add}, the recursive call happens
+with \C{p} as the first argument, \C{p} was introduced by the pattern \C{p.+1}
+in the corresponding pattern-matching rule, the pattern-matching
+construct was observing \C{n}, and \C{n} is the first argument of the
+function \C{my_add}.
+
+In function \C{my_add}, the first argument \C{n} is only used to
+repeat \C{n} times the operation of adding a \C{.+1} on the second
+argument.  This corresponds to the fact that the \C{p} is only used in
+the recursive call.  The programming language makes it possible to do
+more.  For instance, for a given function \(f\), we might want to add all
+the values \(f 0 + f 1 + \cdots + f n\).  This would be done in the
+following manner:
+
+\begin{coq}{name=example_sum_f}{}
+Fixpoint sum_f (f : nat -> nat) (n : nat) :=
+  if n is p.+1 then my_add (f n) (sum_f p) else f 0.
+\end{coq}
+
+If addition tantamounts to repeating the operation of adding a \C{.+1}
+to one of the arguments, subtraction tantamounts to repeating the
+operation of fetching a subterm of the first argument.  This is also
+easily expressed using pattern matching constructs.  Here again,
+subtraction is already defined the libraries, but we can play the game
+of re-defining our own version.
+
+\begin{coq}{name=my_sub}{}
+Fixpoint my_sub n m :=
+  match n, m with
+  | p.+1, q.+1 => my_sub p q
+  | _ , _ => n
+  end.
+\end{coq}
+From a mathematical point of view, this definition can be quite
+unsettling.  The second pattern matching rule indicates that when
+the second argument of the subtraction is \C{0}, then the result is
+the first argument.  But it also covers the case where the second
+argument is non-zero while the first argument is 0.  This phenomenon
+is imposed by the fact that the function must be total (all functions
+are total in the Coq system).  When the second argument is non-zero
+and the first argument is zero, a value must still be returned and
+{\em this value must be a natural number}.  In the long run, this
+problem will be solved by introducing another type of numbers with
+negative integers.
+
+Recursive functions also make it possible to test data for
+equality. We can for example write a function with two arguments, that
+returns \C{true} exactly when the two arguments are equal.
+
+\begin{coq}{name=nat_eq_def}{}
+Fixpoint my_eq_nat n m :=
+  match n, m with
+  | 0, 0 => true
+  | p.+1, q.+1 => my_eq_nat p q
+  | _, _ => false
+  end.
+\end{coq}
+The last rule in the code of this function actually covers two cases :
+\C{0, _.+1} and \C{_.+1, 0}.
+
+For equality test functions, it is useful to add a more intuitive
+notation.  For instance we can attach a notation to \C{my_eq_nat} in
+the following manner:
+
+\begin{coq}{name=notation_my_eq}{}
+Notation "x == y" := (my_eq_nat x y)
+  (at level 70, no associativity).
+\end{coq}
+This equality test function can then be used in other algorithms.  Now
+that we have programmed this equality test function, we can verify
+that the Coq system really identifies various ways to write the same
+natural number.
+
+\begin{coq}{name=equalities}{width=6cm}
+Compute 0 == O.
+Compute 1 == S O.
+Compute 1 == 0.+1.
+Compute 2 == S O.
+Compute 2 == 1.+1.
+Compute 2 == my_add 1 0.+1
+\end{coq}
+\coqrun{name=equalities_run}{equalities}
+\begin{coqout}{equalities_run}{width=6cm}
+= true : bool
+= true : bool
+= true : bool
+= false : bool
+= true : bool
+= true : bool
+\end{coqout}
+
+In this section, we introduced a variety of functions and notations
+for operations on natural numbers.  In practice, these functions and
+notations are already loaded by the preamble that is provided in the
+introductory chapter, so that we work in a context where addition,
+multiplication, comparison, are already provided for direct use.  In
+the next section, we will assume that readers start again with 
+a fresh instance of the Coq system and load the preamble, so that
+function \C{my_add}, \C{my_sub}, \C{my_eq_nat} are not provided
+anymore.  On the other hand, notations for addition (\C{+}),
+subtraction (\C{-}) and the equality test (\C{==}) are provided by the
+preamble.
+
+
+\subsection{The sequence datatype}
+It is often the case that we wish to group several objects in a
+sequence that can be manipulated as a single object.  For instance, we
+might want to compute the sequence of all predecessors or all divisors
+of a number.  the sequence datatype is provided for this purpose.
+
+the ssreflect library provides this datatype under the name \C{seq},
+but defines it as an alias for pre-existing type \C{list} given in the
+Coq preamble.  The definition of type \C{list} is as follows:
+
+\begin{coq}{name=list_def}{}
+Inductive list (A : Type) : Type :=
+  nil : list A
+| cons : A -> list A -> list A.
+\end{coq}
+This definition actually describes the type of lists as a {\em
+  polymorphic type}.  This means that there is a different type
+\C{list A} for each possible choice of a type \C{A}.  The type of the
+fonction \C{cons} is devised specifically to describe how to produce a
+new list of type \C{list A} by combining an element of \C{A} and an
+existing list of type \C{list A}.
+
+In principle, all elements of the datatype definition have a type
+argument.  Thus, \C{list} is a function of type \C{Type -> Type} and
+\C{nil} is a function that takes a type \C{A} as argument and returns
+an empty list of type \C{list A}.  The notation \C{.. -> ..} is not
+well suited for this kind of situation and the type of \C{nil} is
+rather written as follows:
+
+\begin{coq}{name=type_of_nil}{}
+  forall A:Type, list A
+\end{coq}
+The same goes for the other constructor of list, named \C{cons}.  This
+function actually takes three arguments: a type \C{A}, a value in this
+type, and a value in the type \C{list A}.  The type of \C{cons} is
+thus written as follows:
+
+\begin{coq}{name=type_of_cons}{}
+  forall A:Type, A -> list A -> list A
+\end{coq}
+This information can actually be obtained from the system by using the 
+command \C{About} (the answer uses the fact \C{seq} is an alias for \C{list}).
+
+\begin{coq}{name=about_cons}{width=3cm}
+About cons.
+$~$
+$~$
+$~$
+\end{coq}
+\coqrun{name=about_cons_run}{about_cons}
+\begin{coqout}{about_cons_run}{width=9cm,title=Response}
+cons : forall A: Type, A -> seq A -> seq A
+
+Argument A is implicit and maximally inserted
+Argument scopes are [type_scope _ seq_scope]
+\end{coqout}
+In practice, the Coq system implements a mechanism to avoid that
+people need to give the type argument to the \C{cons} function.  This
+the information meant by the message \C{Argument A is implicit and
+  ..}.  Every time users write \C{cons}, the system automatically
+inserts an argument in place of \C{A}, so that this argument does not
+need to be written (the argument is {\em implicit}).  It is then the
+job of the Coq system to guess what this argument is when looking at
+the first explicit argument given to the function.  The same happens
+to the type argument of \C{nil}.  In the end, this makes that user can
+write the following expression.
+
+\begin{coq}{name=check_list_2}{width=6cm}
+Check cons 2 nil.
+\end{coq}
+\coqrun{name=check_list_2_run}{check_list_2}
+\begin{coqout}{check_list_2_run}{width=6cm,title=Response}
+[:: 2] : seq nat
+\end{coqout}
+This example shows that the function \C{cons} is only applied
+explicitely to two arguments.  The first argument, which is implicit,
+has been guessed so that it matches the actually type of \C{2}.  For 
+\C{nil} also, the argument has been guessed to match the constraints
+coming from the fact it was used in place where a list of type \C{list
+  nat} was expected.  This example also shows that the ssreflect
+library provides a collection of notations for lists.  In particular
+\C{cons a l} is usually written \C{a :: l} when \C{l} is a variable
+name, and lists terminated by \C{nil} are written with square brackets.
+
+When programming with sequences, we can again use the the pattern matching
+construct to express how data can be retrieved from a sequence.  For
+instance, to retrieve the first element of a sequence of natural numbers
+or 0 if the sequence does not contain any element, we can write the
+following code:
+
+\begin{coq}{name=first_element}{}
+Definition first_element_or_0 (s : seq nat) :=
+  match s with
+  | nil => 0
+  | cons a _ => a
+  end.
+\end{coq}
+Using the notations for {\tt cons} and {\tt nil}, we can also write
+
+\begin{coq}{name=first_element1}{}
+Definition first_element_or_0 (s : seq nat) :=
+  match s with
+  | [::] => 0
+  | a :: _ => a
+  end.
+\end{coq}
+Using the \C{if} syntax, we can write:
+
+\begin{coq}{name=first_element2}{}
+Definition first_element_or_0 (s : seq nat) :=
+  if s is a :: _ then a else 0.
+\end{coq}
+\subsection{Recursion for sequences}
+Because the second argument of \C{cons} can also be a sequence, it is
+possible to build sequences that are quite long, but always finite.
+In this respect, the sequences are very similar to the natural
+numbers.  Recursion is again the solution to cope with the arbitrary
+length of sequences with functions that can be described concisely.
+
+For instance, we can define a size function that counts the number of
+elements in a sequence.
+
+\begin{coq}{name=def_size}{}
+Fixpoint my_size A (s : seq A) :=
+  if s is _ :: s' then (my_size s').+1 else 0.
+\end{coq}
+During computation on a given sequence, this function will traverse
+the whole list, producing a \C{.+1} construct for each
+\C{cons} pattern that is encountered.  It should be noted that in this
+definition, the function \C{my_size} is described as a two argument
+function, but the recursive call \C{my_size s'} is done by providing
+explicitely only one argument, \C{s'}.  This is because we started the
+Coq session with, among other commands, the command ``\C{Set Implicit
+  Arguments}''.  According to this directive, the Coq system makes
+arguments of functions that can be guessed from the type of following
+arguments automatically implicit.  This design is effective directly
+at definition time.
+
+Another example of recursive function on lists is a function that constructs
+a new list where all elements are obtained by processing the elements
+of a list with a given function.  This function can be defined in this
+manner.
+
+\begin{coq}{name=def_map}{}
+Fixpoint my_map A B (f : A -> B) s :=
+  if s is e :: s' then f e :: my_map f s' else nil.
+\end{coq}
+With this function it is also interesting to understand how we can
+improve the notations.  For instance, we will add a notation that
+makes it more apparent that the result is {\em the sequence of all
+expressions \(f(i)\) for \(i\) taken from another sequence}.
+
+\begin{coq}{name=notation_map}{}
+Notation "[ 'seq' E | i <- s ]" := (my_map (fun i => E) s)
+  (at level 0, E at level 99, i ident,
+   format "[ '[hv' 'seq' E '/ ' | i <- s  ] ']'").
+\end{coq}
+For instance, this notation makes it possible to compute successors of
+a given list of natural numbers.
+
+\begin{coq}{name=try_map_notation}{width=7.cm}
+Compute [seq i.+1 | i <- [:: 2; 3]].
+\end{coq}
+\coqrun{name=try_map_notation_run}{try_map_notation}
+\begin{coqout}{try_map_notation_run}{width=5cm,title=Response}
+= [:: 3; 4] : seq nat
+\end{coqout}
+
+\section{Sections and local environments}
 
 Theoretical content:
 \begin{itemize}
