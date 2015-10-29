@@ -20,8 +20,8 @@ manipulated by operations.  We also show how operations are described.
 In this section, we expect readers to get acquainted with the notion
 of function and the associated syntax.  We rely on a type of natural
 numbers that will only be described fully a few pages later.  There is an
-addition operation associated to this type and noted with the \C{+}
-symbol, and this operation will also be described a few pages later in
+addition operation noted with the \C{+} symbol associated to this
+type, and this operation will also be described  a few pages later in
 the text.
 
 We start by considering the expression
@@ -244,6 +244,27 @@ Definition f23 b := if b then 2 else 3.
 \end{coq}
 \coqrun{name=definef23_run}{definef23}
 Readers are invited to test this function using the \C{Compute} command.
+
+The ssreflect library provides a collection of boolean operations that
+mirror reasoning steps on truth value.  the functions are called
+\C{negb}, \C{orb}, \C{andb} , \C{implyb}, respectively with notations
+\C{\~\~},  \C{||}, \C{&&}, and \C{==>} (the last three operators are
+infix, they appear between the arguments as in \C{b1 && b2}).
+  In
+particular, it should be
+noted that the symbol \C{\~\~} uses two characters \C{\~}, but it should
+not be confused with two iterations of the one-character symbol
+\C{\~}.  In practice, readers become quickly accustomed to the
+distinction between the two symbols.
+
+For instance, the function \C{andb} is defined as follows in one of
+the preamble files:
+
+\begin{coq}{name=define_andb}{}
+Definition andb b1 b2 := if b1 then b2 else false
+\end{coq}
+
+\subsubsection{TODO : A note on associativity for notations}
 
 \subsection{natural numbers}
 The description of natural numbers in the Coq system is inspired from
@@ -573,13 +594,20 @@ In this section, we introduced a variety of functions and notations
 for operations on natural numbers.  In practice, these functions and
 notations are already loaded by the preamble that is provided in the
 introductory chapter, so that we work in a context where addition,
-multiplication, comparison, are already provided for direct use.  In
+multiplication, comparison, are already provided for direct use.
+
+In
 the next section, we will assume that readers start again with 
 a fresh instance of the Coq system and load the preamble, so that
 function \C{my_add}, \C{my_sub}, \C{my_eq_nat} are not provided
-anymore.  On the other hand, notations for addition (\C{+}),
-subtraction (\C{-}) and the equality test (\C{==}) are provided by the
-preamble.
+anymore.  On the other hand, the ssreflect library provides functions
+and notations for addition (function \C{addn}, infix
+notation \C{+}), multiplication
+(\C{muln}, \C{*}), subtraction (\C{subn}, \C{-}), division (\C{divn},
+\C{\%/}),  modulo (\C{modn}, \C{\%\%}), exponentiation (\C{expn}, \C{\^})
+equality comparison (\C{eqn}, \C{==}), order
+ comparison (\C{leq}, \C{<=}).  For the order on natural numbers,
+the notation \C{n < m} is also provided to mean exactly \C{n.+1 <= m}.
 
 
 \subsection{The sequence datatype}
@@ -589,7 +617,7 @@ might want to compute the sequence of all predecessors or all divisors
 of a number.  the sequence datatype is provided for this purpose.
 
 the ssreflect library provides this datatype under the name \C{seq},
-but defines it as an alias for pre-existing type \C{list} given in the
+but defines it as an alias for the pre-existing type \C{list} given in the
 Coq preamble.  The definition of type \C{list} is as follows:
 
 \begin{coq}{name=list_def}{}
@@ -604,7 +632,7 @@ fonction \C{cons} is devised specifically to describe how to produce a
 new list of type \C{list A} by combining an element of \C{A} and an
 existing list of type \C{list A}.
 
-In principle, all elements of the datatype definition have a type
+In principle, all objects of the datatype definition have a type
 argument.  Thus, \C{list} is a function of type \C{Type -> Type} and
 \C{nil} is a function that takes a type \C{A} as argument and returns
 an empty list of type \C{list A}.  The notation \C{.. -> ..} is not
@@ -739,8 +767,8 @@ Notation "[ 'seq' E | i <- s ]" := (my_map (fun i => E) s)
   (at level 0, E at level 99, i ident,
    format "[ '[hv' 'seq' E '/ ' | i <- s  ] ']'").
 \end{coq}
-For instance, this notation makes it possible to compute successors of
-a given list of natural numbers.
+For instance, we this notation we write the computation of successors
+for a given sequence of natural numbers as follows:
 
 \begin{coq}{name=try_map_notation}{width=7.cm}
 Compute [seq i.+1 | i <- [:: 2; 3]].
@@ -749,9 +777,121 @@ Compute [seq i.+1 | i <- [:: 2; 3]].
 \begin{coqout}{try_map_notation_run}{width=5cm,title=Response}
 = [:: 3; 4] : seq nat
 \end{coqout}
+The function \C{my_map} and the associated notation were only declared
+in this section for illustration purposes, but we will assume that
+they don't exist for the rest of the book.  The ssreflect library
+provides a collection of useful functions and notations to work on
+sequences, as described in the header of the file \C{seq.v}.  For
+instance, the notation \C{[seq F | i <- s]} is already provided there,
+together with \C{[seq i | i < s | p]}, which makes it possible to
+filter the elements of a sequence for which \C{p} is the boolean
+value \C{true}.  A function \C{cat} (with infix notation \C{++}) is
+also provided to catenate two sequences together.
 
 \section{Sections and local environments}
+When several functions are designed to work on similar data, it is
+useful to set a working environment where the common data is declared
+only once.  Such a working environment is called a \C{Section}, and
+the data that is local to this section is declared using \C{Variable}
+commands.  A typical example happens when describing functions that
+are polymorphic and rely in a uniform way on a given type and existing
+functions in this type.  Here we shall illustrate this with a small
+experiment on monoid structures:
 
+\begin{coq}{name=simple_monoid_structure}{}
+Section my_monoid.
+
+Variable (T : Type) (naught : T) (op : T -> T -> T).
+
+Fixpoint my_iter x n :=
+  if n is p.+1 then op x (my_iter x p) else naught.
+\end{coq}
+When writing the definition of \C{my_iter}, we can use the type
+\C{T}, the element in \C{T}, and the operation \C{op} which are
+assumed to exist.  However, these various elements have no
+definition, so that every computation made with them is symbolic.
+This is illustrated by the following example.
+
+\begin{coq}{name=compute_in_abstract}{title=Response, width=6.cm}
+Variable x : T.
+Compute my_iter x 3.
+\end{coq}
+\coqrun{compute_in_abstract_run}{compute_in_abstract}
+\begin{coqout}{compute_in_abstract_run}{width=6.cm}
+$~$
+op x (op x (op x naught)) : T
+\end{coqout}
+The section is opened by the \C{Section} command.  It can later be
+closed by an \C{End} command.  When this happens, all the variables
+that were defined in the section become unavailable, but the
+definitions that were declared inside the section are still valid and
+they are still available outside the section where they were defined.
+If these definitions depended on one of the section variables, this
+section variable becomes an extra argument to the function.
+
+For instance, the function \C{my_iter} is defined inside the section
+and relies on the type \C{T}, the value \C{naught}, and the operator
+\C{op}.  Inside the section, the function \C{my_iter} appears to be a
+function of two arguments (in types \C{T} and \C{nat}) and with a
+result in type \C{T}.  When closing the section, it becomes a function
+with five arguments.  The first three arguments must be a type, a
+value in this type, and a binary operation in this type.  Because the
+first argument's value is useful to describe the type of other
+arguments, we need to use the notation \C{forall} that was already
+necessary to describe the type of \C{nil} and \C{cons} in the sectio
+about sequences.
+
+\begin{coq}{name=close_section}{width=4cm}
+About my_iter.
+$~$
+$~$
+$~$
+End my_monoid.
+About my_iter.
+$~$
+$~$
+$~$
+$~$
+\end{coq}
+\coqrun{close_section_run}{close_section}
+\begin{coqout}{close_section_run}{title=Response, width=8cm}
+my_iter : A -> nat -> A
+Argument scopes are [_ nat_scope]
+my_iter is transparent
+Expands to: Constant Top.my_monoid.my_iter
+$~$
+my_iter : forall A : Type, A -> (A -> A -> A) -> A -> nat -> A
+Argument A is implicit
+Argument scopes are [type_scope _ _ _ nat_scope]
+\end{coqout}
+Thus, the function \C{my_iter} that was defined inside the section
+becomes very useful, because it can be applied to any type, element,
+and operator, as long as they are consistent with the type
+constraints.  The type argument to the function \C{my_iter} is
+actually implicit, so that it never needs to be provided and the
+function has only 4 explicit arguments.
+For instance, we can apply this function the
+number \C{1}, and the multiplication operation on natural numbers
+to compute a function that has the same behavior as power:
+
+\begin{coq}{name=compute_in_real}{width=6cm}
+Compute my_iter 1
+    (fun x y => x * y) 3 3.
+\end{coq}
+\coqrun{name=compute_in_real_run}{compute_in_real}
+\begin{coqout}{compute_in_real_run}{title=Response, width=6cm}
+= 27 : nat
+\end{coqout}
+
+This mechanism of sections is very useful to organize formal
+mathematical developments in a style that is closed to what would
+happen in a mathematics textbook, where some concepts are fixed for a
+fragment of the exposition, where they are considered in an abstract
+way, and then used as variable parameters in other part of the book,
+where they can be instantiated to arbitrary objects of the right type.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% End of written part %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Theoretical content:
 \begin{itemize}
 \item Functions with simple types ($\lambda$, $\rightarrow$): functions are the primitive concept
