@@ -108,6 +108,16 @@ type inference}.
 Inheritance among interfaces will be only sketched here: a complete
 treatment of it requires a full chapter, the next one.
 
+Now \lstinline/eqType/ can be seen as an interface to access a
+theory of results.  Indeed we can finally state (and prove) the
+Hedberg theorem in its full generality.
+
+\begin{coq}{name=hedberg}{title=Hedberg}
+Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
+\end{coq}
+\coqrun{name=hedberg}{ssr,hedberg,abort}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbLEARN{panel of options}
