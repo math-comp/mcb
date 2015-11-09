@@ -73,10 +73,22 @@ This chapter introduces the key concepts of \emph{interface}
 and \emph{instance}.  An interface is essentially the signature
 of an agebraic structure: operations, properties and notations
 letting one reason abstractly about a family of objects sharing
-the interface.  An instance is an example of an algebraic structure,
-an object that fits an interface.  The programs we will write to
-extend type inference typically define the link between existing
-instances and interfaces.
+the interface.
+An instance is an example of an algebraic structure,
+an object that fits an interface.  
+For example \C{eqType} is the interface of
+data types that come equipped with a comparison function, and
+the type \C{nat} forms, together with the \C{eqn} function, an
+example of \C{eqType}.
+
+The programs we will write to
+extend type inference play two roles.  On one hand they link
+instances to interfaces, like \C{nat} to \C{eqType}.
+On the other hand they build \emph{derived
+instances} out of basic ones.  For example we teach type inference
+how to synthesize an instance of \C{eqType} for a type like
+\C{(A * B)} whenever \C{A} and \C{B} are instances of \C{eqType}.
+
 The concepts of interface and example are recurrent in
 both computer science and modern mathematics, but are not a primitive
 notion in Coq.  Despite that, they can be encoded quite naturally,
@@ -708,21 +720,18 @@ After the table of canonical solutions has been extended our example
 is accepted.\marginnote{no idea if that output can be
 produce by \Coq{}}
 
-\begin{coq}{name=parsecs2}{title=Example,width=5.3cm}
+\begin{coq}{name=parsecs2}{title=Example,width=6.3cm}
 Check (3, true) == (4, false).
 \end{coq}
 \coqrun{name=cs2}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs2}
-\begin{coqout}{run=cs2}{title=Response,width=6.7cm}
+\begin{coqout}{run=cs2}{title=Response,width=5.7cm}
 (3, true) == (4, false) : bool
 \end{coqout}
 
-Behind the scenese
+The term synthesized by Coq is the folowing one:
 
-\begin{coq}{name=parsecs3}{title=Example,width=5.3cm}
-Check
-@eq_op
- (prod_eqType nat_eqType bool_eqType)
- (3, true) (4, false).
+\begin{coq}{name=parsecs3}{}
+   @eq_op (prod_eqType nat_eqType bool_eqType) (3, true) (4, false).
 \end{coq}
 \coqrun{name=cs3}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs3}
 
@@ -779,13 +788,14 @@ The extra property turns the
 that fully specifies what \C{op} is.
 
 The axiom says that the boolean comparison function
-is compatible with equality: two ground terms compare to equal if and
+is compatible with equality: two ground terms compare as equal if and
 only if they are syntactically equal.  Note that this means that the
 comparison function is not allowed to quotient the type by identifying
 two syntactically different terms.
 
 \mantra{The infix notation \lstinline/==/ stands for 
-a comparison function compatible with Leibnitz equality (substitution)}
+a comparison function compatible with Leibnitz equality
+(substitution in any context)}
 
 The \C{Equality} module enclosing the record acts a name space: \C{sort},
 \C{eq} and \C{axiom}, three very generic words, are here
@@ -794,16 +804,17 @@ made local to the \C{Equality} name space becoming, respectively,
 
 As in Section~\ref{sec:eqtype}, the record plays the role of
 a relation and its \C{sort} component is again the only field
-drives the inference of canonical structure inference. Following
+that drives canonical structure inference. Following
 a terminology typical of object oriented programming languages,
 the set of operations (and properties) that define an interface is
 called a class.  In the next chapter we are going to re-use already
 defined classes in order to build new ones by mixing-in additional
 properties (typically called axioms).
-Hence the real, and final, definition of \C{eqType} is.
+Hence the real, and final, definition of \C{eqType} in the
+Mathematical Components library is the following one:
 \marginnote{We assume that \C{rel} is a known concept here}
 
-\begin{coq}{name=eqtype}{title=eqType}
+\begin{coq}{name=eqtype}{title=The read definition of eqType}
 Module Equality.
 
 Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
@@ -821,13 +832,17 @@ Definition eq_op T := Equality.op (Equality.class T).
 Notation "x == y" := (@eq_op _ x y).
 \end{coq}
 
-In this simple case there is only one, named, axiom.
+In this simple case there is only one property, named
+\C{Equality.axiom}.
+
 Said that, nothing really changes: the \C{eqType} structure 
 relates a type (called \C{sort}) with a signature (called \C{class}).
-Also remark that the use of \C{:>} instead of \C{:} to type the
-field called \C{sort}.  This tells Coq to declare the sort projection
+
+Remark the use of \C{:>} instead of \C{:} to type the
+field called \C{sort}.  This tells Coq to declare the
+\C{Equality.sort} projection
 as a coercion, enabling one to write \C{(forall T : eqType, forall x y
-: T, P)}.  Ineed \C{T} is not a type, its \C{sort} projection is.
+: T, P)}.  Ineed \C{T} is not a type, only its \C{sort} projection is.
 \gotcha{being \C{Equality.sort} a coercion, it is not displayed by
 Coq, hence error messages about a missing canonical structure
 declaration typically look very confusing: has type nat but should
@@ -840,7 +855,7 @@ proof that such function is correct.
 Indeed declaring the \C{eqType} instance for \C{nat} requires some
 extra work:
 
-\begin{coq}{name=eqtype}{title=eqType}
+\begin{coq}{name=eqtype}{title=The complete definition of nat\_eqType}
 Lemma eqnP : Equality.axiom eqn.
 Proof.
 move=> n m; apply: (iffP idP) => [|<-]; last by elim n.
@@ -857,11 +872,24 @@ we are relating the type \C{nat} with its comparison operation.
 \marginnote{This is not exactly as in the .v files, but is way closer
 and should ease section 6 (hierarchy)}
 
-\section{Using and building a generic theory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{overloaded lemmas}
+\mcbREQUIRE{}
+\mcbPROVIDE{eqP}
+\mcbLEVEL{1}
+\mcbsection{Using and building a generic theory}\label{sec:eqtypetheory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The simplest application is the \lstinline/eqP/ \emph{generic lemma}
-that can be used in conjunction with any formula involving the
-\lstinline/==/ notation.
+The whole point or defining interfaces and linking them with their
+examples is to share a theory: a theory proved starting from the
+properties of an interface applies to all its instances,
+transparently.  In some sense every lemma part of an abstract theory
+is \emph{generic}: the very same name can be used for each and every
+isntance of the interface, exactly as the \C{==} notation.
+
+The simplest lemma part of the theory of \C{eqType} is the 
+\lstinline/eqP/ generic lemma that can be used in conjunction with
+any occurrence of the \lstinline/==/ notation.
 
 \begin{coq}{name=eqP}{title=The eqP lemma}
 Lemma eqP (T : Equality.eqType) : Equality.axiom (@Equality.op T).
@@ -869,15 +897,25 @@ Proof. by case: T => ty [op prop]; exact: prop. Qed.
 \end{coq}
 
 The proof is just unpacking the input \lstinline/T/.
-% Since type inference can synthesize
-% an arbitrary complex value for \lstinline/T/ by composing
-% canonical structures instances, this lemma give us a
-% access to the proof part of such inferred value.
+We can use it on an concrete example of \C{eqType} like \C{nat}
 
+\begin{coq}{name=test}{title=Use of eqP}
+Lemma test (x y : nat) : x == y -> x + y == y + y.
+Proof. by move/eqP=> def_x; rewrite def_x. Qed.
+\end{coq}
+\coqrun{name=r7}{ssr,eqtype,eqP}
+\coqrun{name=r8}{ssr,test}
+
+In short, \C{eqP} can be used to change view: turn any
+\C{==} into \C{=} and viceversa.
+
+This also holds on
+abstract instances.
 When we rework the instance of the type \C{(T1 * T2)} we see that the
-proof, by means of the \C{eqP} lemma, uses the axiom of T1 and T2.
+proof, by means of the \C{eqP} lemma, uses the axiom of \C{T1} and
+\C{T2}.
 
-\begin{coq}{name=eqtype}{title=eqType}
+\begin{coq}{name=eqtype}{title=The complete definition of prod\_eqType}
 Section ProdEqType.
 
 Variable T1 T2 : eqType.
@@ -896,22 +934,11 @@ Canonical prod_eqType := @Equality.Pack (T1 * T2) prod_eqMixin.
 End ProdEqType.
 \end{coq}
 
-So now, when one write 
-
-\begin{coq}{name=eqtype}{title=eqType}
-(3, true) == (4, false)
-\end{coq}
-
-Coq infers both a comparison function and a proof that
-
-\begin{coq}{name=eqtype}{title=eqType}
-reflect ((3, true) = (4, false)) ((3, true) == (4, false))
-\end{coq}
-
-Such property can be used, again by using eqP, on an arbitrary eqType.
+Like for \C{nat} the generic lemma \C{eqP} also applies to
+any \C{eqType} instance, like \C{(bool * nat)}
 
 \begin{coq}{name=test}{title=Use of eqP}
-Lemma test (x y :nat) (a b : bool) : (a,x) == (b,y) -> fst (a,x) == b.
+Lemma test (x y : nat) (a b : bool) : (a,x) == (b,y) -> fst (a,x) == b.
 Proof. by move/eqP=> def_ax; rewrite def_ax. Qed.
 \end{coq}
 \coqrun{name=r7}{ssr,eqtype,eqP}
@@ -924,9 +951,33 @@ all the benefits of a computable function (simplification, reasoning
 by cases), but when we need the underlying logical property of
 substitutivity we access it via the view \lstinline/eqP/.
 
-In such sense,
-\lstinline/==/ has now a precise meaning.  In general overloaded
-notation come with a meaning and an associated theory.
+\begin{coq}{name=test}{title=Why one should always use \C{==}
+	(computation)}
+Lemma test (x y : nat) : (true,x) == (false,y) -> false.
+Proof. by []. Qed.
+\end{coq}
+\coqrun{name=r7}{ssr,eqtype,eqP}
+\coqrun{name=r8}{ssr,test}
+
+This is true (or better, the hypothesis is false) by computation.
+
+\begin{coq}{name=test}{title=Why one should always use \C{==} (EM)}
+Lemma test (x y : nat) : if x == y.+1 then x != 0 else true.
+Proof. by case E: (x == y.+1) => //; rewrite (eqP E). Qed.
+\end{coq}
+\coqrun{name=r7}{ssr,eqtype,eqP}
+\coqrun{name=r8}{ssr,test}
+
+
+\marginnote{Maybe here suggest to use ifP and =P if not already known, or
+do it now}
+
+\mantra{
+	whenever we want to state equality between two expressions, if
+	they live in an eq type, always use \lstinline/==/.
+}
+
+
 Note that the proof language silently adjusted the view
 using \lstinline/elimT/.
 
