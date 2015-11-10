@@ -996,7 +996,7 @@ elimT : forall (P : Prop) (b : bool),
 \mcbREQUIRE{}
 \mcbPROVIDE{\\in}
 \mcbLEVEL{1}
-\mcbsection{Building a generic theory}\label{sec:eqtypetheory}
+\mcbsection{The generic theory of sequences}\label{sec:eqtypetheory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Now that the \lstinline/eqType/ interface equips a type with a well
@@ -1124,19 +1124,71 @@ Check undup_uniq ss.
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{overloaded big notations}
 \mcbLEVEL{1}
-\mcbsection{Canonical inference keyed on a term}
+\mcbsection{The generic theory of ``big'' operators}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 As already anticipated in the introducetion of this chapter, terms are
 allowed to occur inside types and hence canonical structure inference
 can be keyed on terms.  This possibility is exploited by the iterated
 operations library that provides convenient notations and theories
-for iterated, ``big'' operators like $\Sigma_i^j F$.
+for iterated, ``big'' operators like
+$$
+\sum_{i=1}^n f(i)
+\quad
+\bigcup_{i \in A} g(i)
+$$
 The theory of big operators depends on the properties the iterated
-function, for example one can pull out of a summation an elemen in
+function, for example one can pull out of a summation an element in
 the middle only if the operation is commutative and associative.
+Maybe cite Bourbaki, algebra 1, ch 1.
 
-Here we quickly present the minimal interfae an operation has to
+First, lets analyze the notation.  We focus on finite iterations.
+The components are a range, a filter, the expression, the iterated
+function and the neutral.  The range can be a list (cite iota).
+Not sure the filter is so common in math, but is clearly convenient
+to pull an \C{if cond then neutral else expr} out of the main body.
+
+For notational purposes it is important to identify the bound
+variable, so we pack most components into a box.
+
+\begin{coq}{name=bigop2}{}
+Inductive bigbody R I := BigBody of I & (R -> R -> R) & bool & R.
+Definition applybig {R I} (body : bigbody R I) x :=
+  let: BigBody _ op b v := body in if b then op v x else x.
+\end{coq}
+
+Finally, we just use fold.
+
+\begin{coq}{name=bigop3}{}
+Definition bigop R I idx r (body : I -> bigbody R I) :=
+  foldr (applybig \o body) idx r.
+Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
+  (bigop idx r (fun i => BigBody i op P%B F)) : big_scope.
+Local Notation "+%N" := addn (at level 0, only parsing).
+Notation "\sum_ ( i <- r | P ) F" :=
+  (\big[+%N/0%N]_(i <- r | P%B) F%N) : nat_scope.
+\end{coq}
+\coqrun{name=uniqp2}{ssr,bigop,bigop2}
+
+Explain the generic notation and the one in nat scope.
+
+How many variants should we document here? we can't use ord here, but
+the other variants make sense.
+
+\begin{coq}{name=bigop3}{}
+Definition index_iota m n := iota m (n - m).
+Notation "\big [ op / idx ]_ ( m <= i < n | P ) F" :=
+  (bigop idx (index_iota m n) (fun i : nat => BigBody i op P%B F))
+     : big_scope.
+
+Notation "\big [ op / idx ]_ ( i 'in' A | P ) F" :=
+  (\big[op/idx]_(i | (i \in A) && P) F) : big_scope.
+
+Notation "\big [ op / idx ]_ ( i <- r ) F" :=
+  (bigop idx r (fun i => BigBody i op true F)) : big_scope.
+\end{coq}
+
+Here we quickly present the minimal interface an operation has to
 satisfy in order to be iterated.  Chapter~\ref{..} will add other
 interfaces and organize the library around them.
 
@@ -1152,36 +1204,22 @@ Structure law := Law {
   _ : left_id idm operator;
   _ : right_id idm operator
 }.
-Inductive bigbody R I := BigBody of I & (R -> R -> R) & bool & R.
-Definition bigop R I idx r (body : I -> bigbody R I) :=
-  foldr (applybig \o body) idx r.
-Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
-  (bigop idx r (fun i => BigBody i op P%B F)) : big_scope.
-Local Notation "+%N" := addn (at level 0, only parsing).
-Notation "\sum_ ( i <- r | P ) F" :=
-  (\big[+%N/0%N]_(i <- r | P%B) F%N) : nat_scope.
 \end{coq}
 \coqrun{name=uniqp2}{ssr,bigop}
 
-Two things here: learn notations and how to read statements; see that
-the index of CS is the operator.
+Here make the point that the key is the operator.
 
-How many variants should we document here?
+Now the theory of this interface.
 
 \begin{coq}{name=bigop1}{}
+Coercion operator : law >-> Funclass.
 Section MonoidProperties.
 
-Import Monoid.Theory.
-
 Variable R : Type.
-
 Variable idx : R.
+Variable op : Monoid.law idx.
+
 Notation Local "1" := idx.
-
-Section Plain.
-
-Variable op : Monoid.law 1.
-
 Notation Local "*%M" := op (at level 0).
 Notation Local "x * y" := (op x y).
 	
@@ -1194,18 +1232,32 @@ Lemma big_cat I r1 r2 (P : pred I) F :
 \end{coq}
 \coqrun{name=uniqp2}{ssr,bigop}
 
-Show CS declation and table
+Help to read the statements.
+
+Explain that operator is a coercion and is inserted in bog body.
 
 \begin{coq}{name=natmonoid}{}
 Canonical addn_monoid := Law addnA add0n addn0.
 \end{coq}
 
-Then show in action
+This adds the following
+
+\noindent
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+projection & value & solution \\ \hline
+\lstinline/operator/ & \lstinline/addn/ & \lstinline/addn_monoid/  \\
+\hline
+\end{tcolorbox}
+
+Then show in action.
 
 \begin{coq}{name=bigop2}{}
 Lemma test l : \sum_(i <- l) 0 = 0.
 Proof. by rewrite big1_eq. Qed.
 \end{coq}
+
+\C{(BigBody i addn true 0)} versus \C{(BigBody i (operator ?m) (?P i) (?F i))}.
+Mention that ?P and ?F are hard too, but in general they work.
 
 In short TI finds out that 0 is neutral for addn (the key of CS
 inference), hence the overloaded lemma applies here.
