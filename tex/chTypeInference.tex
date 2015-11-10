@@ -59,7 +59,7 @@ user possibly completing and constraining it by inferring some
 information.  If the algorithm succeeds the term is accepted,
 otherwise an error is given.
 
-What is crucial to the Mathematical Components library is that the
+What is crucial to the \mcbMC{} library is that the
 type inference algorithm is \emph{programmable}: one can extend the
 basic algorithm with small declarative programs that have access to
 \marginnote{explain declarative programs}
@@ -811,7 +811,7 @@ called a class.  In the next chapter we are going to re-use already
 defined classes in order to build new ones by mixing-in additional
 properties (typically called axioms).
 Hence the real, and final, definition of \C{eqType} in the
-Mathematical Components library is the following one:
+\mcbMC{} library is the following one:
 \marginnote{We assume that \C{rel} is a known concept here}
 
 \begin{coq}{name=eqtype}{title=The read definition of eqType}
@@ -877,7 +877,7 @@ and should ease section 6 (hierarchy)}
 \mcbREQUIRE{}
 \mcbPROVIDE{eqP}
 \mcbLEVEL{1}
-\mcbsection{Using and building a generic theory}\label{sec:eqtypetheory}
+\mcbsection{Using a generic theory}\label{sec:eqtypetheory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The whole point or defining interfaces and linking them with their
@@ -991,32 +991,55 @@ elimT : forall (P : Prop) (b : bool),
           reflect P b -> b -> P
 \end{coqout}
 
-Now that the \lstinline/eqType/ structure comes with a well
-specified comparison function we can use it to program new
-functions, and reason about them.  For example by imposing
-that that the type variable of a container types, like \lstinline/seq/,
-is an \lstinline/eqType/ we can code the following function
-that tests membership.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{eqType is the base of (abstract) ssr style}
+\mcbREQUIRE{}
+\mcbPROVIDE{\\in}
+\mcbLEVEL{1}
+\mcbsection{Building a generic theory}\label{sec:eqtypetheory}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{coq}{name=memseq}{title=Functions}
-Fixpoint mem_seq {T : eqType} (s : seq T) x :=
+Now that the \lstinline/eqType/ interface equips a type with a well
+specified comparison function we can use it build abstract theories,
+for example the one of sequences.
+
+It is worth to remark that the concept of interface is scrucial to
+the development of such theory.  If we try to develop the theory
+of the type \C{(seq T)} for an arbitrary \C{T}, we can't go much far.
+For example we can express what belonging to a sequence means, but
+not write a program that tests if a value is indeed in the list.  As a
+consequence we lose automation and it becomes harder to reason by
+cases on the membership predicate.
+On the contrary when we quantify a theory on the type  \C{(seq T)} for a
+\C{T} that is an \C{eqType}, we recover all that.  In other words
+by better specifying the type that parametrizes a generic container
+we define which operations are lecit and which properties hold.
+So far the only interface we know is \C{eqType}, that is very
+connected with the ``small scale reflection'' approach we follow.
+In the next chapters more elaborate interface will enable us to
+organize knowledge in a more articulated way.
+
+Going back to the abstract theory of sequences over an \C{eqType},
+we define the membership operation.
+
+\begin{coq}{name=memseq}{title=Membership}
+Section SeqTheory.
+Variable T : eqType.
+Implicit Type s : seq T.
+
+Fixpoint mem_seq s x :=
   if s is y :: s' then (y == x) && mem_seq s' x else false.
 \end{coq}
 \coqrun{name=memseq}{ssr,memseq}
 
-Indeed we are allowed to write \lstinline/(x == y)/ because
-\lstinline/T/ is not any type, but a type with a decidable
-equality.
-
-If the elements of a sequence are in an eqType, we can obtain
-the overload the \lstinline/\in/ notation on sequences.
-In turn we can then define new predicates like being duplicate free.
+Like we did for the overloaded \C{==} notation, we can define the
+\C{\\in} (and \C{\\notin}) infix notation.  We can then easily
+define what a duplicate free sequence is, and how to enforce such
+property.
 
 \begin{coq}{name=uniq}{}
-Variable T : eqType.
-Implicit Type s : seq T.
 Fixpoint uniq s :=
-  if s is x :: s' then (x \notin s') && uniq s' else true.
+  if s is x :: s' then (x \notin s') || uniq s' else true.
 Fixpoint undup s :=
   if s is x :: s' then
     if x \in s' then undup s' else x :: undup s'
@@ -1024,10 +1047,12 @@ Fixpoint undup s :=
 \end{coq}
 \coqrun{name=uniq}{ssr,uniq}
 
-And show properties of these functions
+Proofs about such concepts can be made pretty much as if
+the type \C{T} was \C{nat} or \C{bool}, i.e. the style of proofs
+does not change.
 \marginnote{requires \C{=i}}
 
-\begin{coq}{name=undupuniq}{title=Functions}
+\begin{coq}{name=undupuniq1}{title=\C{undup} is correct (step 1)}
 Lemma in_cons y s x : (x \in y :: s) = (x == y) || (x \in s).
 Proof. by []. Qed.
 
@@ -1037,34 +1062,30 @@ move=> x; elim: s => //= y s IHs.
 case Hy: (y \in s); last by rewrite in_cons IHs.
 by rewrite in_cons IHs; case: eqP => // ->.
 Qed.
+\end{coq}
 
+The \C{in\_cons} lemms is just a convenience rewrite rule, while
+\C{mem\_undup} says that the \C{undup} function does not drop
+any non-duplicate element.  Note that in the proof we use both
+decidability of membership (\C{Hy}) and then the decidability of
+equality (via \C{eqP}).
+
+\begin{coq}{name=undupuniq2}{title=\C{undup} is correct (setp 2)}
 Lemma undup_uniq s : uniq (undup s).
 Proof.
-by elim: s => //= x s IHs; case s_x: (x \in s); rewrite //= mem_undup s_x.
+by elim: s => //= x s IHs; case sx: (x \in s); rewrite //= mem_undup sx.
 Qed.
 \end{coq}
-\coqrun{name=uniqp}{ssr,uniq,undupuniq,abort}
+\coqrun{name=uniqp}{ssr,uniq,undupuniq1,undupuniq2,abort}
 
+This last proof adds no new ingredients, it is there just for
+completeness.
 
+The last step in the theory of sequences is to show that the container
+preserves the \C{eqType} interface: whenever we can compare the
+elements of a sequence, we can also compare sequences.
 
-% maybe in the xercises
-% \end{coq}{}
-% Lemma perm_eqP s1 s2 : reflect (count^~ s1 =1 count^~ s2) (perm_eq s1 s2).
-% Lemma perm_rcons x s : perm_eql (rcons s x) (x :: s).
-% \end{coq}
-
-Note that the \mcbMC{} library iterates the construction of
-\lstinline/eqType/ on the container itself:
-if \lstinline/T/ is \lstinline/eqType/ then also \lstinline/seq T/ is.
-
-Maybe this is too much for here.
-
-\begin{coq}{name=seqeqtype}{}
-Section EqSeq.
-
-Variable (T : eqType).
-Implicit Type s : seq T.
-
+\begin{coq}{name=seqeqtype}{title=\C{eqType} for sequences}
 Fixpoint eqseq s1 s2 {struct s2} :=
   match s1, s2 with
   | [::], [::] => true
@@ -1081,43 +1102,174 @@ Qed.
 
 Definition seq_eqMixin := Equality.Mixin eqseqP.
 Canonical seq_eqType := @Equality.Pack (seq T) seq_eqMixin.
-
-End EqSeq.
 \end{coq}
 
-To complete the tour: we have an interface \C{eqType}, base instances
-for \C{nat} and \C{bool}, ways to combine instances (pair and seq),
-abstract theories on the \C{eqType} interface.
-
-The last bit is applying such theories to an example:
+As an example we build the a sequence of sequences, and we assert that
+we can use the \C{==} and \C{\\in} notation on it, as well as apply
+the list operations and theorems on objects of type \C{(seq (seq T))}
+when \C{T} is an \C{eqType}.
 
 \begin{coq}{name=itereqtype}{}
 Let s1 := [:: 1; 2 ].
 Let s2 := [:: 3; 5; 7].
 Let ss := [:: s1 ; s2 ].
-Check ss == [::].
+Check ss == [::] || s1 \in ss.
 Check uniq ss.
 Check undup_uniq ss.
 \end{coq}
 \coqrun{name=uniqp2}{ssr,itereqtype}
 
-Indeed we can compare sequences of sequences, and apply to them
-the theory of sequences.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{bigop}
+\mcbREQUIRE{Canonical}
+\mcbPROVIDE{overloaded big notations}
+\mcbLEVEL{1}
+\mcbsection{Canonical inference keyed on a term}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+As already anticipated in the introducetion of this chapter, terms are
+allowed to occur inside types and hence canonical structure inference
+can be keyed on terms.  This possibility is exploited by the iterated
+operations library that provides convenient notations and theories
+for iterated, ``big'' operators like $\Sigma_i^j F$.
+The theory of big operators depends on the properties the iterated
+function, for example one can pull out of a summation an elemen in
+the middle only if the operation is commutative and associative.
+
+Here we quickly present the minimal interfae an operation has to
+satisfy in order to be iterated.  Chapter~\ref{..} will add other
+interfaces and organize the library around them.
+
+\begin{coq}{name=bigop}{}
+Module Monoid.
+
+Section Definitions.
+Variables (T : Type) (idm : T).
+
+Structure law := Law {
+  operator : T -> T -> T;
+  _ : associative operator;
+  _ : left_id idm operator;
+  _ : right_id idm operator
+}.
+Inductive bigbody R I := BigBody of I & (R -> R -> R) & bool & R.
+Definition bigop R I idx r (body : I -> bigbody R I) :=
+  foldr (applybig \o body) idx r.
+Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
+  (bigop idx r (fun i => BigBody i op P%B F)) : big_scope.
+Local Notation "+%N" := addn (at level 0, only parsing).
+Notation "\sum_ ( i <- r | P ) F" :=
+  (\big[+%N/0%N]_(i <- r | P%B) F%N) : nat_scope.
+\end{coq}
+\coqrun{name=uniqp2}{ssr,bigop}
+
+Two things here: learn notations and how to read statements; see that
+the index of CS is the operator.
+
+How many variants should we document here?
+
+\begin{coq}{name=bigop1}{}
+Section MonoidProperties.
+
+Import Monoid.Theory.
+
+Variable R : Type.
+
+Variable idx : R.
+Notation Local "1" := idx.
+
+Section Plain.
+
+Variable op : Monoid.law 1.
+
+Notation Local "*%M" := op (at level 0).
+Notation Local "x * y" := (op x y).
+	
+Lemma big1_eq I r (P : pred I) : \big[*%M/1]_(i <- r | P i) 1 = 1.
+
+(* Another one used later on *)
+Lemma big_cat I r1 r2 (P : pred I) F :
+  \big[*%M/1]_(i <- r1 ++ r2 | P i) F i =
+     \big[*%M/1]_(i <- r1 | P i) F i * \big[*%M/1]_(i <- r2 | P i) F i.
+\end{coq}
+\coqrun{name=uniqp2}{ssr,bigop}
+
+Show CS declation and table
+
+\begin{coq}{name=natmonoid}{}
+Canonical addn_monoid := Law addnA add0n addn0.
+\end{coq}
+
+Then show in action
+
+\begin{coq}{name=bigop2}{}
+Lemma test l : \sum_(i <- l) 0 = 0.
+Proof. by rewrite big1_eq. Qed.
+\end{coq}
+
+In short TI finds out that 0 is neutral for addn (the key of CS
+inference), hence the overloaded lemma applies here.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{Notation}
 \mcbLEVEL{2}
-\mcbsection{Declaring overloaded notations}
+\mcbsection{Working with overloaded notations}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Notations must be stable.
-\begin{itemize}
-\item Arguments nosimpl
-\item + that becomes * with a CS inference
-\item scopes the effect \lstinline/%R/ when using a bigop lemma.
-\end{itemize}
+This little section deals with two ``technological issues'' the reader
+may need to know in order to define overloaded notations or work
+comfortably with them.
+
+The first one is the necessity ot tune the behavior of the
+simplification tactic (the \C{/=} switch) to avoid loosing the
+heand constant to which the overloaded notation is attached.
+For example the following term:
+
+\begin{coq}{name=infix,print}{}
+  (@eq_op bool_eqType true false).
+\end{coq}
+
+can be simplifies (reduced) to the following one
+
+\begin{coq}{name=infix,print}{}
+  (@eqb true false).
+\end{coq}
+
+While the two terms are logically equivalent (i.e. the logic cannot
+distinguish them) the pretty printer can.  Indeed the overloaded
+\C{==} notation is attached to the \C{eq\_op} constant, and if such
+constant fades away the notation follows it.  Coq lets one declare
+constants that should not be automatically simplifies away, unless the
+occur in a context that demands it.
+
+\begin{coq}{name=infix,print}{}
+Arguments eq_op {_} _ _ : simpl never.
+Eval simpl in forall x y : bool, x == y.
+Eval simpl in forall x y : bool, true == false || x == y.
+\end{coq}
+
+The first call to \C{simpl} does not reduce away \C{eq\_op}
+leaving the expression untouched.  In the second example, it
+does reduce to \C{false} the test \C{(true == false)} in order to
+simplify the \C{||} connective.
+
+The converse technological issue may arise when cnaonical structure
+inference ``promotes'' ....
+
+\begin{coq}{name=infix,print}{}
+Lemma xxx F l1 l2 : \sum_(i <- l1 ++ l2) F i = \sum_(i <- l2 ++ l1) F i.
+Proof.
+rewrite big_cat.  (* show here *)
+rewrite /=.
+by rewrite addnC -big_cat.
+Qed.
+\end{coq}
+
+It is not uncommon to see \C{/=} switch in purely algebraic proofs
+(where no computation is really involved) just to clean up the display
+of the current conjecture.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Implement \lstinline/[foo of nat]/}
@@ -1127,35 +1279,51 @@ Notations must be stable.
 \mcbsection{Triggering type inference}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-One does a minimal presentation of phantoms here, so pave the way to
-the 2 stars section in next chapter where one defines the smart
-constructor of an algebraic structure.
-\begin{itemize}
-\item lifting a term into a type
-\item notations are untyped
-\end{itemize}
+Sometime one wants to force a type parameter to stand for a type that
+satisfies a given interface.  For example a set data structure may
+require its elements to be eqtypes.  (well, fintype in the
+library...).  So one want to let the user write \C{\{set nat\}} or
+\C{\{set (nat * nat)\}} and have the system accept such notation only
+if the type parametner is an eqtype.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{difference with type classes, limitations}
-\mcbREQUIRE{RecCanonical,Coqercions}
-\mcbPROVIDE{}
-\mcbLEVEL{2}
-\mcbsection{Discussion about type inference}\label{sec:typeinfrelated}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{coq}{name=phantom}{}
+CoInductive phant (p : Type) := Phant.
+\end{coq}
 
-NOT sure I want to keep that discussion.
+An example
 
-The points I want to make are:
-\begin{itemize}
-\item during type inference, HO infers (morally) the minimum
-	info necessary to make things well typed (if we were 1st order
-	that would really be true).
-	hence we KNOW when CS inference is triggered EXACTLY.
-	this is a big difference w.r.t. type classes. It is like a
-	Prolog program where goals are reordered randomly
-\item I also want to talk about the overlapping instances problem,
-	that is ``easy'' with TC, hard with CS and envisage an
-	extension.
-\item limitation of coercions, from both the usability perspective and
-	the expressive power they offer
-\end{itemize}
+\begin{coq}{name=set}{}
+Variable T : eqType.
+Definition set_of of phant T := seq T.  (* show sort here *)
+Notation "{ 'set' T }" := (set_of (Phant T))
+  (at level 0, format "{ 'set'  T }") : type_scope.
+Check {set nat}.
+Fail Check {set (nat -> nat)}.
+\end{coq}
+
+Points: lifting a term into a type; notations are untyped (needed?).
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \mcbLEARN{difference with type classes, limitations}
+% \mcbREQUIRE{RecCanonical,Coqercions}
+% \mcbPROVIDE{}
+% \mcbLEVEL{2}
+% \mcbsection{Discussion about type inference}\label{sec:typeinfrelated}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+% NOT sure I want to keep that discussion.
+% 
+% The points I want to make are:
+% \begin{itemize}
+% \item during type inference, HO infers (morally) the minimum
+% 	info necessary to make things well typed (if we were 1st order
+% 	that would really be true).
+% 	hence we KNOW when CS inference is triggered EXACTLY.
+% 	this is a big difference w.r.t. type classes. It is like a
+% 	Prolog program where goals are reordered randomly
+% \item I also want to talk about the overlapping instances problem,
+% 	that is ``easy'' with TC, hard with CS and envisage an
+% 	extension.
+% \item limitation of coercions, from both the usability perspective and
+% 	the expressive power they offer
+% \end{itemize}
