@@ -20,6 +20,24 @@ Require Import tuple.
 \end{coqdef}
 
 \Chapter{Subtypes: terms with extra properties}{}
+% 0- tuple: reuse the theory of seq, + the invariant on the length
+% 1- seq is eqType -> tuple is eqType by <:
+% 2- new interface fintype
+% 3- example: I_n (mainly to talk about finType)
+%    - is a eqType by <:
+%    - but we prove that it is a finType too
+% 4- we refine 'I_n/tuple do define ffun
+%    - is an eqType by <:
+%    - is a fintype with a proof from tuple (like 'I_n)
+% 5- we refine ffun to 'S_n that
+%    - is eqType by <:
+%    - is finType by <:
+% 6- spoiler for ch6: if we start an abstract theory on T:finType
+%    then == also works!! Magic?
+% ??- finset/card/enum, \in, \big_(x \in A)
+
+
+
 Wild notes: the purpose of this chapter is to stress what is truely
 important and perennial, as opposed to technicalities too much tied to
 the present technology implemented in Coq... tentative list:

@@ -1262,6 +1262,8 @@ Mention that ?P and ?F are hard too, but in general they work.
 In short TI finds out that 0 is neutral for addn (the key of CS
 inference), hence the overloaded lemma applies here.
 
+TODO: help the reader to serach/browse bigop.v
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
 \mcbREQUIRE{Canonical}
@@ -1310,14 +1312,26 @@ simplify the \C{||} connective.
 The converse technological issue may arise when cnaonical structure
 inference ``promotes'' ....
 
-\begin{coq}{name=infix,print}{}
-Lemma xxx F l1 l2 : \sum_(i <- l1 ++ l2) F i = \sum_(i <- l2 ++ l1) F i.
+\begin{coq}{name=infix,print}{width=5.3cm}
+Implicit Type l : seq nat.
+Lemma example F l1 l2 :
+ \sum_(i <- l1 ++ l2) F i =
+ \sum_(i <- l2 ++ l1) F i.
 Proof.
-rewrite big_cat.  (* show here *)
+rewrite big_cat.
 rewrite /=.
 by rewrite addnC -big_cat.
 Qed.
 \end{coq}
+\begin{coqout}{run=roar}{title=Response after line 3,width=6.9cm}
+F : nat -> nat
+l1, l2 : seq nat
+============================
+addn_monoid
+ (\big[addn_monoid/0]_(i <- l1) F i)
+ (\big[addn_monoid/0]_(i <- l2) F i) =
+\sum_(i <- (l2 ++ l1)) F i
+\end{coqout}
 
 It is not uncommon to see \C{/=} switch in purely algebraic proofs
 (where no computation is really involved) just to clean up the display
@@ -1331,6 +1345,8 @@ of the current conjecture.
 \mcbsection{Triggering type inference}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Maybe also for the lambda user show that \C{[the Foo of X]}.
+
 Sometime one wants to force a type parameter to stand for a type that
 satisfies a given interface.  For example a set data structure may
 require its elements to be eqtypes.  (well, fintype in the
@@ -1339,21 +1355,31 @@ library...).  So one want to let the user write \C{\{set nat\}} or
 if the type parametner is an eqtype.
 
 \begin{coq}{name=phantom}{}
-CoInductive phant (p : Type) := Phant.
+Inductive phant (p : Type) := Phant.
 \end{coq}
 
 An example
 
 \begin{coq}{name=set}{}
 Variable T : eqType.
-Definition set_of of phant T := seq T.  (* show sort here *)
+Definition set_of of phant T := seq T.
 Notation "{ 'set' T }" := (set_of (Phant T))
   (at level 0, format "{ 'set'  T }") : type_scope.
 Check {set nat}.
 Fail Check {set (nat -> nat)}.
 \end{coq}
 
-Points: lifting a term into a type; notations are untyped (needed?).
+If we show the coercions
+
+\begin{coqout}{run=..}{title=Type of set\_of}
+	set_of : forall T : eqType, phant (Equality.sort T) -> Type
+\end{coqout}
+
+When you write \C{\{set nat\}} the system gets 
+\C{(set\_of ?T (Phant nat))}.
+The unification problem is \C{(phant (Equality.sort ?T))} versus \C{(phant nat)}
+and then the definition uses \C{?T} as inferred by the preious
+problem to obtain \C{(seq (Equality.sort nat_eqType))}.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEARN{difference with type classes, limitations}

@@ -19,6 +19,7 @@ manipulated by operations.  We also show how operations are described.
 \section{Functions}
 In this section, we expect readers to get acquainted with the notion
 of function and the associated syntax.  We rely on a type of natural
+\marginnote{first occurrence of type}
 numbers that will only be described fully a few pages later.  There is an
 addition operation noted with the \C{+} symbol associated to this
 type, and this operation will also be described  a few pages later in
@@ -113,7 +114,7 @@ Print f.
 \end{coq}
 \coqrun{name=print_f_run}{print_f}
 \begin{coqout}{run=print_f_run}{title=Response,width=6cm}
-f =- fun x : nat -> x + 1
+f = fun x : nat => x + 1
        : nat -> nat
 \end{coqout}
 
@@ -145,6 +146,7 @@ type \C{nat -> nat}.  For later reference in the definition of
 
 Reading the second line of this statement, we see that the value
 returned by \C{repeat_twice} when applied to its argument is a new
+\marginnote{return is a bit technical to me, maybe constructed?}
 function, described using the ``\C{fun .. => ..}'' construct.  The
 argument to that function is called \C{x}.  After the \C{=>} sign, we
 find the ultimate value of this function.  This fragment of text, \C{g
@@ -204,6 +206,7 @@ Print bool.
 \begin{coqout}{run=print_bool_run}{width=6cm,title=Response}
 Inductive bool : Set := true : bool | false : bool
 \end{coqout}
+\marginnote{I guess we should use Type, also for bool, and not even mention Set}
 This declaration states explicitely that there are only two cases for
 elements of type \C{bool}.  the first case is given by the constant
 \C{true}, the second case by constant \C{false}.  Thus, the

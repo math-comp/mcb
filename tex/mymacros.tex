@@ -27,6 +27,7 @@
 \definecolor{dk2green}{rgb}{0.4,0,0}
 \definecolor{dkviolet}{rgb}{0.6,0,0.8}
 \definecolor{mantra}{rgb}{1.0,0.5,0}
+\definecolor{gotcha}{rgb}{1.0,0.2,0}
 
 \def\lstlanguagefiles{defManSSR.tex}
 \lstset{language=SSR}
@@ -44,9 +45,24 @@
   {#1\\ [2ex] {\Large \itshape #2}}
   \markboth{\MakeUppercase{\chaptername\ \thechapter.\ #1}}{}}
 
-\newcommand{\gotcha}[1]{\framebox[\width]{\parbox{\textwidth}{gotcha: #1}}}
-
 \newcolumntype{V}{>{\centering\arraybackslash} m{0\linewidth} }
+
+\newcommand{\gotcha}[1]{
+\begin{center}
+\begin{tcolorbox}[colframe=gotcha,
+	center title,
+	title={\textcolor{white}{\textsf{\Large\textbf{Gotcha}}}}]
+\begin{tabular}{lV}
+\begin{minipage}{0.86\textwidth}
+\vspace{1em}
+\large
+#1
+\end{minipage}
+&
+\warnsign{1cm}
+\end{tabular}
+\end{tcolorbox}
+\end{center}}
 
 \newcommand{\mantra}[1]{
 \begin{center}
@@ -66,6 +82,7 @@
 \end{center}}
 
 \newcommand{\coqhead}[1]{\includegraphics[width=#1]{../artwork/smallpantade}}
+\newcommand{\warnsign}[1]{\includegraphics[width=#1]{../artwork/Ambox_warning_pn}}
 
 \newcommand{\mcbpplevel}[1]{
 \switch[#1=]
