@@ -1038,7 +1038,8 @@ hand side can be written as \C{m * n1 - m * n2}, which in turns
 factors into \C{m * (n1 - n2)}. We then conclude using
 lemma \C{muln_eq0}.
 
-The first step hence consists in unfolding the definition of leq, in order to
+The first step hence consists in unfolding the definition of the
+\C{leq} relation, denoted by the \C{<=} infix notation, in order to
 reveal the hidden subtraction. This can be performed using the rewrite
 tactic with the following syntax:
 
@@ -1058,19 +1059,22 @@ m, n1, n2 : nat
 \end{coqout}
 
 Observe that the definition of \C{<=} has been exposed
-\emph{everywhere} in the goal, i.e. at both initial occurrences.
-We can now factor \C{m} on the left, using the appropriate
+\emph{everywhere} in the goal, i.e. at both its occurrences in this
+initial goal. We can now factor \C{m} on the left, using the appropriate
 distributivity property:
 \marginnote{Here again we cheat and do not use predicators}
 
 \begin{coq}{def=mulnBr}{title=Distributivity of multiplication over subtraction}
 Lemma |*mulnBr*| n m p : n * (m - p) = n * m - n * p.
 \end{coq}
-This time we need to perform a right-to-left rewriting (instead of the
-default left-to-right) that finds in the goal an instance of pattern
-\C{(_ * _ - _ * _)} where the terms matched by the first and the third
-wild-cards coincide. The syntax for right-to-left rewriting adds a
-minus \C{-} to the name of the rewrite rule:
+This time we need to perform a right-to-left rewriting of the
+\C{mulnBr} lemma (instead of the
+default left-to-right). The rewriting step first finds in the goal an
+instance of pattern \C{(_ * _ - _ * _)}, where the terms matched by
+the first and the third wild-cards coincide. The syntax for
+right-to-left rewriting consists in adding a minus \C{-} to the name
+of the rewrite rule:
+
 
 \begin{coq}{def=LeqMul2lproof2}{title=Ordered products,width=7.7cm}
 Lemma |*leq_mul2l*| m n1 n2 :
@@ -1179,26 +1183,89 @@ About negbk.
 negbK : forall b : bool, ~~ ~~ b = b
 \end{coqout}
 
-And she has thus observed the prenex \C{forall} quantifier. This
-quantifier binds a boolean, and expresses --as expected-- that that
-the equation holds for any boolean. In fact statements like \C{negbK}
-are better stated using generic patterns like:
-\marginnote{negbK is not a good first example: use right id or
-  commutative instead.}
+She has thus observed thate \Coq{}'s output features a prenex
+\C{forall} quantifier. This universal quantifier binds a boolean, and
+expresses --as expected-- that that the equation holds for any
+boolean. The type of the lemmas and theorems with parameters all feature
+prenex universal quantifiers:
 
-Do other examples, with an implication.
+\marginnote{Todo : use coqout.}
+\begin{coq}{}{}
+(* One parameter *)
+About leqn0.
+  (* leqn0 : forall n : nat, (n <= 0) = (n == 0) *)
 
-\subsection{Higher order quantification}
+(* Two parameters *)
+About muln_eq0.
+  (* muln_eq0 : forall m n : nat, (m * n == 0) = (m == 0) || (n == 0) *)
 
-Inductive schemes come here.
+\end{coq}
 
-\subsection{Proofs by instanciation}
+This quantifier can also be used to \emph{define} logical statements,
+like in the following examples:
+
+\begin{coq}{}{}
+Definition |*eqfun*| (f g : B -> A) : Prop := forall x, f x = g x.
+\end{coq}
+
+where we have two parameters \C{f} and \C{g} and one universal
+quantification.
+
+\marginnote{
+Warning, do not confuse predicates and their types:
+\C{About eqfun.
+(* eqfun : forall A B : Type, (B -> A) -> (B -> A) -> Prop *)}
+But this is too early: requires CH.}
+
+When several definitions and/or lemmas share the same family of
+parameters, these can be factored using the \C{Section} mechanism of
+\C{Coq}. For instance, the \C{ssrfun} library includes a catalogue of
+definitions that are used to normalize the statements of the
+equational theory of operations:
+
+\begin{coq}{}{}
+
+Section Injections.
+
+Variables (rT aT : Type) (f : aT -> rT).
+
+Definition |*injective*| := forall x1 x2, f x1 = f x2 -> x1 = x2.
+
+Definition |*cancel*| g := forall x, g (f x) = x.
+
+Definition |*pcancel*| g := forall x, g (f x) = Some x.
+
+(* ... *)
+End Injections.
+\end{coq}
+
+\marginnote{Were sections already mentionned in chapter 1?}
+Observe the results of \C{About} queries before and after closing the
+Section. There is no problem with quantifying on functions in
+\C{Coq}'s logic. It is even possible to quantify over predicates, and
+this is how reasoning by induction is formalized. For instance, the
+possibility to reason by recurrence on a natural numbers is formalized
+by the following sentence:
+
+\begin{coq}{}{}
+About nat_ind.
+
+(* nat_ind :
+forall P : nat -> Prop,
+P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n *)
+\end{coq}
+
+Observe the different nature of universal quantification.
+
+\subsection{Using quantified statements: proofs by instanciation}
 
 Just like in Chapter 1, universal quantification codes for places for
 arguments. One can obtain instances of an identity, like
 \C{(negbK true)} useful for instance in the case of \C{(addnC a)}. The
 \C{apply} tactic does the job of finding the right instance from the
-goal.
+goal.  It is smart enough to take benefit of computation to make the
+glue if needed. Example: {H1 : n <= m = true} with a goal
+\C{n.+1 <= m.+1}.
 
 \subsection{Proving conditional/universal statements}
 
