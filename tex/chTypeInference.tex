@@ -75,7 +75,7 @@ of an agebraic structure: operations, properties and notations
 letting one reason abstractly about a family of objects sharing
 the interface.
 An instance is an example of an algebraic structure,
-an object that fits an interface.  
+an object that fits an interface.
 For example \C{eqType} is the interface of
 data types that come equipped with a comparison function, and
 the type \C{nat} forms, together with the \C{eqn} function, an
@@ -769,7 +769,7 @@ commutative.
 Going back to our running example, the actual definition of \lstinline/eqType/
 used in the \mcbMC{} library also contains a property.
 Indeed there is little one can do with a comparison function if that
-function is not ``correct''.  
+function is not ``correct''.
 
 \begin{coq}{name=eqtype}{title=eqType}
 Module Equality.
@@ -793,7 +793,7 @@ only if they are syntactically equal.  Note that this means that the
 comparison function is not allowed to quotient the type by identifying
 two syntactically different terms.
 
-\mantra{The infix notation \lstinline/==/ stands for 
+\mantra{The infix notation \lstinline/==/ stands for
 a comparison function compatible with Leibnitz equality
 (substitution in any context)}
 
@@ -835,7 +835,7 @@ Notation "x == y" := (@eq_op _ x y).
 In this simple case there is only one property, named
 \C{Equality.axiom}.
 
-Said that, nothing really changes: the \C{eqType} structure 
+Said that, nothing really changes: the \C{eqType} structure
 relates a type (called \C{sort}) with a signature (called \C{class}).
 
 Remark the use of \C{:>} instead of \C{:} to type the
@@ -887,7 +887,7 @@ transparently.  In some sense every lemma part of an abstract theory
 is \emph{generic}: the very same name can be used for each and every
 isntance of the interface, exactly as the \C{==} notation.
 
-The simplest lemma part of the theory of \C{eqType} is the 
+The simplest lemma part of the theory of \C{eqType} is the
 \lstinline/eqP/ generic lemma that can be used in conjunction with
 any occurrence of the \lstinline/==/ notation.
 
@@ -1222,7 +1222,7 @@ Variable op : Monoid.law idx.
 Notation Local "1" := idx.
 Notation Local "*%M" := op (at level 0).
 Notation Local "x * y" := (op x y).
-	
+
 Lemma big1_eq I r (P : pred I) : \big[*%M/1]_(i <- r | P i) 1 = 1.
 
 (* Another one used later on *)
@@ -1337,6 +1337,9 @@ It is not uncommon to see \C{/=} switch in purely algebraic proofs
 (where no computation is really involved) just to clean up the display
 of the current conjecture.
 
+
+TODO : Discuss also the dangers of breaking abstraction barriers, as a
+good practice.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Implement \lstinline/[foo of nat]/}
 \mcbREQUIRE{Canonical}
@@ -1375,7 +1378,7 @@ If we show the coercions
 	set_of : forall T : eqType, phant (Equality.sort T) -> Type
 \end{coqout}
 
-When you write \C{\{set nat\}} the system gets 
+When you write \C{\{set nat\}} the system gets
 \C{(set\_of ?T (Phant nat))}.
 The unification problem is \C{(phant (Equality.sort ?T))} versus \C{(phant nat)}
 and then the definition uses \C{?T} as inferred by the preious
@@ -1388,9 +1391,9 @@ problem to obtain \C{(seq (Equality.sort nat_eqType))}.
 % \mcbLEVEL{2}
 % \mcbsection{Discussion about type inference}\label{sec:typeinfrelated}
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
+%
 % NOT sure I want to keep that discussion.
-% 
+%
 % The points I want to make are:
 % \begin{itemize}
 % \item during type inference, HO infers (morally) the minimum
