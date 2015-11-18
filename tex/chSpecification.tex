@@ -321,23 +321,6 @@ last one comes earlier).
 % views applied to top, inline destructuring and subst:
 %   => /andP[/eqP-> pb] ->.
 
-\section{Structuring proofs}
-
-May be a real 10 lines proofs would help here. Lemmas about Euclidean
-division?
- \begin{itemize}
-\item Proofs have a structure, to ensure readability (in a certain
-  sense) and maintenance; we list here some tools and good practice.
-\item Declare intermediate steps: forward (\C{have}), backward
-  (\C{suff}), symmetries (\C{gen have} and mention \C{wlog}),
-abbreviations \C{set}
-\item: Punctuation to help the reader: bullets, indentation,
-  terminating tactics.
-\item Good practices: local/early error detection, checkpoints via
-  \C{have}, naming policies (lemmas, but also hypotheses and bound
-  variables), robust rewrite.
-\end{itemize}
-
 % Fwd and backward declarative steps.
 % have : P x := ... H ...
 % suff.
@@ -371,6 +354,72 @@ reasoning. Hence the next section.
 
 \end{itemize}
 
+\section{Toward real proofs}
+
+May be a real 10 lines proofs would help here. Lemmas about Euclidean
+division?
+ \begin{itemize}
+\item Proofs have a structure, to ensure readability (in a certain
+  sense) and maintenance; we list here some tools and good practice.
+\item Declare intermediate steps: forward (\C{have}), backward
+  (\C{suff}), symmetries (\C{gen have} and mention \C{wlog}),
+abbreviations \C{set}
+\item: Punctuation to help the reader: bullets, indentation,
+  terminating tactics.
+\item Good practices: local/early error detection, checkpoints via
+  \C{have}, naming policies (lemmas, but also hypotheses and bound
+  variables), robust rewrite.
+\item keep context clean?
+\end{itemize}
+
+\begin{coq}{}{}
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+(* pedestrian *)
+case/orP: (leq_total n2 n1) => [le_n21|le_n12].
+rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+apply: leq_trans le_mn2 le_n21.
+rewrite maxnC orbC.
+rewrite (maxn_idPl le_n12) orb_idr // => le_mn1.
+apply: leq_trans le_mn1 le_n12.
+(* ------------- with indentation, have and internal naming *)
+have th_l2r x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
+  move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+  by apply: leq_trans le_mn2 le_n21.
+by case/orP: (leq_total n2 n1) => /th_l2r; last rewrite maxnC orbC.
+(* ------------- better with suff *)
+suff th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
+  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+by apply: leq_trans le_mn2 le_n21.
+(* ---------- wlog *)
+wlog le_n21: n1 n2 / n2 <= n1.
+  by case/orP: (leq_total n2 n1) => ?; last rewrite maxnC orbC; apply.
+by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
+\end{coq}
+
+\begin{coq}{}{title=tools}
+Lemma orb_idl (a b : bool) : (a -> b) -> a || b = b.
+Lemma maxn_idPl {m n} : reflect (maxn m n = m) (m >= n).
+Lemma leq_total m n : (m <= n) || (m >= n).
+\end{coq}
+
+\begin{coq}{}{}
+Lemma edivnP m d :
+ let ed := edivn m d in
+   ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
+Proof.
+move E: (edivn m d) => ed /=.
+case: d => [|d /=] in E *; first by rewrite -E eqxx.
+rewrite /edivn /= in E.
+rewrite -[m]/(0 * d.+1 + m).
+elim: m {-2}m 0 (leqnn m) E => [|n IHn] [??<-|m] //= q le_mn.
+rewrite subn_if_gt; case: (leqP d m) => [le_dm|lt_md <- /=]; last first.
+  by rewrite ltnS lt_md eqxx.
+have le_mdn : m - d <= n by rewrite (leq_trans (leq_subr d m)).
+by move/(IHn _ _ le_mdn); rewrite mulSnr -addnA -subSS subnKC.
+Qed.
+\end{coq}
 \section{STOP HERE}
 
 THIS CHAPTER IS ABOUT METHODOLOGY, plus introduces the other logical
