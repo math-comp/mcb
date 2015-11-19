@@ -337,7 +337,128 @@ Not everything needs to be a tactic, the logic is powerful
 enough to express special connectives that induce a line of
 reasoning. Hence the next section.
 
-\section{Advanced statements}
+\section{Advanced, practical, statements}
+
+general talk about the fact that statements/definition do matter: not only for
+their meaning but also because they have implications on the
+usability/practicality in the rest of the library.  At least two classes of
+techniques, the ones based on the logic (bool refl, reflect, classically, order
+of forall when instantiation done via CH) and the ones based on the support of
+the prover (implicit args, type inference CS, Hint Resolve).
+
+More in general, this has to be mentioned in the main intro of the book, here
+we revise the idea.
+
+What we did for reflect, an ad hoc connective, to model a line of reasoning is
+a recurrent pattern in the \mcbMC{} library: the ``spec'' predicates.  Specs
+are particularly handy  because inductive predicates, via their elimination
+rule, accesses a special feature of the type theory of Coq: implicit equations
+/ automatic substitution.
+
+If we look at reflect, and its use, one is very likely to substitute b
+for its value in each branch of the case.
+
+\begin{coq}{}{}
+Inductive |*reflect*| (P : Prop) (b : bool) : Prop :=
+|ReflectT (p : P)    (e : b = true)
+|ReflectF (np : ~ P) (e : b = false)
+\end{coq}
+
+This alternative formulation makes the equation implicitly stated and
+also automatically substituted during case analysis.
+
+\begin{coq}{}{}
+Inductive |*reflect*| (P : Prop) : bool -> Prop :=
+|ReflectT (p : P)    : reflect P true
+|ReflectF (np : ~ P) : reflect P false
+\end{coq}
+
+Here the second argument of \C{reflect} is said to be an \emph{index}
+and it is allowed to vary depending on the constructor: \C{ReflecT} always
+builds a term of type \C{(reflect P true)} while \C{ReflectF} builds
+a term of type \C{(reflect P false)}.
+Example:
+
+\begin{coq}{}{}
+case: (andP a b) => [ab|nab]
+\end{coq}
+
+\begin{coqout}{}{width=6cm}
+a, b : bool
+============================
+a && b ==> (a == b)
+\end{coqout}
+\begin{coqout}{}{width=6cm}
+a, b : bool
+ab : a /\ b
+============================
+true || a == b 
+
+subgoal 2 is:
+false || a == b 
+\end{coqout}
+
+Every time a term of type \C{(reflect (a /\\ b) (a && b))} is eliminated, the
+following happens:
+\begin{enumerate}
+\item 2 subgoals are generated
+\item in the first one (corresponding to \C{ReflectT}) a new hyp is
+  available (\C{(a /\\ b)}) and all occurrences of the boolean
+  expression \C{(a && b)} are replaced by \C{true} (the value of the index
+  for \C{ReflectT}).
+\item in the first one (corresponding to \C{ReflectF}) a new hyp is
+  available (\C{\~(a /\\ b)}) and all occurrences of the boolean
+  expression \C{(a && b)} are replaced by \C{false}, the value of
+  the index for \C{ReflectF}.
+\end{enumerate}
+
+The second goal becomes trivial, hence we can finish
+
+\begin{coq}{}{}
+case: (andP a b) => [[-> ->] | //]
+\end{coq}
+
+An even better tactic is
+
+\begin{coq}{}{}
+case: (andP _ _) => [[-> ->] | //]
+\end{coq}
+
+In this case the boolean expression replaced by true/false is \C{(_ && _)}. 
+Trailing \C{_} are also added automatically by \C{case} leading to the
+idiomatic
+
+\begin{coq}{}{}
+case: andP => [[-> ->] | //]
+\end{coq}
+
+Note the similarity between matching \C{(_ && _)} and the job of rewrite.
+
+On the same line, we present \C{leqP} that still models a case split but
+this time specialized to the order relation (and its negation) substituting
+both with true/false.  Just mention \C{ltngtP}, that is the proof that
+a boolean predicate (because of its 2 valued nature) can model a concept
+with 3 cases as well via this spec mechanism.  Or that the same concept,
+depending on the proof you need to do, may benefit from different natures
+of case splits.
+
+\mantra{the structure of the proof shall not be driven by the syntax (head
+symbol) of the definition/predicate under study but by the view/spec you apply
+to it}
+
+Just show a use of \C{ifP} and/or \C{ifPn} and the fact that its pattern is
+quite smart/small wrt the expression it typically handles (3 chars in place of\\
+\C{(if cond then branch else alternative)}).
+
+Also show the adaptor altP, that is particularly useful with eqnP.
+
+\subsection{TBD: dependent elimination (**)}
+
+explain return match clause.  Maybe just the syntax we provide here and
+there, the / annotation for elim/case, and then point to other texts explaining
+the thing.  \mcbMC{} does not use such thing but for spec.
+
+\subsection{other tools?}
 
 \begin{itemize}
 \item Use macros (\C{left_commutative} or notations like
@@ -346,31 +467,9 @@ reasoning. Hence the next section.
 \item Classically (do not insist too much)
 \item iff (\C{AGM}): find examples?
 \item Tuning of implicit arguments
-\item Spec lemmas in order: to implement the most appropriate
-  branching, to chose the extra hypotheses (like equations) that pop
-  up in each branch, to have automatic substitution (via
-  indexes). Explain (finally) the \C{reflect} predicate in the light
-  of these. But we cannot yet explain sort \C{Type}.
-
 \end{itemize}
 
 \section{Toward real proofs}
-
-May be a real 10 lines proofs would help here. Lemmas about Euclidean
-division?
- \begin{itemize}
-\item Proofs have a structure, to ensure readability (in a certain
-  sense) and maintenance; we list here some tools and good practice.
-\item Declare intermediate steps: forward (\C{have}), backward
-  (\C{suff}), symmetries (\C{gen have} and mention \C{wlog}),
-abbreviations \C{set}
-\item: Punctuation to help the reader: bullets, indentation,
-  terminating tactics.
-\item Good practices: local/early error detection, checkpoints via
-  \C{have}, naming policies (lemmas, but also hypotheses and bound
-  variables), robust rewrite.
-\item keep context clean?
-\end{itemize}
 
 \begin{coq}{}{}
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
@@ -404,6 +503,8 @@ Lemma maxn_idPl {m n} : reflect (maxn m n = m) (m >= n).
 Lemma leq_total m n : (m <= n) || (m >= n).
 \end{coq}
 
+
+
 \begin{coq}{}{}
 Lemma edivnP m d :
  let ed := edivn m d in
@@ -420,6 +521,23 @@ have le_mdn : m - d <= n by rewrite (leq_trans (leq_subr d m)).
 by move/(IHn _ _ le_mdn); rewrite mulSnr -addnA -subSS subnKC.
 Qed.
 \end{coq}
+
+May be a real 10 lines proofs would help here. Lemmas about Euclidean
+division?
+ \begin{itemize}
+\item Proofs have a structure, to ensure readability (in a certain
+  sense) and maintenance; we list here some tools and good practice.
+\item Declare intermediate steps: forward (\C{have}), backward
+  (\C{suff}), symmetries (\C{gen have} and mention \C{wlog}),
+abbreviations \C{set}
+\item: Punctuation to help the reader: bullets, indentation,
+  terminating tactics.
+\item Good practices: local/early error detection, checkpoints via
+  \C{have}, naming policies (lemmas, but also hypotheses and bound
+  variables), robust rewrite.
+\item keep context clean?
+\end{itemize}
+
 \section{STOP HERE}
 
 THIS CHAPTER IS ABOUT METHODOLOGY, plus introduces the other logical
