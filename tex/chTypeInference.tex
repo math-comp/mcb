@@ -647,7 +647,7 @@ example to use it on terms whose type was built using a type
 constructor like the Cartesian product we encounter an error.
 
 \begin{coq}{name=reccs}{title=Error,width=6cm}
-Check (3, true) == (false, 4).
+Check (3, true) == (4, false).
 $~$
 \end{coq}
 \coqrun{name=nc1;fail}{ssr,eqtype,eqn,bety,infix,declcs,reccs}
@@ -819,16 +819,14 @@ Module Equality.
 
 Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
 
-Record class_of T := Mixin {op : rel T; _ : axiom op}.
-
 Structure eqType : Type := Pack {
   sort :> Type;
-  class : class_of sort
+  eq_op : rel sort;
+  _ : axiom eq_op;
 }.
 
 End Equality.
 
-Definition eq_op T := Equality.op (Equality.class T).
 Notation "x == y" := (@eq_op _ x y).
 \end{coq}
 
@@ -893,7 +891,7 @@ any occurrence of the \lstinline/==/ notation.
 
 \begin{coq}{name=eqP}{title=The eqP lemma}
 Lemma eqP (T : Equality.eqType) : Equality.axiom (@Equality.op T).
-Proof. by case: T => ty [op prop]; exact: prop. Qed.
+Proof. by case: T => ty op prop; exact: prop. Qed.
 \end{coq}
 
 The proof is just unpacking the input \lstinline/T/.
@@ -1039,7 +1037,7 @@ property.
 
 \begin{coq}{name=uniq}{}
 Fixpoint uniq s :=
-  if s is x :: s' then (x \notin s') || uniq s' else true.
+  if s is x :: s' then (x \notin s') && uniq s' else true.
 Fixpoint undup s :=
   if s is x :: s' then
     if x \in s' then undup s' else x :: undup s'
@@ -1113,7 +1111,7 @@ when \C{T} is an \C{eqType}.
 Let s1 := [:: 1; 2 ].
 Let s2 := [:: 3; 5; 7].
 Let ss := [:: s1 ; s2 ].
-Check ss == [::] || s1 \in ss.
+Check (ss == [::]) || s1 \in ss.
 Check uniq ss.
 Check undup_uniq ss.
 \end{coq}

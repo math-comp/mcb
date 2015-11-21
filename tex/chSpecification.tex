@@ -521,6 +521,20 @@ by apply: leq_trans le_mn1 le_n12.
 Qed.
 \end{coq}
 
+alternative with a more declarative have
+
+\begin{coq}{}{}
+Proof.
+have /orP[le_n21|le_n12] := leq_total n2 n1.
+  rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+  by apply: leq_trans le_mn2 le_n21.
+rewrite maxnC orbC.
+rewrite (maxn_idPl le_n12) orb_idr // => le_mn1.
+by apply: leq_trans le_mn1 le_n12.
+Qed.
+\end{coq}
+
+
 2 goals, hence indentation.
 
 \begin{coqout}{}{title=Output line 3,width=8cm}
@@ -625,8 +639,12 @@ wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
   by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
 rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
+
+by rewrite /maxn le_n21 orb_idr // => le_mn2; apply: leq_trans le_mn2 le_n21.
+
 (* then, recalling apply adds _ we can avoid naming/mentioning le_mn2*)
 by rewrite (maxn_idPl le_n21) orb_idr // => ?; apply: leq_trans le_n21.
+
 (* or even better using lemmas in intro pattern + auto generalization
    plus rewriting an is_true... or maybe not *)
 by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
