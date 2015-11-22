@@ -392,10 +392,10 @@ a && b ==> (a == b)
 a, b : bool
 ab : a /\ b
 ============================
-true || a == b 
+true || a == b
 
 subgoal 2 is:
-false || a == b 
+false || a == b
 \end{coqout}
 
 Every time a term of type \C{(reflect (a /\\ b) (a && b))} is eliminated, the
@@ -424,7 +424,7 @@ An even better tactic is
 case: (andP _ _) => [[-> ->] | //]
 \end{coq}
 
-In this case the boolean expression replaced by true/false is \C{(_ && _)}. 
+In this case the boolean expression replaced by true/false is \C{(_ && _)}.
 Trailing \C{_} are also added automatically by \C{case} leading to the
 idiomatic
 
@@ -450,7 +450,7 @@ Just show a use of \C{ifP} and/or \C{ifPn} and the fact that its pattern is
 quite smart/small wrt the expression it typically handles (3 chars in place of\\
 \C{(if cond then branch else alternative)}).
 
-Also show the adaptor altP, that is particularly useful with eqnP.
+Also show the adaptor altP, that is particularly useful with eqnP and boolP.
 
 \subsection{TBD: dependent elimination (**)}
 
@@ -652,7 +652,7 @@ Qed.
 \end{coq}
 
 For wlog, say that the block naming \C{th_sym} is optional and frequently
-omitted (at the cost of less explicit script). 
+omitted (at the cost of less explicit script).
 
 \begin{coq}{}{}
 Lemma edivnP m d :
