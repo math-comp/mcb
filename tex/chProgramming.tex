@@ -18,8 +18,7 @@ manipulated by operations.  We also show how operations are described.
 
 \section{Functions}
 In this section, we expect readers to get acquainted with the notion
-of function and the associated syntax.  We rely on a type of natural
-\marginnote{first occurrence of type}
+of function and the associated syntax.  We rely on natural
 numbers that will only be described fully a few pages later.  There is an
 addition operation noted with the \C{+} symbol associated to this
 type, and this operation will also be described  a few pages later in
@@ -30,7 +29,7 @@ We start by considering the expression
 We can read this expression as an object, but also as the result of an
 operation on an object, or as the result of an operation on two
 objects.  Let us first consider the operation of {\em adding one to
-  natural number}.  This operation is written in the following manner.
+a natural number}.  This operation is written in the following manner.
 
 \begin{coq}{name=exfun}{}
   fun n => n + 1
@@ -50,7 +49,11 @@ way:
 \begin{coq}{name=exapp}{}
   (fun n => n + 1) 2
 \end{coq}
-From the point of view of mathematical syntax, this object {\tt
+From the point of view of mathematical syntax, there are two unusual 
+things in this line.  First, applying a function to an argument is simply
+by writing the function on left of the argument, {\em not necessarily
+with parentheses around the argument}; we will come back to this later.
+Second, this object {\tt
   fun n => n + 1} is unusual.  When defining an operation, we usually
 rely on a sentence {\em consider the function \(f\) from {\(\mathbb{N}\)}
 to {\(\mathbb{N}\)} which maps \(n\) to \(n + 1\)}.  This would also be
@@ -88,6 +91,8 @@ Coq to represent \(\mathbb{N}\):
 \begin{coq}{name=exdef-type}{}
 Definition f (x : nat) : nat := x + 1.
 \end{coq}
+In this description, {\tt nat} is called a {\em type}.  Types describe
+collections of objects that can be treated in a uniform way.
 
 Once a definition was made, the Coq system provides a command to
 describe the relevant information about the constant that is defined:
@@ -101,9 +106,12 @@ f : nat -> nat
 Argument scope is [nat_scope] ...
 \end{coqout}
 This response confirms that \C{f} is a function from
-\({\mathbb{N}}\) to \({\mathbb{N}}\).  We also learn that  \C{f}
-will interact with the parser in such a way that overloaded notations
-will be interpreted as notations for operations on natural number.
+\({\mathbb{N}}\) to \({\mathbb{N}}\).
+We also learn that the Coq system will pay attention to
+arguments of \C{f} in such a way that overloaded notations
+will be interpreted as notation for natural numbers.
+\marginnote{maybe place a footnote here to point to another paragraph
+about overloaded notations.  To  be discussed.}
 
 We can be more inquisitive in our requests for information about
 \C{f}, we can also require to know what is the value.  This is done in
@@ -140,13 +148,12 @@ Definition repeat_twice (g : nat -> nat) :=
 \end{coq}
 Reading the first line of this statement, we see that a new object is
 being defined, called \C{repeat_twice}.  We also see that this object
-is a function argument the argument of which is a function of
+is a function the argument of which is a function of
 type \C{nat -> nat}.  For later reference in the definition of
 \C{repeat_twice}, the argument is given the name \C{g}.
 
 Reading the second line of this statement, we see that the value
-returned by \C{repeat_twice} when applied to its argument is a new
-\marginnote{return is a bit technical to me, maybe constructed?}
+of \C{repeat_twice} when applied to one argument is a new
 function, described using the ``\C{fun .. => ..}'' construct.  The
 argument to that function is called \C{x}.  After the \C{=>} sign, we
 find the ultimate value of this function.  This fragment of text, \C{g
@@ -168,7 +175,7 @@ When we want to apply the function \C{repeat_twice} to the function
 written as follows:
 \begin{coq}{name=eval_repeat_twice_f_two}{width=6cm,title=Evaluating
     an expression}
-Compute repeat_twice f 2
+Eval compute in repeat_twice f 2.
 \end{coq}
 \coqrun{name=eval_run}{eval_repeat_twice_f_two}
 \begin{coqout}{run=eval_f_run}{title=Response,width=6cm}
@@ -178,18 +185,20 @@ From the syntax point of view, we wrote three subexpressions only
 separated by space.  By default, the parser understands this as
 \C{(repeat_twice f) 2}, so we actually have a first subexpression
 which is \C{repeat_twice} applied to \C{f}.  According to the
-definition of the first function, this returns an intermediate
+definition of the first function, the value is an intermediate
 function from \C{nat}
 to \C{nat}, which is then applied to \C{2}.  The intermediate function
 actually is \C{fun x => f (f x)}, so the result expression is \C{f (f
   2)}.  Remembering the definition of \C{f}, this expression can also
 be read as \C{(2 + 1) + 1}.  Thus, after computation, the result is \C{4}.
 
+\marginnote{it would be nice to have one more example here, or exercises.
+To be discussed.}
 \section{Data: cases and induction}
-It is also possible to define a datatype by giving in one declaration
+It is possible to define a datatype by giving in one declaration
 the type, methods to build elements of this type, and methods to
 use elements of the type while computing.  This approach is used
-systematically in Coq to define a variety of basic datatypes among
+systematically in Coq to define a variety of basic datatypes, among
 which boolean values, natural numbers, pairs and sequences of values
 are the most prominents examples.  We will study these examples in
 turn.
@@ -209,11 +218,11 @@ Inductive bool : Set := true : bool | false : bool
 \marginnote{I guess we should use Type, also for bool, and not even mention Set}
 This declaration states explicitely that there are only two cases for
 elements of type \C{bool}.  the first case is given by the constant
-\C{true}, the second case by constant \C{false}.  Thus, the
+\C{true}, the second case by the constant \C{false}.  Thus, the
 declaration of the type gives in an obvious manner the type, \C{bool},
-and ways to build elements, \C{true}, and \C{false}.  All definitions
+and ways to build all its elements, \C{true}, and \C{false}.  All definitions
 in Coq, like this one, which define a type by providing at the same
-time the only ways to build elements of the type are called {\em
+time a type and the only ways to build elements of the type are called {\em
   inductive} definitions.  The two objects \C{true} and \C{false} are
 called constructors.
 
@@ -246,7 +255,7 @@ manner:
 Definition f23 b := if b then 2 else 3.
 \end{coq}
 \coqrun{name=definef23_run}{definef23}
-Readers are invited to test this function using the \C{Compute} command.
+Readers are invited to test this function using the \C{Eval compute in} command.
 
 The ssreflect library provides a collection of boolean operations that
 mirror reasoning steps on truth value.  the functions are called
@@ -294,13 +303,16 @@ Print nat.
 Inductive nat : Set :=  O : nat | S : nat -> nat
 \end{coqout}
 
-This declaration states that \C{O} is a natural number, \C{S O} is a
+This declaration states that the only ways to produce natural numbers
+are by using the constant \C{O}, or by applying the function \C{S} to
+an already existing natural number.  So \C{O} is a natural number, \C{S O} is a
 natural number, \C{S (S O)}, and so on, and these are the only natural
 numbers.  When interacting with Coq, we will often see decimal
 notations, but these are only a parsing and display
 facility provided to the user for readability.  So \C{O} is displayed
-\C{0}, \C{S O} is displayed \C{1}, etc.  The decimal notations can
-also be used interactively.
+\C{0}, \C{S O} is displayed \C{1}, etc.  Users can also type decimal
+numbers to describe values, but these are automatically translated into
+terms built with \C{O} and \C{S}.
 
 The ssreflect library provides a few notations to make uses of the
 constructor {\tt S} more intuitive to read.  In particular, if \C{x}
@@ -373,8 +385,8 @@ if n is 0 then true else false
 
 For an example where the pattern variable is actually used, we can
 observe the function that returns the predecessor of a natural number
-when it exists.  This function already exists in the library, but we
-could redefine it as follows:
+when it exists, or 0 otherwise.  This function already exists in the library,
+but we could redefine it as follows:
 
 \begin{coq}{name=pred}{}
 Definition my_pred n := if n is u.+1 then u else n.
@@ -393,8 +405,9 @@ successor of the successor of O, which we could also write
 \C{0.+1.+1}.  When matching \C{0.+1.+1} against the pattern \C{u.+1}
 the value of \C{u} is found to be \C{0.+1}, in other words \C{1}.
 
-The pattern used in the \C{if} statement can use several nested levels
-of the \C{.+1} pattern.  For instance, if we want to write a function
+The pattern used in the \C{if} statement can be composed of
+several nested levels of the \C{.+1} pattern.  For instance,
+if we want to write a function
 that returns \(n-5\) for every input larger than or equal to 5 and 0
 for every input smaller than 5, we can write the following definition:
 
@@ -421,20 +434,20 @@ any number \(n \in \{1, \ldots, 4\}\) to \(n-1\), and \(0\) to \(0\).
 The pattern matching construct \C{match .. with | .. => .. end}
 contains an arbitrary large number of {\em pattern matching rules} of
 the form \C{| \(pattern\) => \(result\)}.  For the symbols that are allowed
-in the pattern, they are essentially restricted to \C{O}, \C{S}, and
+in the pattern, they are essentially restricted to \C{O}, \C{S} and
 variable names.  Thanks to notations, a pattern can also contains
 occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occur, this variable can be
 re-used in the result part.  When computing with a natural number, all
 the pattern matching rules are tried successively against this number.
-For instance, if the input is \C{2}, in other \C{0.+1.+1}, the first
+For instance, if the input is \C{2}, in other words \C{0.+1.+1}, the first
 rule cannot match, because this would require that \C{0} matches
 \C{u.+1.+1.+.1} and we know that \(0\) is not the successor of any
 natural number, when it comes to the second rule \C{0.+1.+1} matches
 \C{v.+1}, because the rightmost \C{.+1} in the value of \C{2} matches
-the \C{.+1} part in the pattern and \C{0.+1} matches the \C{v} part in
-the pattern.
+the rightmost \C{.+1} part in the pattern and \C{0.+1} matches the \C{v} part
+in the pattern.
 
 \subsection{Recursion for integers}
 With only pattern-matching, we do not cope well with the fact that the
@@ -444,7 +457,7 @@ facility, known as {\em recursivity}.  The idea behind recursivity is
 that we can define a function while supposing that it is already
 defined for a subset of the type.  This adds a new element for which
 the function is defined, and progressively this makes that the
-function is defined for all possible inputs.
+function is defined for all elements of the type.
 
 Many usual functions to deal with natural numbers are
 defined recursively.  For instance, we can define addition in the
@@ -462,9 +475,11 @@ function \C{my_add} itself.  This text expresses that the value of
 \C{(my_add p m).+1} and that the value \C{my_add 0 m} is \C{m}.
 This first equality may
 seem redundant, but there is progress when reading this equality from
-left to right: addition of \C{p.+1} is explained with the help of
-addition of \C{p}, which is a smaller number.  When considering the
-expression \C{my_add 2 3}, the computation progresses as follows
+left to right: an addition with \C{p.+1} as the left-hand side argument
+is explained with the help of addition with \C{p} as the left-hand side
+argument, and \C{p} is a smaller number than \C{p.+1}.  When considering the
+expression \C{my_add 2 3}, we can know the value by performing the following
+computation:
 \begin{tabbing}
 \C{adfasdfasdfafafafafafaf}\=\kill
 \C{my_add 2 3} \> use the second pattern matching rule, \C{p = 1}\\
@@ -486,9 +501,9 @@ Fixpoint my_add n m :=
   | p.+1 => (my_add p m).+1
   end.
 \end{coq}
-With this way of writing the recursive function, it becomes obvious
-pattern-matching rule describes an equality between two symbolic
-expression, but this equality is always used from left to right during
+With this way of writing the recursive function, it becomes obvious that
+pattern-matching rules describe equalities between two symbolic
+expressions, but these equalities are always used from left to right during
 computations.
 
 When writing recursive functions, the Coq systems imposes the
@@ -525,7 +540,7 @@ If addition tantamounts to repeating the operation of adding a \C{.+1}
 to one of the arguments, subtraction tantamounts to repeating the
 operation of fetching a subterm of the first argument.  This is also
 easily expressed using pattern matching constructs.  Here again,
-subtraction is already defined the libraries, but we can play the game
+subtraction is already defined in the libraries, but we can play the game
 of re-defining our own version.
 
 \begin{coq}{name=my_sub}{}
@@ -541,7 +556,8 @@ the second argument of the subtraction is \C{0}, then the result is
 the first argument.  But it also covers the case where the second
 argument is non-zero while the first argument is 0.  This phenomenon
 is imposed by the fact that the function must be total (all functions
-are total in the Coq system).  When the second argument is non-zero
+are total in the Coq system) and the type \C{nat} does not contain any
+element to represent negative numbers.  When the second argument is non-zero
 and the first argument is zero, a value must still be returned and
 {\em this value must be a natural number}.  In the long run, this
 problem will be solved by introducing another type of numbers with
@@ -576,12 +592,12 @@ that the Coq system really identifies various ways to write the same
 natural number.
 
 \begin{coq}{name=equalities}{width=6cm}
-Compute 0 == O.
-Compute 1 == S O.
-Compute 1 == 0.+1.
-Compute 2 == S O.
-Compute 2 == 1.+1.
-Compute 2 == my_add 1 0.+1
+Eval compute in 0 == O.
+Eval compute in 1 == S O.
+Eval compute in 1 == 0.+1.
+Eval compute in 2 == S O.
+Eval compute in 2 == 1.+1.
+Eval compute in 2 == my_add 1 0.+1
 \end{coq}
 \coqrun{name=equalities_run}{equalities}
 \begin{coqout}{equalities_run}{width=6cm}
@@ -633,7 +649,9 @@ This definition actually describes the type of lists as a {\em
 \C{list A} for each possible choice of a type \C{A}.  The type of the
 fonction \C{cons} is devised specifically to describe how to produce a
 new list of type \C{list A} by combining an element of \C{A} and an
-existing list of type \C{list A}.
+existing list of type \C{list A}.  This also means that this data-type
+does not allow users to construct lists where the first element would be
+a boolean value and the second element would be a natural number.
 
 In principle, all objects of the datatype definition have a type
 argument.  Thus, \C{list} is a function of type \C{Type -> Type} and
@@ -670,7 +688,7 @@ Argument A is implicit and maximally inserted
 Argument scopes are [type_scope _ seq_scope]
 \end{coqout}
 In practice, the Coq system implements a mechanism to avoid that
-people need to give the type argument to the \C{cons} function.  This
+people need to give the type argument to the \C{cons} function.  This is
 the information meant by the message \C{Argument A is implicit and
   ..}.  Every time users write \C{cons}, the system automatically
 inserts an argument in place of \C{A}, so that this argument does not
@@ -691,8 +709,8 @@ This example shows that the function \C{cons} is only applied
 explicitely to two arguments.  The first argument, which is implicit,
 has been guessed so that it matches the actually type of \C{2}.  For 
 \C{nil} also, the argument has been guessed to match the constraints
-coming from the fact it was used in place where a list of type \C{list
-  nat} was expected.  This example also shows that the ssreflect
+that it is used in a place where a list of type \C{list
+  nat} is expected.  This example also shows that the ssreflect
 library provides a collection of notations for lists.  In particular
 \C{cons a l} is usually written \C{a :: l} when \C{l} is a variable
 name, and lists terminated by \C{nil} are written with square brackets.
@@ -740,7 +758,7 @@ Fixpoint my_size A (s : seq A) :=
   if s is _ :: s' then (my_size s').+1 else 0.
 \end{coq}
 During computation on a given sequence, this function will traverse
-the whole list, producing a \C{.+1} construct for each
+the whole list, adding 1 to the result for ever
 \C{cons} pattern that is encountered.  It should be noted that in this
 definition, the function \C{my_size} is described as a two argument
 function, but the recursive call \C{my_size s'} is done by providing
@@ -748,12 +766,12 @@ explicitely only one argument, \C{s'}.  This is because we started the
 Coq session with, among other commands, the command ``\C{Set Implicit
   Arguments}''.  According to this directive, the Coq system makes
 arguments of functions that can be guessed from the type of following
-arguments automatically implicit.  This design is effective directly
+arguments automatically implicit.  This feature is effective directly
 at definition time.
 
 Another example of recursive function on lists is a function that constructs
-a new list where all elements are obtained by processing the elements
-of a list with a given function.  This function can be defined in this
+a new list where all elements are values of a given function applied
+the elements of a list.  This function can be defined in this
 manner.
 
 \begin{coq}{name=def_map}{}
@@ -770,11 +788,11 @@ Notation "[ 'seq' E | i <- s ]" := (my_map (fun i => E) s)
   (at level 0, E at level 99, i ident,
    format "[ '[hv' 'seq' E '/ ' | i <- s  ] ']'").
 \end{coq}
-For instance, we this notation we write the computation of successors
+For instance, with this notation we write the computation of successors
 for a given sequence of natural numbers as follows:
 
 \begin{coq}{name=try_map_notation}{width=7.cm}
-Compute [seq i.+1 | i <- [:: 2; 3]].
+Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 \end{coq}
 \coqrun{name=try_map_notation_run}{try_map_notation}
 \begin{coqout}{try_map_notation_run}{width=5cm,title=Response}
@@ -817,7 +835,7 @@ This is illustrated by the following example.
 
 \begin{coq}{name=compute_in_abstract}{title=Response, width=6.cm}
 Variable x : T.
-Compute my_iter x 3.
+Eval compute in my_iter x 3.
 \end{coq}
 \coqrun{compute_in_abstract_run}{compute_in_abstract}
 \begin{coqout}{compute_in_abstract_run}{width=6.cm}
@@ -841,8 +859,8 @@ with five arguments.  The first three arguments must be a type, a
 value in this type, and a binary operation in this type.  Because the
 first argument's value is useful to describe the type of other
 arguments, we need to use the notation \C{forall} that was already
-necessary to describe the type of \C{nil} and \C{cons} in the sectio
-about sequences.
+necessary to describe the type of \C{nil} and \C{cons} when discussing
+sequences.
 
 \begin{coq}{name=close_section}{width=4cm}
 About my_iter.
@@ -878,7 +896,7 @@ number \C{1}, and the multiplication operation on natural numbers
 to compute a function that has the same behavior as power:
 
 \begin{coq}{name=compute_in_real}{width=6cm}
-Compute my_iter 1
+Eval compute in my_iter 1
     (fun x y => x * y) 3 3.
 \end{coq}
 \coqrun{name=compute_in_real_run}{compute_in_real}
