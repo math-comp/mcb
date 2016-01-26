@@ -1125,74 +1125,263 @@ Check undup_uniq ss.
 \mcbsection{The generic theory of ``big'' operators}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-As already anticipated in the introducetion of this chapter, terms are
-allowed to occur inside types and hence canonical structure inference
-can be keyed on terms.  This possibility is exploited by the iterated
-operations library that provides convenient notations and theories
-for iterated, ``big'' operators like
+The objective of the so called \C{bigop} library is to provide
+the compact notations of definite iterated operations and a library
+of generic lemmas about them.  For example
 $$
-\sum_{i=1}^n f(i)
-\quad
-\bigcup_{i \in A} g(i)
+\sum_{i=1}^n f(i) = f(1) + f(2) + \ldots + f(n)
 $$
-The theory of big operators depends on the properties the iterated
-function, for example one can pull out of a summation an element in
-the middle only if the operation is commutative and associative.
-Maybe cite Bourbaki, algebra 1, ch 1.
+$$
+\bigcup_{a \in A} g(a) = g(a_1) \cup g(a_2) \cup \ldots \cup g(a_{|A|})
+$$
 
-First, lets analyze the notation.  We focus on finite iterations.
-The components are a range, a filter, the expression, the iterated
-function and the neutral.  The range can be a list (cite iota).
-Not sure the filter is so common in math, but is clearly convenient
-to pull an \C{if cond then neutral else expr} out of the main body.
+To share an infrastructure for this class of operators we have to
+identify a common pattern.  First the big symbol specifies the
+operation begin iterated and the neutral element for such operator
+(e.g. if $A$ is empty, then the union of all $g(a)$ is $\emptyset$).
+Then the range is an expression identifying a finite set of points,
+some times expressing an order (i.e. when the iterated operation is not
+commutative).  Finally a general expression describing the single
+items being combined by the main operator.
 
-For notational purposes it is important to identify the bound
-variable, so we pack most components into a box.
+As already mentioned in chapter 1~\ref{sec:bigopnat}, 
+the functional programming language
+provided by Coq can express in a very natural way iterations over
+a finite domain.  In particular such finite domain can be expressed
+as a list, the general expression like $f(i)$ by a function \C{(fun i =>
+...)}, while the operation of evaluating a function on all the
+elements of list and combining the results is the \C{fold} operator.
+Funtional programming can also esily describe the fnite domain.  For
+example the list of natural numbers $m, m+1, \ldots m + (n-m)$ 
+corresponding to the range $m \leq i < n$ can be built using the \C{iota}
+function as follows:
+\begin{coq}{name=iota}{}
+Definition index_iota m n := iota m (n - m).
+\end{coq}
+
+The only notation component of iterated operations we have not
+discussed yet is the filter.  Sometimes one needs to iterate the
+operation only on a subset of the domain.
+For example to state that the sum of the first $n$ odd numbers is $n^2$ 
+one could write:
+$$
+\sum_{i < 2n,\, 2 \nmid i} i = n^2
+$$
+An alternative writing is to use the general expression to rule out
+even numbers as in:
+$$
+\sum_{i < n} (i * 2 - 1) = n^2
+$$
+While the latter writing is elegant, it is harder to support
+generically, since the filtering condition is not explicit.  For
+example such equation clearly holds for any filtering, something hard
+to express if the filter is mixed with the general expression.
+$$
+\sum_{i < 2n,\,  2 \nmid i} i \;+ \sum_{i < 2n,\,  2 | i}  i = \sum_{i < 2n}
+$$
+
+At the light of that, our formal statement will be
+
+\begin{coq}{name=bigop21}{}
+Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
+\end{coq}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The generic notation for \C{foldr}}
+
+Knowing that we target the \C{foldr} generic iterator, we need to
+obtain something like
+
+\begin{coq}{name=bigop2}{}
+Definition sum_odd_def n :=
+  foldr
+    (fun acc i => if odd i then i + acc else acc)
+    0 (index_iota 0 n.*2)
+\end{coq}
+
+The notation can be split into two components: 
+on one hand the general expression, the filter, and the iterate
+operation (line 3); on the other hand the generic iterator, the initial
+value and the range (lines 2 and 4).  We start from the former.
+
+For notational purposes it is important to identify the various
+components, that in the \C{sum\_odd\_def} definition above are mixed.
 
 \begin{coq}{name=bigop2}{}
 Inductive bigbody R I := BigBody of I & (R -> R -> R) & bool & R.
-Definition applybig {R I} (body : bigbody R I) x :=
-  let: BigBody _ op b v := body in if b then op v x else x.
 \end{coq}
 
-Finally, we just use fold.
+The arguments of \C{BigBody} are respectively the index, the
+iterated operation, the filter and the generic expression.
+For our running example the \C{bigbody} component would be:
+
+\begin{coq}{name=bigopeven}{}
+Definition sum_odd_def_body i := BigBody i addn (odd i) i.
+\end{coq}
+
+It is then easy to turn such compound term into the function expected
+by \C{foldr}:
+
+\begin{coq}{name=bigopapplybig}{}
+Definition applybig {R I} (body : bigbody R I) acc :=
+  let: BigBody _ op b v := body in if b then op v acc else acc.
+\end{coq}
+
+Finally, our generic iterated operator can be defined as follows.
 
 \begin{coq}{name=bigop3}{}
 Definition bigop R I idx r (body : I -> bigbody R I) :=
   foldr (applybig \o body) idx r.
+\end{coq}
+
+A notation for it would be:
+
+\begin{coq}{name=bigopnotation}{}
 Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
   (bigop idx r (fun i => BigBody i op P%B F)) : big_scope.
+\end{coq}
+
+Where \C{op} is the iterated operation, \C{idx} the neutral element
+\C{r} the range, \C{P} the filter (hence the boolean scope)
+and \C{F} the general expression.
+
+\begin{coq}{name=bigop21}{}
+Lemma sum_odd n : \big[addn/0]_(i <- index_iota 0 n.*2 | odd i) i = n^2.
+\end{coq}
+
+To obtain a notation closer to the mathematical one we can specify
+at once the iterated operation and the neutral element as follows.
+
+\begin{coq}{name=bigop3nat}{}
 Local Notation "+%N" := addn (at level 0, only parsing).
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%N/0%N]_(i <- r | P%B) F%N) : nat_scope.
 \end{coq}
-\coqrun{name=uniqp2}{ssr,bigop,bigop2}
 
-Explain the generic notation and the one in nat scope.
+Such notation is placed in \C{nat_scope} and is indeed specialized
+on \C{addn} and \C{0}.  Finally we specialize the notation to
+a numerical range:
 
-How many variants should we document here? we can't use ord here, but
-the other variants make sense.
-
-\begin{coq}{name=bigop3}{}
-Definition index_iota m n := iota m (n - m).
+\begin{coq}{name=bigop3nat2}{}
 Notation "\big [ op / idx ]_ ( m <= i < n | P ) F" :=
   (bigop idx (index_iota m n) (fun i : nat => BigBody i op P%B F))
      : big_scope.
+Notation "\sum_ ( m <= i < n ) F" :=
+  (\big[+%N/0%N]_(m <= i < n) F%N) : nat_scope.
+\end{coq}
+\coqrun{name=uniqp2}{ssr,bigop,bigop2}
 
-Notation "\big [ op / idx ]_ ( i 'in' A | P ) F" :=
-  (\big[op/idx]_(i | (i \in A) && P) F) : big_scope.
+We can now comfortably state the theorem about the sum of odd numbers
+inside the \C{nat\_scope}.  The proof of the general theorem is left as
+an exercise.  We now focus on a simpler instance, for $n$ equal to 3,
+to introduce the library that equips iterated operations.
 
-Notation "\big [ op / idx ]_ ( i <- r ) F" :=
-  (bigop idx r (fun i => BigBody i op true F)) : big_scope.
+\begin{coq}{name=bigop3ex}{}
+Lemma sum_odd_3 : \sum_(0 <= i < 3.*2 | odd i) i = 3^2.
+Proof.
+rewrite unlock /=.
 \end{coq}
 
-Here we quickly present the minimal interface an operation has to
-satisfy in order to be iterated.  Chapter~\ref{..} will add other
-interfaces and organize the library around them.
+The \C{bigop} constant is ``locked'' to make the notation steady.
+To unravel its computational behavior one
+has to rewrite with \C{unlock}.
+
+\begin{coqout}{}{}
+============================
+1 + (3 + (5 + 0)) = 3^2
+\end{coqout}
+
+The computation behavior of \C{bigop} is generic, it does not
+depend on the iterated operation.  On the contrary some results
+on iterated operations may depend on a particular property of the
+operation.
+For example the lemma \C{big\_nat\_recr} expresses that one can pull
+out of an interated operation on a numerical range the last element,
+proviso the range is non empty.
+
+\begin{coq}{name=bigop3natrec}{}
+Lemma big_nat_recr n m F : m <= n ->
+  \big[*%M/1]_(m <= i < n.+1) F i = (\big[*%M/1]_(m <= i < n) F i) * F n.
+\end{coq}
+
+Such lemma  applies to any operation \C{*\%M} and any neutral element
+\C{idx} and any generic expression \C{F}, while the filter \C{P} is
+fixed to \C{true} (i.e. no filter).
+Hence to apply it to our goual one needs to temporarily move the
+finter condition inside the body \C{F} using the \C{big\_mkcond}
+lemma.
+
+\begin{coq}{name=bigop3natrec}{}
+Lemma sum_odd_3 : 
+  \sum_(1 <= i < 3.*2) i.*2 = 5 * 4
+Proof.
+rewrite big_mkcond /=.
+rewrite big_nat_recr //=.
+rewrite -big_mkcond unlock /=.
+\end{coq}
+
+The result after the first rewrite is:
+
+\begin{coqout}{}{}
+============================
+\sum_(0 <= i < 3.*2) (if odd i then i else 0) = 3^2
+\end{coqout}
+
+Now the lemma \C{big\_nat\_recr} applies, and pulls out 5 while
+shrinking the range.
+
+\begin{coqout}{}{}
+============================
+\sum_(0 <= i < 5) (if odd i then i else 0) + 5 = 3^2
+\end{coqout}
+
+Unraveling the computation leads to:
+
+\begin{coqout}{}{}
+============================
+1 + (3 + 0) + 5 = 3^2
+\end{coqout}
+
+It is clear that for the two expressions (with and without \C{big\_nat\_recr})
+to be equal one needs to associativiy of \C{addn} (and also that \C{0} is
+neutral).
+In other words the lemmas requires the operation \C{*\%M} to form
+a monoid together with \C{idx}.
+
+We detail how this requirement is stated, and automatically satisfied by
+Coq in the case of \C{addn}, in the next subsection.
+Before that we show that the same lemma also applies to an iterated
+product.
+
+\begin{coq}{name=bigop3natrec}{width=5.5cm}
+Lemma prod_fact_4 : 
+  \prod_(1 <= i < 5) i = 4`!.
+Proof.
+rewrite big_nat_recr //=.
+\end{coq}
+\begin{coqout}{}{width=6cm,title=Pulling out the last product}
+============================
+\prod_(1 <= i < 4) i * 4 = 4`!
+\end{coqout}
+
+This is why we call the bigop library generic: it works uniformly on
+any iterated operator, and provided such operator has certain
+properties it give uniform access to a palette of lemmas.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Expressing the requirement of a bigop lemma}
+
+As we anticipated, canonical structures can be indexed not only on
+types, but on any terms.  In particular we can index them on function
+symbols to state that, for example, \C{addn} together with \C{0}
+forms a monoid.
+
+Here we only present the \C{Monoid} interface an operation has to
+satisfy in order support to be iterated.  Chapter~\ref{..} will add other
+interfaces and organize the bigop library around them.
 
 \begin{coq}{name=bigop}{}
 Module Monoid.
-
 Section Definitions.
 Variables (T : Type) (idm : T).
 
@@ -1207,43 +1396,62 @@ Structure law := Law {
 
 Here make the point that the key is the operator.
 
-Now the theory of this interface.
+Now we have the interface we can parametrize an intire theory on it.
 
 \begin{coq}{name=bigop1}{}
 Coercion operator : law >-> Funclass.
 Section MonoidProperties.
-
 Variable R : Type.
-Variable idx : R.
-Variable op : Monoid.law idx.
 
+Variable idx : R.
 Notation Local "1" := idx.
+
+Variable op : Monoid.law idx.
 Notation Local "*%M" := op (at level 0).
 Notation Local "x * y" := (op x y).
 
 Lemma big1_eq I r (P : pred I) : \big[*%M/1]_(i <- r | P i) 1 = 1.
+\end{coq}
 
-(* Another one used later on *)
-Lemma big_cat I r1 r2 (P : pred I) F :
-  \big[*%M/1]_(i <- r1 ++ r2 | P i) F i =
-     \big[*%M/1]_(i <- r1 | P i) F i * \big[*%M/1]_(i <- r2 | P i) F i.
+The first lemma, \C{big1\_eq}, states that iteraring the operation to
+its neutral element leads to the neutra element (i.e. summing zeros,
+or multiplying 1, does nothing).
+
+The lemma we used in the previous section, \C{big\_nat\_recr}, is
+stated as follows:
+
+\begin{coq}{name=bigop1}{}
+Lemma big_nat_recr n m F : m <= n ->
+  \big[*%M/1]_(m <= i < n.+1) F i = (\big[*%M/1]_(m <= i < n) F i) * F n.
 \end{coq}
 \coqrun{name=uniqp2}{ssr,bigop}
 
-Help to read the statements.
+Help to read the statements, where does one see that it is a monoid.
 
-Explain that operator is a coercion and is inserted in bog body.
+\begin{coqout}{}{}
+big_nat_recr
+     : forall (R : Type) (idx : R) (op : Monoid.law idx)
+         (n m : nat) (F : nat -> R),
+       m <= n ->
+       \big[op/idx]_(m <= i < n.+1) F i =
+       op (\big[op/idx]_(m <= i < n) F i) (F n)
+\end{coqout}
+
+Explain that operator is a coercion and is inserted in big body,
+hence there is a projection there.
+
+Finally, to declare a monoid structure:
 
 \begin{coq}{name=natmonoid}{}
 Canonical addn_monoid := Law addnA add0n addn0.
 \end{coq}
 
-This adds the following
+This adds the following rules:
 
 \noindent
 \begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
 projection & value & solution \\ \hline
-\lstinline/operator/ & \lstinline/addn/ & \lstinline/addn_monoid/  \\
+\lstinline/Monoid.operator/ & \lstinline/addn/ & \lstinline/addn_monoid/  \\
 \hline
 \end{tcolorbox}
 
@@ -1260,7 +1468,20 @@ Mention that ?P and ?F are hard too, but in general they work.
 In short TI finds out that 0 is neutral for addn (the key of CS
 inference), hence the overloaded lemma applies here.
 
-TODO: help the reader to serach/browse bigop.v
+Mention other notations finite types and ord in the next chapter.
+
+Exercise:
+
+\begin{coq}{name=bigop222}{}
+Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
+Proof.
+elim=> /= [|n IHn]; first by rewrite unlock.
+rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond.
+rewrite -[odd _.+1]/(~~ (odd _)) odd_double /= addn0 {}IHn.
+by rewrite -addnn -!mulnn !mulSn !addSn !mulnS !addnS addnAC !addnA.
+Qed.
+\end{coq}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
