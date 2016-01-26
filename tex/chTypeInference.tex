@@ -1173,36 +1173,41 @@ $$
 \sum_{i < n} (i * 2 - 1) = n^2
 $$
 While the latter writing is elegant, it is harder to support
-generically, since the filtering condition is not explicit.  For
-example such equation clearly holds for any filtering, something hard
-to express if the filter is mixed with the general expression.
+generically, since the filtering condition is not explicit.
+
+For example the following equation clearly holds for any filter,
+range and general expression.  It would be hard to express
+it if the filter is mixed with the general expression, and hence its
+negation would not be obvious to formulate.
 $$
-\sum_{i < 2n,\,  2 \nmid i} i \;+ \sum_{i < 2n,\,  2 | i}  i = \sum_{i < 2n}
+\sum_{i < 2n,\,  2 \nmid i} i \;+ \sum_{i < 2n,\,  2 | i}  i = \sum_{i < 2n} i
 $$
 
-At the light of that, our formal statement will be
+At the light of that, our formal statement is:
 
 \begin{coq}{name=bigop21}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \end{coq}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The generic notation for \C{foldr}}
-
-Knowing that we target the \C{foldr} generic iterator, we need to
-obtain something like
+That stands for something like the following:
 
 \begin{coq}{name=bigop2}{}
-Definition sum_odd_def n :=
+Lemma sum_odd n :
   foldr
     (fun acc i => if odd i then i + acc else acc)
     0 (index_iota 0 n.*2)
+  = n^2
 \end{coq}
 
-The notation can be split into two components: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The generic notation for \C{foldr}}
+
+The notation standing for \C{foldr} can be split into two components: 
 on one hand the general expression, the filter, and the iterate
-operation (line 3); on the other hand the generic iterator, the initial
-value and the range (lines 2 and 4).  We start from the former.
+operation \C{(fun acc i => if odd i then i + acc else acc)};
+on the other hand the generic iterator, the initial
+value \C{0} and the range \C{(index\_iota 0 n.*2)}.
+We start from the former.
 
 For notational purposes it is important to identify the various
 components, that in the \C{sum\_odd\_def} definition above are mixed.
@@ -1475,10 +1480,9 @@ Exercise:
 \begin{coq}{name=bigop222}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 Proof.
-elim=> /= [|n IHn]; first by rewrite unlock.
-rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond.
-rewrite -[odd _.+1]/(~~ (odd _)) odd_double /= addn0 {}IHn.
-by rewrite -addnn -!mulnn !mulSn !addSn !mulnS !addnS addnAC !addnA.
+elim=> [|n IHn]; first by rewrite unlock.
+rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond /=.
+by rewrite {}IHn odd_double /= addn0 -addnn -!mulnn; ring.
 Qed.
 \end{coq}
 
