@@ -747,9 +747,9 @@ language to express structurally recursive programs on the syntax
 of types.  The \mcbCIC{} allows arbitrary terms to occur inside
 types.  As a consequence the language of canonical structures can
 express also structurally recursive programs on the syntax
-of terms.  This capability is used, for example, in the next
-chapter to related Monoid laws to function symbols to model
-the syntax and theory of iterated, ``big'', operators.
+of terms.  This capability is used, for example, in
+Section~\ref{sec:bigoplemmas} to related Monoid laws to function
+symbols to model the syntax and theory of iterated, ``big'', operators.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -774,7 +774,7 @@ function is not ``correct''.
 \begin{coq}{name=eqtype}{title=eqType}
 Module Equality.
 
-Structure eqType : Type := Pack {
+Structure type : Type := Pack {
   sort : Type;
   op : sort -> sort -> bool;
   axiom : forall x y, reflect (x = y) (eq_op x y)
@@ -797,21 +797,22 @@ two syntactically different terms.
 a comparison function compatible with Leibnitz equality
 (substitution in any context)}
 
-The \C{Equality} module enclosing the record acts a name space: \C{sort},
+The \C{Equality} module enclosing the record acts a name space:
+\C{type}, \C{sort},
 \C{eq} and \C{axiom}, three very generic words, are here
 made local to the \C{Equality} name space becoming, respectively,
-\C{Equality.sort}, \C{Equality.op} and \C{Equality.axiom}.
+\C{Equality.type}, \C{Equality.sort}, \C{Equality.op} and \C{Equality.axiom}.
 
 As in Section~\ref{sec:eqtype}, the record plays the role of
 a relation and its \C{sort} component is again the only field
 that drives canonical structure inference. Following
 a terminology typical of object oriented programming languages,
 the set of operations (and properties) that define an interface is
-called a class.  In the next chapter we are going to re-use already
+called a \emph{class}.  In the next chapter we are going to re-use already
 defined classes in order to build new ones by mixing-in additional
 properties (typically called axioms).
-Hence the real, and final, definition of \C{eqType} in the
-\mcbMC{} library is the following one:
+Hence the definition of \C{eqType} in the
+\mcbMC{} library is closer to the following one:
 \marginnote{We assume that \C{rel} is a known concept here}
 
 \begin{coq}{name=eqtype}{title=The read definition of eqType}
@@ -819,22 +820,26 @@ Module Equality.
 
 Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
 
-Structure eqType : Type := Pack {
+Record mixin_of T := Mixin {op : rel T; _ : axiom op}.
+Notation class_of := mixin_of.
+
+Structure type : Type := Pack {
   sort :> Type;
-  eq_op : rel sort;
-  _ : axiom eq_op;
+  _ : class_of sort;
 }.
 
 End Equality.
 
+Notation eqType := Equality.type.
+Definition eq_op T := Equality.op (Equality.class T).
 Notation "x == y" := (@eq_op _ x y).
 \end{coq}
 
 In this simple case there is only one property, named
-\C{Equality.axiom}.
+\C{Equality.axiom}, and the class is exactly the mixin.
 
 Said that, nothing really changes: the \C{eqType} structure
-relates a type (called \C{sort}) with a signature (called \C{class}).
+relates a type with a signature.
 
 Remark the use of \C{:>} instead of \C{:} to type the
 field called \C{sort}.  This tells Coq to declare the
@@ -851,7 +856,7 @@ when we write \lstinline/(a == b)/ type inference does not only infer
 a function to compare \lstinline/a/ with \lstinline/b/ but also a
 proof that such function is correct.
 Indeed declaring the \C{eqType} instance for \C{nat} requires some
-extra work:
+extra work, namely proving the correctness of the \C{eqn} function.
 
 \begin{coq}{name=eqtype}{title=The complete definition of nat\_eqType}
 Lemma eqnP : Equality.axiom eqn.
@@ -859,7 +864,11 @@ Proof.
 move=> n m; apply: (iffP idP) => [|<-]; last by elim n.
 by elim: n m => [|n IHn] [|m] //= /IHn->.
 Qed.
+\end{coq}
 
+We now have all the pieces to declare \C{eqn} as canonical.
+
+\begin{coq}{name=eqtype}{title=Making eqn canonical}
 Definition nat_eqMixin := Equality.Mixin eqnP.
 Canonical nat_eqType := @Equality.Pack nat nat_eqMixin.
 \end{coq}
@@ -878,20 +887,21 @@ and should ease section 6 (hierarchy)}
 \mcbsection{Using a generic theory}\label{sec:eqtypetheory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The whole point or defining interfaces and linking them with their
-examples is to share a theory: a theory proved starting from the
-properties of an interface applies to all its instances,
-transparently.  In some sense every lemma part of an abstract theory
+The whole point of defining interfaces is to share a theory
+among all examples of each interface.
+In other words a theory proved starting from the
+properties (axioms) of an interface applies to all its instances,
+transparently.  Every lemma part of an abstract theory
 is \emph{generic}: the very same name can be used for each and every
-isntance of the interface, exactly as the \C{==} notation.
+instance of the interface, exactly as the \C{==} notation.
 
 The simplest lemma part of the theory of \C{eqType} is the
 \lstinline/eqP/ generic lemma that can be used in conjunction with
 any occurrence of the \lstinline/==/ notation.
 
 \begin{coq}{name=eqP}{title=The eqP lemma}
-Lemma eqP (T : Equality.eqType) : Equality.axiom (@Equality.op T).
-Proof. by case: T => ty op prop; exact: prop. Qed.
+Lemma eqP (T : eqType) : Equality.axiom (@Equality.op T).
+Proof. by case: T => ty [op prop]; exact: prop. Qed.
 \end{coq}
 
 The proof is just unpacking the input \lstinline/T/.
@@ -899,7 +909,7 @@ We can use it on an concrete example of \C{eqType} like \C{nat}
 
 \begin{coq}{name=test}{title=Use of eqP}
 Lemma test (x y : nat) : x == y -> x + y == y + y.
-Proof. by move/eqP=> def_x; rewrite def_x. Qed.
+Proof. by move=> /eqP def_x; rewrite def_x. Qed.
 \end{coq}
 \coqrun{name=r7}{ssr,eqtype,eqP}
 \coqrun{name=r8}{ssr,test}
@@ -907,15 +917,13 @@ Proof. by move/eqP=> def_x; rewrite def_x. Qed.
 In short, \C{eqP} can be used to change view: turn any
 \C{==} into \C{=} and viceversa.
 
-This also holds on
-abstract instances.
+The \C{eqP} lemma also applies to abstract instances of \C{eqType}.
 When we rework the instance of the type \C{(T1 * T2)} we see that the
 proof, by means of the \C{eqP} lemma, uses the axiom of \C{T1} and
 \C{T2}.
 
 \begin{coq}{name=eqtype}{title=The complete definition of prod\_eqType}
 Section ProdEqType.
-
 Variable T1 T2 : eqType.
 
 Definition pair_eq := [rel u v : T1 * T2 | (u.1 == v.1) && (u.2 == v.2)].
@@ -928,11 +936,10 @@ Qed.
 
 Definition prod_eqMixin := Equality.Mixin pair_eqP.
 Canonical prod_eqType := @Equality.Pack (T1 * T2) prod_eqMixin.
-
 End ProdEqType.
 \end{coq}
 
-Like for \C{nat} the generic lemma \C{eqP} also applies to
+Like for \C{nat} the generic lemma \C{eqP} applies to
 any \C{eqType} instance, like \C{(bool * nat)}
 
 \begin{coq}{name=test}{title=Use of eqP}
@@ -1001,13 +1008,13 @@ Now that the \lstinline/eqType/ interface equips a type with a well
 specified comparison function we can use it build abstract theories,
 for example the one of sequences.
 
-It is worth to remark that the concept of interface is scrucial to
+It is worth to remark that the concept of interface is crucial to
 the development of such theory.  If we try to develop the theory
 of the type \C{(seq T)} for an arbitrary \C{T}, we can't go much far.
 For example we can express what belonging to a sequence means, but
 not write a program that tests if a value is indeed in the list.  As a
-consequence we lose automation and it becomes harder to reason by
-cases on the membership predicate.
+consequence we lose the form automation provided by computation
+and it also becomes harder to reason by cases on the membership predicate.
 On the contrary when we quantify a theory on the type  \C{(seq T)} for a
 \C{T} that is an \C{eqType}, we recover all that.  In other words
 by better specifying the type that parametrizes a generic container
@@ -1018,7 +1025,7 @@ In the next chapters more elaborate interface will enable us to
 organize knowledge in a more articulated way.
 
 Going back to the abstract theory of sequences over an \C{eqType},
-we define the membership operation.
+we start by defining the membership operation.
 
 \begin{coq}{name=memseq}{title=Membership}
 Section SeqTheory.
@@ -1032,7 +1039,7 @@ Fixpoint mem_seq s x :=
 
 Like we did for the overloaded \C{==} notation, we can define the
 \C{\\in} (and \C{\\notin}) infix notation.  We can then easily
-define what a duplicate free sequence is, and how to enforce such
+define what a duplicate-free sequence is, and how to enforce such
 property.
 
 \begin{coq}{name=uniq}{}
@@ -1046,8 +1053,8 @@ Fixpoint undup s :=
 \coqrun{name=uniq}{ssr,uniq}
 
 Proofs about such concepts can be made pretty much as if
-the type \C{T} was \C{nat} or \C{bool}, i.e. the style of proofs
-does not change.
+the type \C{T} was \C{nat} or \C{bool}, i.e. our predicates do
+compute.
 \marginnote{requires \C{=i}}
 
 \begin{coq}{name=undupuniq1}{title=\C{undup} is correct (step 1)}
@@ -1062,7 +1069,7 @@ by rewrite in_cons IHs; case: eqP => // ->.
 Qed.
 \end{coq}
 
-The \C{in\_cons} lemms is just a convenience rewrite rule, while
+The \C{in\_cons} lemma is just a convenience rewrite rule, while
 \C{mem\_undup} says that the \C{undup} function does not drop
 any non-duplicate element.  Note that in the proof we use both
 decidability of membership (\C{Hy}) and then the decidability of
@@ -1076,12 +1083,12 @@ Qed.
 \end{coq}
 \coqrun{name=uniqp}{ssr,uniq,undupuniq1,undupuniq2,abort}
 
-This last proof adds no new ingredients, it is there just for
-completeness.
+The proof of \c{undup\_uniq} requires not new ingredients and
+completes the specification of \C{undup}.
 
-The last step in the theory of sequences is to show that the container
-preserves the \C{eqType} interface: whenever we can compare the
-elements of a sequence, we can also compare sequences.
+A last, very important, step in the theory of sequences is to show
+that the container preserves the \C{eqType} interface: whenever we can
+compare the elements of a sequence, we can also compare sequences.
 
 \begin{coq}{name=seqeqtype}{title=\C{eqType} for sequences}
 Fixpoint eqseq s1 s2 {struct s2} :=
@@ -1102,7 +1109,7 @@ Definition seq_eqMixin := Equality.Mixin eqseqP.
 Canonical seq_eqType := @Equality.Pack (seq T) seq_eqMixin.
 \end{coq}
 
-As an example we build the a sequence of sequences, and we assert that
+As an example we build a sequence of sequences, and we assert that
 we can use the \C{==} and \C{\\in} notation on it, as well as apply
 the list operations and theorems on objects of type \C{(seq (seq T))}
 when \C{T} is an \C{eqType}.
@@ -1110,12 +1117,17 @@ when \C{T} is an \C{eqType}.
 \begin{coq}{name=itereqtype}{}
 Let s1 := [:: 1; 2 ].
 Let s2 := [:: 3; 5; 7].
-Let ss := [:: s1 ; s2 ].
-Check (ss == [::]) || s1 \in ss.
-Check uniq ss.
-Check undup_uniq ss.
+Let ss :  seq (seq nat) := [:: s1 ; s2 ].
+Check (ss != [::]) && s1 \in ss && undup_uniq ss.
 \end{coq}
 \coqrun{name=uniqp2}{ssr,itereqtype}
+
+As we have anticipated in Chapter 1, functional programming and lists
+can model, definite, iterated operations like the ``big'' sum
+$\Sigma$.  Next Section describes how the generic theory
+of iterated operations can be built and made practical thanks again
+to the programming of type inference via the canonical structures
+language.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{bigop}
@@ -1143,18 +1155,18 @@ while if $n=0$ then the sum of all $f(i)$ is $0$.
 Then the range is an expression identifying a finite set of elements,
 some times expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
-items being combined by the main operator.
+items being combined by the iterated operation.
 
-As already mentioned in chapter 1~\ref{sec:bigopnat}, 
+As already mentioned in Chapter 1~\ref{sec:bigopnat}, 
 the functional programming language
 provided by Coq can express in a very natural way iterations over
-a finite domain.  In particular such finite domain can be expressed
-as a list, the general expression like $f(i)$ by a function \C{(fun i =>
-...)}. Finally the operation of evaluating a function on all the
-elements of list and combining the results is the \C{foldr} operator.
+a finite domain.  In particular such finite domain can be represented
+as a list; the general term $f(i)$ by a function \C{(fun i =>
+...)}; the operation of evaluating a function on all the
+elements of list and combining the results by the \C{foldr} operator.
 
 Funtional programming can also be used to describe the finite domain.
-For example the list of natural numbers $m, m+1, \ldots m + (n-m)$ 
+For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$ 
 corresponding to the range $m \leq i < n$ can be built using the \C{iota}
 function as follows:
 \begin{coq}{name=iota}{}
@@ -1176,13 +1188,12 @@ $$
 $$
 While this latter writing is surely elegant, it is harder to support
 generically, since the filtering condition is not explicit.
-
 For example the following equation clearly holds for any filter,
 range and general term.  It would be hard to express such statement
 if the filter was mixed with the general term, and hence its
 negation was not obvious to formulate.
 $$
-\sum_{i < 2n,\,  2 \nmid i} i \;+ \sum_{i < 2n,\,  2 | i}  i = \sum_{i < 2n} i
+\sum_{i < 2n,\,  2 \mid i} i \;+ \sum_{i < 2n,\,  2 \nmid i}  i = \sum_{i < 2n} i
 $$
 
 At the light of that our formal statement concerning the sum
@@ -1192,7 +1203,7 @@ of odd numbers is the following:
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \end{coq}
 
-Under the hood, we expect to have the following expression:
+Under the hood we expect to find the following expression:
 
 \begin{coq}{name=bigop2}{}
 Lemma sum_odd n :
@@ -1214,7 +1225,7 @@ two components:
 \begin{itemize}
 \item
 the general term, the filter and the iterated operation, corresponding
-to the term \C{(fun acc i => if odd i then i + acc else acc)}
+to \C{(fun acc i => if odd i then i + acc else acc)}
 \item
 the generic iterator, the initial value and the range
 corresponding to \C{foldr}, \C{0} and \C{(index\_iota 0 n.*2)}
@@ -1237,6 +1248,11 @@ For our running example the \C{bigbody} component would be:
 \begin{coq}{name=bigopeven}{}
 Definition sum_odd_def_body i := BigBody i addn (odd i) i.
 \end{coq}
+
+Note that in this case the index, i.e. the name of the bound variable,
+is identical to the general term, but this is not true in general.
+Indeed the first component of the \C{BigBody} box is there only to
+help the notation system to figure out the name of the bound variable.
 
 It is then easy to turn such compound term into the function expected
 by \C{foldr}:
@@ -1278,7 +1294,7 @@ Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%N/0%N]_(i <- r | P%B) F%N) : nat_scope.
 \end{coq}
 
-Such notation is placed in \C{nat_scope} and is indeed specialized
+Such notation is placed in \C{nat\_scope} and is indeed specialized
 on \C{addn} and \C{0}.  The general term \C{F} is also placed in
 the scope of natural numbers.
 We can proceed even furhter and specialize the notation to
@@ -1314,23 +1330,24 @@ unravel its computational behavior one has to rewrite with \C{unlock}.
 
 The computation behavior of \C{bigop} is generic, it does not
 depend on the iterated operation.
-
 On the contrary some results
 on iterated operations may depend on a particular property of the
 operation. For example to pull out the last item from the summation
-to obtain
+and obtain
 
 \begin{coqout}{}{}
 ============================
 1 + (3 + 0) + 5 = 3^2
 \end{coqout}
 
-one really needs the operation, \C{+}, to be associative.  Also note
+one really needs the iterated operation, addition here, 
+to be associative.  Also note
 that, given the filter, what one really pulls out is
 \C{(if odd 5 then 5 else 0)}, so for the theorem to be true for any
-range, \C{0} must be neutral.
+range, \C{0} must also be neutral.
 
-Such lemma is provided as the combination of two simlper lemmas called
+The lemma to pull out the last item of an iterated operation
+is provided as the combination of two simlper lemmas called
 respectively \C{big\_nat\_recr} and \C{big\_mkcond}.
 
 The former states that one can pull out of an interated operation on a
@@ -1375,14 +1392,14 @@ and obtain the following goal:
 \end{coqout}
 
 It is clear that for the two lemmas to be provable
-one needs to associativiy of \C{addn} and that \C{0} is
-neutral.
+one needs the associativiy property of \C{addn} and also that
+\C{0} is neutral.
 In other words the lemmas we used require the operation \C{*\%M} to form
 a monoid together with the unit \C{1}.
 
 We detail how this requirement is stated, and automatically satisfied by
-Coq in the case of \C{addn}, in the next subsection.
-Before that we show that the same lemmas also apply to an iterated
+Coq in the case of \C{addn}, in the next Section.  We conclude this
+Section by showing that the same lemmas also apply to an iterated
 product.
 
 \begin{coq}{name=bigop3natrec}{width=5.5cm}
@@ -1396,22 +1413,22 @@ rewrite big_nat_recr //=.
 \prod_(1 <= i < 4) i * 4 = 4`!
 \end{coqout}
 
-This is why we call the bigop library generic: it works uniformly on
-any iterated operator, and provided such operator has certain
-properties it give uniform access to a palette of lemmas.
+This is the reason why we can say that the bigop library is generic:
+it works uniformly on any iterated operator, and provided the operator
+has certain properties it give uniform access to a palette of lemmas.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Expressing the requirement of a bigop
 lemma}\label{sec:bigoplemmas}
 
 As we anticipated, canonical structures can be indexed not only on
-types, but on any terms.  In particular we can index them on function
-symbols to state that, for example, \C{addn} together with \C{0}
-forms a monoid.
+types, but on any term.  In particular we can index them on function
+symbols to relate, for example, \C{addn} and its monoid structure.
 
 Here we only present the \C{Monoid} interface an operation has to
-satisfy in order support to be iterated.  Chapter~\ref{..} will add other
-interfaces and organize the bigop library around them.
+satisfy in order aceess a class of generic lemmas.
+Chapter~\ref{..} adds other interfaces to the picture and organizes
+the bigop library around them.
 
 \begin{coq}{name=bigop}{}
 Module Monoid.
@@ -1427,9 +1444,10 @@ Structure law := Law {
 \end{coq}
 \coqrun{name=uniqp2}{ssr,bigop}
 
-Here make the point that the key is the operator.
+The \C{Monoid.law} structure relates the \C{operator} (the key used by
+canonical structures) to the three propoerties of monois.
 
-Now we have the interface we can parametrize an intire theory on it.
+We can then parametrize an intire theory on this interface.
 
 \begin{coq}{name=bigop1}{}
 Coercion operator : law >-> Funclass.
@@ -1442,16 +1460,15 @@ Notation Local "1" := idx.
 Variable op : Monoid.law idx.
 Notation Local "*%M" := op (at level 0).
 Notation Local "x * y" := (op x y).
-
-Lemma big1_eq I r (P : pred I) : \big[*%M/1]_(i <- r | P i) 1 = 1.
 \end{coq}
 
-The first lemma, \C{big1\_eq}, states that iteraring the operation to
-its neutral element leads to the neutra element (i.e. summing zeros,
-or multiplying 1, does nothing).
-
 The lemma we used in the previous section, \C{big\_nat\_recr}, is
-stated as follows:
+stated as follows. Note that
+\C{op} is a record, and not a function, but since the \C{operator}
+projection is declared as a coercion we can use \C{op} as such.
+In particular under the hood of the expression \C{\\big[*\%M/1]} we
+find \C{\\big[ operation op / idx ]}.
+
 
 \begin{coq}{name=bigop1}{}
 Lemma big_nat_recr n m F : m <= n ->
@@ -1459,7 +1476,8 @@ Lemma big_nat_recr n m F : m <= n ->
 \end{coq}
 \coqrun{name=uniqp2}{ssr,bigop}
 
-Help to read the statements, where does one see that it is a monoid.
+If we print such statement once the \C{Section MonoidProperties} is
+closed we see the requirement affecting the operation \C{op} explicitly.
 
 \begin{coqout}{}{}
 big_nat_recr
@@ -1470,16 +1488,18 @@ big_nat_recr
        op (\big[op/idx]_(m <= i < n) F i) (F n)
 \end{coqout}
 
-Explain that operator is a coercion and is inserted in big body,
-hence there is a projection there.
+Note that wherever the operation \C{op} occurs we also find
+the \C{Monoid.operation} projection.
 
-Finally, to declare a monoid structure:
+To make this lemma available on the addition on natural numbers
+we need to declare the canonical monoid structure on \C{addn}.
 
 \begin{coq}{name=natmonoid}{}
-Canonical addn_monoid := Law addnA add0n addn0.
+Canonical addn_monoid := Monoid.Law addnA add0n addn0.
 \end{coq}
 
-This adds the following rules:
+This command adds the following rules to the canonical structures
+index:
 
 \noindent
 \begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
@@ -1488,22 +1508,43 @@ projection & value & solution \\ \hline
 \hline
 \end{tcolorbox}
 
-Then show in action.
+Whenever the lemma is applied to an expression about natural numbers
+as
 
 \begin{coq}{name=bigop2}{}
-Lemma test l : \sum_(i <- l) 0 = 0.
-Proof. by rewrite big1_eq. Qed.
+Lemma test : \sum_(0 <= i < 6) i =  \sum_(0 <= i < 5) i + 5.
+Proof. by apply: big_nat_recr. Qed.
 \end{coq}
 
-\C{(BigBody i addn true 0)} versus \C{(BigBody i (operator ?m) (?P i) (?F i))}.
-Mention that ?P and ?F are hard too, but in general they work.
+the following unification problem has to be solved:
+\C{(BigBody i addn true i)} versus \C{(BigBody i (operator ?m) (?P i) (?F i))}.
+The sub problem \C{addn} versus \C{(operator ?m)} is solved by
+canonical structure inference.  Inferring a value for \C{?m} mean
+inferring a proof that \C{addn} forms a monoid with \C{0}: a
+prerequisite for the \C{big\_nat\_recr} lemma we don't have to provide
+by hand.
 
-In short TI finds out that 0 is neutral for addn (the key of CS
-inference), hence the overloaded lemma applies here.
+% The problem \C{i} versus \C{(?F i)}
+% is a hard problem too, since \C{?F} is a program, but it has
+% a unique solution: being \C{i} a locally boud variable, not in the
+% scope of the body of \C{?F}, the only way for \C{(?F i)} to
+% produce \C{i} is to return its input.
 
-Mention other notations finite types and ord in the next chapter.
 
-Exercise:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Searching the bigop library}
+
+One cannot search with \C{\\sum}, since all lemmas are about
+monoidal operation, and not addn.
+
+Tricks of the trade are:
+\begin{itemize}
+\item lemma names contain ``big''
+\item ...
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Exercises}
 
 \begin{coq}{name=bigop222}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
