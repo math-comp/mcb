@@ -1480,12 +1480,11 @@ If we print such statement once the \C{Section MonoidProperties} is
 closed we see the requirement affecting the operation \C{op} explicitly.
 
 \begin{coqout}{}{}
-big_nat_recr
-     : forall (R : Type) (idx : R) (op : Monoid.law idx)
-         (n m : nat) (F : nat -> R),
-       m <= n ->
-       \big[op/idx]_(m <= i < n.+1) F i =
-       op (\big[op/idx]_(m <= i < n) F i) (F n)
+big_nat_recr :
+  forall (R : Type) (idx : R) (op : Monoid.law idx) (n m : nat) (F : nat -> R),
+  m <= n ->
+    \big[op/idx]_(m <= i < n.+1) F i =
+    op (\big[op/idx]_(m <= i < n) F i) (F n)
 \end{coqout}
 
 Note that wherever the operation \C{op} occurs we also find
@@ -1637,44 +1636,61 @@ good practice.
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{Phantom}
 \mcbLEVEL{3}
-\mcbsection{Triggering type inference}
+\mcbsection{Querying canonical structures}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Maybe also for the lambda user show that \C{[the Foo of X]}.
+It is possible to  ask Coq if a certain term does validate an
+interface.  For example, to check if \C{addn} forms a monoid one can
+\C{Check [law of addn]}.  A notation of this kind exists for any
+interface, for example \C{[eqType of nat]} is another valid query to
+check if \C{nat} is equipped with a canonical comparison function.
 
-Sometime one wants to force a type parameter to stand for a type that
-satisfies a given interface.  For example a set data structure may
-require its elements to be eqtypes.  (well, fintype in the
-library...).  So one want to let the user write \C{\{set nat\}} or
-\C{\{set (nat * nat)\}} and have the system accept such notation only
-if the type parametner is an eqtype.
+This mechanism can also be used to craft notations that assert
+if one of their argumets validates an inferface.  For example
+imagine one wants to define the concept of finite set as an
+alias of \C{seq T} but such that only values for \C{T} being
+\C{eqType}s are accepted.
+
+This rest of this section introduces the general mechanism of phantom
+types used to trigger canonical strcuture resolution.
+
+First of all, canonical structure resolution kicks in during
+unification that in turn is used to compare types.  Types are
+compared whenever a function is applied to an argument, and in
+particular the type expected by the function and the one of the
+argument are unified.  What we need to craft is is a mechanism that
+takes any input term (proper terms like \C{addn} but also types as \C{nat})
+an puts it into a type.  We will then wire things up so that such
+type is unified with another one containing the application of 
+a projection to an unknow canonical structure instance.
 
 \begin{coq}{name=phantom}{}
-Inductive phant (p : Type) := Phant.
+Inductive phantom (T : Type) (p : Type) := Phantom.
 \end{coq}
 
-An example
+The \C{Phant} constructor expects two arguments.  If we apply
+it to \C{nat} as in \C{(Phantom Type nat)} we obtain a term
+of type \C{(phantom Type nat)}.  If we apply it to \C{addn} as
+in \C{(Phantom (nat -> nat -> nat) addn)} we obtain a term
+pf type \C{(phantom (nat -> nat -> nat) addn)}.  In both cases the
+input term (\C{nat} and \C{addn} respectively) is now part of a type.
+
+The following example defined a notation \C{{set T}} that
+fails if \C{T} is not an \C{eqType} but is an alias of the type
+\C{(seq T)} that imposes no requirement on the type argument. 
 
 \begin{coq}{name=set}{}
-Variable T : eqType.
-Definition set_of of phant T := seq T.
-Notation "{ 'set' T }" := (set_of (Phant T))
+Definition set_of : (T : eqType) (_ : phantom Type (Equality.sort T)) := seq T.
+Notation "{ 'set' T }" := (set_of _ (Phantom _ T))
   (at level 0, format "{ 'set'  T }") : type_scope.
-Check {set nat}.
-Fail Check {set (nat -> nat)}.
 \end{coq}
 
-If we show the coercions
-
-\begin{coqout}{run=..}{title=Type of set\_of}
-	set_of : forall T : eqType, phant (Equality.sort T) -> Type
-\end{coqout}
-
-When you write \C{\{set nat\}} the system gets
-\C{(set\_of ?T (Phant nat))}.
-The unification problem is \C{(phant (Equality.sort ?T))} versus \C{(phant nat)}
-and then the definition uses \C{?T} as inferred by the preious
-problem to obtain \C{(seq (Equality.sort nat_eqType))}.
+When type inference runs on \C{\{set nat\}} the underlying term being
+typed is \C{(set\_of ?T (Phantom ?N nat))}.
+The unification problem arising for the last argument of \C{set\_of}
+is \C{(phantom Type (Equality.sort ?T))} versus 
+\C{(phantom Type nat)}, that in turn contains the sub problem
+we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEARN{difference with type classes, limitations}
