@@ -20,6 +20,53 @@ Require Import tuple.
 \end{coqdef}
 
 \Chapter{Subtypes: terms with extra properties}{}\label{ch:sigmabool}
+
+\begin{itemize}
+\item mixing data and proofs is possible
+\item get richer objects out of already existing ones without
+	redefining new objects
+\item need to inherit the theory of base objects
+\item handy to infer the extra property (easy to form)
+\item exzample 1 : ordinals (fintype)
+\item impact of ordinals on bigop
+\item finfun and matrixes
+\item example 2 : polynomials (need ringType)
+\end{itemize}
+
+to build a large library one needs to reuse as much as possible what
+is available and build incrementally.  so far inductive types have
+been the only way to define a new object, while bool predicates the
+common way to define predicates.
+
+in CIC proofs are terms, so one can put together objects and proofs
+of properties to obtain new objects.  this operation is expensive in
+the sense that imposes on the user extra work whenever he has to build
+an inhabitant, so hat to be use with care.  some techniques to ease
+the creation of such types and of such inhabitants are provided. also
+crafting a new type lets one enrich its type to expose to the type
+system some piece of info.  type inference can use so to let one write
+very concisely statements.
+
+examples are the type of ordinals and the type of polynomials.
+
+ordinals expose the size in their types and are finite.  This is for
+example useful to leave size constraints implicit in expressions about
+matrixes.  If a matrix is a function from in*im to x, then we can't
+possibly address elements in the matrix outside its dimensions, and we
+can write : determinant, biop switch sum prod.
+
+it is crucial that the theory is inherited. coercions and CS help
+here.  organizing the theories around a hirarchy in next chapter.
+ordinals inherit arithmetic.
+polynomials are lists of coefficients. one typically wants a canonical
+representation, so that equal polymonials can be proved eq.
+we can easily impose such proposerty in the proposed approach.
+we inherit all the operations on lists, and all the theory of eqType,
+via the subtype machinery.
+
+
+\section{xxxxxxxxxxxxxx old xxxxxxxxxxxxxxxxx}
+
 % 0- tuple: reuse the theory of seq, + the invariant on the length
 % 1- seq is eqType -> tuple is eqType by <:
 % 2- new interface fintype
