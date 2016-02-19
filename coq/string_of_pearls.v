@@ -4,6 +4,7 @@ Section Cycle.
 (* The colors *)
 Variable  a : finType.
 
+
 Definition cycle m (l : seq a):= iter m (rot 1) l.
 
 Lemma cycle_size l m: size (cycle m l)= size l.
@@ -71,25 +72,30 @@ rewrite -[l in LHS](cycle_multiple_back q m) //.
 by rewrite cycle_add Hp cycle_multiple_back.
 Qed.
 
-End Cycle.
-
 
 Section TheNecklaceProof.
-(* The colors *)
-Variable  a : finType.
-Notation cycle := (cycle a).
+
 
 
 (* A necklace is of size n *)
 Definition necklace n  : finType := [finType of n.-tuple a].
+
+
+
+
+
 
 Lemma card_necklace n  : #| necklace n | = #|a| ^ n.
 Proof. exact: card_tuple. Qed.
 
 Definition mono n  : {set necklace n } :=
   [set t : necklace n  |  if val t is x :: xs then all (pred1 x) xs else true ].
-Definition mono_coloured {n} (l: necklace n) := l \in (mono n).
+Definition  mono_coloured {n} (l: necklace n) := l \in (mono n).
 
+Lemma mono0 (l: (necklace 0)):(mono_coloured l).
+Proof.
+by case:l=> [[h| x l //]]; rewrite /mono_coloured inE.
+Qed.
 
 Definition multi n  := setC (mono n ).
 Definition multi_coloured {n} (l: necklace n) := l \in (multi n).
@@ -98,8 +104,14 @@ Definition colors (l : seq a ):= #|l|.
 
 Definition set_of_color (l : seq a ):=[set x | x \in l].
 
-Lemma mono_multi n (l: necklace n.+1 ): l \in (multi n.+1 )= (l \notin (mono n.+1)).
+Lemma mono_multi_in n (l: necklace n ): l \in (multi n )= (l \notin (mono n)).
 Proof. by rewrite -in_setC. Qed.
+
+Lemma multiNmono  n (l: necklace n ): multi_coloured l = ~~(mono_coloured l).
+Proof.
+by rewrite /multi_coloured /mono_coloured mono_multi_in. 
+Qed.
+
 
 Lemma monoP : forall n  (l: necklace n.+1 ),
 reflect (set_of_color l = [set (tnth l ord0)]) (l \in (mono n.+1 )).
@@ -172,6 +184,8 @@ apply/all_pred1P/idP=> [xs_all_x |].
 by case/imsetP=> [y y_a [-> ->]]; rewrite size_nseq.
 Qed.
 
+
+
 Lemma card_multi n  : #| multi n.+1  | = #| a | ^ n.+1 - #| a |.
 Proof.
 rewrite -card_necklace -[#|a|](card_mono n).
@@ -185,23 +199,22 @@ apply/setP=>x; rewrite !inE /cycle.
 by elim:p=>//= p Ip; rewrite mem_rot Ip.
 Qed.
 
-Lemma cycle_mono n p (l: necklace n.+1 ): mono_coloured l =
+
+Lemma cycle_mono n p (l: necklace n ): mono_coloured l =
                                 (mono_coloured [tuple of (cycle p l)]).
 Proof.
+case:n l=>[l|n l]; first by rewrite !mono0.
 apply/mono_cst/mono_cst=>H c.
   rewrite -cycle_inE (H (tnth _ _)); first exact: (H c).
-  by rewrite (cycle_inE a p) mem_tnth.
-rewrite (cycle_inE a p)(H (tnth _ _)); first exact:(H c).
+  by rewrite (cycle_inE  p) mem_tnth.
+rewrite (cycle_inE  p)(H (tnth _ _)); first exact:(H c).
 by rewrite -cycle_inE mem_tnth.
 Qed.
-
-
 
 Lemma cycle_multi n p (l: necklace n.+1 ):
         (multi_coloured [tuple of (cycle p l)])= multi_coloured l.
 Proof.
-move:(cycle_mono n p l); rewrite /mono_coloured /multi_coloured !mono_multi.
-by move->.
+by move:(cycle_mono _ p l); rewrite !multiNmono=> ->.
 Qed.
 
 
@@ -273,7 +286,10 @@ by rewrite -cycle_add -H1 -H2.
 Qed.
 
 (* to reconsider...*)
-Definition associates x := [set y:((size x).-tuple a)| similarb x y].
+(* Definition associates x := [set y:((size x).-tuple a)| similarb x y].*)
+
+Definition associates p  (l:necklace p):(seq (necklace p) ):=
+[seq [tuple of (cycle (val n) l)] | n in ordinal_finType p].
 
 Lemma mono_nseqE {n}  (l: necklace n.+1 ): 
 reflect (val l = (nseq n.+1 (tnth l ord0)))(mono_coloured l).
@@ -297,10 +313,7 @@ suff ->: forall T (x:T) m, ncons m x [:: x] = x :: nseq m x by [].
 by move=> T x; elim=>//= m ->.
 Qed.
 
-Lemma mono0 (l: (necklace 0)):(mono_coloured l).
-Proof.
-by case:l=> [[h| x l //]]; rewrite /mono_coloured inE.
-Qed.
+
 
 Variable c: a.
 
@@ -366,7 +379,6 @@ by move <-; rewrite (tnth_nth c).
 Qed.
 
 
-(* Multicoloured Necklaces with Prime Length *)
 Lemma mono_cycle1P {n}  (l: (necklace n)): 
         reflect (cycle 1 l = l)  (mono_coloured l).
 Proof.
@@ -376,6 +388,76 @@ apply(iffP idP).
   by apply:mono_cycle1.
 by apply: cycle1_mono.
 Qed.
+
+Variable p:nat.
+Hypothesis p_prime: prime p.
+
+Lemma aux3: forall (x y : 'I_p) (l: necklace p), multi_coloured l -> cycle x l = cycle y l -> x = y.
+Proof.
+move=> x y l ml; wlog lt_xy: y x / x <= y.
+  move=> hwlog.
+  case/orP: (leq_total x y).
+    by apply: hwlog.
+  move=>hxy /eqP; rewrite eq_sym=> /eqP hcyc.
+  by apply:sym_eq; apply:hwlog.
+move => hcyc; move:lt_xy; rewrite leq_eqVlt.
+case/orP=> hxy; first by apply/eqP.
+pose d := y - x.
+have dpos: 0 < d by rewrite /d subn_gt0.
+have dltp: d < p by apply:(leq_ltn_trans(leq_subr x y)).
+have dDx: (d + x = y) by rewrite /d subnK // ltnW.
+pose l' := [tuple of (cycle x l)].
+have cycl': (cycle d l')= l'.
+  by rewrite /l' cycle_add dDx -hcyc.
+move:(cycle_back  l'); rewrite size_tuple.
+move/(cycle_gcd  _ _ _  cycl').
+have ->:  gcdn d p = 1.
+  rewrite gcdnC.
+  apply/eqP; move:(prime_coprime d  p_prime); rewrite /coprime => ->.
+  by rewrite gtnNdvd.
+move/mono_cycle1P.
+rewrite /l' -(cycle_mono p x l) => monol.
+by move: ml; rewrite multiNmono monol.
+Qed.
+
+Theorem cyclen_inj: forall (l: necklace p), multi_coloured l -> 
+     injective (fun n : 'I_p => (cycle n l)).
+Proof.
+move=> l ml  x y.
+by apply: aux3.
+Qed.
+
+Check (fun n (l:necklace p) => (cycle  n l)).
+
+
+Lemma aux4: forall (l : necklace p) l' n, multi_coloured l -> l' = (cycle  n l)->
+exists (k:'I_p) , l' = cycle k l.
+Proof.
+move=> l l' n ml.
+rewrite -cycle_mod_length  size_tuple => ->.
+ by exists (Ordinal (ltn_pmod  n(prime_gt0 p_prime))).
+Qed.
+
+
+
+Theorem card_assoc: forall (l : necklace p), multi_coloured l -> 
+                     #|(associates _ l)| = p.
+Proof.
+move=> l ml.
+rewrite -[in RHS](card_ord p).
+move:(@card_codom _  _(fun n:'I_p => [tuple of (cycle n l)]))=> <-.
+  by rewrite /codom /associates.
+move => x y H.
+rewrite (cyclen_inj l ml x y)//.
+(* ???*)
+by rewrite (f_equal (fun t => tval t) H).
+Qed.
+
+Notation n := #|a|.
+
+Theorem Fermat_little_th: p %| n^p - n.
+Proof.
+Admitted.
 
 
 End TheNecklaceProof.
