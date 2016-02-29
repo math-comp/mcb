@@ -1,6 +1,5 @@
 (* Version of string_of_pearls using pure Math Comp, by Cyril *)
-
-From mathcomp Require Import all_ssreflect ssralg perm zmodp cyclic fingroup.
+From mathcomp Require Import all_ssreflect ssralg zmodp.
 
 Set Implicit Arguments.
 Unset Strict Implicit.
@@ -86,25 +85,8 @@ End Necklace.
 
 Theorem Fermat_little_necklace p n : prime p -> p %| n ^ p - n.
 Proof.
-move=> p_prime; have p_gt0 := prime_gt0 p_prime.
-have pB1_gt0 : 0 < p.-1 by rewrite -subn1 subn_gt0 prime_gt1.
-have := @pdvd_multicolor [finType of 'I_n] p.-2.
-by rewrite cardsCs setCK card_ffun card_monocolor !card_ord !prednK //; apply.
+case: p => [|[|p']] // /(@pdvd_multicolor [finType of 'I_n]).
+by rewrite cardsCs setCK card_ffun card_monocolor !card_ord.
 Qed.
 
 End TheNecklaceProof.
-
-Section TotientProof.
-
-Theorem Fermat_little_th p n : prime p -> p %| n ^ p - n.
-Proof.
-move=> p_prime; have p_gt0 := prime_gt0 p_prime.
-have [p_dvdn|pNdvdn] := boolP (p %| n); first by rewrite dvdn_sub // dvdn_exp.
-have [->|n_gt0] := posnP n; first by rewrite exp0n // subnn.
-rewrite -eqn_mod_dvd; last by rewrite -{1}[n]expn1 leq_pexp2l.
-have {1}->: p = (totient (p ^ 1)).+1 by rewrite totient_pfactor ?muln1 ?prednK.
-rewrite expnS -modnMmr Euler_exp_totient 1?coprime_sym ?prime_coprime //.
-by rewrite ?[1 %% _]modn_small ?prime_gt1 ?muln1.
-Qed.
-
-End TotientProof.
