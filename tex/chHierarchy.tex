@@ -20,11 +20,123 @@ come before ch5.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
-\mcbLEARN{contents}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Guided tour of widespread eqtype}
+\mcbLEARN{Packed class organisation of types}
+\mcbPROVIDE{packed classes, GRing}
+\mcbREQUIRE{simplified eqType, finType}
+\mcbsection{Structure hierarchies}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-Examples: nat (but not ordinals yet, since we need ch 6) ordinals, ...
+\subsection{Telescopes}
+
+use monoid hierarchy\\
+point out nested projections\\
+explain gradual instanciation\\
+
+\subsection{Packed classes}
+
+start from eqType\\
+show at least choiceType & ringType\\
+dual coercion/instance inheritance graph\\
+dependent mixins\\
+cloning, constructors (with forward ref)
+
+\subsection{Module interface}
+
+internals/implementation/exports/theory\\
+type parameters\\
+exports list\\
+``protected'' internals
+
+\subsection{Constructors}
+
+the interface\\
+phantom\_id\\
+transport\\
+generic cloning
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{the collection hierarchy; inheritance by coercion}
+\mcbPROVIDE{\\in}
+\mcbREQUIRE{eqType, seq, coercions}
+\mcbsection{Predicates and sets}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Collective predicates}
+\\in
+PredType
+appPred and CollPred classes
+simplPred
+mem
+
+\subsection{Coercion bierarchies}
+
+PredArgType
+pred\_class
+PredArgType
+{set _}, {group _}
+
+\subsection{Qualifiers}
+\subsection{Generic predicates}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{canonical properties of operators and predicates; keyed predicates}
+\mcbPROVIDE{linear, semiring\_closed}
+\mcbREQUIRE{bigop}
+\mcbsection{Lemma overloading}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+What is lemma overloading
+
+\subsection{Monoid properties}
+
+bigop lemmas and their use
+
+\subsection{Linearity properties}
+
+morphism properties\\
+the chaining issue.
+
+\subsection{General linearity}
+
+helper operator classes
+
+\subsection{Algebraic predicates}
+
+closure properties\\
+bounded quantification
+
+\subsection{Keyed predicates}
+
+keyed predicates\\
+non-nesting telescopes\\
+default keying
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{2}
+\mcbLEARN{reflected notation}
+\mcbPROVIDE{mxdirect}
+\mcbREQUIRE{bigop}
+\mcbsection{Quotation}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Advanced topic\\
+contrast with CA (maple, etc)
+
+\subsection{Quotation by notation}
+
+static overloading\\
+explicit interpreter\\
+presentations\\
+algebraic terms
+
+\subsection{Quotation by inference}
+
+direct sums\\
+default instances\\
+definition unfolding\\
+double keying
+
 
