@@ -1,6 +1,5 @@
 (* Version of string_of_pearls using pure Math Comp, by Cyril *)
 
-
 From mathcomp Require Import all_ssreflect ssralg perm zmodp cyclic fingroup.
 
 Set Implicit Arguments.
@@ -15,20 +14,12 @@ Variable (color : finType) (p' : nat).
 Let p := p'.+2.
 
 Local Notation necklace := (color ^ p)%type.
-Definition monocolor := [set nl : necklace | [exists c, [forall i, nl i == c]]].
+Definition monocolor : {set necklace} := [set [ffun=> c] |c : color].
 
 Lemma card_monocolor : #|monocolor| = #|color|.
-Proof.
-suff -> : monocolor = [set [ffun=> c] |c : color].
-  by rewrite card_imset => // c1 c2 /ffunP/(_ ord0); rewrite !ffunE.
-apply/setP => /= n; rewrite inE.
-apply/'exists_'forall_eqP/imsetP => /= [[c nl_eqc]|[c _ ->]]; exists c => //.
-  by apply/ffunP=> i; rewrite ffunE nl_eqc.
-by move=> i; rewrite ffunE.
-Qed.
+Proof. by rewrite card_imset => // c1 c2 /ffunP/(_ ord0); rewrite !ffunE. Qed.
 
-Definition cycle (nl : necklace) d : necklace :=
-   [ffun i : 'Z_p => nl (i + d)%R].
+Definition cycle (nl : necklace) d := [ffun i : 'Z_p => nl (i + d)%R].
 
 Lemma cycle_eq_mul nl m d : cycle nl d = nl -> cycle nl (m * d)%R = nl.
 Proof.
@@ -58,9 +49,8 @@ Qed.
 Lemma similar_multicolor nl1 nl2 : similar nl1 nl2 ->
   nl1 \in ~: monocolor -> nl2 \in ~: monocolor.
 Proof.
-move=> /'exists_eqP /= [d ->].
-rewrite !inE; apply: contra => /'exists_'forall_eqP /= [c nl2_eqc].
-by apply/'exists_'forall_eqP; exists c => /= i; rewrite ffunE nl2_eqc.
+move=> /'exists_eqP /= [d ->]; rewrite !inE; apply: contra => /imsetP [c _ ->].
+by apply/imsetP; exists c => //; apply/ffunP=> i; rewrite !ffunE.
 Qed.
 
 Lemma pdvd_multicolor : prime p -> p %| #|~: monocolor|.
@@ -81,7 +71,7 @@ have -> : [set y in ~: monocolor | similar nl y] = [set cycle nl d | d : 'Z_p].
 rewrite card_imset ?card_ord //= => d1 d2 eq_nl.
 apply: contraTeq nl_multi => neq_d; rewrite inE negbK.
 suff eq_all_nl m : cycle nl m = nl.
-  rewrite inE /=; apply/'exists_'forall_eqP => /=; exists (nl ord0) => i.
+  apply/imsetP; exists (nl ord0) => //; apply/ffunP => i; rewrite ffunE.
   by have /(_ i) /ffunP /(_ ord0) := eq_all_nl; rewrite !ffunE add0r.
 rewrite -[m]mulr1 -[1%R](@Zp_mulVz _ (d2 - d1)%R); last first.
   rewrite prime_coprime //; apply/negP => /dvdn_leq.
