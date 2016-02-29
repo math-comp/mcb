@@ -11,7 +11,7 @@ equations.
 
 \section{Type Theory}
 
-\subsection{Curry-Howard correspondance for propositional logic}
+\subsection{Curry-Howard correspondance}
 
 In TT proofs are terms terms and statements are types.
 In particular inductive data types like the ones we programmed with in
@@ -96,8 +96,6 @@ to prefer the curryfied form.
 Inductives for \C{True}, \C{False} (elimination principle is ex falso
 quod libet). Definition of \C{not}.
 
-\subsection{Curry-Howard for quantifiers}
-Dependent types and CH for forall.
 
 CH for exists, like conj but dependent.
 
@@ -128,7 +126,7 @@ elim applies such principle.
 \item Mention case analysis as match.
 \item Complex \C{elim} like \C{elim: {2}n (leqnn n)}.
 \end{itemize}
-\subsection{Constructivism}
+\subsection{Axioms of the logic we work with}
 
 TT is constructive.  As for nat and bool the \emph{only} way
 to ... also for proposition. Eg. exists can only be proved
@@ -179,9 +177,8 @@ As described on the picture 1:
   more but this will be expanded in chapter~\ref{ch:sigmabool}.
 \end{itemize}
 
-\subsection{The \C{is_true} coercion}
-
-The \C{is_true} coercion gives the illusion of inhabiting a \C{bool}.
+First tool, that we already used: the \C{is_true} coercion, which
+gives the illusion of inhabiting a \C{bool}.
 Hence one can use rewriting.
 
 \subsection{Equivalences between booleans and \C{Prop} statements}
@@ -250,8 +247,10 @@ These are called views.
 
 \end{itemize}
 
-Rmk: Still missing: \C{/andP [h1 h2]} and \C{=> /v1 /v2} (may be the
-last one comes earlier).
+Rmk: The view feature in the tactic language is there to combine an
+action (tactic or intro pattern) with a change of world. Order in
+which we could introduce it: \C{/eqP ->}, \C{/andP [h1 h2]},
+\C{/orP [h1 | h2]}. May be mention \C{=> /v1 /v2} as a side remark.
 
 % It is the fragment of decidable stuff (EM as case).
 % It is a concrete data type on which you can program (SSR), automation by
@@ -349,6 +348,7 @@ the prover (implicit args, type inference CS, Hint Resolve).
 More in general, this has to be mentioned in the main intro of the book, here
 we revise the idea.
 
+\subsection{Inductive specs with indices}
 What we did for reflect, an ad hoc connective, to model a line of reasoning is
 a recurrent pattern in the \mcbMC{} library: the ``spec'' predicates.  Specs
 are particularly handy  because inductive predicates, via their elimination
@@ -458,7 +458,7 @@ explain return match clause.  Maybe just the syntax we provide here and
 there, the / annotation for elim/case, and then point to other texts explaining
 the thing.  \mcbMC{} does not use such thing but for spec.
 
-\subsection{other tools?}
+\subsection{Other tools to craft good statements}
 
 \begin{itemize}
 \item Use macros (\C{left_commutative} or notations like
@@ -474,7 +474,10 @@ the thing.  \mcbMC{} does not use such thing but for spec.
 
 Real proofs also deal with structure (readability, naming, context handling and
 robustness), repetitions (like symmetry).  This section works out a few
-examples illustrating good practices and specific proof commands.
+examples illustrating good practices and specific proof
+commands. Start with infinity of primes (and the two lemmas it relies
+on), in order to introduce \C{have} and to see how one can work on a
+goal, even in implicative shape. Then this one:
 
 Example:
 $$
@@ -521,7 +524,7 @@ by apply: leq_trans le_mn1 le_n12.
 Qed.
 \end{coq}
 
-alternative with a more declarative have
+alternative with a more declarative have (probably useless).
 
 \begin{coq}{}{}
 Proof.

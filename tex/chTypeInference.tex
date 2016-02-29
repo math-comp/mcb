@@ -1186,7 +1186,7 @@ terms to rule out even numbers:
 $$
 \sum_{i < n} (i * 2 - 1) = n^2
 $$
-While this latter writing is surely elegant, it is harder to support
+While this latter writing is elegant, it is harder to support
 generically, since the filtering condition is not explicit.
 For example the following equation clearly holds for any filter,
 range and general term.  It would be hard to express such statement
@@ -1195,6 +1195,9 @@ negation was not obvious to formulate.
 $$
 \sum_{i < 2n,\,  2 \mid i} i \;+ \sum_{i < 2n,\,  2 \nmid i}  i = \sum_{i < 2n} i
 $$
+
+Last, not all filtering conditions can be naturally expressed in the
+general term. En example is not being a prime number.
 
 At the light of that our formal statement concerning the sum
 of odd numbers is the following:
@@ -1220,60 +1223,32 @@ the generic theory for iterated operations.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The generic notation for \C{foldr}}
 
-The generic notation for iterated operations has to encompass
-two components:
-\begin{itemize}
-\item
-the general term, the filter and the iterated operation, corresponding
-to \C{(fun acc i => if odd i then i + acc else acc)}
-\item
-the generic iterator, the initial value and the range
-corresponding to \C{foldr}, \C{0} and \C{(index\_iota 0 n.*2)}
-\end{itemize}
-
-We start from the former.
-For notational purposes it is important to identify the various
-sub components, that in the \C{(fun acc i => ...)} expression
-are mixed.  For that purpose we craft a box, \C{BigBody}, with
-separate compartments for each sub component
+The generic notation for iterated operations has to be attached to
+something more specific than \C{foldr} in order to clearly identify
+all components
 
 \begin{coq}{name=bigop2}{}
-Inductive bigbody R I := BigBody of I & (R -> R -> R) & bool & R.
+Definition bigop R I idx op r (P : pred I) (F : I -> R) : R :=
+  foldr (fun i x => if P i then op (F i) x else x) idx r.
 \end{coq}
 
-The arguments of \C{BigBody} are respectively the index, the
-iterated operation, the filter and the generic expression.
-For our running example the \C{bigbody} component would be:
+Using the \C{bigop} contant to express our statement leads to
 
-\begin{coq}{name=bigopeven}{}
-Definition sum_odd_def_body i := BigBody i addn (odd i) i.
+\begin{coq}{name=bigop2}{}
+Lemma sum_odd n :
+  bigop 0 addn (index_iota 0 n.*2) odd (fun i => i) = n^2
 \end{coq}
 
-Note that in this case the index, i.e. the name of the bound variable,
-is identical to the general term, but this is not true in general.
-Indeed the first component of the \C{BigBody} box is there only to
-help the notation system to figure out the name of the bound variable.
+Note that \C{odd} is already a predicate on \C{nat}, the general
+term is the identity function, the range \C{r} is \C{(index_iota 0
+n.*2)}, the iterated operation \C{addn} and the initial value is
+\C{0}.
 
-It is then easy to turn such compound term into the function expected
-by \C{foldr}:
-
-\begin{coq}{name=bigopapplybig}{}
-Definition applybig {R I} (body : bigbody R I) acc :=
-  let: BigBody _ op b v := body in if b then op v acc else acc.
-\end{coq}
-
-Finally the generic iterated operator can be defined as follows.
-
-\begin{coq}{name=bigop3}{}
-Definition bigop R I idx r (body : I -> bigbody R I) :=
-  foldr (applybig \o body) idx r.
-\end{coq}
-
-And a generic notation can be attached to it.
+A generic notation can now be attached to \C{bigop}.
 
 \begin{coq}{name=bigopnotation}{}
 Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
-  (bigop idx r (fun i => BigBody i op P%B F)) : big_scope.
+  (bigop idx op r (fun i => P%B) (fun i => F)) : big_scope.
 \end{coq}
 
 Here \C{op} is the iterated operation, \C{idx} the neutral element
@@ -1302,7 +1277,7 @@ a numerical range:
 
 \begin{coq}{name=bigop3nat2}{}
 Notation "\big [ op / idx ]_ ( m <= i < n | P ) F" :=
-  (bigop idx (index_iota m n) (fun i : nat => BigBody i op P%B F))
+  (bigop idx op (index_iota m n) (fun i : nat => P%B) (fun i => F))
      : big_scope.
 Notation "\sum_ ( m <= i < n ) F" :=
   (\big[+%N/0%N]_(m <= i < n) F%N) : nat_scope.
@@ -1332,8 +1307,15 @@ The computation behavior of \C{bigop} is generic, it does not
 depend on the iterated operation.
 On the contrary some results
 on iterated operations may depend on a particular property of the
-operation. For example to pull out the last item from the summation
-and obtain
+operation. For example to pull out the last item from the summation,
+i.e. using the following lemma
+
+
+$$
+\mbox{if }a \le b\mbox{ then }\sum_{a \le i < b+1} F i = \sum_{a \le i < b} F i + F b
+$$
+
+to obtain
 
 \begin{coqout}{}{}
 ============================
@@ -1548,12 +1530,80 @@ Tricks of the trade are:
 \begin{coq}{name=bigop222}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 Proof.
-elim=> [|n IHn]; first by rewrite unlock.
+elim: n => [|n IHn]; first by rewrite unlock.
 rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond /=.
 by rewrite {}IHn odd_double /= addn0 -addnn -!mulnn; ring.
 Qed.
 \end{coq}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEARN{Real bigop notation}
+\mcbREQUIRE{bigop}
+\mcbPROVIDE{BigBody}
+\mcbLEVEL{3}
+\mcbsection{Stable notations for iterated operations}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The definition of \C{bigop} and the notations attached to it
+are defined in a more complex way in the \mcbMC{} library.
+In particular \C{bigop} is fragile because the predicate and
+the general term do not share the same binder.  For example,
+if we write the following
+
+\begin{coq}{name=bigop2}{}
+Lemma sum_odd n :
+  bigop 0 addn (index_iota 0 n.*2) (fun j => odd j) (fun i => i) = n^2
+\end{coq}
+
+What should be printed by the system?  It is an iterated sum on
+\C{j} or \C{i}?  Similarly, if the index becomes unused during a
+proof, which name should be printed?
+
+\begin{coq}{name=bigop2}{}
+Lemma sum_0 n :
+  bigop 0 addn (index_iota 0 n) (fun _ => true) (fun _ => 0) = 0
+\end{coq}
+
+To solve these problems we craft a box, \C{BigBody}, with
+separate compartments for each sub component.  Such box will
+be used under a single binder and will hold an occurrence of the
+bound variable even if it is unused in the predicate and in the
+general term.
+
+\begin{coq}{name=bigop2}{}
+Inductive bigbody R I := BigBody of I & (R -> R -> R) & bool & R.
+\end{coq}
+
+The arguments of \C{BigBody} are respectively the index, the
+iterated operation, the filter and the generic expression.
+For our running example the \C{bigbody} component would be:
+
+\begin{coq}{name=bigopeven}{}
+Definition sum_odd_def_body i := BigBody i addn (odd i) i.
+\end{coq}
+
+It is then easy to turn such compound term into the function expected
+by \C{foldr}:
+
+\begin{coq}{name=bigopapplybig}{}
+Definition applybig {R I} (body : bigbody R I) acc :=
+  let: BigBody _ op b v := body in if b then op v acc else acc.
+\end{coq}
+
+Finally the generic iterated operator can be defined as follows.
+
+\begin{coq}{name=bigop3}{}
+Definition bigop R I idx r (body : I -> bigbody R I) :=
+  foldr (applybig \o body) idx r.
+\end{coq}
+
+And a generic notation can be attached to it.
+
+\begin{coq}{name=bigopnotation}{}
+Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
+  (bigop idx r (fun i => BigBody i op P%B F)) : big_scope.
+\end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring overloaded notations}
@@ -1668,7 +1718,7 @@ a projection to an unknow canonical structure instance.
 Inductive phantom (T : Type) (p : Type) := Phantom.
 \end{coq}
 
-The \C{Phant} constructor expects two arguments.  If we apply
+The \C{Phantom} constructor expects two arguments.  If we apply
 it to \C{nat} as in \C{(Phantom Type nat)} we obtain a term
 of type \C{(phantom Type nat)}.  If we apply it to \C{addn} as
 in \C{(Phantom (nat -> nat -> nat) addn)} we obtain a term

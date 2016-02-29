@@ -165,7 +165,7 @@ Lemma my_first_lemma : 3 = 3.
 Proof. Redirect "goal" Show.
 \end{coqdef}
 \begin{coq}{def=first-lemma}{width=6cm,title=Starting a proof}
-Lemma my_first_lemma : 3 = 3.
+Lemma |*my_first_lemma*| : 3 = 3.
 Proof.
 \end{coq}
 \coqrun{name=r3}{ssr,first-lemma,abort}
@@ -663,10 +663,10 @@ negbK is defined
 The boolean equivalence \C{leqn0} is also an example of statement that
 cannot be proved by computation only:
 
-\begin{coq}{def=leqn0,done}{width=6cm,title=Negative natural number}
+\begin{coq}{def=leqn0,done}{width=6cm,title=No negative natural number}
 Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 \end{coq}
-\begin{coqout}{def=leqn0,done}{width=6cm,title=Negative natural
+\begin{coqout}{def=leqn0,done}{width=6cm,title=No negative natural
     number}
 1 subgoal
 
@@ -683,12 +683,12 @@ branches: one in which \C{n} is \C{0} and one in which \C{n} is
 \C{(S k)} for some \C{k : nat}. We hence need a variant of the \C{case}
 tactic, in order to \emph{name} the parameter \C{k} which pops up in
 the second branch:
-\begin{coq}{def=leqn01,done}{width=6cm,title=Negative natural numbers}
+\begin{coq}{def=leqn01,done}{width=6cm,title=No negative natural numbers}
 Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 Proof.
 case: n => [| k].
 \end{coq}
-\begin{coqout}{run=leqn01}{width=6cm, title=Negative natural numbers}
+\begin{coqout}{run=leqn01}{width=6cm, title=No negative natural numbers}
 2 subgoals, subgoal 1
 
 ======================
@@ -719,13 +719,13 @@ observe that \C{n} has been substituted with \C{k.+1}. The first goal
 can be easily solved by computation, as both hand sides of the equality
 evaluates to \C{true}.
 
-\begin{coq}{def=leqn02,done}{width=6cm,title=Negative natural numbers}
+\begin{coq}{def=leqn02,done}{width=6cm,title=No negative natural numbers}
 Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 Proof.
 case: n => [| k].
   by [].
 \end{coq}
-\begin{coqout}{run=leqn02}{width=6cm, title=Negative natural numbers}
+\begin{coqout}{run=leqn02}{width=6cm, title=No negative natural numbers}
 1 subgoal
 
   k : nat
@@ -738,19 +738,19 @@ The second and now only remaining goal corresponds to the case when
 It can also be  solved by computation, as both hand sides
 of the equality evaluates to \C{false}.
 
-\begin{coq}{def=leqn03,done}{width=6cm,title=Negative natural numbers}
+\begin{coq}{def=leqn03,done}{width=6cm,title=No negative natural numbers}
 Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 Proof.
 case: n => [| k].
   by [].
 by [].
 \end{coq}
-\begin{coqout}{run=leqn03}{width=6cm, title=Negative natural numbers}
+\begin{coqout}{run=leqn03}{width=6cm, title=No negative natural numbers}
   No more subgoals.
 \end{coqout}
 As in the previous example, we can make the proof script even shorter:
 
-\begin{coq}{def=leqn04,done}{width=8cm,title=Negative natural numbers}
+\begin{coq}{def=leqn04,done}{width=8cm,title=No negative natural numbers}
 Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 Proof.
 by case: n => [| k].
