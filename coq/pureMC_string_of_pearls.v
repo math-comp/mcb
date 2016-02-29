@@ -1,3 +1,6 @@
+(* Version of string_of_pearls using pure Math Comp, by Cyril *)
+
+
 From mathcomp Require Import all_ssreflect ssralg perm zmodp cyclic fingroup.
 
 Set Implicit Arguments.
