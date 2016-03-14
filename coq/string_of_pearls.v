@@ -347,3 +347,94 @@ Qed.
 
 End TheNecklaceProof.
 
+Section DirectNumberTheoreticProof.
+Variable p':nat.
+Let p :=p'.+1.
+Hypothesis p_prime: prime p.
+
+
+(* Theorem 7 *)
+Theorem modnKr x y z :  ~~(p %| x) -> x * y = x * z %[mod p] -> y = z %[mod p].
+Proof.
+move=> px_coprime.
+wlog lt_yz: y z / z <= y.
+  move=> hwlog.
+  case/orP: (leq_total z y); first by apply:hwlog.
+  move=> hyz /eqP; rewrite eq_sym=>/eqP xyz_p.
+  by apply:sym_eq; apply: hwlog.
+move/eqP; rewrite eqn_mod_dvd; last by rewrite leq_mul2l lt_yz orbT.
+rewrite -mulnBr Euclid_dvdM // (negbTE  px_coprime) /=.
+by rewrite -eqn_mod_dvd=> // /eqP.
+Qed.
+
+(* residues *)
+
+Definition residues := [set i:'I_p | i != ord0].
+Definition residuen (i:nat) := (0 < i) && (i < p).
+
+
+Definition row (a:'I_p) := 
+    fun (x: 'I_p) =>(Ordinal (ltn_pmod (a * x) (prime_gt0 p_prime))).
+
+
+
+Fact row_inj a:  (a != ord0) -> (injective (row a)).
+Proof.
+move => ha  [x hx] [y hy].
+rewrite /row =>  /val_eqP /= /eqP hrow.
+apply/val_eqP; rewrite /=  -(modn_small hx) -(modn_small hy).
+apply/eqP; apply: (@modnKr a)=> //.
+by rewrite gtnNdvd // lt0n.
+Qed.
+
+Theorem th8 a : a \in residues -> [set row a x | x in residues] = residues.
+Proof.
+rewrite inE =>ha.
+apply/setP;apply/subset_cardP. 
+  apply/eqP /imset_injP => y z hy hz; apply:(row_inj ha).
+apply/subsetP => x.
+move/imsetP=>[y]; rewrite !inE => hy hx; move:hy; apply/contraNN=>/eqP hx0.
+move:hx; rewrite hx0.
+have <-: row a ord0 = ord0.
+  by  apply/val_eqP; rewrite /= muln0  mod0n.
+by move/(row_inj ha) <-;apply/val_eqP; rewrite /row  muln0; apply/val_inj.
+Qed.
+
+Lemma pdivfact: forall n, n < p ->   ~~ (p %| n`!).
+Proof.
+elim=>[_| n Ihn hn]; first by rewrite fact0 Euclid_dvd1.
+rewrite factS Euclid_dvdM // negb_or Ihn ?andbT ?gtnNdvd //.
+by rewrite (ltn_trans (ltnSn n)).
+Qed.
+
+Theorem Fermat_little_th2:forall a, a \in residues -> a^(p-1) %% p = 1.
+Proof.
+move=> a ha.
+rewrite -[in RHS](@modn_small 1 p) ?(prime_gt1) //.
+apply:(@modnKr  p'`!); rewrite ?pdivfact //.
+rewrite muln1.
+have card_res: \prod_(i< p | i != ord0) i = p'`!.
+  rewrite fact_prod.
+  rewrite -(@big_mkord nat 1 muln p (fun i  => i!= 0) (fun x => x)).
+  rewrite big_nat_cond (big_ltn_cond  (prime_gt0 p_prime)) /=.
+  by apply:congr_big_nat=>// i //= /andP; case; rewrite lt0n => -> ->.
+suff ->:  p'`! * a ^ (p - 1) = 
+              \prod_(i in [set row a x | x in residues]) i %[mod p].
+  rewrite -card_res.
+  suff ->: \prod_(i < p | i != ord0) i =  \prod_(i in residues) i by rewrite th8.
+  by apply/eq_bigl=> i; rewrite inE.
+rewrite  big_imset /=; first last.
+  by move=> x y hx hy; apply:row_inj; rewrite inE in ha.
+have ->: \prod_(i in residues) ((a * i) %% p) = 
+        \prod_(i < p | i != ord0)((a * i) %% p).
+  by rewrite /residues; apply/eq_bigl =>i; rewrite inE.
+have -> : \prod_(i < p| i!= ord0) ((a * i) %% p) 
+       = (\prod_(i < p | i != ord0) (a * i))%[mod p].
+  apply/eqP; elim/big_rec2: _ =>[//| i y1 y2 hi hy2].
+  by rewrite modnMml -modnMm  (eqP hy2) modnMm.
+rewrite big_split /= big_const /= iter_muln muln1.
+by rewrite cardC1 card_ord subn1 mulnC card_res.
+Qed.
+
+End DirectNumberTheoreticProof.
+
