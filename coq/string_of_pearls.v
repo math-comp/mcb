@@ -438,3 +438,72 @@ Qed.
 
 End DirectNumberTheoreticProof.
 
+From mathcomp Require Import all_fingroup.
+From mathcomp Require Import algebra.zmodp.
+
+Section ApplyingActions2Necklaces.
+
+Notation cycle:= Top.cycle.
+Variable a:finType.
+Variable p': nat.
+Let p := p'.+2.
+
+Definition act  (l:(necklace  a p)) (k: 'Z_p) := [tuple of cycle l k].
+Lemma actP : is_action [set: 'Z_p] act.
+Proof.
+apply: is_total_action. 
+  by move=> l; apply/val_inj; rewrite /=  cycle_0.
+rewrite /act /act_morph /=  => l k1 k2.
+apply/val_inj; rewrite /=.
+have {3}-> : (Zp_trunc p).+2 = (size l) by rewrite size_tuple.
+by rewrite cycle_mod_length cycle_add addnC.
+Qed.
+
+Canonical cycle_action := Action actP.
+
+Lemma th26: (afix cycle_action [set:'Z_p])= (monocolor a p).
+Proof.
+apply/setP=> l; apply/idP/idP; first last.
+  move/mono_cycle; rewrite inE subTset=> lmono.
+  apply/eqP /setP=> x; rewrite !inE /=.
+  by apply/eqP/val_inj; rewrite /= lmono.
+rewrite inE /=  subTset => /eqP /setP /= h.
+apply/mono_cycle1P.
+have h1: 1 < p by done.
+move:(h (Ordinal h1)); rewrite !inE /=.
+by move=> /eqP  /val_eqP /eqP.
+Qed.
+
+Fact th19 x: p =  #|orbit cycle_action [set:'Z_p]%G x| * #|('C_[set:'Z_p][x | cycle_action])%g|.
+Proof.
+rewrite card_orbit_in_stab; last by rewrite subEproper eqxx.
+by rewrite cardsT card_ord.
+Qed.
+
+Fact aux19 x: (prime p) ->  (#|orbit cycle_action [set:'Z_p]%G x| == 1) || 
+(#|orbit cycle_action [set:'Z_p]%G x| == p).
+Proof.
+move/primeP=>[]pgt1; apply; apply/dvdnP.
+by exists #|('C_[set:'Z_p][x | cycle_action])%g|; rewrite [in LHS](th19 x) mulnC.
+Qed.
+
+(* Fermat's little theorem by Fixed Points *)
+Notation n := #|a|.
+Theorem Fermat_little_th3: prime p -> n^p = n %[mod p].
+Proof.
+move=>p_prime.
+rewrite -card_necklace.
+rewrite -(cardsC  (monocolor a p)) /=.
+have hmulti:[acts [set: 'Z_p]%G, on (multicolor a p) | cycle_action].
+  apply/subsetP=>x hx; rewrite !inE; apply/subsetP=> y hy.
+  by rewrite inE cycle_multi.
+move:(acts_sum_card_orbit hmulti).
+move <-.
+rewrite (eq_bigr (fun _ => p)).
+  by rewrite big_const iter_addn_0 card_mono addnC mulnC modnMDl.
+move=> i.
+move/imsetP=>[] x; rewrite inE  => /negP hx ->.
+by case/orP: (aux19 x p_prime)=> /eqP // /card_orbit1 /orbit1P; rewrite th26.
+Qed.
+
+End ApplyingActions2Necklaces.
