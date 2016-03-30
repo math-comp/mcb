@@ -507,3 +507,36 @@ by case/orP: (aux19 x p_prime)=> /eqP // /card_orbit1 /orbit1P; rewrite th26.
 Qed.
 
 End ApplyingActions2Necklaces.
+
+
+(* by induction , using binumials *)
+
+
+Theorem th31: forall p, prime p -> forall x y , (x + y)^p = x^p + y^p %[mod p].
+Proof.
+move=> p p_prime x y ; rewrite Pascal.
+rewrite (bigD1 ord0) //=  (bigD1 (Ordinal (ltnSn p))) /=; last first.
+  by rewrite -val_eqE /= -lt0n (prime_gt0 p_prime).
+rewrite subnn subn0 !expn0  bin0 binn !mul1n muln1 addnA.
+set s := (\sum_ (_|_)  _).
+suff : p %| s by  case/dvdnP=> k ->; rewrite addnC modnMDl.
+rewrite /s dvdn_sum // => [[i hi]] /andP; rewrite -!val_eqE /= =>[[igt0 iltp]].
+rewrite dvdn_mulr //  prime_dvd_bin //; apply/andP.
+by split; rewrite ?lt0n //ltn_neqAle iltp  -ltnS.
+Qed.
+
+(* Fermat's little Theorem via Binomial Theorem *)
+Theorem Fermat_little_binomial p a: prime p -> a^p = a %[mod p].
+Proof.
+move=> p_prime; have pgt0 := (prime_gt0 p_prime).
+by elim: a=>[|a Iha]; rewrite ?exp0n // -addn1 th31 // -modnDm exp1n Iha modnDm.
+Qed.
+
+From mathcomp Require Import all_solvable.
+
+(* Euler's Generalisation *)
+Theorem Fermat_little_totient n p : prime p -> coprime n p  -> n^p.-1 = 1 %[mod p].
+Proof.
+move=> p_prime /(@Euler_exp_totient n p).
+by rewrite -[in LHS](expn1 p) totient_pfactor //= expn0 muln1 expn1.
+Qed.
