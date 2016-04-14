@@ -1583,7 +1583,7 @@ We hence start our formal proof by naming hypothesis \C{p <= m}, which
 means that we add it to the current context of the goal. The dedicated
 tactic for this naming step is \C{move=>}.
 
-\begin{coq}{}{{width=2cm}
+\begin{coq}{}{width=2cm}
 move=> leq_p_m.
 \end{coq}
 \begin{coqout}{}{width=7cm}
@@ -1601,11 +1601,11 @@ Lemma |*dvdn_addr*| m d n : d %| m -> (d %| m + n) = (d %| n).
 \end{coq}
 
 which states a conditional equivalence, expressed as a conditional identity.
-We can replace our current goal with \C{~~ (p \%| 1} by rewriting (the
+We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting (the
 appropriate instance of) this identity but this operation will open an
 extra goal requiring a proof of (corresponding instance of) the side condition.
 
-\begin{coq}{}{{width=2cm}
+\begin{coq}{}{width=2cm}
 move=> leq_p_m.
 rewrite dvdn_addr.
 \end{coq}
@@ -1633,9 +1633,9 @@ order, with apply. Then show how to linearize the script using rewrite
 and switches. Hence rename or split the section.}
 
 
-% Conversely, proving an implication (or a universal statement) requires
-% \emph{introduction} (is it the right place to speak about this?). This
-% is what \C{move=>} does (same as in \C{case}, but no branch).\marginnote{example?}
+Conversely, proving an implication (or a universal statement) requires
+\emph{introduction} (is it the right place to speak about this?). This
+is what \C{move=>} does (same as in \C{case}, but no branch).\marginnote{example?}
 
 \subsection{Proofs by induction}\label{ssec:ind}
 
