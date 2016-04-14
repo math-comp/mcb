@@ -1039,16 +1039,41 @@ factors into \C{m * (n1 - n2) == 0}. We then conclude using
 lemma \C{muln_eq0}, since \C{n1 - n2 == 0} is the definition of
 \C{(n1 <= n2)}.
 
-The first step hence consists in unfolding the definition of the
-\C{leq} relation, denoted by the \C{<=} infix notation, in order to
-reveal the hidden subtraction. This can be performed using the rewrite
-tactic with the following syntax:
+The first step hence consists in using the definition of the
+\C{leq} relation, denoted by the \C{<=} infix notation, to replace the
+right hand side by a subtraction. This can be performed using the
+following equation:
+
+\begin{coq}{def=LeqDef}{title=Definition of Order}
+Lemma |*leq_def*| m n : (m <= n) = (m - n == 0).
+\end{coq}
+For this purpose, we use the rewrite tactic. However, the command
+\C{rewrite leq_def} only affects the first occurrence of \C{<=} and we
+would like to treat both.
+
+\begin{coq}{def=LeqMul2lproof1}{title=Simple rewrite,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite leq_def.
+\end{coq}
+\begin{coqout}{def=LeqMul2lproof1}{title=Simple rewrite,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * n1 - m * n2 == 0) =
+(m == 0) || (n1 <= n2)
+\end{coqout}
+
+In order to rewrite \emph{all} the possible instances, we use a
+repetition flag:
 
 \begin{coq}{def=LeqMul2lproof1}{title=Ordered products,width=7.7cm}
 Lemma |*leq_mul2l*| m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
-rewrite /leq.
+rewrite !leq_def.
 \end{coq}
 \begin{coqout}{def=LeqMul2lproof1}{title=Ordered products,width=5cm}
 1 subgoal
@@ -1059,7 +1084,7 @@ m, n1, n2 : nat
 (m == 0) || (n1 - n2 == 0)
 \end{coqout}
 
-Observe that the definition of \C{<=} has been exposed
+Now the definition of \C{<=} has been exposed
 \emph{everywhere} in the goal, i.e. at both its occurrences in this
 initial goal. We can now factor \C{m} on the left, using the appropriate
 distributivity property:
@@ -1081,7 +1106,7 @@ of the rewrite rule:
 Lemma |*leq_mul2l*| m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
-rewrite /leq.
+rewrite !leq_def.
 rewrite -mulnBr.
 \end{coq}
 \begin{coqout}{def=LeqMul2lproof2}{title=First case analysis,width=5cm}
@@ -1100,7 +1125,7 @@ and the right hand sides of the identity.
 Lemma |*leq_mul2l*| m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
-rewrite /leq.
+rewrite !leq_def.
 rewrite -mulnBr.
 rewrite muln_eq0.
 \end{coq}
@@ -1121,113 +1146,232 @@ indeed be performed by a single invocation of the \C{rewrite} tactic.
 
 \begin{coq}{def=LeqMul2lproof}{title=Ordered products}
 Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
-Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
+Proof. by rewrite !leq_def -mulnBr muln_eq0. Qed.
 \end{coq}
 
 This example illustrates how the \C{rewrite} tactic, provided a
-rewrite rule like \C{mulnBr} or \C{muln_eq0}, was able to identifiy a
-subterm in the goal to be substituted -- in theses cases without any
-further specification required from the user. The usability of the
+rewrite rule like \C{leq_def}, \C{mulnBr} or \C{muln_eq0}, was able
+to identifiy a
+subterm in the goal to be substituted. The usability of the
 tactic crucially relies on an appropriate combination of automation
 and control. The user should be able to predict which subterm will be
 substituted and to drive the tactic if needed, with enough control
 options, but not too much verbosity. A key ingredient of the
 \C{rewrite} tactic is hence the \emph{matching} algorithm which
-elects this subterm from the arguments provided to the tactic. Suppose
-we execute the command \C{rewrite mulnBr} on the following goal:
+elects this subterm from the arguments provided to the tactic. Let us
+provide some insights on the power and on the limitations of this
+algorithm, as well as on the control primitives that can drive it.
 
-\begin{coq}{def=LHS1}{title=Two subterms matching}
-Lemma |*foo*| n m p a b c : n * (m - p) = a * (b - c).
-\end{coq}
-
-Here both hand-sides are instances of the pattern described by the
-left hand side of lemma \C{mulnBr}. The command transforms the goal into:
-
-\begin{coq}{def=LHS1}{title=Two subterms matching,width=7.3cm}
-Lemma |*foo*| n m p a : n * (m - p) = m * (n - a) + n * (m - p).
-rewrite mulnBr.
-\end{coq}
-\begin{coqout}{def=LHS1}{title=The first is picked,width=5.2cm}
-n, m, p, a : nat
-===========================
-n * m - n * p = m * (n - a) + (n * m - n * p)
-\end{coqout}
+First, remember that our first attempt, using the simple
+\C{rewrite leq_def} command only
+affected the left hand side of the initial goal because of the
+behaviour of this matching algorithm.
 Indeed, the matching algorithm traverses the entire goal
 left-to-right, looking for the first subterm matching pattern
-\C{(_ * _ -_)},  and hence picks subterm \C{(n * m - p)}. Note that
-\emph{every} occurrence of this subterm is then rewritten, including
-the one located on the right hand-side. Now suppose we want to pick
+\C{(_ <= _)},  and hence picks subterm \C{(m * n1 <= m * n2)}.
+Now suppose we want to pick
 the other instance of subterm matching this pattern in the goal. We
-can use the command \C{rewrite [in RHS]mulnr}, which restricts the
-search to the left-hand side of the equality in the goal. The goal
-becomes:
-\begin{coqout}{def=LHS1}{title=The first is picked,width=5.2cm}
-n, m, p, a : nat
-===========================
-n * (m - p) = m * n - m * a + n * (m - p)
-\end{coqout}
-because now subterm \C{m * (n - a)} is the first encountered subterm
-matching the pattern. Yet this is not so robust so we could rather use
-a more precise \emph{pattern} to specify the subterm to be picked by the
-matching algorithm, like for instance in \C{rewrite [m * (_ - _)]muln0}.
-Now in order to substitute only the right hand side occurrence of
-subterm \C{n * (m - p)}, we can use the command
-\C{rewrite [X in _ = X + _]mulnBr}, using a pattern variable \C{X},
-bound in the pattern \C{(_ = X + _)}. See the reference
-manual~\cite{ssrman} for more.
-\marginnote{To be  improved.}
+can use the command \C{rewrite [n1 <= _]leq_def}: the
+pattern given by the user overrides the one inferred from the rewrite
+rule and is used to select the subterm to be rewritten. In this case,
+term \C{m * n1 <= m * n2} is ruled out because the first argument of
+\C{<=}, namely \C{(m * n1)}, does not match the first argument \C{n1}
+required in the user-given pattern. Therefore, \C{rewrite} picks term
+\C{(n1 <= n2)}, in the right hand-side.
 
-\marginnote{Shall we really use as a first example one which requires unfolding?}
-END OF REWRITING.
-Why is the unfold important/needed here?  We need to expose the pattern of the
-RHS of \C{mulnBr} to factor out m.  Such step being just computation has no
-logical content, but helps driving the following rewrite.
-By looking at the RHS of \C{mulnBr} rewrite infers the pattern
-\C{(_ * (_ - _))}.  Rewrite traverses the entire goal looking for the
-head symbol *, but both occurrences don't have a - in their RHS.
-No goal subterm matches such pattern, hence /leq is really needed.
-
-One frequently needs to drive rewrite, here an explain in which we explain
-patterns.
-
-\C{in RHS, [_ + a]addnC} and maybe \C{[_ + _]mulnC}.
-
-Explain: first find the first instance of the pattern, then replace all
-occurrences.  As a last tuning, \C{{2}}.
-
-Take a goal with many wrong parentheses and normalize it? Or many \C{+0}.
-Explain \C{!}.
-
-\begin{coq}{def=LeqMul2lproof}{title=}
-Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
-Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
+\begin{coq}{def=UserRwPat}{title=User rewrite pattern,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite [n1 <= _]leq_def.
 \end{coq}
+\begin{coqout}{def=UserRwPat}{title=User rewrite pattern,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * n1 <= m * n2) =
+(m == 0) || (n1 - n2 == 0)
+\end{coqout}
+
+Another way of driving the matching algorithm is by providing a
+\emph{context}, restricting the part of the goal to be explored. For
+instance, in this case, the instance we want to pick is on
+the right hand side of the identity to be proved. We can implement
+this specification using the pattern \C{[in RHS]}:
+
+\begin{coq}{def=UserRHSPat}{title=RHS pattern,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite [n1 <= _]leq_def.
+\end{coq}
+\begin{coqout}{def=UserRHSPat}{title=RHSpattern,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * n1 <= m * n2) =
+(m == 0) || (n1 - n2 == 0)
+\end{coqout}
+
+More generally, one can provide context patterns like \C{[in X in T]}
+where \C{X} is a variable name, bound in \C{T}. For instance pattern
+\C{[in RHS]} is just syntactic sugar for the context pattern
+\C{[in X in _ = X]}.  We invite the interested reader to check the
+reference manual~\cite{ssrman} for more variants of patterns and for a
+more precise description of the different phases in the matching
+algorithm used by this tactic.
+
+Lemma \C{leq_def} in fact does not exist in the library. Indeed the
+identity it states holds by symbolic computation, and we have seen in
+Section~\ref{} that such a proof step can be omitted. However if we
+try to omit the first \C{rewrite !leq_def} command, then the next one,
+namely \C{rewrite -mulnBr} fails:
+
+\begin{coq}{def=LeqMul2lproof2}{title=Failing rewrite,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite -mulnBr.
+\end{coq}
+\begin{coqout}{def=LeqMul2lproof2}{title=Failing rewrite,width=5cm}
+Error: The RHS of mulnBr (_ * _ - _ * _) does not match any subterm of
+the goal.
+\end{coqout}
+
+This indicates in particular that although term \C{(m * n1 <= m * n1)}
+is convertible to term \C{(m * n1 - m * n1 == 0)}, the matching
+algorithm is not able to see it. This is due to the compromise that
+has been chosen, between predictability and cleverness. Indeed the
+algorithm looks for a verbatim occurrence of the head symbol of the
+pattern: in this case it hence looks for an occurence of \C{_ - _},
+which is not found. As a consequence, we need an explicit step in the
+proof script in order to expose the substraction before being able to
+rewrite right to left with \C{mulnBr}. However we can make this
+rewrite step succeed using a user-provided pattern:
+
+\begin{coq}{def=PatForConv}{title=Using a Pattern,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite -[_ <= _]mulnBr.
+\end{coq}
+\begin{coqout}{def=PatForConv}{title=Using a Pattern,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * (n1 - n2) == 0) =
+(m == 0) || (n1 <= n2)
+\end{coqout}
+
+Indeed, such a pattern identifies term \C{(m * n1 <= m * n2)}, as
+their head symbols coincide. Now that we have elected a subterm, the
+\C{rewrite} tactic is able to identify it with term
+\C{(m * n1 - m * n1 == 0)}, itself an instance of the right instance
+of \C{mulnBr}. Note that while matching only sees syntactic
+occurrences of the
+head symbols of patterns, it is able to compare the other parts of the
+patterns up to symbolic computation.
+
+Although lemma \C{leq_def} does not exist we can still use the
+statement of this identity, which is simply the \emph{unfolding} of
+the definition of the \C{leq} constant. The \C{rewrite} tactic can
+perform this nature of step, as in the script:
+
+\begin{coq}{def=Unfold}{title=Unfold,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite /leq.
+\end{coq}
+\begin{coqout}{def=Unfold}{title=Unfold,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * n1 - m * n2 == 0) =
+(m == 0) || (n1 - n2 ==0)
+\end{coqout}
+
+where the command \C{rewrite /leq} has exposed the definition of
+\C{leq} at all its occurrence in the goal. An unfolding step can be
+driven by patterns as well, as in:
+
+\begin{coq}{def=Unfold}{title=Unfold,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite [in LHS]/leq
+\end{coq}
+\begin{coqout}{def=Unfold}{title=Unfold,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * n1 - m * n2 == 0) =
+(m == 0) || (n1 <= n2)
+\end{coqout}
+
+More generally, the \C{rewrite} tactic can be used to replace a
+certain subterm of the goal by a convertible one:
+
+\begin{coq}{def=Unfold}{title=Unfold,width=7.7cm}
+Lemma |*leq_mul2l*| m n1 n2 :
+(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+rewrite -[n1]/((1 - 1) + n1).
+\end{coq}
+\begin{coqout}{def=Unfold}{title=Unfold,width=5cm}
+1 subgoal
+
+m, n1, n2 : nat
+==========================
+(m * ((1 - 1) + n1) <= m * n2) =
+(m == 0) || (((1 - 1) + n1) <= n2)
+\end{coqout}
+\marginnote{Find a more meaningful example of change?}
 
 
 
-And here we should find a way to introduce, illustrate and explain:
-\begin{itemize}
-\item Simple rewrite (substitution). May be not so usefull.
-\item Rewrite of a parametric equality (with matching)
-\item Unfold as a rewrite command
-\item Simpl as a rewrite command? Well, may be not, and better in
-  elim's intro patterns, followed by the remark that it also applies
-  to case (and then show the library's script for \C{my_muln_eq0}.
-\item Control via patterns (e.g. rw \C{leq_mul2l} on
-\C{m * n1 <= n2 * m}, the use of \C{mulnC} is ambigious). At this
-stage at least, show patterns for redex selection but only show RHS
-(and no the full power of \C{[X in _ <= X]}-like patterns).
-\item Mention the possibility of chaining rewrites, but simple chaining.
-\item \C{rewrite \\} comes later and allows to discuss chaining more.
-\end{itemize}
-
-Here we have to assume some results for the purpose of the
-explanations, because in fact we usually rewrite statements proved by
-an induction...
 
 \section{More complex statements and proofs}
 
 \subsection{Universal quantification, first examples}
+
+In Chapter~\ref{}, we have defined \emph{predicates}, as functions
+with boolean values. For instance, the \C{leq} predicate is defined as
+a predicate on natural numbers, as:
+
+\begin{coq}{def=LeqDef}{title=Comparison Boolean Predicate}
+Definition |*leq*| n m := m - n == 0.
+\end{coq}
+
+We recall, as seen in Chapter~\ref{}, that this concise syntax stands
+for:
+
+\begin{coq}{def=LeqDefFun}{title=Comparison Boolean Predicate}
+Definition |*leq*| := fun n m => m - n == 0.
+\end{coq}
+and the type of the constant \C{|*leq*|} is:
+
+\begin{coq}{name=about-leq}{width=6cm,title= Type of leq}
+About leq.
+\end{coq}
+\coqrun{name=about}{ssr,about-leq,about-leq}
+\begin{coqout}{run=about}{title=Response,width=6cm}
+leq : nat -> nat -> bool
+...
+\end{coqout}
+
+In the present Chapter, we have used a similar syntax when stating
+parametric statements, like:
+
+\begin{coq}{def=leqn0}{title=A parametric identity}
+Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+\end{coq}
+
 The curious reader might already have tested the answer of the
 \C{About} command on the parametric lemmas we have used or proved in the
 previous sections, like for instance:
@@ -1239,68 +1383,264 @@ About leqn0.
 leqn0 : forall n : nat, (n <= 0) = (n == 0)
 \end{coqout}
 
-She has thus observed thate \Coq{}'s output features a prenex
-\C{forall} quantifier. This universal quantifier binds a boolean, and
-expresses --as expected-- that that the equation holds for any
-boolean. The type of the lemmas and theorems with parameters all feature
+She has thus observed that \Coq{}'s output features a prenex
+\C{forall} quantifier. This universal quantifier binds a natural number, and
+expresses --as expected-- that the equation holds for any
+natural number. The type of the lemmas and theorems with parameters all feature
 prenex universal quantifiers:
 
 \marginnote{Todo : use coqout.}
-\begin{coq}{}{}
-(* One parameter *)
-About leqn0.
-  (* leqn0 : forall n : nat, (n <= 0) = (n == 0) *)
 
-(* Two parameters *)
+\begin{coq}{}{}
+(* With two parameters *)
 About muln_eq0.
   (* muln_eq0 : forall m n : nat, (m * n == 0) = (m == 0) || (n == 0) *)
 
 \end{coq}
-
-Quantifiers can also be used to \emph{define} logical statements,
-like in the following example:
+But quantifiers do not need to be in prenex position:
 
 \begin{coq}{}{}
-Definition |*eqfun*| (f g : B -> A) : Prop := forall x, f x = g x.
+Lemma |*seq_eq_ext*| (s1 s2 : seq nat) :
+  size s1 = size s2 ->
+  (forall i : nat, nth 0 s1 i = nth 0 s2 i) ->
+  s1 = s2.
 \end{coq}
 
-which features two parameters \C{f} and \C{g} and one universal
-quantification.
+and they can range over arbitrary functions:
+\begin{coq}{}{}
+Lemma |*size_map*| (T1 T2 : Type) :
+forall (f : T1 -> T2) (s : seq T1), size (map f s) = size s.
+\end{coq}
 
-\marginnote{
-Warning, do not confuse predicates and their types:
-\C{About eqfun.
-(* eqfun : forall A B : Type, (B -> A) -> (B -> A) -> Prop *)}
-But this is too early: requires CH.}
-
-When several definitions and/or lemmas share the same family of
-parameters, these can be factored using the \C{Section} mechanism of
-\C{Coq}. For instance, the \C{ssrfun} library includes a catalogue of
-definitions that are used to normalize the statements of the
-equational theory of operations:
+Observe that in the above statement of \C{size_map}, we have used a
+compact notation for successive universal quantifications:
+\C{forall (f : T1 -> T2) (s : seq T1), ...} is syntactic sugar for
+\C{forall f : T1 -> T2, forall s : seq T1, ...}. However in this case
+of prenex quantification we would rather write:
 
 \begin{coq}{}{}
+Lemma |*size_map*| (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
+ size (map f s) = size s.
+\end{coq}
+as all quantifiers are in prenex positions.
 
-Section Injections.
+We can also use quantifiers in the body of definitions, which is
+useful to define ``macros'' expressing standard properties on
+objects. For instance the commutativity property of a binary operator
+is defined as:
 
-Implicit Types (rT aT : Type) (f : aT -> rT).
+\begin{coq}{}{}
+Definition |*commutative*| (T : Type) (op : T -> T -> T) :=
+  forall x y, op x y = op y x.
+\end{coq}
 
-Definition |*injective*| rT aT f :=
+and the lemma stating the commutativity of the \C{addn} operation is
+in fact:
+
+\begin{coq}{}{}
+Lemma |*addnC*| : commutative addn.
+\end{coq}
+
+The \mcbMC{} library provides many macros to state in a consistent
+and compact way standard properties.  Here we recall only few of them.
+
+\begin{coq}{}{}
+Section Macros.
+Variable T : Type.
+Implicit Types (op add : T -> T -> T) (R : rel T).
+
+Definition |*associative*| op :=
+  forall x y z, op x (op y z) = op (op x y) z.
+
+Definition |*left_distributive*| op add :=
+  forall x y z, op (add x y) z = add (op x z) (op y z).
+
+Definition |*transitive*| R :=
+  forall y x z, R x y -> R y z -> R x z.
+
+
+Variables rT aT : Type.
+Implicit Types (f : aT -> rT).
+
+Definition |*injective*| f :=
   forall x1 x2, f x1 = f x2 -> x1 = x2.
+Definition |*cancel*| f g := forall x, g (f x) = x.
+Definition |*pcancel*| f g := forall x, g (f x) = Some x.
 
-Definition |*cancel*| rT aT f g := forall x, g (f x) = x.
-
-Definition |*pcancel*| rT aT f g := forall x, g (f x) = Some x.
-
-(* ... *)
-End Injections.
+End Macros.
 \end{coq}
 
-\marginnote{Were sections already mentionned in chapter 1? Shall we
-  use section variables or implicit types?}
-Observe the results of \C{About} queries before and after closing the
-Section. There is no problem with quantifying on functions in
-\C{Coq}'s logic. It is even possible to quantify over predicates, and
+Note that beside the standardization of the statements through these
+macrors, the MC library uses a systematic naming policy for the lemmas
+that are instances of these macros. For instance a common suffix \C{C}
+is used for commutativity properties like \C{addnC} or \C{mulnC}.
+\marginnote{To be expanded elsewhere?}
+
+Now it is worth discussing the type of the macros
+
+\begin{coq}{}{}
+About commutative.
+\end{coq}
+\begin{coqout}{}{}
+commutative : forall T : Type, (T -> T -> T) -> Prop.
+\end{coqout}
+
+So it is a polymorphic function taking a binary operation and
+building a \emph{proposition}, i.e. it has the same status as the
+identity statements that we have seen so far in this chapter:
+
+\begin{coq}{}{}
+Check 3 = 3.
+
+Check (commutative addn).
+\end{coq}
+\begin{coqout}{}{}
+3 = 3 : Prop
+
+commutative addn : Prop
+\end{coqout}
+Indeed, the class of propositions is closed under universal quantification
+\C{forall} (and also under implication \C{->}). Chapter~\ref{} will
+provide a more in-depth study of these propositions.
+
+\subsection{Quantified statements and implications}
+
+In order to use a lemma with a parameter, we can use the \C{apply}
+tactic, which finds the appropriate instance (as the \C{rewrite}
+tactic does):
+
+\begin{coq}{}{}
+Lemma foo a b : a + b <= a + b.
+Proof.
+apply: leqnn.
+Qed.
+\end{coq}
+
+Find the appropriate instance works up to computation:
+
+\begin{coq}{}{}
+Lemma foo a b : a.+1 + b <= (a + b).+1.
+Proof.
+apply: leqnn.
+Qed.
+\end{coq}
+
+By the way, in order to save the effort of mentionning too trivial
+steps in the proof script, we can extend the power of the \C{by}
+terminator to make it aware of some (concluding) lemmas available in
+the library. The \C{Hint Resolve} command is used to tag these lemmas,
+as in:
+
+\begin{coq}{}{}
+(* This line belongs to the file where the lemma is stated and proved.*)
+Hint Resolve leqnn.
+Lemma foo a b : a + b <= a + b.
+Proof.
+by [].
+Qed.
+\end{coq}
+Observe that the goal is now closed without a mention of \C{leqnn}.
+
+The \C{apply} tactic can also be used on non-atomic statements. For
+instance, the following lemma can be used to perform a flavour of
+proof by contraposition:
+
+\begin{coq}{}{}
+Lemma |*contraL*| (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
+\end{coq}
+
+The command \C{apply: contraL} transforms the goal:
+
+\begin{coq}{}{}
+m, p : nat
+prime_p : prime p
+====================
+p %| m `! + 1 -> ~~ (p <= m)
+\end{coq}
+
+into:
+
+\begin{coqout}{}{}
+m, p : nat
+prime_p : prime p
+====================
+ p <= m -> ~~ (p %| m `! + 1)
+\end{coqout}
+
+First observe that the \C{apply:} tactic has found the correct values
+of the two parameters \C{c, b} of lemma \C{contraL}, namely
+\C{(p <= m)} and \C{(p \%| m `! + 1)}, by unifying the statement to be
+proved with the conclusion \C{(b -> ~~ c)} of the statement of the lemma.
+Indeed lemma \C{contraL} provide a sufficient condition for a
+statement of this shape to hold. After the execution of the tactic, we
+are hence left with proving this sufficient condition.
+
+The rest of proof informally goes as follows: if $p <= m$, then $p$
+certainly divides $m!$. But then $p\ |\ !m + 1$ iff $p\ |\ 1$. But
+since $p$ is a prime, $p$ cannot be $1$.
+
+We hence start our formal proof by naming hypothesis \C{p <= m}, which
+means that we add it to the current context of the goal. The dedicated
+tactic for this naming step is \C{move=>}.
+
+\begin{coq}{}{{width=2cm}
+move=> leq_p_m.
+\end{coq}
+\begin{coqout}{}{width=7cm}
+m, p : nat
+prime_p : prime p
+leq_p_m :  p <= m
+====================
+ ~~ (p %| m `! + 1)
+\end{coqout}
+
+The next step is implemented by using lemma:
+
+\begin{coq}{}{}
+Lemma |*dvdn_addr*| m d n : d %| m -> (d %| m + n) = (d %| n).
+\end{coq}
+
+which states a conditional equivalence, expressed as a conditional identity.
+We can replace our current goal with \C{~~ (p \%| 1} by rewriting (the
+appropriate instance of) this identity but this operation will open an
+extra goal requiring a proof of (corresponding instance of) the side condition.
+
+\begin{coq}{}{{width=2cm}
+move=> leq_p_m.
+rewrite dvdn_addr.
+\end{coq}
+\begin{coqout}{}{width=7cm}
+2 subgoals
+
+  m, p : nat
+  pr_p : prime p
+  p_le_m : p <= m
+  ============================
+   ~~ (p %| 1)
+
+subgoal 2 is:
+ p %| m`!
+\end{coqout}
+
+Observe the remainder at the bottom of the buffer which displays the
+statement of the side condition to be proved later. The context of
+this extra (sub)goal is ommited but we do not really need to see it:
+we know that statement \C{p \%| m!} holds because \C{p <= m}, as
+stated by lemma:
+
+\marginnote{Cheat here: state dvdnfact currified and treat subgoals in
+order, with apply. Then show how to linearize the script using rewrite
+and switches. Hence rename or split the section.}
+
+
+% Conversely, proving an implication (or a universal statement) requires
+% \emph{introduction} (is it the right place to speak about this?). This
+% is what \C{move=>} does (same as in \C{case}, but no branch).\marginnote{example?}
+
+\subsection{Proofs by induction}\label{ssec:ind}
+
+Induction means applying an induction scheme. Here is how we formalize this.
+In fact it is even possible to quantify over predicates, and
 this is how reasoning by induction is formalized. For instance, the
 possibility to reason by recurrence on a natural numbers is formalized
 by the following sentence:
@@ -1315,24 +1655,6 @@ P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n *)
 
 Observe the different nature of universal
 quantification.\marginnote{Is it too early? What to say with Prop here?}
-
-\subsection{Using quantified statements: proofs by instanciation}
-
-Just like in Chapter 1, universal quantification codes for places for
-arguments. One can obtain instances of an identity, like
-\C{(negbK true)} useful for instance in the case of \C{(addnC a)}. The
-\C{apply} tactic does the job of finding the right instance from the
-goal.  It is smart enough to take benefit of computation to make the
-glue if needed. Example: {H1 : n <= m = true} with a goal
-\C{n.+1 <= m.+1}.\marginnote{Dunno what to say here...}
-
-\subsection{Proving conditional/universal statements}
-
-Conversely, proving an implication (or a universal statement) requires
-\emph{introduction} (is it the right place to speak about this?). This
-is what \C{move=>} does (same as in \C{case}, but no branch).\marginnote{example?}
-
-\subsection{Proofs by induction}\label{ssec:ind}
 
 This amounts to applying an induction scheme. Observe that the
 unification problem is more difficult. The \C{elim}
