@@ -1034,9 +1034,10 @@ Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 \end{coq}
 
 The proof goes as follows: by definition of the order \C{<=}, the left
-hand side can be written as \C{m * n1 - m * n2}, which in turns
-factors into \C{m * (n1 - n2)}. We then conclude using
-lemma \C{muln_eq0}.
+hand side can be written as \C{m * n1 - m * n2 == 0}, which in turns
+factors into \C{m * (n1 - n2) == 0}. We then conclude using
+lemma \C{muln_eq0}, since \C{n1 - n2 == 0} is the definition of
+\C{(n1 <= n2)}.
 
 The first step hence consists in unfolding the definition of the
 \C{leq} relation, denoted by the \C{<=} infix notation, in order to
@@ -1123,6 +1124,61 @@ Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof. by rewrite /leq -mulnBr muln_eq0. Qed.
 \end{coq}
 
+This example illustrates how the \C{rewrite} tactic, provided a
+rewrite rule like \C{mulnBr} or \C{muln_eq0}, was able to identifiy a
+subterm in the goal to be substituted -- in theses cases without any
+further specification required from the user. The usability of the
+tactic crucially relies on an appropriate combination of automation
+and control. The user should be able to predict which subterm will be
+substituted and to drive the tactic if needed, with enough control
+options, but not too much verbosity. A key ingredient of the
+\C{rewrite} tactic is hence the \emph{matching} algorithm which
+elects this subterm from the arguments provided to the tactic. Suppose
+we execute the command \C{rewrite mulnBr} on the following goal:
+
+\begin{coq}{def=LHS1}{title=Two subterms matching}
+Lemma |*foo*| n m p a b c : n * (m - p) = a * (b - c).
+\end{coq}
+
+Here both hand-sides are instances of the pattern described by the
+left hand side of lemma \C{mulnBr}. The command transforms the goal into:
+
+\begin{coq}{def=LHS1}{title=Two subterms matching,width=7.3cm}
+Lemma |*foo*| n m p a : n * (m - p) = m * (n - a) + n * (m - p).
+rewrite mulnBr.
+\end{coq}
+\begin{coqout}{def=LHS1}{title=The first is picked,width=5.2cm}
+n, m, p, a : nat
+===========================
+n * m - n * p = m * (n - a) + (n * m - n * p)
+\end{coqout}
+Indeed, the matching algorithm traverses the entire goal
+left-to-right, looking for the first subterm matching pattern
+\C{(_ * _ -_)},  and hence picks subterm \C{(n * m - p)}. Note that
+\emph{every} occurrence of this subterm is then rewritten, including
+the one located on the right hand-side. Now suppose we want to pick
+the other instance of subterm matching this pattern in the goal. We
+can use the command \C{rewrite [in RHS]mulnr}, which restricts the
+search to the left-hand side of the equality in the goal. The goal
+becomes:
+\begin{coqout}{def=LHS1}{title=The first is picked,width=5.2cm}
+n, m, p, a : nat
+===========================
+n * (m - p) = m * n - m * a + n * (m - p)
+\end{coqout}
+because now subterm \C{m * (n - a)} is the first encountered subterm
+matching the pattern. Yet this is not so robust so we could rather use
+a more precise \emph{pattern} to specify the subterm to be picked by the
+matching algorithm, like for instance in \C{rewrite [m * (_ - _)]muln0}.
+Now in order to substitute only the right hand side occurrence of
+subterm \C{n * (m - p)}, we can use the command
+\C{rewrite [X in _ = X + _]mulnBr}, using a pattern variable \C{X},
+bound in the pattern \C{(_ = X + _)}. See the reference
+manual~\cite{ssrman} for more.
+\marginnote{To be  improved.}
+
+\marginnote{Shall we really use as a first example one which requires unfolding?}
+END OF REWRITING.
 Why is the unfold important/needed here?  We need to expose the pattern of the
 RHS of \C{mulnBr} to factor out m.  Such step being just computation has no
 logical content, but helps driving the following rewrite.
@@ -1173,14 +1229,14 @@ an induction...
 
 \subsection{Universal quantification, first examples}
 The curious reader might already have tested the answer of the
-\C{About} command on the parametric lemmas we have proved in the
+\C{About} command on the parametric lemmas we have used or proved in the
 previous sections, like for instance:
 
-\begin{coq}{def=negbktAbout}{width=6cm,title=Inspecting the negbK lemma}
-About negbk.
+\begin{coq}{def=negbktAbout}{width=5cm,title=Inspecting lemma leqn0}
+About leqn0.
 \end{coq}
-\begin{coqout}{run=negbktAbout,ssr}{width=6cm, title=Universal quantification}
-negbK : forall b : bool, ~~ ~~ b = b
+\begin{coqout}{run=negbktAbout,ssr}{width=7cm, title=Universal quantification}
+leqn0 : forall n : nat, (n <= 0) = (n == 0)
 \end{coqout}
 
 She has thus observed thate \Coq{}'s output features a prenex
@@ -1201,14 +1257,14 @@ About muln_eq0.
 
 \end{coq}
 
-This quantifier can also be used to \emph{define} logical statements,
-like in the following examples:
+Quantifiers can also be used to \emph{define} logical statements,
+like in the following example:
 
 \begin{coq}{}{}
 Definition |*eqfun*| (f g : B -> A) : Prop := forall x, f x = g x.
 \end{coq}
 
-where we have two parameters \C{f} and \C{g} and one universal
+which features two parameters \C{f} and \C{g} and one universal
 quantification.
 
 \marginnote{
@@ -1227,19 +1283,21 @@ equational theory of operations:
 
 Section Injections.
 
-Variables (rT aT : Type) (f : aT -> rT).
+Implicit Types (rT aT : Type) (f : aT -> rT).
 
-Definition |*injective*| := forall x1 x2, f x1 = f x2 -> x1 = x2.
+Definition |*injective*| rT aT f :=
+  forall x1 x2, f x1 = f x2 -> x1 = x2.
 
-Definition |*cancel*| g := forall x, g (f x) = x.
+Definition |*cancel*| rT aT f g := forall x, g (f x) = x.
 
-Definition |*pcancel*| g := forall x, g (f x) = Some x.
+Definition |*pcancel*| rT aT f g := forall x, g (f x) = Some x.
 
 (* ... *)
 End Injections.
 \end{coq}
 
-\marginnote{Were sections already mentionned in chapter 1?}
+\marginnote{Were sections already mentionned in chapter 1? Shall we
+  use section variables or implicit types?}
 Observe the results of \C{About} queries before and after closing the
 Section. There is no problem with quantifying on functions in
 \C{Coq}'s logic. It is even possible to quantify over predicates, and
@@ -1255,7 +1313,8 @@ forall P : nat -> Prop,
 P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n *)
 \end{coq}
 
-Observe the different nature of universal quantification.
+Observe the different nature of universal
+quantification.\marginnote{Is it too early? What to say with Prop here?}
 
 \subsection{Using quantified statements: proofs by instanciation}
 
@@ -1265,13 +1324,13 @@ arguments. One can obtain instances of an identity, like
 \C{apply} tactic does the job of finding the right instance from the
 goal.  It is smart enough to take benefit of computation to make the
 glue if needed. Example: {H1 : n <= m = true} with a goal
-\C{n.+1 <= m.+1}.
+\C{n.+1 <= m.+1}.\marginnote{Dunno what to say here...}
 
 \subsection{Proving conditional/universal statements}
 
 Conversely, proving an implication (or a universal statement) requires
 \emph{introduction} (is it the right place to speak about this?). This
-is what \C{move=>} does (same as in \C{case}, but no branch).
+is what \C{move=>} does (same as in \C{case}, but no branch).\marginnote{example?}
 
 \subsection{Proofs by induction}\label{ssec:ind}
 
