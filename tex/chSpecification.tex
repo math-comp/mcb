@@ -9,104 +9,355 @@ always a good idea hence nosimpl.
 equations.
 \end{itemize}
 
-\section{Type Theory}
+\section{Type Theory and the Curry-Howard correspondence}
 
-\subsection{Curry-Howard correspondance}
+By now, the informed reader is likely to wonder when the authors of the book
+will eventually mention the mathematical foundation of Coq, a variant of 
+type theory called \mcbCIC{}, and
+in particular explain the Curry-Howard isomorphism.  Indeed this text departs
+from the standard presentation of Coq, that typically starts by 
+presenting the logic and showing how standard connectives like 
+conjunction or disjunction are defined in term of inductive types.
 
-In TT proofs are terms terms and statements are types.
-In particular inductive data types like the ones we programmed with in
-the previous chapters can be used to describe the usual logical
-connectives and atomic predicates.
+We made a deliberate choice to put forward the programming aspects of
+type theory and how programs can be used both to express computable functions
+and decidable predicates or boolean connectives.  
+Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
+library.  The computational behavior of program is at the core of
+type theory, i.e. the fact that a function computes to a value requires no
+proof.  This fact provided a powerful form of automation, and as we will
+see later will also ease the construction of ``sub sets''.
 
-First, A -> B, then forall x : A, Bx.  \C{fun x : A => b} as the constructor
-of the function space.
+Now we really need to provide a minimal presentation of the statements as types
+correspondence.  The universe of boolean predicates is in \mcbMC{} limited: one
+cannot for example express a general $\exists$ quantification, and also the
+status of the $\forall$ quantification has been so far never really explained.
+This presentation is far from being exhaustive, the interested reader can find
+a modern presentation of type theory in \cite{hott}.
+
+\subsection{Primitive types and terms formers}
+
+In type theory we say that \emph{logical statements} corresponds to
+\emph{types} and that \emph{proofs} correspond to \emph{programs}.
+
+The simplest example one could think of is the formal statement saying that
+a proposition $A$ implies itself, namely $A \rightarrow A$.  If one reads
+the implication symbol $\to$ as the type of functions, the statements reads
+as a function from $A$ to $A$.  A program with that type would be
+\C{(fun x : A => x)}.  Such program takes in input a term $x$ of
+type $A$, that we here see as a proof of $A$, and returns it, i.e. it
+produces in output a proof of $A$.  We say that such program is a
+proof of $A \rightarrow A$. 
+
+What is striking here is that the same class of terms represents both programs
+and proofs, for example the identity function of natural numbers has the very
+same shape of the proof we've just seen.  So we are left with only two
+concepts, types and terms, playing a double role.  We now see how types and
+terms can be formed.
+
+Regarding types, the primitive type formers we have seen are the function space
+$\to$, also logical implication, and the universal quantification
+$\forall$, used to describe polymorphic function as well as parametric lemmas.
+Standard logical rules describing how one can prove formulas involving these
+connectives are:
 
 \begin{center}
 \AxiomC{$A$}
+\noLine
+\UnaryInfC{$\vdots$}
 \noLine
 \UnaryInfC{$B$}
 \RightLabel{$\to_I$}
 \UnaryInfC{$A \to B$}
 \DisplayProof
-\end{center}
-
-\begin{center}
+\hspace{1cm}
 \AxiomC{$B$}
 \RightLabel{$\forall_I$ ($x$ fresh)}
 \UnaryInfC{$\forall x, B$}
 \DisplayProof
 \end{center}
 
-For example the connective and is usually described by the introduction rule
+The former reads: to prove $A \to B$ one can prove $B$ under the
+assumption $A$.  The latter: to prove $\forall x,B$ one can prove $B$
+assuming that $x$ is fresh.  We annotate such rules with the terms
+corresponding to these proof rules.
 
 \begin{center}
-\AxiomC{$A$} \AxiomC{$B$}
-\RightLabel{Conj}
-\BinaryInfC{$A \wedge B$}
+\AxiomC{\C{x : }$~A$}
+\noLine
+\UnaryInfC{$\vdots$}
+\noLine
+\UnaryInfC{\C{b : }$~B$}
+\RightLabel{$\to_I$}
+\UnaryInfC{\C{(fun x : A => b) : }$~A \to B$}
+\DisplayProof
+\hspace{1cm}
+\AxiomC{\C{b : }$B$}
+\RightLabel{$\forall_I$}
+\UnaryInfC{\C{(fun x : A => b) : }$~\forall x, B$}
 \DisplayProof
 \end{center}
 
-We call such rule Conj.  In Coq
+The anonymous function constructor \C{(fun .. => ..)} serves as a proof
+for both rules: the term \C{b} is in both cases a proof of $B$.  The only
+difference is that $x$ is only allowed to occur in $B$ in the second rule.
+Said otherwise in type theory $\to$ is a special case of $\forall$ where
+the bound variable does not occur in the quantified formula.  In other
+words there is no semantic difference between \C{(nat -> bool)} and
+\C{(forall x : nat, bool)}.
+
+Logical connectives come with elimination rules, in particular
+
+\begin{center}
+\AxiomC{$A \to B$}
+\AxiomC{$A$}
+\RightLabel{$\to_E$}
+\BinaryInfC{$B$}
+\DisplayProof
+\hspace{1cm}
+\AxiomC{$\forall x, B$}
+\RightLabel{$\forall_E$ ($t$ a term)}
+\UnaryInfC{$B[t/x]$}
+\DisplayProof
+\end{center}
+
+Function application serves as a proof for both rules.
+
+\begin{center}
+\AxiomC{\C{f : }$~A \to B$}
+\AxiomC{\C{a : }$~A$}
+\RightLabel{$\to_E$}
+\BinaryInfC{\C{(f a) :}$~B$}
+\DisplayProof
+\hspace{1cm}
+\AxiomC{\C{f : }$~\forall x : A, B$}
+\AxiomC{\C{t : }$~A$}
+\RightLabel{$\forall_E$}
+\BinaryInfC{\C{(f a) : }$~B[t/x]$}
+\DisplayProof
+\end{center}
+
+Here the programs as proofs correspondence has a visible impact in the proofs
+part of the \mcbMC{} library.  In particular quantified lemmas, being programs,
+can be instantiated by simply passing arguments to them.  Exactly as one can
+pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
+can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
+\C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
+shows up in the type of the resulting term \C{(addnC 3)}:  The type of the
+\C{addnC} program depends on the value the program is applied to.  Note that
+the $\forall$ quantification specifies the type of the bound variable, and that
+the $\forall_E$ checks the term $t$ has the right type.
+
+\subsection{Inductive types}
+
+In the previous chapters we used many data types already.  For example we have
+seen the type \C{nat} and its constructors \C{O} and \C{S}.  Trough the looking
+glasses of the Curry-Howard correspondence \C{O}, being a term of type \C{nat}
+can represent a ``proof'' of \C{nat}.  For data types we prefer to say
+\emph{inhabited} rather than \emph{proved}, but there is no real difference.
+
+Inductive ``data'' types can be used to represent logical connectives, in
+particular the ones we miss so far, the existential quantifier in particular.  
+But lets start by the simple conjunction.
+
+\begin{center}
+\AxiomC{$A$} \AxiomC{$B$}
+\RightLabel{$\wedge_I$}
+\BinaryInfC{$A \wedge B$}
+\DisplayProof
+\hspace{1cm}
+\AxiomC{$A \wedge B$}
+\RightLabel{$\wedge_E$ (left)}
+\UnaryInfC{$A$}
+\DisplayProof
+\end{center}
+
+The first rule reads: to prove $A \wedge B$ one needs to prove both
+$A$ and $B$.  The latter lets one prove $A$ whenever he can prove
+the stronger $A \wedge B$ statement.
+
+In Coq such connective can be characterized by the following
+inductive definition.
 
 \begin{coq}{name=And}{}
-Inductive And (A B : Prop) : Prop :=
-| Conj (pa : A) (pb : B)
+Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B)
+where "A /\ B" := (and A B).
 \end{coq}
 
-Here A and B are parameters ranging over logical propositions (Prop),
-exactly as the rule above is a schema (on A and B). The single constructor
-of And plays the role of the intro rule: to create a term of type And
-you must use Conj, exactly as to Create a term of type A*B you must use
-pair.  Indeed
+Remark that the ``data'' type \C{And} is tagged as \C{Prop}, i.e.  we declare
+the intention to use it as a logical connective rather than a data type.  The
+only constructor \C{conj} that can be used to inhabit \C{and} takes two
+arguments, a proof of \C{A} and a proof of \C{B}, faithfully modelling the
+logical rule \C{$\wedge_I$}.  Note that \C{A} and \C{B} are parameters of the
+inductive definition, similarly to the definition of polymorphic lists
+or pairs.  Finally note that the definition of the pair data type is very
+similar to the one of the conjunction.
 
-\begin{coq}{name=And}{}
-Infix "/\" := And.
-About Conj : forall A B : Prop, A -> B -> A /\ B.
-\end{coq}
-
-Repeat that argument passing is like instantiation.
-
-We have seen how to inspect pairs and extract the components. Given that
-also the proofs of And are data we can do the same.
+Pattern matching provides a way to express the elimination rule for
+conjunction.  In particular the elimination rule is just a projection.
 
 \begin{coq}{name=Ande1}{}
-Definition elimAndleft A B (ab : A /\ B) : A :=
-match ab with
-| Conj a _ => a
-end.
-About elimAndleft : forall A B, A /\ B -> A.
+Definition proj1 A B (p : A /\ B) : A :=
+  match p with conj a _ => a end.
 \end{coq}
 
-Pattern matching implements elimination
+Now recall the similarity between $\to$ and $\forall$, where the former is the
+simple, non dependent, case of the latter.  If we check the type of
+the \C{conj} constructor
 
-$$
-\frac{A \wedge B}{A}elim\_left
-$$
-
-We do the same with Or.
-
-What are tactics?  Tactics are commands that build proofs, hence
-they construct terms.  E.g. \C{apply}, \C{case} on \C{nat},
-\C{split}, \C{left}, \C{right}, for intro rules.  \C{case} tactic as
-the only elim rule (for all inductives, since it is always a match).
-
-A simple exercise to show "curryfication" and take that as an excuse
-to prefer the curryfied form.
-
-Inductives for \C{True}, \C{False} (elimination principle is ex falso
-quod libet). Definition of \C{not}.
-
-
-CH for exists, like conj but dependent.
-
-\begin{coq}{name=Ex}{}
-Inductive Ex A (P : A -> Prop) : Prop :=
-| exI (a : A) (pa : P a).
-About exI.
+\begin{coq}{name=Ande1}{}
+Check conj. (* forall A B : Prop, A -> B -> A /\ B *)
 \end{coq}
+
+we may wonder what happens if the type of the second argument (i.e. \C{B}) is
+made dependent on the value of the first argument (of type \C{A}).
+What we obtain is the inductive definition corresponding to the
+existential quantification.
+
+\begin{coq}{name=Ande1}{}
+Inductive ex (A : Type) (P : A -> Prop) : Prop :=
+  ex_intro (x : A) (p : P x).
+Notation "'exists' x : A , p" := (ex A (fun x : A => p)).
+\end{coq}
+
+The \C{ex\_intro} constructor is the only mean to prove a statement like
+\C{(exists n, prime n)}.  In such case the first argument would be a number
+\C{n} of type \C{nat} while the second argument would be a proof \C{p} of type
+\C{(prime n)}.  The \C{ex} inductive definition is again pretty similar to the
+pair, but note that the type of the second component depends on the value of
+the first one.  Last note the parameter \C{P} that is a function
+representing an arbitrary predicate over a term of
+type \C{A}.  Hence \C{(P a)} is the instance of the predicate to \C{a}.  E.g.
+the predicate of being an even prime number is expressed as
+\C{(fun x : nat => ~~ odd x && prime x)}, and the statement expressing the
+existence of such number is
+\C{(ex nat (fun x : nat => ~~ odd x && prime x))}.
+
+We quickly see the inductive definition of the disjunction.
+
+\begin{coq}{name=Or}{}
+Inductive or (A B : Prop) : Prop :=
+  | or_introl (a : A)
+  | or_intror (b : B)
+where "A \/ B" := (or A B).
+\end{coq}
+
+The elimination rule can again be expressed by pattern matching:
+
+\begin{coq}{name=Or}{}
+Definition or_ind (A B P : Prop)
+  (aob : A \/ B) (pa : A -> P) (pb : B -> P) : P :=
+  match aob with
+  | or_introl a => pa a
+  | or_intror b => pb b
+  end.
+\end{coq}
+
+The detail worth noting here is that the pattern match construct has two
+branches in this case.  Each branch represents a distinct sub proof.  In this
+case to prove \C{P} starting from \C{A \\/ B} one has to deal with all
+possibilities: prove \C{P} under the assumption \C{A} and prove \C{P}
+under the assumption \C{B}.
+
+Typically a logic comes with the $\top$, $\bot$ and $\neg$ constants.
+They can be defined as follows.
+
+\begin{coq}{name=TrueFalse}{}
+Inductive True : Prop := I.
+Inductive False : Prop := .
+Definition not (A : Prop) := A -> False.
+\end{coq}
+
+Remark that to prove \C{True} one has simply to provide \C{I} that has no
+argument.  So proving \C{True} is trivial, and as a consequence eliminating it
+provides little help (i.e. no extra knowledge is obtained by pattern matching
+over \C{I}).  Conversely it is impossible to prove \C{False}, since it has no
+constructor, and pattern matching on \C{False} can inhabit any type, since no
+branch has to be provided.
+
+\begin{coq}{name=exfalso}{}
+Definition exfalso (P : Prop) (f : False) : P :=
+  match f with end.  (* no constructors, no branches *)
+\end{coq}
+
+The only base predicate we are left to describe is equality.  The reason we
+left is as the last one is that it has a tricky nature.  In particular
+equality, as we have seen in the previous chapters, is an open notion
+in the following sense.  Terms that compute to the same syntactic expression
+are considered as equal, and this is true for any program the user may write.
+Hence such notion of equality needs to be somewhat primitive, as 
+\C{match} and \C{Fixpoint} are.  One also expects such notion to come
+with a substitutivity property: replacing equals by equals must be licit.
+
+The way this internal notion is exposed is via the concept of index
+on which an inductive family may vary.
+
+\begin{coq}{name=Eq}{}
+Inductive eq (A:Type) (x:A) : A -> Prop := erefl : x = x
+where "x = y" := (@eq _ x y) : type_scope.
+\end{coq}
+
+This is the first time we see a function type after the \C{:}.
+The \C{eq} type constructor takes three arguments: a type \C{A} and
+two terms of that type.  Hence one can write \C{a=b} whenever \C{a} and \C{b}
+have the same type.
+The \C{erefl} constructor takes no arguments, as \C{I}, but its type
+annotation says it can be used to inhabit only the type \C{x = x}.
+Hence one is able to prove \C{a=b} it only when \C{a} and \C{b} are
+equal up to computation.  Conversely by eliminating a term
+of type \C{a=b} one discovers that  \C{a} and \C{b} are
+equal and \C{b} can be freely replaced by \C{a}.
+
+\begin{coq}{name=EqInd}{}
+Definition eq_ind A (P : A -> Prop) x (px : P x) y (e : x = y) : P y :=
+  match e with erefl => px end.
+\end{coq}
+
+The notion of equality is one of the most intricate aspects of type
+theory and out of the scope of this book.  The interested reader
+finds an extensive study of this subject in~\cite{hott}.  Later in this
+chapter we define and use other inductive families to take advantage
+of the ``automatic'' substitution of the implicit equations we see here:
+while the type of \C{px} is \C{(P x)} it is accepted as an
+inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
+is automatically replaced by \C{x}.
+
+\subsection{Proof commands}
+
+Since proofs are just terms, one can hardly use the term language to
+write long proofs.   The proof commands we have seen so far, like
+\C{case:} for example, provide a much more compact syntax for proofs and can be explain in terms of the proof terms they generate behind the scenes.
+
+For example \C{case: n} writes for you a \C{match} expression with the right
+shape by looking at the type of \C{n}.  If \C{n} is a natural number then there
+are two branches, the one for the \C{S} constructor carries an argument of type
+\C{nat}, the other one is for \C{0} and binds no additional term.
+The \C{case:} tactic is general enough to work with any inductive data type
+and inductive predicate.
+
+The \C{apply:} tactic generates an application.  For example \C{apply: addnC}
+generates the term \C{addnC t1 t2} by figuring out the correct values of
+\C{t1} and \C{t2}, or opening new goals when this cannot be done.
+
+There is a list of proof commands that are shorthands for \C{apply:}
+and is only worth mentioning here briefly. \C{split} proves a conjunction
+by applying the \C{conj} constructor, \C{left} and \C{right} prove a
+disjunction by applying \C{or\_introl} and \C{or\_intror} respectively.
+\C{exist t} proves an existentially quantified formula by providing
+the witness \C{t} and, later, a proof that \C{t} validated the predicate.
+Finally \C{reflexivity} proves an equality by applying \C{erefl}.
+
+The only primitive constructor that remains without an associated proof command
+is \C{(fun .. => ..)}.  Operationally what the $\to_I$ and
+$\forall_I$ logical rule do is to introduce into the proof context a
+new entry.  So far we either expressed this step at the beginning of proofs
+by putting such names just after the name of the lemma being prover, or
+just after a \C{case:} or \C{elim:} proof command.  Next section
+expands this subject covering the full management of the proof context.
+
+\subsection{Intro pattern}
 
 \begin{itemize}
-\item Again \C{case} as the eliminator and the  \C{exists} tactic.
 
 \item Her come the more complex the explaination of \C{=>} and
 \C{:}. Warning the \C{:} of \C{apply:} is of a different nature (but
@@ -117,32 +368,54 @@ not the one of \C{apply/view:})...
   \C{ltn_trans}.
 \end{itemize}
 
-\subsection{Curry-Howard correspondance for inductive reasoning}
+\subsection{Curry-Howard correspondence for inductive reasoning}
 
-CH: how to inhabit the type of induction on nat.
-elim applies such principle.
-\begin{itemize}
-\item  This is recursive programming.
-\item Mention case analysis as match.
-\item Complex \C{elim} like \C{elim: {2}n (leqnn n)}.
-\end{itemize}
+In chapter 1 we have seen the \C{fun} construction of functions and inductive
+data types like \C{nat} as well as the pattern matching.  All these
+constructions have found a correspondence in the Curry-Howard correspondence.
+The only missing piece is recursive programs.  For example
+\C{addn} was written by recursion on its first argument, and is a
+function taking in input two numbers and producing a third one.
+We can write programs by recursion that take in input, among regular  data,
+proofs and produce in output other proofs.  Let's look at the
+induction principle for natural numbers
+
+\begin{coq}{}{}
+About nat_ind.
+(* nat_ind :
+forall P : nat -> Prop, P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n *)
+\end{coq}
+
+\C{nat\_ind} is a program that produces a proof of \C{(P n)} for any \C{n}
+proviso a proof for the base case \C{(P 0)}, and a proof
+of the inductive step \C{(forall n : nat, P n -> P n.+1)}.
+Let's write such program.
+
+\begin{coq}{}{}
+Fixpoint nat_ind (P : nat -> Prop)
+  (p0 : P 0) (pS : forall n : nat, P n -> P n.+1) n : P n :=
+  if n is m.+1 then
+    let pm (* : P m *) := nat_ind P p0 pS m in
+    pS m pm (* : P m.+1 *)
+  else p0.
+\end{coq}
+
+Every inductive comes with such an induction principle, the job of elim is
+to find a suitable value for \C{P} in order to \C{apply} the induction
+principle. Typically P can be obtained by taking the goal and generalizing
+it.  Complex \C{elim} like \C{elim: {2}n (leqnn n)}.
+
 \subsection{Axioms of the logic we work with}
 
-TT is constructive.  As for nat and bool the \emph{only} way
-to ... also for proposition. Eg. exists can only be proved
-by exhibiting the witness and a proof that is satisfies the predicate.
+Not all valid reasoning principles can be expressed as programs.
+For example excluded middle can be proved by a program only when
+the predicate is decidable, i.e. when we can write in Coq a program
+to \C{bool} that decides it.
+Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
 
-It is pretty clear that our proofs are programs, we used match and fix
-to prove exactly as we used them to program.
-
-Stress the difference with proofs that use a classical axiom, like
-excludded middle.
-Show the example of a proof like the irrationality of $a ^b$, in
-order to convey the idea that existential proofs demand a concrete
-witness in this logic, which cannot in general be constructed without
-resorting to someting else than what we presented so far, for instance
-an axiom.
-
+In \mcbMC{} we stay axiom free.  This makes the library compatible with as many
+extra axioms as possible (i.e. not all combinations of axioms are consistent,
+hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like RCF (less reals but enough).
 
 
 \section{Boolean reasoning, \C{Prop} reasoning, going back and forth}
