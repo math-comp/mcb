@@ -258,7 +258,7 @@ Definition f23 b := if b then 2 else 3.
 Readers are invited to test this function using the \C{Eval compute in} command.
 
 The ssreflect library provides a collection of boolean operations that
-mirror reasoning steps on truth value.  the functions are called
+mirror reasoning steps on truth value.  The functions are called
 \C{negb}, \C{orb}, \C{andb} , \C{implyb}, respectively with notations
 \C{\~\~},  \C{||}, \C{&&}, and \C{==>} (the last three operators are
 infix, they appear between the arguments as in \C{b1 && b2}).
@@ -314,7 +314,7 @@ facility provided to the user for readability.  So \C{O} is displayed
 numbers to describe values, but these are automatically translated into
 terms built with \C{O} and \C{S}.
 
-The ssreflect library provides a few notations to make uses of the
+The ssreflect library provides a few notations to make use of the
 constructor {\tt S} more intuitive to read.  In particular, if \C{x}
 is a value of type \C{nat}, \C{x.+1} is another way to write \C{S
   x}.  The \C{.+1} notation binds more strongly than function
@@ -401,7 +401,7 @@ fails, this means that \C{n} has the form \C{0}, the returned value is
 \C{n}, or equivalently \C{0}.
 
 Assume for instance that \C{n} is \C{2}, in other words \C{n} is the
-successor of the successor of O, which we could also write
+successor of the successor of \C{O}, which we could also write
 \C{0.+1.+1}.  When matching \C{0.+1.+1} against the pattern \C{u.+1}
 the value of \C{u} is found to be \C{0.+1}, in other words \C{1}.
 
@@ -480,6 +480,7 @@ is explained with the help of addition with \C{p} as the left-hand side
 argument, and \C{p} is a smaller number than \C{p.+1}.  When considering the
 expression \C{my_add 2 3}, we can know the value by performing the following
 computation:
+\marginnote{LR: the meaning of ``first'' or ``second'' pattern matching is not clear with a definition using ``if''}
 \begin{tabbing}
 \C{adfasdfasdfafafafafafaf}\=\kill
 \C{my_add 2 3} \> use the second pattern matching rule, \C{p = 1}\\
@@ -633,9 +634,9 @@ the notation \C{n < m} is also provided to mean exactly \C{n.+1 <= m}.
 It is often the case that we wish to group several objects in a
 sequence that can be manipulated as a single object.  For instance, we
 might want to compute the sequence of all predecessors or all divisors
-of a number.  the sequence datatype is provided for this purpose.
+of a number.  The sequence datatype is provided for this purpose.
 
-the ssreflect library provides this datatype under the name \C{seq},
+The ssreflect library provides this datatype under the name \C{seq},
 but defines it as an alias for the pre-existing type \C{list} given in the
 Coq preamble.  The definition of type \C{list} is as follows:
 
@@ -715,7 +716,7 @@ library provides a collection of notations for lists.  In particular
 \C{cons a l} is usually written \C{a :: l} when \C{l} is a variable
 name, and lists terminated by \C{nil} are written with square brackets.
 
-When programming with sequences, we can again use the the pattern matching
+When programming with sequences, we can again use the  pattern matching
 construct to express how data can be retrieved from a sequence.  For
 instance, to retrieve the first element of a sequence of natural numbers
 or 0 if the sequence does not contain any element, we can write the
@@ -770,7 +771,7 @@ arguments automatically implicit.  This feature is effective directly
 at definition time.
 
 Another example of recursive function on lists is a function that constructs
-a new list where all elements are values of a given function applied
+a new list where all elements are values of a given function applied to
 the elements of a list.  This function can be defined in this
 manner.
 
