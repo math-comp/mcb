@@ -355,18 +355,272 @@ by putting such names just after the name of the lemma being prover, or
 just after a \C{case:} or \C{elim:} proof command.  Next section
 expands this subject covering the full management of the proof context.
 
-\subsection{Intro pattern}
+\subsection{Bookkeeping and the stack model}
 
-\begin{itemize}
+The presentation we gave so far of proof commands like \C{case: n => [|m]}
+is oversimplified.  While \C{case} is indeed the proof command in
+charge of performing case analysis the ``\C{: n}'' and ``\C{=> [|m]}''
+parts are decorators to prepare the goal and post process the result of
+the proof command.  These decorators deal with what we typically call
+\emph{bookkeeping}: actions that are necessary to obtain readable and
+robust proof scripts but that are too frequent to require a move verbose
+syntax.  Bookkeeping actions do convoy a lot of information, like where
+names are given to assumptions, but also let one deal with annoying details
+using a compact, symbolic, language.  Note that all bookkeeping action
+correspond to regular, named, proof commands.  It is the use one makes of them
+that may be twofold: a case analysis in the middle of a proof may start two
+distinct lines of reasoning, and hence it is worth being noted explicitly with
+the \C{case} word; conversely de-structuring a pair to obtain the two
+components can hardly be a relevant step in a proof, so one may prefer to
+perform such bookkeeping action with a symbolic, compact, notation
+corresponding to the same \C{case} functionality.
 
-\item Her come the more complex the explaination of \C{=>} and
-\C{:}. Warning the \C{:} of \C{apply:} is of a different nature (but
-not the one of \C{apply/view:})...
+Lets start with the post processing phase, called \emph{introduction pattern}.
+The postfix ``\C{=> ...}'' syntax can be used in conjunction with any proof
+command, and it performs a sequence of actions on the first goal assumption or
+quantified variable.  With these looking glasses, the goal becomes a
+\emph{stack}. Take for example this goal:
 
-\item General intro patterns: casing brackets \C{[]}, \C{ ->, _},
-  \C{/lemma, /(_ x)}. For an example of \C{/lemma}, see \C{/ltnW} in
-  \C{ltn_trans}.
-\end{itemize}
+\begin{coqout}{name=Stack}{}
+========================
+forall x, prime x.1 -> odd x.2 -> 2 < x.2 + x.1
+\end{coqout}
+
+Before accessing the assumption \C{prime x} one has to name the
+bound variable \C{x}, exactly as one can only access a stack from its top.
+The execution of \C{=> xy pr\_x odd\_y} is just the composition of
+\C{=> xy} with \C{=> pr\_x} and finally \C{=> odd\_y}.  Each action
+pulls out of the stack an item and names it.  The \C{move} proof
+command is the one that does nothing.  We can use it as a placeholder
+for the postfix \C{=>} bookkeeping action.
+
+\begin{coq}{}{width=7cm}
+move=> xy pr_x odd_y
+\end{coq}
+\begin{coqout}{name=Stack1}{width=5cm}
+ xy : nat * nat
+ pr_x : prime xy.1
+ odd_y : odd xy.2
+========================
+ 2 < xy.2 + xy.1
+\end{coqout}
+
+Now, en passant, one would like to decompose \C{xy} into its first
+and second component.  Instead of the verbose \C{=> xy; case: xy => x y}
+one can use the symbolic notation \C{[]} to perform such action.
+
+\begin{coq}{}{width=7cm}
+move=> [x y] pr_x odd_y
+\end{coq}
+\begin{coqout}{name=Stack2}{width=5cm}
+ x, y : nat
+ pr_x : prime (x,y).1
+ odd_y : odd (x,y).2
+========================
+ 2 < (x,y).2 + (x,y).1
+\end{coqout}
+
+One can place the \C{/=} switch to force the system to reduce the formulas on
+the stack, before introducing them in the context, and obtain:
+
+\begin{coq}{}{width=7cm}
+move=> [x y] /= pr_x odd_y
+\end{coq}
+\begin{coqout}{name=Stack2}{width=5cm}
+ x, y : nat
+ pr_x : prime x
+ odd_y : odd y
+========================
+ 2 < y + x
+\end{coqout}
+
+One could also process an assumption trough a lemma.  For example
+\C{prime\_gt1} states \C{(prime p -> 1 < p)} for any \C{p}, and we can
+use it as a function to obtain a proof of \C{(1 < x)}  from a proof
+of \C{(prime x)}.
+
+\begin{coq}{}{width=7cm}
+move=> [x y] /= /prime_gt1-x_gt1 odd_y
+\end{coq}
+\begin{coqout}{name=Stack2}{width=5cm}
+ x, y : nat
+ x_gt1 : 1 < x
+ odd_y : odd y
+========================
+ 2 < y + x
+\end{coqout}
+
+The leading \C{/} makes \C{prime\_gt1} act as a function instead of
+as a name to be assigned to the top of the stack.  The \C{-} has no effect but
+to visually link the function and name assigned to its output.  Note that
+\C{/prime\_gt1} is a complete action in itself, and its output is placed on the
+stack.
+
+\begin{coq}{}{width=7cm}
+move=> [x y] /= /prime_gt1.
+\end{coq}
+\begin{coqout}{name=Stack2}{width=5cm}
+ x, y : nat
+ ========================
+ 1 < x -> odd y -> 2 < y + x
+\end{coqout}
+
+One could also examine \C{y}: it can't be \C{0}, since it would contradict
+the assumption saying that \C{y} is \C{odd}.
+
+\begin{coq}{}{width=7cm}
+move=> [x [//|y]] /= /prime_gt1-x_gt1.
+\end{coq}
+\begin{coqout}{name=Stack2}{width=5cm}
+ x, y : nat
+ x_gt1 : 1 < x
+ ========================
+ ~~ odd y -> 2 < y.+1 + x
+\end{coqout}
+
+This time the destruction of \C{y} generates to cases, hence the \C{[ .. | .. ]}
+syntax mentioning the two branches.  In the first one, when \C{y} is \C{0},
+the \C{//} action solves the goal, by the same trivial means 
+of the \C{by []} terminator.  In the second branch we name \C{y} the
+new variable.
+
+Now, the fact that \C{y} is even is not needed to conclude, so we can discard it using the \C{\_} dummy name.
+
+\begin{coq}{}{}
+by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
+\end{coq}
+
+We finally conclude with the \C{apply:} command that here we use
+with two arguments: a function and its last argument.
+
+\begin{coq}{}{}
+About ltn_addl. (* forall m n p : nat, m < n -> m < p + n *)
+\end{coq}
+
+\C{apply:} will fill in the blanks between the function (the lemma name)
+and the argument provided.  Note that by passing \C{x\_gt1}, the
+variable \C{m} picks the value \C{1}.  The conclusion of \C{ltn\_addl}
+hence unifies with \C{(2 < y.+1 + x)} because both \C{+} and \C{<} are
+defined as programs that compute: addition exposes a \C{.+1} by
+reducing to \C{2 < (y+x).+1}, then \C{<}, or better the underlying
+\C{<=}, eats a successor from both sides, leading to \C{1 < y + x}
+that looks like the conclusion of the lemma we apply.
+
+Here we have shown all possible actions one can perform in an intro
+pattern, squeezing the entire proof into a single line.  This has
+to be seen both as an opportunity and as a danger: one can easily
+make a proof unreadable by performing too many actions in the bookkeeping
+operator \C{=>}.  At the same time a trivial sub-proof like this one
+should take no more than a line, and in that case one typically
+sacrifices readability in favour of compactness: what would you learn by
+reading a trivial proof?  Of course,
+finding the right balance only comes with experience.
+
+TODO: arrow and specialize.
+
+We have seen how to pull items from the stack to the context.  Now let's see
+how to perform the converse via the \C{:} operator.  Such operator decorates
+proof commands with actions to be performed before the command is actually run.
+Imagine we want to perform case analysis on \C{y} at this stage
+
+\begin{coqout}{name=Stack2}{}
+ x, y : nat
+ x_gt1 : 1 < x
+ odd_y : odd y
+ ========================
+ 2 < y + x
+\end{coqout}
+
+Let's dissect the command \C{case: y}.  It is equivalent to
+\C{move: y; case.} where \C{move} once again is a place holder,
+\C{: y} pushes onto the stack the \C{y} variable and \C{case}
+operates on the top of the stack.
+Pushing items on the stack is called \emph{discharging}.
+
+Just before running \C{case} the goal looks like this:
+
+\begin{coqout}{name=Stack2}{}
+ x : nat
+ x_gt1 : 1 < x
+ odd_y : odd y
+ ========================
+ forall y, 2 < y + x
+\end{coqout}
+
+Unfortunately the binding for y is needed by the \C{odd\_y}
+context item, so \C{case: y} fails.  One has to push on the stack
+items in a valid order.  \C{case: y odd\_y} would push \C{odd\_y}
+first, then \C{y}, leading to
+
+\begin{coqout}{name=Stack2}{}
+ x : nat
+ x_gt1 : 1 < x
+ ========================
+ forall y, odd y -> 2 < y + x
+\end{coqout}
+
+Via the execution of \C{case} one obtains:
+
+\begin{coqout}{name=Stack2}{}
+2 subgoals
+  
+  x : nat
+  x_gt1 : 1 < x
+  ========================
+   odd 0 -> 2 < 0 + x
+
+subgoal 2 is:
+ forall n : nat, odd n.+1 -> 2 < n.+1 + x
+\end{coqout}
+
+An alternative to discharging \C{odd\_y} would be to clear it, i.e. purge it
+from the context.  Listing context entry names inside curly braces has this
+effect.  For example \C{case: y {odd\_y}}.
+
+One can combine \C{:} and \C{=>} around a proof command, to first prepare the
+goal for its execution and finally apply the necessary bookkeeping to the
+result.  For example:
+
+\begin{coq}{}{width=6cm}
+case: y odd_y => [|y']
+\end{coq}
+\begin{coqout}{name=Stack2}{width=6cm}
+2 subgoals
+  
+  x : nat
+  x_gt1 : 1 < x
+  ========================
+   odd 0 -> 2 < 0 + x
+
+subgoal 2 is:
+ odd y'.+1 -> 2 < y'.+1 + x
+\end{coqout}
+
+At the left of the \C{:} operator one can also put a name for an
+equation that links the term at the top of the stack before and
+after the tactic execution.  \C{case E: y odd\_y => [|y']} leads to
+the two sub goals:
+
+\begin{coqout}{name=Stack2}{width=6cm}
+ x, y : nat 
+ x_gt1 : 1 < x 
+ E : y = 0 
+============================ 
+ odd 0 -> 2 < 0 + x 
+\end{coqout}
+\begin{coqout}{name=Stack2}{width=6cm}
+ x, y : nat
+ x_gt1 : 1 < x
+ y' : nat
+ E : y = y'.+1
+========================
+ odd y'.+1 -> 2 < y'.+1 + x	
+\end{coqout}
+
+\gotcha{: after apply is not the same, it is just to distinguish the apply of Coq from the one of ssr that fills in the blanks}
+
+\gotcha{[] as the first item of \C{=>} never does case, only the branching (not the status quo, but I prefer this exception to the current one)}
+
 
 \subsection{Curry-Howard correspondence for inductive reasoning}
 
@@ -658,13 +912,13 @@ case: (andP a b) => [ab|nab]
 
 \begin{coqout}{}{width=6cm}
 a, b : bool
-============================
+========================
 a && b ==> (a == b)
 \end{coqout}
 \begin{coqout}{}{width=6cm}
 a, b : bool
 ab : a /\ b
-============================
+========================
 true || a == b
 
 subgoal 2 is:
@@ -817,7 +1071,7 @@ Qed.
 2 subgoals
 m, n1, n2 : nat
 le_n21 : n2 <= n1
-============================
+========================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 
 subgoal 2 is:
@@ -833,7 +1087,7 @@ with an extra hyp we name \C{le_mn2}
 2 subgoals
 m, n1, n2 : nat
 le_n21 : n2 <= n1
-============================
+========================
 (m <= n1) = (m <= n1) || (m <= n2)
 
 subgoal 2 is: ...
@@ -843,7 +1097,7 @@ subgoal 2 is: ...
 m, n1, n2 : nat
 le_n21 : n2 <= n1
 le_mn2 : m <= n2
-============================
+========================
 m <= n1
 
 subgoal 2 is: ...
@@ -877,7 +1131,7 @@ hypothesis on \C{n1} and \C{n2} generated by the case analysis.
 m, n1, n2 : nat
 th_sym : forall x y : nat,
          y <= x -> (m <= maxn x y) = (m <= x) || (m <= y)
-============================
+========================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2) ->
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 
@@ -1093,7 +1347,7 @@ Proof.  by [].  Qed.
 \begin{coqout}{run=r3;out=g1}{title=Goal after line 3,width=6cm}
 1 subgoal
 
-============================
+========================
 is_true (prime 17)
 \end{coqout}
 
