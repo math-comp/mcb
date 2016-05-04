@@ -12,16 +12,16 @@ equations.
 \section{Type Theory and the Curry-Howard correspondence}
 
 By now, the informed reader is likely to wonder when the authors of the book
-will eventually mention the mathematical foundation of Coq, a variant of 
+will eventually mention the mathematical foundation of Coq, a variant of
 type theory called \mcbCIC{}, and
 in particular explain the Curry-Howard isomorphism.  Indeed this text departs
-from the standard presentation of Coq, that typically starts by 
-presenting the logic and showing how standard connectives like 
+from the standard presentation of Coq, that typically starts by
+presenting the logic and showing how standard connectives like
 conjunction or disjunction are defined in term of inductive types.
 
 We made a deliberate choice to put forward the programming aspects of
 type theory and how programs can be used both to express computable functions
-and decidable predicates or boolean connectives.  
+and decidable predicates or boolean connectives.
 Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
 library.  The computational behavior of program is at the core of
 type theory, i.e. the fact that a function computes to a value requires no
@@ -37,7 +37,7 @@ a modern presentation of type theory in \cite{hott}.
 
 \subsection{Primitive types and terms formers}
 
-In type theory we say that \emph{logical statements} corresponds to
+In type theory we say that \emph{logical statements} correspond to
 \emph{types} and that \emph{proofs} correspond to \emph{programs}.
 
 The simplest example one could think of is the formal statement saying that
@@ -47,7 +47,7 @@ as a function from $A$ to $A$.  A program with that type would be
 \C{(fun x : A => x)}.  Such program takes in input a term $x$ of
 type $A$, that we here see as a proof of $A$, and returns it, i.e. it
 produces in output a proof of $A$.  We say that such program is a
-proof of $A \rightarrow A$. 
+proof of $A \rightarrow A$.
 
 What is striking here is that the same class of terms represents both programs
 and proofs, for example the identity function of natural numbers has the very
@@ -151,13 +151,13 @@ the $\forall_E$ checks the term $t$ has the right type.
 \subsection{Inductive types}
 
 In the previous chapters we used many data types already.  For example we have
-seen the type \C{nat} and its constructors \C{O} and \C{S}.  Trough the looking
+seen the type \C{nat} and its constructors \C{O} and \C{S}.  Through the looking
 glasses of the Curry-Howard correspondence \C{O}, being a term of type \C{nat}
 can represent a ``proof'' of \C{nat}.  For data types we prefer to say
 \emph{inhabited} rather than \emph{proved}, but there is no real difference.
 
 Inductive ``data'' types can be used to represent logical connectives, in
-particular the ones we miss so far, the existential quantifier in particular.  
+particular the ones we miss so far, the existential quantifier in particular.
 But lets start by the simple conjunction.
 
 \begin{center}
@@ -173,7 +173,7 @@ But lets start by the simple conjunction.
 \end{center}
 
 The first rule reads: to prove $A \wedge B$ one needs to prove both
-$A$ and $B$.  The latter lets one prove $A$ whenever he can prove
+$A$ and $B$.  The latter lets one prove $A$ whenever one can prove
 the stronger $A \wedge B$ statement.
 
 In Coq such connective can be characterized by the following
@@ -285,7 +285,7 @@ left is as the last one is that it has a tricky nature.  In particular
 equality, as we have seen in the previous chapters, is an open notion
 in the following sense.  Terms that compute to the same syntactic expression
 are considered as equal, and this is true for any program the user may write.
-Hence such notion of equality needs to be somewhat primitive, as 
+Hence such notion of equality needs to be somewhat primitive, as
 \C{match} and \C{Fixpoint} are.  One also expects such notion to come
 with a substitutivity property: replacing equals by equals must be licit.
 
@@ -480,7 +480,7 @@ move=> [x [//|y]] /= /prime_gt1-x_gt1.
 
 This time the destruction of \C{y} generates to cases, hence the \C{[ .. | .. ]}
 syntax mentioning the two branches.  In the first one, when \C{y} is \C{0},
-the \C{//} action solves the goal, by the same trivial means 
+the \C{//} action solves the goal, by the same trivial means
 of the \C{by []} terminator.  In the second branch we name \C{y} the
 new variable.
 
@@ -563,7 +563,7 @@ Via the execution of \C{case} one obtains:
 
 \begin{coqout}{name=Stack2}{}
 2 subgoals
-  
+
   x : nat
   x_gt1 : 1 < x
   ========================
@@ -586,7 +586,7 @@ case: y odd_y => [|y']
 \end{coq}
 \begin{coqout}{name=Stack2}{width=6cm}
 2 subgoals
-  
+
   x : nat
   x_gt1 : 1 < x
   ========================
@@ -602,11 +602,11 @@ after the tactic execution.  \C{case E: y odd\_y => [|y']} leads to
 the two sub goals:
 
 \begin{coqout}{name=Stack2}{width=6cm}
- x, y : nat 
- x_gt1 : 1 < x 
- E : y = 0 
-============================ 
- odd 0 -> 2 < 0 + x 
+ x, y : nat
+ x_gt1 : 1 < x
+ E : y = 0
+============================
+ odd 0 -> 2 < 0 + x
 \end{coqout}
 \begin{coqout}{name=Stack2}{width=6cm}
  x, y : nat
@@ -614,7 +614,7 @@ the two sub goals:
  y' : nat
  E : y = y'.+1
 ========================
- odd y'.+1 -> 2 < y'.+1 + x	
+ odd y'.+1 -> 2 < y'.+1 + x
 \end{coqout}
 
 \gotcha{: after apply is not the same, it is just to distinguish the apply of Coq from the one of ssr that fills in the blanks}
@@ -672,41 +672,103 @@ extra axioms as possible (i.e. not all combinations of axioms are consistent,
 hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like RCF (less reals but enough).
 
 
-\section{Boolean reasoning, \C{Prop} reasoning, going back and forth}
+\section{Boolean Reflection}
 
 
 
-\subsection{Motivations for boolean reflection}
+\subsection{Motivations}
 
-As described on the picture 1:
-\begin{itemize}
-\item We now have two ways to express logical statements, and we just
-  saw they are different (EM).
-\item The first one is \C{bool},
-  with \C{true, false : bool : Type}.
-  It is a datatype with case analysis and computation (hence automation)
-  available, which is good. And we can use \C{bool} to express some
-  statements like \C{b1 && b2 = b2 && b1}. The other is \C{Prop}, with
-  \C{? : P : Prop}. It is a sort, inhabited by statements, which are
-  (possibly) themselves inhabited by proofs built by deduction. The
-  later is necessary as bool does not capture all the statements we
-  would like to work with. But can we bring the good points of
-  \C{bool} in the \C{Prop} world when it is possible? For this purpose
-  we need:
-  \begin{itemize}
-    \item We need to send \C{b1 && b2} to \C{Prop}: we do it via
-      \C{is_true}.
-    \item We need to relate \C{&&} and \C{/\\}.
-  \end{itemize}
-  By the way, in \C{bool}, the only proof term is \C{erefl true} (this
-  is called UIP), which comes handy when crafting data structures that
-  pair a data with a spec (comprehension style). We do not comment
-  more but this will be expanded in chapter~\ref{ch:sigmabool}.
-\end{itemize}
+At this stage, we are in presence of one of the main issues in the
+representation of mathematics in a formal language: very often,
+several datastructures can be used to represent a same mathematical
+definition or statement. But this choice may have a significant impact
+on the upcoming layers of formalized theories. We have seen so far two
+ways of expressing logical statements: using boolean predicates and
+truth values on one hand, and using logical connectives and the
+\C{Prop} sort on the other. For instance, in order to define the
+predicate ``the sequence \C{s} has at least one element satisfying the
+(boolean) predicate \C{a}'', we can either use a boolean predicate:
 
-First tool, that we already used: the \C{is_true} coercion, which
-gives the illusion of inhabiting a \C{bool}.
-Hence one can use rewriting.
+\begin{coq}{}{}
+Fixpoint |*has*| {T : Type} (a : T -> bool) (s : seq T) : bool :=
+  if s is x :: s' then a x || has s' else false.
+\end{coq}
+
+or we can use an alternate formula, like for instance:\marginnote{Is
+  exists2 presented in the previous section?}
+
+\begin{coq}{}{}
+Definition |*has_prop*|  {T : Type} (a : T -> bool) (x0 : T) (s : seq T) :=
+   exists2 i, i < size s & a (nth x0 s i)
+\end{coq}
+
+Term \C{(has a s)} is a boolean value, hence a hypothesis
+\C{s_has_a : has a s} can easily be used in a proof to perform a case
+analysis on the fact that sequence
+\C{s} has an element such that \C{a} holds, using the \C{case} tactic:
+
+\begin{coq}{}{}
+case: s_has_a.
+\end{coq}
+As we already noted, computation provides some automation for free, as
+for instance in order to establish that \C{(has odd [:: 3; 2; 7]) =
+  true}, we only need to observe that the left hand-side \emph{computes} to
+\C{true}.
+
+It is not as immediate to perform a similar case analysis in a proof
+using the alternate version \C{s_has_aP : has_prop a x0 s}. On the
+other hand, this phrasing of the hypothesis easily gives access to the
+value of the index at which the witness is to be found:
+
+\begin{coq}{}{}
+case: s_has_aP => [n asn].
+\end{coq}
+introduces in the context of the goal a natural number \C{n : nat} and
+the fact \C{asn : a (nth x0 s n)}. In order to establish that
+\C{(has_prop a x0 s)} we cannot resort to computation, but we can
+on the other hand prove it by providin the index at which a witness is
+to be found  --plus a proof of this fact-- which may be better suited
+for instance to an abstract sequence \C{s}.
+
+In summary, boolean statements are specially convenient for excluded
+middle arguments and its variants (contrapositive, reductio ad
+absurdum,...). They furthermore provide a form of small step
+automation by computation\footnote{They moreover allow for
+  proof-irrelevant specifications. This feature is largely used
+  throughout the Mathematical Components library but beyond the scope
+  of the present chapter: it will be the topic of
+  Chapter~\ref{ch:sigmabool}}. Specification in the \C{Prop} sort
+are structured logical statements, that can be ``destructed'' to
+provide witnesses (of existential statements), instances (of universal
+statements), subformulae (of conjunctions),... They are proved by
+deduction, building proof trees made with the rules of the
+logic. Formalizing a predicate by the means of a boolean specfication
+requires implementing a form of decision
+procedure and possibly proving a specification lemma if
+the code of the procedure is not a self-explanatory description of the
+standard axiomatic description of the mathematical notion. For instance a
+boolean definition \C{|*prime*| : nat -> bool} implements a complete
+primality test, which requires a companion lemma proving that it is
+equivalent to the usual definition in terms of proper
+divisors. Postulating the existence of such a decision procedure for a
+given specification is akin to assuming that the excluded middle
+principle holds on the corresponding predicate.
+
+The boolean reflection methodology proposes to avoid
+commiting to one or the other of these options, providing enough
+infrastructure to ease the bureaucracy of navigating between the two.
+The \C{is_true} correcion, which we have been using since the early
+pages of Chapter~\ref{ch:proofs} is in fact one ingredient of this
+infrastructure.\marginnote{We should now decide what is said in the
+  previous chapter and what we say here about this coercion.} Indeed
+this coercion turns a boolean value into a \C{Prop} statement, that
+can be used as a the statement of a theorem or of a hypothesis. It
+hides however an equality than can also be used with the \C{rewrite}
+tactic, for instance to perform local modification in goals that can
+incidentally trigger larger simplifications when they combine well with
+computations. \marginnote{Give an example here. Do we need to mention
+  setoid rewriting here for Coq users?}
+
 
 \subsection{Equivalences between booleans and \C{Prop} statements}
 
