@@ -153,7 +153,7 @@ Inductive |*reflect*| (P : Prop) (b : bool) : Prop :=
 We can prove that the statement \C{reflect P b} is actually equivalent
 to the double implication. Exercise, prove:
 
-\begin{coq}{}{}
+\begin{coq}{}{width=13cm}
 Lemma |*iffP_lr*| (P : Prop) (b : bool) : (P -> b) -> (b -> P) -> reflect P b.
 
 Lemma |*iffP_rl*| (P : Prop) (b : bool) : reflect P b -> ((P -> b) /\ (b -> P)).
@@ -471,6 +471,7 @@ implication, using the classical equivalence and a negated premise:
 
 \begin{coq}{}{width=7.6cm}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
+Proof.
 rewrite -implyNb.
 \end{coq}
 \begin{coqout}{}{width=4.7cm}
@@ -484,6 +485,7 @@ This premise can be seen as \C{n < m}:
 
 \begin{coq}{}{width=7.6cm}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
+Proof.
 rewrite -implyNb -ltnNge.
 \end{coq}
 \begin{coqout}{}{width=4.5cm}
@@ -501,6 +503,7 @@ with a minimal amount of bureaucracy:
 
 \begin{coq}{}{width=7.6cm}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
+Proof.
 rewrite -implyNb -ltnNge; apply/implyP.
 \end{coq}
 \begin{coqout}{}{width=4.5cm}
