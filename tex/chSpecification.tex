@@ -1,4 +1,4 @@
-\chapter{More statements, more proofs}{Advanced specifications}
+\Chapter{Boolean reflection}{ Advanced specifications}
 
 in addition to the photos:
 \begin{itemize}
@@ -9,675 +9,9 @@ always a good idea hence nosimpl.
 equations.
 \end{itemize}
 
-\section{Type Theory and the Curry-Howard correspondence}
-\label{sec:ttch}
 
-By now, the informed reader is likely to wonder when the authors of the book
-will eventually mention the mathematical foundation of Coq, a variant of
-type theory called \mcbCIC{}, and
-in particular explain the Curry-Howard isomorphism.  Indeed this text departs
-from the standard presentation of Coq, that typically starts by
-presenting the logic and showing how standard connectives like
-conjunction or disjunction are defined in term of inductive types.
 
-We made a deliberate choice to put forward the programming aspects of
-type theory and how programs can be used both to express computable functions
-and decidable predicates or boolean connectives.
-Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
-library.  The computational behavior of program is at the core of
-type theory, i.e. the fact that a function computes to a value requires no
-proof.  This fact provided a powerful form of automation, and as we will
-see later will also ease the construction of ``sub sets''.
-
-Now we really need to provide a minimal presentation of the statements as types
-correspondence.  The universe of boolean predicates is in \mcbMC{} limited: one
-cannot for example express a general $\exists$ quantification, and also the
-status of the $\forall$ quantification has been so far never really explained.
-This presentation is far from being exhaustive, the interested reader can find
-a modern presentation of type theory in \cite{hott}.
-
-\subsection{Primitive types and terms formers}
-
-In type theory we say that \emph{logical statements} correspond to
-\emph{types} and that \emph{proofs} correspond to \emph{programs}.
-
-The simplest example one could think of is the formal statement saying that
-a proposition $A$ implies itself, namely $A \rightarrow A$.  If one reads
-the implication symbol $\to$ as the type of functions, the statements reads
-as a function from $A$ to $A$.  A program with that type would be
-\C{(fun x : A => x)}.  Such program takes in input a term $x$ of
-type $A$, that we here see as a proof of $A$, and returns it, i.e. it
-produces in output a proof of $A$.  We say that such program is a
-proof of $A \rightarrow A$.
-
-What is striking here is that the same class of terms represents both programs
-and proofs, for example the identity function of natural numbers has the very
-same shape of the proof we've just seen.  So we are left with only two
-concepts, types and terms, playing a double role.  We now see how types and
-terms can be formed.
-
-Regarding types, the primitive type formers we have seen are the function space
-$\to$, also logical implication, and the universal quantification
-$\forall$, used to describe polymorphic function as well as parametric lemmas.
-Standard logical rules describing how one can prove formulas involving these
-connectives are:
-
-\begin{center}
-\AxiomC{$A$}
-\noLine
-\UnaryInfC{$\vdots$}
-\noLine
-\UnaryInfC{$B$}
-\RightLabel{$\to_I$}
-\UnaryInfC{$A \to B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{$B$}
-\RightLabel{$\forall_I$ ($x$ fresh)}
-\UnaryInfC{$\forall x, B$}
-\DisplayProof
-\end{center}
-
-The former reads: to prove $A \to B$ one can prove $B$ under the
-assumption $A$.  The latter: to prove $\forall x,B$ one can prove $B$
-assuming that $x$ is fresh.  We annotate such rules with the terms
-corresponding to these proof rules.
-
-\begin{center}
-\AxiomC{\C{x : }$~A$}
-\noLine
-\UnaryInfC{$\vdots$}
-\noLine
-\UnaryInfC{\C{b : }$~B$}
-\RightLabel{$\to_I$}
-\UnaryInfC{\C{(fun x : A => b) : }$~A \to B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{\C{b : }$B$}
-\RightLabel{$\forall_I$}
-\UnaryInfC{\C{(fun x : A => b) : }$~\forall x, B$}
-\DisplayProof
-\end{center}
-
-The anonymous function constructor \C{(fun .. => ..)} serves as a proof
-for both rules: the term \C{b} is in both cases a proof of $B$.  The only
-difference is that $x$ is only allowed to occur in $B$ in the second rule.
-Said otherwise in type theory $\to$ is a special case of $\forall$ where
-the bound variable does not occur in the quantified formula.  In other
-words there is no semantic difference between \C{(nat -> bool)} and
-\C{(forall x : nat, bool)}.
-
-Logical connectives come with elimination rules, in particular
-
-\begin{center}
-\AxiomC{$A \to B$}
-\AxiomC{$A$}
-\RightLabel{$\to_E$}
-\BinaryInfC{$B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{$\forall x, B$}
-\RightLabel{$\forall_E$ ($t$ a term)}
-\UnaryInfC{$B[t/x]$}
-\DisplayProof
-\end{center}
-
-Function application serves as a proof for both rules.
-
-\begin{center}
-\AxiomC{\C{f : }$~A \to B$}
-\AxiomC{\C{a : }$~A$}
-\RightLabel{$\to_E$}
-\BinaryInfC{\C{(f a) :}$~B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{\C{f : }$~\forall x : A, B$}
-\AxiomC{\C{t : }$~A$}
-\RightLabel{$\forall_E$}
-\BinaryInfC{\C{(f a) : }$~B[t/x]$}
-\DisplayProof
-\end{center}
-
-Here the programs as proofs correspondence has a visible impact in the proofs
-part of the \mcbMC{} library.  In particular quantified lemmas, being programs,
-can be instantiated by simply passing arguments to them.  Exactly as one can
-pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
-can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
-\C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
-shows up in the type of the resulting term \C{(addnC 3)}:  The type of the
-\C{addnC} program depends on the value the program is applied to.  Note that
-the $\forall$ quantification specifies the type of the bound variable, and that
-the $\forall_E$ checks the term $t$ has the right type.
-
-\subsection{Inductive types}\label{ssec:indtypes}
-
-In the previous chapters we used many data types already.  For example we have
-seen the type \C{nat} and its constructors \C{O} and \C{S}.  Through the looking
-glasses of the Curry-Howard correspondence \C{O}, being a term of type \C{nat}
-can represent a ``proof'' of \C{nat}.  For data types we prefer to say
-\emph{inhabited} rather than \emph{proved}, but there is no real difference.
-
-Inductive ``data'' types can be used to represent logical connectives, in
-particular the ones we miss so far, the existential quantifier in particular.
-But lets start by the simple conjunction.
-
-\begin{center}
-\AxiomC{$A$} \AxiomC{$B$}
-\RightLabel{$\wedge_I$}
-\BinaryInfC{$A \wedge B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{$A \wedge B$}
-\RightLabel{$\wedge_E$ (left)}
-\UnaryInfC{$A$}
-\DisplayProof
-\end{center}
-
-The first rule reads: to prove $A \wedge B$ one needs to prove both
-$A$ and $B$.  The latter lets one prove $A$ whenever one can prove
-the stronger $A \wedge B$ statement.
-
-In Coq such connective can be characterized by the following
-inductive definition.
-
-\begin{coq}{name=And}{}
-Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B)
-where "A /\ B" := (and A B).
-\end{coq}
-
-Remark that the ``data'' type \C{And} is tagged as \C{Prop}, i.e.  we declare
-the intention to use it as a logical connective rather than a data type.  The
-only constructor \C{conj} that can be used to inhabit \C{and} takes two
-arguments, a proof of \C{A} and a proof of \C{B}, faithfully modelling the
-logical rule \C{$\wedge_I$}.  Note that \C{A} and \C{B} are parameters of the
-inductive definition, similarly to the definition of polymorphic lists
-or pairs.  Finally note that the definition of the pair data type is very
-similar to the one of the conjunction.
-
-Pattern matching provides a way to express the elimination rule for
-conjunction.  In particular the elimination rule is just a projection.
-
-\begin{coq}{name=Ande1}{}
-Definition proj1 A B (p : A /\ B) : A :=
-  match p with conj a _ => a end.
-\end{coq}
-
-Now recall the similarity between $\to$ and $\forall$, where the former is the
-simple, non dependent, case of the latter.  If we check the type of
-the \C{conj} constructor
-
-\begin{coq}{name=Ande1}{}
-Check conj. (* forall A B : Prop, A -> B -> A /\ B *)
-\end{coq}
-
-we may wonder what happens if the type of the second argument (i.e. \C{B}) is
-made dependent on the value of the first argument (of type \C{A}).
-What we obtain is the inductive definition corresponding to the
-existential quantification.
-
-\begin{coq}{name=Ande1}{}
-Inductive ex (A : Type) (P : A -> Prop) : Prop :=
-  ex_intro (x : A) (p : P x).
-Notation "'exists' x : A , p" := (ex A (fun x : A => p)).
-\end{coq}
-
-The \C{ex\_intro} constructor is the only mean to prove a statement like
-\C{(exists n, prime n)}.  In such case the first argument would be a number
-\C{n} of type \C{nat} while the second argument would be a proof \C{p} of type
-\C{(prime n)}.  The \C{ex} inductive definition is again pretty similar to the
-pair, but note that the type of the second component depends on the value of
-the first one.  Last note the parameter \C{P} that is a function
-representing an arbitrary predicate over a term of
-type \C{A}.  Hence \C{(P a)} is the instance of the predicate to \C{a}.  E.g.
-the predicate of being an even prime number is expressed as
-\C{(fun x : nat => ~~ odd x && prime x)}, and the statement expressing the
-existence of such number is
-\C{(ex nat (fun x : nat => ~~ odd x && prime x))}.
-
-We quickly see the inductive definition of the disjunction.
-
-\begin{coq}{name=Or}{}
-Inductive or (A B : Prop) : Prop :=
-  | or_introl (a : A)
-  | or_intror (b : B)
-where "A \/ B" := (or A B).
-\end{coq}
-
-The elimination rule can again be expressed by pattern matching:
-
-\begin{coq}{name=Or}{}
-Definition or_ind (A B P : Prop)
-  (aob : A \/ B) (pa : A -> P) (pb : B -> P) : P :=
-  match aob with
-  | or_introl a => pa a
-  | or_intror b => pb b
-  end.
-\end{coq}
-
-The detail worth noting here is that the pattern match construct has two
-branches in this case.  Each branch represents a distinct sub proof.  In this
-case to prove \C{P} starting from \C{A \\/ B} one has to deal with all
-possibilities: prove \C{P} under the assumption \C{A} and prove \C{P}
-under the assumption \C{B}.
-
-Typically a logic comes with the $\top$, $\bot$ and $\neg$ constants.
-They can be defined as follows.
-
-\begin{coq}{name=TrueFalse}{}
-Inductive True : Prop := I.
-Inductive False : Prop := .
-Definition not (A : Prop) := A -> False.
-\end{coq}
-
-Remark that to prove \C{True} one has simply to provide \C{I} that has no
-argument.  So proving \C{True} is trivial, and as a consequence eliminating it
-provides little help (i.e. no extra knowledge is obtained by pattern matching
-over \C{I}).  Conversely it is impossible to prove \C{False}, since it has no
-constructor, and pattern matching on \C{False} can inhabit any type, since no
-branch has to be provided.
-
-\begin{coq}{name=exfalso}{}
-Definition exfalso (P : Prop) (f : False) : P :=
-  match f with end.  (* no constructors, no branches *)
-\end{coq}
-
-The only base predicate we are left to describe is equality.  The reason we
-left is as the last one is that it has a tricky nature.  In particular
-equality, as we have seen in the previous chapters, is an open notion
-in the following sense.  Terms that compute to the same syntactic expression
-are considered as equal, and this is true for any program the user may write.
-Hence such notion of equality needs to be somewhat primitive, as
-\C{match} and \C{Fixpoint} are.  One also expects such notion to come
-with a substitutivity property: replacing equals by equals must be licit.
-
-The way this internal notion is exposed is via the concept of index
-on which an inductive family may vary.
-
-\begin{coq}{name=Eq}{}
-Inductive eq (A:Type) (x:A) : A -> Prop := erefl : x = x
-where "x = y" := (@eq _ x y) : type_scope.
-\end{coq}
-
-This is the first time we see a function type after the \C{:}.
-The \C{eq} type constructor takes three arguments: a type \C{A} and
-two terms of that type.  Hence one can write \C{a=b} whenever \C{a} and \C{b}
-have the same type.
-The \C{erefl} constructor takes no arguments, as \C{I}, but its type
-annotation says it can be used to inhabit only the type \C{x = x}.
-Hence one is able to prove \C{a=b} it only when \C{a} and \C{b} are
-equal up to computation.  Conversely by eliminating a term
-of type \C{a=b} one discovers that  \C{a} and \C{b} are
-equal and \C{b} can be freely replaced by \C{a}.
-
-\begin{coq}{name=EqInd}{}
-Definition eq_ind A (P : A -> Prop) x (px : P x) y (e : x = y) : P y :=
-  match e with erefl => px end.
-\end{coq}
-
-The notion of equality is one of the most intricate aspects of type
-theory and out of the scope of this book.  The interested reader
-finds an extensive study of this subject in~\cite{hottbook}.  Later in this
-chapter we define and use other inductive families to take advantage
-of the ``automatic'' substitution of the implicit equations we see here:
-while the type of \C{px} is \C{(P x)} it is accepted as an
-inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
-is automatically replaced by \C{x}.
-
-\subsection{Proof commands}
-
-Since proofs are just terms, one can hardly use the term language to
-write long proofs.   The proof commands we have seen so far, like
-\C{case:} for example, provide a much more compact syntax for proofs and can be explain in terms of the proof terms they generate behind the scenes.
-
-For example \C{case: n} writes for you a \C{match} expression with the right
-shape by looking at the type of \C{n}.  If \C{n} is a natural number then there
-are two branches, the one for the \C{S} constructor carries an argument of type
-\C{nat}, the other one is for \C{0} and binds no additional term.
-The \C{case:} tactic is general enough to work with any inductive data type
-and inductive predicate.
-
-The \C{apply:} tactic generates an application.  For example \C{apply: addnC}
-generates the term \C{addnC t1 t2} by figuring out the correct values of
-\C{t1} and \C{t2}, or opening new goals when this cannot be done.
-
-There is a list of proof commands that are shorthands for \C{apply:}
-and is only worth mentioning here briefly. \C{split} proves a conjunction
-by applying the \C{conj} constructor, \C{left} and \C{right} prove a
-disjunction by applying \C{or\_introl} and \C{or\_intror} respectively.
-\C{exist t} proves an existentially quantified formula by providing
-the witness \C{t} and, later, a proof that \C{t} validated the predicate.
-Finally \C{reflexivity} proves an equality by applying \C{erefl}.
-
-The only primitive constructor that remains without an associated proof command
-is \C{(fun .. => ..)}.  Operationally what the $\to_I$ and
-$\forall_I$ logical rule do is to introduce into the proof context a
-new entry.  So far we either expressed this step at the beginning of proofs
-by putting such names just after the name of the lemma being prover, or
-just after a \C{case:} or \C{elim:} proof command.  Next section
-expands this subject covering the full management of the proof context.
-
-\subsection{Bookkeeping and the stack model}
-
-The presentation we gave so far of proof commands like \C{case: n => [|m]}
-is oversimplified.  While \C{case} is indeed the proof command in
-charge of performing case analysis the ``\C{: n}'' and ``\C{=> [|m]}''
-parts are decorators to prepare the goal and post process the result of
-the proof command.  These decorators deal with what we typically call
-\emph{bookkeeping}: actions that are necessary to obtain readable and
-robust proof scripts but that are too frequent to require a move verbose
-syntax.  Bookkeeping actions do convoy a lot of information, like where
-names are given to assumptions, but also let one deal with annoying details
-using a compact, symbolic, language.  Note that all bookkeeping action
-correspond to regular, named, proof commands.  It is the use one makes of them
-that may be twofold: a case analysis in the middle of a proof may start two
-distinct lines of reasoning, and hence it is worth being noted explicitly with
-the \C{case} word; conversely de-structuring a pair to obtain the two
-components can hardly be a relevant step in a proof, so one may prefer to
-perform such bookkeeping action with a symbolic, compact, notation
-corresponding to the same \C{case} functionality.
-
-Lets start with the post processing phase, called \emph{introduction pattern}.
-The postfix ``\C{=> ...}'' syntax can be used in conjunction with any proof
-command, and it performs a sequence of actions on the first goal assumption or
-quantified variable.  With these looking glasses, the goal becomes a
-\emph{stack}. Take for example this goal:
-
-\begin{coqout}{name=Stack}{}
-========================
-forall x, prime x.1 -> odd x.2 -> 2 < x.2 + x.1
-\end{coqout}
-
-Before accessing the assumption \C{prime x} one has to name the
-bound variable \C{x}, exactly as one can only access a stack from its top.
-The execution of \C{=> xy pr\_x odd\_y} is just the composition of
-\C{=> xy} with \C{=> pr\_x} and finally \C{=> odd\_y}.  Each action
-pulls out of the stack an item and names it.  The \C{move} proof
-command is the one that does nothing.  We can use it as a placeholder
-for the postfix \C{=>} bookkeeping action.
-
-\begin{coq}{}{width=7cm}
-move=> xy pr_x odd_y
-\end{coq}
-\begin{coqout}{name=Stack1}{width=5cm}
- xy : nat * nat
- pr_x : prime xy.1
- odd_y : odd xy.2
-========================
- 2 < xy.2 + xy.1
-\end{coqout}
-
-Now, en passant, one would like to decompose \C{xy} into its first
-and second component.  Instead of the verbose \C{=> xy; case: xy => x y}
-one can use the symbolic notation \C{[]} to perform such action.
-
-\begin{coq}{}{width=7cm}
-move=> [x y] pr_x odd_y
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
- x, y : nat
- pr_x : prime (x,y).1
- odd_y : odd (x,y).2
-========================
- 2 < (x,y).2 + (x,y).1
-\end{coqout}
-
-One can place the \C{/=} switch to force the system to reduce the formulas on
-the stack, before introducing them in the context, and obtain:
-
-\begin{coq}{}{width=7cm}
-move=> [x y] /= pr_x odd_y
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
- x, y : nat
- pr_x : prime x
- odd_y : odd y
-========================
- 2 < y + x
-\end{coqout}
-
-One could also process an assumption trough a lemma.  For example
-\C{prime\_gt1} states \C{(prime p -> 1 < p)} for any \C{p}, and we can
-use it as a function to obtain a proof of \C{(1 < x)}  from a proof
-of \C{(prime x)}.
-
-\begin{coq}{}{width=7cm}
-move=> [x y] /= /prime_gt1-x_gt1 odd_y
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
- x, y : nat
- x_gt1 : 1 < x
- odd_y : odd y
-========================
- 2 < y + x
-\end{coqout}
-
-The leading \C{/} makes \C{prime\_gt1} do as a function instead of
-as a name to be assigned to the top of the stack.  The \C{-} has no effect but
-to visually link the function and name assigned to its output.  Note that
-\C{/prime\_gt1} is a complete action in itself, and its output is placed on the
-stack.
-
-\begin{coq}{}{width=7cm}
-move=> [x y] /= /prime_gt1.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
- x, y : nat
- ========================
- 1 < x -> odd y -> 2 < y + x
-\end{coqout}
-
-One could also examine \C{y}: it can't be \C{0}, since it would contradict
-the assumption saying that \C{y} is \C{odd}.
-
-\begin{coq}{}{width=7cm}
-move=> [x [//|y]] /= /prime_gt1-x_gt1.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
- x, y : nat
- x_gt1 : 1 < x
- ========================
- ~~ odd y -> 2 < y.+1 + x
-\end{coqout}
-
-This time the destruction of \C{y} generates to cases, hence the \C{[ .. | .. ]}
-syntax mentioning the two branches.  In the first one, when \C{y} is \C{0},
-the \C{//} action solves the goal, by the same trivial means
-of the \C{by []} terminator.  In the second branch we name \C{y} the
-new variable.
-
-Now, the fact that \C{y} is even is not needed to conclude, so we can discard it using the \C{\_} dummy name.
-
-\begin{coq}{}{}
-by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
-\end{coq}
-
-We finally conclude with the \C{apply:} command that here we use
-with two arguments: a function and its last argument.
-
-\begin{coq}{}{}
-About ltn_addl. (* forall m n p : nat, m < n -> m < p + n *)
-\end{coq}
-
-\C{apply:} will fill in the blanks between the function (the lemma name)
-and the argument provided.  Note that by passing \C{x\_gt1}, the
-variable \C{m} picks the value \C{1}.  The conclusion of \C{ltn\_addl}
-hence unifies with \C{(2 < y.+1 + x)} because both \C{+} and \C{<} are
-defined as programs that compute: addition exposes a \C{.+1} by
-reducing to \C{2 < (y+x).+1}, then \C{<}, or better the underlying
-\C{<=}, eats a successor from both sides, leading to \C{1 < y + x}
-that looks like the conclusion of the lemma we apply.
-
-Here we have shown all possible actions one can perform in an intro
-pattern, squeezing the entire proof into a single line.  This has
-to be seen both as an opportunity and as a danger: one can easily
-make a proof unreadable by performing too many actions in the bookkeeping
-operator \C{=>}.  At the same time a trivial sub-proof like this one
-should take no more than a line, and in that case one typically
-sacrifices readability in favour of compactness: what would you learn by
-reading a trivial proof?  Of course,
-finding the right balance only comes with experience.
-
-TODO: arrow and specialize.
-
-We have seen how to pull items from the stack to the context.  Now let's see
-how to perform the converse via the \C{:} operator.  Such operator decorates
-proof commands with actions to be performed before the command is actually run.
-Imagine we want to perform case analysis on \C{y} at this stage
-
-\begin{coqout}{name=Stack2}{}
- x, y : nat
- x_gt1 : 1 < x
- odd_y : odd y
- ========================
- 2 < y + x
-\end{coqout}
-
-Let's dissect the command \C{case: y}.  It is equivalent to
-\C{move: y; case.} where \C{move} once again is a place holder,
-\C{: y} pushes onto the stack the \C{y} variable and \C{case}
-operates on the top of the stack.
-Pushing items on the stack is called \emph{discharging}.
-
-Just before running \C{case} the goal looks like this:
-
-\begin{coqout}{name=Stack2}{}
- x : nat
- x_gt1 : 1 < x
- odd_y : odd y
- ========================
- forall y, 2 < y + x
-\end{coqout}
-
-Unfortunately the binding for y is needed by the \C{odd\_y}
-context item, so \C{case: y} fails.  One has to push on the stack
-items in a valid order.  \C{case: y odd\_y} would push \C{odd\_y}
-first, then \C{y}, leading to
-
-\begin{coqout}{name=Stack2}{}
- x : nat
- x_gt1 : 1 < x
- ========================
- forall y, odd y -> 2 < y + x
-\end{coqout}
-
-Via the execution of \C{case} one obtains:
-
-\begin{coqout}{name=Stack2}{}
-2 subgoals
-
-  x : nat
-  x_gt1 : 1 < x
-  ========================
-   odd 0 -> 2 < 0 + x
-
-subgoal 2 is:
- forall n : nat, odd n.+1 -> 2 < n.+1 + x
-\end{coqout}
-
-An alternative to discharging \C{odd\_y} would be to clear it, i.e. purge it
-from the context.  Listing context entry names inside curly braces has this
-effect.  For example \C{case: y {odd\_y}}.
-
-One can combine \C{:} and \C{=>} around a proof command, to first prepare the
-goal for its execution and finally apply the necessary bookkeeping to the
-result.  For example:
-
-\begin{coq}{}{width=6cm}
-case: y odd_y => [|y']
-\end{coq}
-\begin{coqout}{name=Stack2}{width=6cm}
-2 subgoals
-
-  x : nat
-  x_gt1 : 1 < x
-  ========================
-   odd 0 -> 2 < 0 + x
-
-subgoal 2 is:
- odd y'.+1 -> 2 < y'.+1 + x
-\end{coqout}
-
-At the left of the \C{:} operator one can also put a name for an
-equation that links the term at the top of the stack before and
-after the tactic execution.  \C{case E: y odd\_y => [|y']} leads to
-the two sub goals:
-
-\begin{coqout}{name=Stack2}{width=6cm}
- x, y : nat
- x_gt1 : 1 < x
- E : y = 0
-============================
- odd 0 -> 2 < 0 + x
-\end{coqout}
-\begin{coqout}{name=Stack2}{width=6cm}
- x, y : nat
- x_gt1 : 1 < x
- y' : nat
- E : y = y'.+1
-========================
- odd y'.+1 -> 2 < y'.+1 + x
-\end{coqout}
-
-\gotcha{: after apply is not the same, it is just to distinguish the apply of Coq from the one of ssr that fills in the blanks}
-
-\gotcha{[] as the first item of \C{=>} never does case, only the branching (not the status quo, but I prefer this exception to the current one)}
-
-
-\subsection{Curry-Howard correspondence for inductive reasoning}
-
-In chapter 1 we have seen the \C{fun} construction of functions and inductive
-data types like \C{nat} as well as the pattern matching.  All these
-constructions have found a correspondence in the Curry-Howard correspondence.
-The only missing piece is recursive programs.  For example
-\C{addn} was written by recursion on its first argument, and is a
-function taking in input two numbers and producing a third one.
-We can write programs by recursion that take in input, among regular  data,
-proofs and produce in output other proofs.  Let's look at the
-induction principle for natural numbers
-
-\begin{coq}{}{}
-About nat_ind.
-(* nat_ind :
-forall P : nat -> Prop, P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n *)
-\end{coq}
-
-\C{nat\_ind} is a program that produces a proof of \C{(P n)} for any \C{n}
-proviso a proof for the base case \C{(P 0)}, and a proof
-of the inductive step \C{(forall n : nat, P n -> P n.+1)}.
-Let's write such program.
-
-\begin{coq}{}{}
-Fixpoint nat_ind (P : nat -> Prop)
-  (p0 : P 0) (pS : forall n : nat, P n -> P n.+1) n : P n :=
-  if n is m.+1 then
-    let pm (* : P m *) := nat_ind P p0 pS m in
-    pS m pm (* : P m.+1 *)
-  else p0.
-\end{coq}
-
-Every inductive comes with such an induction principle, the job of elim is
-to find a suitable value for \C{P} in order to \C{apply} the induction
-principle. Typically P can be obtained by taking the goal and generalizing
-it.  Complex \C{elim} like \C{elim: {2}n (leqnn n)}.
-
-\subsection{Axioms of the logic we work with}
-
-Not all valid reasoning principles can be expressed as programs.
-For example excluded middle can be proved by a program only when
-the predicate is decidable, i.e. when we can write in Coq a program
-to \C{bool} that decides it.
-Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
-
-In \mcbMC{} we stay axiom free.  This makes the library compatible with as many
-extra axioms as possible (i.e. not all combinations of axioms are consistent,
-hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like RCF (less reals but enough).
-
-
-\section{Boolean Reflection}
-
-
-
-\subsection{Motivations}
+%\section{Motivations}
 
 At this stage, we are in presence of one of the main issues in the
 representation of mathematics in a formal language: very often,
@@ -727,11 +61,11 @@ case: s_has_aP => [n asn].
 introduces in the context of the goal a natural number \C{n : nat} and
 the fact \C{asn : a (nth x0 s n)}. In order to establish that
 \C{(has_prop a x0 s)} we cannot resort to computation, but we can
-on the other hand prove it by providin the index at which a witness is
+on the other hand prove it by providing the index at which a witness is
 to be found  --plus a proof of this fact-- which may be better suited
 for instance to an abstract sequence \C{s}.
 
-In summary, boolean statements are specially convenient for excluded
+In summary, boolean statements are especially convenient for excluded
 middle arguments and its variants (contrapositive, reductio ad
 absurdum,...). They furthermore provide a form of small step
 automation by computation\footnote{They moreover allow for
@@ -743,7 +77,7 @@ are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
 statements), subformulae (of conjunctions),... They are proved by
 deduction, building proof trees made with the rules of the
-logic. Formalizing a predicate by the means of a boolean specfication
+logic. Formalizing a predicate by the means of a boolean specification
 requires implementing a form of decision
 procedure and possibly proving a specification lemma if
 the code of the procedure is not a self-explanatory description of the
@@ -756,14 +90,14 @@ given specification is akin to assuming that the excluded middle
 principle holds on the corresponding predicate.
 
 The boolean reflection methodology proposes to avoid
-commiting to one or the other of these options, providing enough
+committing to one or the other of these options, providing enough
 infrastructure to ease the bureaucracy of navigating between the two.
-The \C{is_true} correcion, which we have been using since the early
+The \C{is_true} correction, which we have been using since the early
 pages of Chapter~\ref{ch:proofs} is in fact one ingredient of this
 infrastructure.\marginnote{We should now decide what is said in the
   previous chapter and what we say here about this coercion.} Indeed
 this coercion turns a boolean value into a \C{Prop} statement, that
-can be used as a the statement of a theorem or of a hypothesis. It
+can be used as the statement of a theorem or of a hypothesis. It
 hides however an equality than can also be used with the \C{rewrite}
 tactic, for instance to perform local modification in goals that can
 incidentally trigger larger simplifications when they combine well with
@@ -771,7 +105,9 @@ computations. \marginnote{Give an example here. Do we need to mention
   setoid rewriting here for Coq users?}
 
 
-\subsection{Equivalences between booleans and \C{Prop} statements}\label{ssec:boolProp}
+\section{Views}
+
+\subsection{Relating statements in \C{bool} and \C{Prop}}\label{ssec:boolProp}
 
 How to best formalize the equivalence between a boolean value \C{b}
 and a statement \C{P : Prop}? The most direct way would be to use the
@@ -783,7 +119,7 @@ Definition |*bool_Prop_equiv*| (P : Prop) (b : bool) := b = true <-> P.
 \end{coq}
 Yet as we shall see in this section, we can improve the phrasing of
 this logical sentence, in order to improve its usability. For
-instance, although \C{(bool_Prop_equiv b P)} implies that the excluded
+instance, although \C{(bool_Prop_equiv P b)} implies that the excluded
 middle holds for \C{P}, it does not provide directly a convenient way
 to reason by case analysis on the fact that \C{P} holds or not, or to
 use its companion version \C{b = false <-> ~ P}. The following proof
@@ -800,7 +136,7 @@ Qed.
 \end{coq}
 
 We could try
-alternate formulations based on the connective seen in
+alternate formulations based on the connectives seen in
 section~\ref{sec:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but a better solution is
 to use an ad-hoc inductive definition, that ressembles this
@@ -944,7 +280,8 @@ provides a proof of the usual double implication between \C{P} and
 
 Statement \C{(@iffP_lr P b)} in the exercise can be obtained as the
 specialization \C{(@iffP _ _ (@idP b))} where \C{|*idP*|} is the
-trivial reflexive equivalence:
+trivial reflexive\footnote{Note that the first occurrence of \C{b} is
+coerced to \C{Prop} by \C{is\_true}} equivalence:
 
 \begin{coq}{}{}
 Lemma |*idP*| {b : bool} : reflect b b.
@@ -1023,29 +360,33 @@ intro-pattern with the application of a view.
 
 For instance, suppose that one wants to access the components of a
 conjunctive hypothesis, stated as a boolean conjunction like in:
+
 \begin{coq}{}{}
-Lemma foo n m k : k <= n -> (n <= m) && (m <= k) -> n = k.
+Lemma example n m k : k <= n -> (n <= m) && (m <= k) -> n = k.
 \end{coq}
+
 Then we can use lemma \C{andP} in a \emph{view intro-pattern}:
 
 \begin{coq}{}{width=7cm}
-Lemma foo n m k :
-  k <= n -> (n <= m) && (m <= k) -> n = k.
+Lemma example n m k :
+  k <= n ->
+    (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP.
 \end{coq}
-\begin{coqout}{}{width=7cm}
+\begin{coqout}{}{width=5cm}
 n : nat
 m : bool
 k : nat
 lekn : k <= n
-============================
- n <= m /\ m <= k -> n = k
+==========================
+ n <= m /\ m <= k ->
+   n = k
 \end{coqout}
 
 The view intro-pattern \C{/andP} has \emph{applied} view \C{andP} to
 the head hypothesis \C{(n <= m) && (m <= k)} and tranformed it into
-its equivalent form \C{(n <= m) /\ (m <= k)}. Note that strictly
+its equivalent form \C{(n <= m) /\\ (m <= k)}. Note that strictly
 speaking, view \C{andP} does not have the shape of an implication,
 that can be fed with a proof of its premise: it is (isomorphic to) the
 conjunction of \emph{two} such implications. The \emph{view mechanism}
@@ -1056,7 +397,7 @@ well as the possible missing arguments of the view.
 
 More precisely in this case, the \C{/andP} intro pattern has changed
 hypothesis \C{top : (n <= m) && (m <= k) (* = true *)} into
-\C{elimTF andP top : (n <= m) /\ (m <= k)},
+\C{elimTF andP top : (n <= m) /\\ (m <= k)},
 where \C{elimTF} is the ``adaptator'' which has been
 inserted\footnote{Adaptators are in fact called \C{Hint Views},
   registered by the eponym vernacular command. See~\cite{ssrman} for
@@ -1067,8 +408,8 @@ Lemma |*elimTF*| {P Q : Prop} {b c : bool} :
   reflect P b -> b = c -> if c then P else ~ P.
 \end{coq}
 Term \C{elimTF andP top} hence has type
-\C{if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\ (m <= k))},
-which reduces to \C{((n <= m) /\ (m <= k))}.
+\C{if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\\ (m <= k))},
+which reduces to \C{((n <= m) /\\ (m <= k))}.
 
 \marginnote{Show other examples of inserted hint views? Like negation...}
 
@@ -1076,7 +417,7 @@ Going back to  our example: we can then chain this view with a casing
 intro-pattern to break the conjunction and introduce its components:
 
 \begin{coq}{}{width=7cm}
-Lemma foo n m k :
+Lemma example n m k :
   k <= n -> (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP [lenm lemk].
@@ -1097,7 +438,7 @@ As \C{(n <= m)} is a notation for \C{n - m == 0}, we can use view
 new shape of the \C{leqnm} hypothesis:
 
 \begin{coq}{}{width=7cm}
-Lemma foo n m k :
+Lemma example n m k :
   k <= n -> (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP [/eqnP lenm lemk].
@@ -1116,7 +457,9 @@ n = k
 Combining wisely the facilities of \C{Prop} structural reasoning with
 the ease to reason by equivalence via rewriting of boolean identities
 leads to concise proofs and proof scripts and prevent from too low
-level proof steps. Let us dissect as an example a possible proof that
+level proof steps. 
+
+Let us now move to a non artificial example and dissect the proof that
 \C{(_ <= _)} is a total relation, expressed as a boolean statement:
 
 \begin{coq}{}{}
@@ -1126,11 +469,11 @@ Lemma |*leq_total*| m n : (m <= n) || (m >= n).
 The first step of the proof is to view this disjunction as an
 implication, using the classical equivalence and a negated premise:
 
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{width=7.6cm}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
 rewrite -implyNb.
 \end{coq}
-\begin{coqout}{}{width=5cm}
+\begin{coqout}{}{width=4.7cm}
 m : nat
 n : nat
 =====================
@@ -1139,11 +482,11 @@ n : nat
 
 This premise can be seen as \C{n < m}:
 
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{width=7.6cm}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
 rewrite -implyNb -ltnNge.
 \end{coq}
-\begin{coqout}{}{width=5cm}
+\begin{coqout}{}{width=4.5cm}
 m : nat
 n : nat
 =====================
@@ -1156,11 +499,11 @@ mechanism not only exists in intro-patterns: it can also be used in
 combination with the \C{apply} tactic, to apply a view to a given goal
 with a minimal amount of bureaucracy:
 
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{width=7.6cm}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
 rewrite -implyNb -ltnNge; apply/implyP.
 \end{coq}
-\begin{coqout}{}{width=5cm}
+\begin{coqout}{}{width=4.5cm}
 m : nat
 n : nat
 =====================
@@ -1168,27 +511,26 @@ n : nat
 \end{coqout}
 
 We can now conclude the proof:
-\begin{coq}{}{width=7cm}
+
+\begin{coq}{}{}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
-rewrite -implyNb -ltnNge; apply/implyP; apply: ltnW.
+Proof. by rewrite -implyNb -ltnNge; apply/implyP; apply: ltnW. Qed.
 \end{coq}
-\begin{coqout}{}{width=5cm}
-No more subgoals.
-\end{coqout}
 
 The \C{case} tactic also combines with the \C{view} mechansism, which
 eases reasoning by cases along a disjunction expressed with a boolean
 statement, like \C{leq_total}. Example:
 
-
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{}
 Lemma |*leq_max m n1 n2*| :
   (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 case/orP: (leq_total n2 n1) => le_n12.
 \end{coq}
 
-\begin{coqout}{}{width=5cm}
+That results in:
+
+\begin{coqout}{}{}
 m : nat
 n1 : nat
 n2 : nat
@@ -1202,16 +544,17 @@ subgoal 2 (ID 478) is:
 
 Finally, the \C{rewrite} tactic can also be used to work with views:
 
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{}
 Lemma |*maxn_idPl*| {m n} : reflect (maxn m n = m) (m >= n).
+Proof. (* exercise *) Qed.
 
 Lemma |*leq_max m n1 n2*| :
   (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
-case/orP: (leq_total n2 n1) => le_n12.
-  rewrite (maxn_idPl le_n12).
+case/orP: (leq_total n2 n1) => le_n12. rewrite (maxn_idPl le_n12).
 \end{coq}
 
+Leading to:
 
 \begin{coqout}{}{}
 
@@ -1317,7 +660,7 @@ which we could introduce it: \C{/eqP ->}, \C{/andP [h1 h2]},
 % Lemma introFn : P -> b' = false.   Proof using Pb'. exact: introTFn false _. Qed.
 % \end{coq}
 
-% \subsection{how to use reflect lemmas as tactic decorators}
+% \section{how to use reflect lemmas as tactic decorators}
 
 % we make examples with andP orP negP in move/P, apply/P, case/P.
 
@@ -1325,7 +668,7 @@ which we could introduce it: \C{/eqP ->}, \C{/andP [h1 h2]},
 
 % some view can be partial, A -> B -> reflect B c.
 
-% \subsubsection{The view mechanism in intro pattern}
+% \subsection{The view mechanism in intro pattern}
 
 %   a == b \&\& bb
 
@@ -1702,69 +1045,69 @@ abbreviations \C{set}
 \item keep context clean?
 \end{itemize}
 
-\section{STOP HERE}
-
-THIS CHAPTER IS ABOUT METHODOLOGY, plus introduces the other logical
-connectives. May be merged into the previous chapter.
-
-
-% Where one learns to do proofs.
-% Boolean reflection in practice, views, discussion on the definition of leq,
-% proofs on things defined in the
-% previous chapter, associated tactics, exercises on prime, div,
-% binomial, etc.
-%
-% spec? A new vernacular to declare specs without typing coinductive and
-% by writing explicitly the equations.
-
-Discussion prop/bool, intuitionism, extraction (we should be able to
-avoid talking about impredicativity, but use Prop for computationally
-irrelevant).
-
-
-\begin{itemize}
-\item can we specify all we have written so far using just = and forall? No.
-	Example dvdn needs exists to be specified
-\item exists, and, or, neg, False, True as inductives (again CH style)
-\item related tactics: split, left, right,exists,case
-\end{itemize}
-
-Anyway to take advantage of computation (ssr style) we want to
-work with bool as much as possible:
-
-\begin{itemize}
-\item reflect is the right way to write iff, <->, specialized to bool
-	so that the proof language recognizes it and offer a bit more ergonomic
-\item is-true
-\item infrastructure for reflect: iffp, altp
-\item no split if goal is \&\& (metodology)
-\end{itemize}
-
-Writing good statements
-
-\begin{itemize}
-\item = as iff for bool, because rewrite is easy to use
-\item and3p, spec (drive your proof),
-\item advanced stuff: classically P instead of not-not P (can be
-  skipped for beginners)
-\item in general good quantifications and implicit arguments and good library
-	makes it possible to work without evars
-\item . \C{<=} . ?= iff .
-\end{itemize}
-
-Statements do also occur in the middle of proofs.  There we have many ways to
-write them compactly, wlog and have.
-
-Comparison with other possible ways of writing properties:
-\begin{itemize}
-\item impact of le v.s. leq in a proof
-\end{itemize}
-
-In this chapter we should distill a description of our
-systematic-reactions, reflexes, to typical situations a
-beginner would screw up. In fact it would be great to explain here the
-mix of Gallina (unless, classically, etc.) and of tactics (wlog,
-have,...) that lead to a convenient modelling of the math prose.
+% \section{STOP HERE}
+% 
+% THIS CHAPTER IS ABOUT METHODOLOGY, plus introduces the other logical
+% connectives. May be merged into the previous chapter.
+% 
+% 
+% % Where one learns to do proofs.
+% % Boolean reflection in practice, views, discussion on the definition of leq,
+% % proofs on things defined in the
+% % previous chapter, associated tactics, exercises on prime, div,
+% % binomial, etc.
+% %
+% % spec? A new vernacular to declare specs without typing coinductive and
+% % by writing explicitly the equations.
+% 
+% Discussion prop/bool, intuitionism, extraction (we should be able to
+% avoid talking about impredicativity, but use Prop for computationally
+% irrelevant).
+% 
+% 
+% \begin{itemize}
+% \item can we specify all we have written so far using just = and forall? No.
+% 	Example dvdn needs exists to be specified
+% \item exists, and, or, neg, False, True as inductives (again CH style)
+% \item related tactics: split, left, right,exists,case
+% \end{itemize}
+% 
+% Anyway to take advantage of computation (ssr style) we want to
+% work with bool as much as possible:
+% 
+% \begin{itemize}
+% \item reflect is the right way to write iff, <->, specialized to bool
+% 	so that the proof language recognizes it and offer a bit more ergonomic
+% \item is-true
+% \item infrastructure for reflect: iffp, altp
+% \item no split if goal is \&\& (metodology)
+% \end{itemize}
+% 
+% Writing good statements
+% 
+% \begin{itemize}
+% \item = as iff for bool, because rewrite is easy to use
+% \item and3p, spec (drive your proof),
+% \item advanced stuff: classically P instead of not-not P (can be
+%   skipped for beginners)
+% \item in general good quantifications and implicit arguments and good library
+% 	makes it possible to work without evars
+% \item . \C{<=} . ?= iff .
+% \end{itemize}
+% 
+% Statements do also occur in the middle of proofs.  There we have many ways to
+% write them compactly, wlog and have.
+% 
+% Comparison with other possible ways of writing properties:
+% \begin{itemize}
+% \item impact of le v.s. leq in a proof
+% \end{itemize}
+% 
+% In this chapter we should distill a description of our
+% systematic-reactions, reflexes, to typical situations a
+% beginner would screw up. In fact it would be great to explain here the
+% mix of Gallina (unless, classically, etc.) and of tactics (wlog,
+% have,...) that lead to a convenient modelling of the math prose.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Declaring implicit arguments}
 \mcbREQUIRE{Canonical}
