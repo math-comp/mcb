@@ -184,6 +184,9 @@ logical rule \C{$\wedge_I$}.  Note that \C{A} and \C{B} are parameters of the
 inductive definition, similarly to the definition of polymorphic lists
 or pairs.  Finally note that the definition of the pair data type is very
 similar to the one of the conjunction.
+\marginnote{The observation on pairs deserves more hammering. May be
+  recall the code of the polymorphic pairs here. And in any case,
+  ensure that this data structure has been seen in chapter~\ref{ch:prog}}
 
 Pattern matching provides a way to express the elimination rule for
 conjunction.  In particular the elimination rule is just a projection.
@@ -662,4 +665,3 @@ Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
 In \mcbMC{} we stay axiom free.  This makes the library compatible with as many
 extra axioms as possible (i.e. not all combinations of axioms are consistent,
 hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like RCF (less reals but enough).
-
