@@ -1,7 +1,6 @@
 \Chapter{Computational definitions}{ Defining concepts by writing programs}\label{ch:prog}
 
-\textcolor{blue}{Find a more catchy title? The motivation is: how to define things:
-objects, operations, (boolean) relations.}
+%\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
 We will take the point of view that mathematics can be understood as
 the study of objects, operations on these objects, and abstractions.  
@@ -276,7 +275,7 @@ the preamble files:
 Definition andb b1 b2 := if b1 then b2 else false
 \end{coq}
 
-\subsubsection{TODO : A note on associativity for notations}
+% \subsubsection{TODO : A note on associativity for notations}
 
 \subsection{natural numbers}
 The description of natural numbers in the Coq system is inspired from
@@ -914,87 +913,87 @@ where they can be instantiated to arbitrary objects of the right type.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% End of written part %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Theoretical content:
-\begin{itemize}
-\item Functions with simple types ($\lambda$, $\rightarrow$): functions are the primitive concept
-\item Inductive {\bf datas}
-\item Programs by case analysis and recursion
-\item Compute (beta, delta, iota) example of beta (that helps later on to explain a predicate for elim principles)
-\item Polymorphic datatypes (introduce $\Pi$, and its \Coq{} notation
-  \C{forall}, for quantification over datatypes only)
-\item Everyone has a type : \C{0 : nat : Type : Type}, types avoid confusion
-\end{itemize}
-This is more or less a standard introduction to (a flavor of)
-functional programming, with two possible difficulties:
-\begin{itemize}
-\item Be precise but not too technical (e.g. on inductive types)
-\item Find a line of speech which does not bore/discourage
-  mathematicians.
-\item Somehow the syntax of (this fragment of the) terms should made
-  be clear and precise.
+% Theoretical content:
+% \begin{itemize}
+% \item Functions with simple types ($\lambda$, $\rightarrow$): functions are the primitive concept
+% \item Inductive {\bf datas}
+% \item Programs by case analysis and recursion
+% \item Compute (beta, delta, iota) example of beta (that helps later on to explain a predicate for elim principles)
+% \item Polymorphic datatypes (introduce $\Pi$, and its \Coq{} notation
+%   \C{forall}, for quantification over datatypes only)
+% \item Everyone has a type : \C{0 : nat : Type : Type}, types avoid confusion
+% \end{itemize}
+% This is more or less a standard introduction to (a flavor of)
+% functional programming, with two possible difficulties:
+% \begin{itemize}
+% \item Be precise but not too technical (e.g. on inductive types)
+% \item Find a line of speech which does not bore/discourage
+%   mathematicians.
+% \item Somehow the syntax of (this fragment of the) terms should made
+%   be clear and precise.
 % \item types depending on terms (matrix x m)
-\end{itemize}
+% \end{itemize}
 
 
-\begin{itemize}
-\item Use monomorphic instances/compatible versions of the notations
-  that will later be generalized using canonical structures;
-\item For instance the infix \C{==} is the comparison on \C{nat}
-\item Further examples: \verb+\sum_(i <- l) F i+, \verb+\sum_(a <= b <) F i+
-in order to illustrate \C{foldr}.
-\end{itemize}
-\Coq{} commands and features:
-\begin{itemize}
-\item Implicit arguments (only to go from system F to ML), \C{@}
-\item Sections and its discharging, implicit types
-\end{itemize}
-
-
-\Coq{} types introduced:
-\begin{itemize}
-\item \C{bool, nat, seq, option, prod}
-\end{itemize}
-
-Programs presented in detailed examples/exercises:
-\begin{itemize}
-\item Elementary programs on \C{option}: \C{odflt, obind,}\dots
-\item Elementary programs on \C{seq} (without the \C{eqType}):
-  \C{size, map, iota,...}
-\item Comparison functions on \C{bool, nat}
-\item Comparison functions on containers, taking the comparison
-  function on the type of stored elements in argument (mind the
-  higher-order)
-\item Boolean connectives, arithmetic operations on \C{nat}
-\item Do not forget to mention \C{if .. then .. else}
-\item Euclidean division, computation of prime factors, examples from
-  elementary number theory
-\item Examples of G{\"o}del-style encoding from the {\tt choice.v} library.
-\item Examples/exercises about extended gcd (egcdn), which mix lists
-  and arithmetic.
-\end{itemize}
-If possible give a few context to the exercises, in order not to bore
-the reader not familiar with programming. For instance do not say that
-you encode sequences of nats in nats but give a few hints about the
-use of G{\"o}del encoding.
-
-Examples and exercises can be executed in an empty context, or
-libraries can be required for the purpose of (re)using and combine existing
-programs (non proofs here).
-
-The current contents are organized like the tutorial at ITP15 I gave (Enrico).
-It was on standard Coq and was intended not to be difficult class ;-)
-It is a possible plan, no strong opinions.
-
-\section*{Things needed by chapter 2}
-\begin{itemize}
-\item type annotations on arguments of lemmas/definitions can be omitted
-\item if then else
-\item all boolean connectives: \C{orb andb negb implb xorb}
-\item recursive programs: \C{addn muln subn leq eqn expn dvdn}
-\item notations with associativity: \C{+ * - == != .+1 < <= \%| \~\~}
-\end{itemize}
-
-
+% \begin{itemize}
+% \item Use monomorphic instances/compatible versions of the notations
+%   that will later be generalized using canonical structures;
+% \item For instance the infix \C{==} is the comparison on \C{nat}
+% \item Further examples: \verb+\sum_(i <- l) F i+, \verb+\sum_(a <= b <) F i+
+% in order to illustrate \C{foldr}.
+% \end{itemize}
+% \Coq{} commands and features:
+% \begin{itemize}
+% \item Implicit arguments (only to go from system F to ML), \C{@}
+% \item Sections and its discharging, implicit types
+% \end{itemize}
+% 
+% 
+% \Coq{} types introduced:
+% \begin{itemize}
+% \item \C{bool, nat, seq, option, prod}
+% \end{itemize}
+% 
+% Programs presented in detailed examples/exercises:
+% \begin{itemize}
+% \item Elementary programs on \C{option}: \C{odflt, obind,}\dots
+% \item Elementary programs on \C{seq} (without the \C{eqType}):
+%   \C{size, map, iota,...}
+% \item Comparison functions on \C{bool, nat}
+% \item Comparison functions on containers, taking the comparison
+%   function on the type of stored elements in argument (mind the
+%   higher-order)
+% \item Boolean connectives, arithmetic operations on \C{nat}
+% \item Do not forget to mention \C{if .. then .. else}
+% \item Euclidean division, computation of prime factors, examples from
+%   elementary number theory
+% \item Examples of G{\"o}del-style encoding from the {\tt choice.v} library.
+% \item Examples/exercises about extended gcd (egcdn), which mix lists
+%   and arithmetic.
+% \end{itemize}
+% If possible give a few context to the exercises, in order not to bore
+% the reader not familiar with programming. For instance do not say that
+% you encode sequences of nats in nats but give a few hints about the
+% use of G{\"o}del encoding.
+% 
+% Examples and exercises can be executed in an empty context, or
+% libraries can be required for the purpose of (re)using and combine existing
+% programs (non proofs here).
+% 
+% The current contents are organized like the tutorial at ITP15 I gave (Enrico).
+% It was on standard Coq and was intended not to be difficult class ;-)
+% It is a possible plan, no strong opinions.
+% 
+% \section*{Things needed by chapter 2}
+% \begin{itemize}
+% \item type annotations on arguments of lemmas/definitions can be omitted
+% \item if then else
+% \item all boolean connectives: \C{orb andb negb implb xorb}
+% \item recursive programs: \C{addn muln subn leq eqn expn dvdn}
+% \item notations with associativity: \C{+ * - == != .+1 < <= \%| \~\~}
+% \end{itemize}
+% 
+% 
 % \section{Functional programming in a nutshell}
 % Only intuitions here.
 % 

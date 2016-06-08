@@ -2,15 +2,17 @@
 
 \input{mymacros.tex}
 \input{myacronyms.tex}
+\renewcommand\marginnote[1]{}
+% \renewcommand\marginpar[1]{}
 
 \title{The Book}
-\author{Assia, Enrico, \ldots (you are welcome)}
+\author{} %{Assia, Enrico, Georges, \ldots (you are welcome)}
 
 \begin{document}
 \maketitle
 \tableofcontents{}
 
-\input{chConventions.tex}
+% \input{chConventions.tex}
 
 \input{ch0.tex}
 
@@ -21,17 +23,14 @@
 \input{chTT}
 \input{chSpecification}
 
+\part{Formalization techniques}
+
 \input{chTypeInference}
 \input{chSigmaBool}
 \input{chHierarchy}
 
-\mantra{
-	if you have a proof in mind, don't let the system drive you
-        to another, less clean and abstract, proof.
-}
-
-Declaring an instance is hard... we need to document the multuiple processes
-for each structure in each hierarchy and possibily make a program out of it.
+% Declaring an instance is hard... we need to document the multuiple processes
+% for each structure in each hierarchy and possibily make a program out of it.
 
 % \chapter{Larger scale reflection (out of place)}
 % Four colours, decomposition in primes, example in peterfalvi. In
@@ -40,6 +39,11 @@ for each structure in each hierarchy and possibily make a program out of it.
 % to hint the proof. This topic is probably at a wrong place.
 
 \part{Mathematics in Mathematical Components}
+
+\mantra{
+	if you have a proof in mind, don't let the system drive you
+        to another, less clean and abstract, proof.
+}
 
 \section{STYLE of these chapters}
 These chapters hopefully in the following style:
@@ -76,19 +80,19 @@ particular for complex numbers).
 Georges'ITP paper. Here is one of the main application of the choice
 operator (complement a base).
 
-\chapter{Quotients}
+% \chapter{Quotients}
 
 \chapter{Finite group theory}
 
 Data-structures, how to craft the set of variants of a same theorem to
 make the formalization handy. Permutations. Presentations?
 
-\chapter{Representation theory, Character theory}
+\chapter{Representation and Character theory}
 
 As an example of application, in particular of the linear algebra
 theory.
 
-\chapter{Galois Theory}
+% \chapter{Galois Theory}
 
 
 \input{rcf.tex}
@@ -107,7 +111,7 @@ formalism (Cubical Coq, HITs...).
 
 \part{Annexes}
 
-\chapter{Foundations}
+% \chapter{Foundations}
 
 \chapter{What is done where?}
 
@@ -125,6 +129,7 @@ suggestions:
 \item Compute ``for real'' (Natbin, Coqeal)
 \item MathComp script style
 \end{itemize}
+
 \chapter{Naming conventions}
 
 \chapter{Index of notations}

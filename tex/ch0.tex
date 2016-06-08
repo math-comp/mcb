@@ -1,12 +1,13 @@
 \setcounter{chapter}{-1}
 \chapter{Mathematical Components}
 
-the library was originally developed to support the formalization
-of the oothm, a result that requires a wide panel of math theories.
+\emph{Brainstorming notes; to be fleshed out after technical content is fixed.}
+
+The Mathematical Components library was originally developed to
+support the formalization of the Odd Order theorem, a result that
+requires a wide selection of mathematical theories.
 
 \section{challenges}
-
-
 
 This introduction explains the motivation of the book, which is to
 present the methodologies we propose to build libraries of formalized
@@ -59,11 +60,11 @@ reader. And in general we would like the user to provide as much, but
 no more information in his statement/proof as he would in a proof,
 avoiding redundant information (where redundant covers inferable).
 
-Another kind of implicit information is behind reasoning patterns that should also
-be modeled in a convenient way for the user. For instance,
+Another kind of implicit information is behind reasoning patterns that
+should also be modeled in a convenient way for the user. For instance,
 \emph{mutatis mutandis}, wlog, etc. These rely on the fact that the
 reader is able both to infer the mathematical statement involved in a
-cut formula \marginnote{ LR: is it reasonable to talk about cut formula  here?}
+cut formula \marginnote{LR: is it reasonable to talk about cut formula here?}
  and to run rather easily the simple piece of proof that
 justifies it. This is modeled by techniques based on formula generation
 by subterm selection. This also overcomes an unwanted behavior that
@@ -84,9 +85,6 @@ to organize the infrastructure content that make it possible to work with
 some comfort in upper layers of the library, in order to configure
 the content so that the machine can use it (order of arguments,
 implicit status, naming policy...).
-
-
-
 
 
 \section{challenges faced and tools adopted}
@@ -184,7 +182,7 @@ and be sure you can model it as such:
 	canon, comput... in the type)
 \end{itemize}
 
-This may also be another way present the whole chapter
+% This may also be another way present the whole chapter
 
 \mantra{(basic) if you see toto=false you should perform the case analysys via
 fooP

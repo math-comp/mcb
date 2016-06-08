@@ -23,11 +23,11 @@ correspondence.  The universe of boolean predicates is in \mcbMC{} limited: one
 cannot for example express a general $\exists$ quantification, and also the
 status of the $\forall$ quantification has been so far never really explained.
 This presentation is far from being exhaustive, the interested reader can find
-a modern presentation of type theory in \cite{hott}.
+a modern presentation of type theory in \cite{hottbook}.
 
 \section{Connectives}
 
-\subsection{Primitive types and terms formers}
+\subsection{Primitive types and terms formers}\label{sec:chi}
 
 In type theory we say that \emph{logical statements} correspond to
 \emph{types} and that \emph{proofs} correspond to \emph{programs}.
@@ -664,4 +664,4 @@ Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
 
 In \mcbMC{} we stay axiom free.  This makes the library compatible with as many
 extra axioms as possible (i.e. not all combinations of axioms are consistent,
-hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like RCF (less reals but enough).
+hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like Real Closed Fields (weaker than reals, but sufficient for most algebra).

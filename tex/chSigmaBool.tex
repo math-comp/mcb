@@ -21,48 +21,48 @@ Require Import tuple.
 
 \Chapter{Subtypes: terms with extra properties}{}\label{ch:sigmabool}
 
-\begin{itemize}
-\item mixing data and proofs is possible
-\item get richer objects out of already existing ones without
-	redefining new objects
-\item need to inherit the theory of base objects
-\item handy to infer the extra property (easy to form)
-\item exzample 1 : ordinals (fintype)
-\item impact of ordinals on bigop
-\item finfun and matrixes
-\item example 2 : polynomials (need ringType)
-\end{itemize}
+% \begin{itemize}
+% \item mixing data and proofs is possible
+% \item get richer objects out of already existing ones without
+% 	redefining new objects
+% \item need to inherit the theory of base objects
+% \item handy to infer the extra property (easy to form)
+% \item exzample 1 : ordinals (fintype)
+% \item impact of ordinals on bigop
+% \item finfun and matrixes
+% \item example 2 : polynomials (need ringType)
+% \end{itemize}
 
-to build a large library one needs to reuse as much as possible what
-is available and build incrementally.  so far inductive types have
-been the only way to define a new object, while bool predicates the
-common way to define predicates.
+To build a large library one needs to reuse as much as possible what
+is available and build incrementally.  So far inductive types have
+been the only way to define a new object, while bool predicates have been the
+preferred way to define predicates.
 
-in CIC proofs are terms, so one can put together objects and proofs
-of properties to obtain new objects.  this operation is expensive in
+In CIC proofs are terms, so one can put together objects and proofs
+of properties to obtain new objects.  This operation is expensive in
 the sense that imposes on the user extra work whenever he has to build
-an inhabitant, so hat to be use with care.  some techniques to ease
+an inhabitant, so it must be used with care. Some techniques to ease
 the creation of such types and of such inhabitants are provided. also
 crafting a new type lets one enrich its type to expose to the type
-system some piece of info.  type inference can use so to let one write
+system some piece of info. Type inference can be used so to let one write
 very concisely statements.
 
-examples are the type of ordinals and the type of polynomials.
+Prime examples of such \emph{refinement types} are the type of ordinals and the type of polynomials.
 
-ordinals expose the size in their types and are finite.  This is for
+Ordinals expose the size in their types and are finite. This is for
 example useful to leave size constraints implicit in expressions about
-matrixes.  If a matrix is a function from in*im to x, then we can't
-possibly address elements in the matrix outside its dimensions, and we
-can write : determinant, biop switch sum prod.
+matrixes. If a matrix is a function from $I_m\times I_n$ to $X$, then we can't
+possibly address elements in the matrix outside its dimensions.
+%, and we can write : determinant, bigop switch sum prod.
 
-it is crucial that the theory is inherited. coercions and CS help
-here.  organizing the theories around a hirarchy in next chapter.
-ordinals inherit arithmetic.
-polynomials are lists of coefficients. one typically wants a canonical
-representation, so that equal polymonials can be proved eq.
-we can easily impose such proposerty in the proposed approach.
-we inherit all the operations on lists, and all the theory of eqType,
-via the subtype machinery.
+% It is crucial that the theory is inherited. coercions and CS help
+% here.  organizing the theories around a hirarchy in next chapter.
+% ordinals inherit arithmetic.
+% polynomials are lists of coefficients. one typically wants a canonical
+% representation, so that equal polymonials can be proved eq.
+% we can easily impose such proposerty in the proposed approach.
+% we inherit all the operations on lists, and all the theory of eqType,
+% via the subtype machinery.
 
 
 \section{xxxxxxxxxxxxxx old xxxxxxxxxxxxxxxxx}
@@ -98,7 +98,6 @@ the present technology implemented in Coq... tentative list:
   are to be added to the graph of the hierarchy when a new
   structure is added.
 \end{itemize}
-
 
 Organizing, structuring, knowledge is a delicate task. A successful
 path followed in mathematics is algebraization. The focus shifts
@@ -293,7 +292,7 @@ involution, we have to prove the same property from scratch for
 Of course one can relate sequences and vectors by means of
 morphisms.  Even if the \mcbMC{} library provides adequate
 infrastructure for dealing with morphisms, its use is generally
-avoided when possible.  GIVE A BETTER INSIGHT.
+avoided when possible. % GIVE A BETTER INSIGHT.
 
 The conclusion is to drop the idea of defining a completely new data
 type, and try to reuse the one of sequences.  For example by packing a
@@ -770,18 +769,18 @@ Notation "[ 'subType' 'for' v ]" := (SubType _ v _ inlined_sub_rect vrefl_rect)
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{2}
-\mcbLEARN{curiosity}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Sub-types in HoTT}
+% \mcbLEVEL{2}
+% \mcbLEARN{curiosity}
+% \mcbPROVIDE{}
+% \mcbREQUIRE{}
+% \mcbsection{Sub-types in HoTT}
 
-Recent advances in HoTT identify the class of propositions that have a
-canonical proof, mere propositions, and such class is closed under
-forall quantification, while the one we use is not (only bounded
-forall) but the idea is pretty much the same.  Mere propositions can
-be easily used to form a subtype.
+% Recent advances in HoTT identify the class of propositions that have a
+% canonical proof, mere propositions, and such class is closed under
+% forall quantification, while the one we use is not (only bounded
+% forall) but the idea is pretty much the same.  Mere propositions can
+% be easily used to form a subtype.
 
-Also Cyril had other arguments on the fact that one can
-ask less (be more general) and recover all required properties later
-on, but I've to ask him again cause I've forgotten the example.
+% Also Cyril had other arguments on the fact that one can
+% ask less (be more general) and recover all required properties later
+% on, but I've to ask him again cause I've forgotten the example.
