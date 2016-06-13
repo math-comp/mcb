@@ -215,8 +215,9 @@ At the light of that we observe that every time we apply the identity
 function to a term we can omit to specify its first argument,
 since \Coq{} is able to infer it and complete the input term for us.
 This phenomenon is so frequent that one can ask the system to insert
-the right number of \lstinline/_/ for him.  For more details see
-Section~\ref{sec:declaringimpl} or refer to the user manual.  Here
+the right number of \lstinline/_/ for him.  For more details
+% see Section~\ref{sec:declaringimpl} or
+refer to the user manual.  Here
 we only provide a simple example.
 
 \begin{coq}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
@@ -318,7 +319,7 @@ argument of \lstinline/prime_gt1/ as implicit.  \marginnote{maybe also
 tell why one does not need two underscores in the last line}
 Choosing a good  declaration of implicit arguments for lemmas is
 tricky and requires one to think ahead how the lemma is used.
-Section~\ref{sec:declaringimpl} is dedicated to that.
+% Section~\ref{sec:declaringimpl} is dedicated to that.
 
 So far type inference and in particular unification has been used in
 its simplest form, and indeed a first order unification algorithm
@@ -359,7 +360,8 @@ Record eqType : Type := Pack {
   sort : Type;
   eq_op : sort -> sort -> bool
 }.
-\end{coq}\label{eqtype:noproof}
+\end{coq}
+\label{eqtype:noproof}
 \coqrun{name=eqtype1}{ssr,eqtype}
 
 The sentence above declares a new inductive type called
@@ -465,7 +467,7 @@ Actually the meaning of a symbol in math is even deeper: by writing $a
 we are talking about, recall its theory, and use this knowledge to
 eventually justify the steps that follow in a proof.  This very
 same approach let us also model this practice.  We will discuss
-it in Section~\ref{sec:...}}
+it in Section~\ref{rec:itf}}
 Using records lets us model these practices.
 Note that, thanks to its higher order nature, the term \lstinline/eq_op/
 can always be the head symbol denoting a comparison.  This makes
@@ -815,7 +817,7 @@ Hence the definition of \C{eqType} in the
 \mcbMC{} library is closer to the following one:
 \marginnote{We assume that \C{rel} is a known concept here}
 
-\begin{coq}{name=eqtype}{title=The read definition of eqType}
+\begin{coq}{name=eqtype}{title=The real definition of eqType}
 Module Equality.
 
 Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
@@ -823,10 +825,7 @@ Definition axiom T (e : rel T) := forall x y, reflect (x = y) (e x y).
 Record mixin_of T := Mixin {op : rel T; _ : axiom op}.
 Notation class_of := mixin_of.
 
-Structure type : Type := Pack {
-  sort :> Type;
-  _ : class_of sort;
-}.
+Structure type : Type := Pack {sort :> Type; class : class_of sort; }.
 
 End Equality.
 
@@ -1001,7 +1000,7 @@ elimT : forall (P : Prop) (b : bool),
 \mcbREQUIRE{}
 \mcbPROVIDE{\\in}
 \mcbLEVEL{1}
-\mcbsection{The generic theory of sequences}\label{sec:eqtypetheory}
+\mcbsection{The generic theory of sequences}\label{sec:seqtypetheory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Now that the \lstinline/eqType/ interface equips a type with a well
@@ -1157,7 +1156,7 @@ some times expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
 items being combined by the iterated operation.
 
-As already mentioned in Chapter 1~\ref{sec:bigopnat}, 
+As already mentioned in Chapter 1, %~\ref{sec:bigopnat}, 
 the functional programming language
 provided by Coq can express in a very natural way iterations over
 a finite domain.  In particular such finite domain can be represented
@@ -1400,16 +1399,15 @@ it works uniformly on any iterated operator, and provided the operator
 has certain properties it give uniform access to a palette of lemmas.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Expressing the requirement of a bigop
-lemma}\label{sec:bigoplemmas}
+\subsection{Expressing the requirement of a bigop lemma}\label{sec:bigoplemmas}
 
 As we anticipated, canonical structures can be indexed not only on
 types, but on any term.  In particular we can index them on function
 symbols to relate, for example, \C{addn} and its monoid structure.
 
 Here we only present the \C{Monoid} interface an operation has to
-satisfy in order aceess a class of generic lemmas.
-Chapter~\ref{..} adds other interfaces to the picture and organizes
+satisfy in order access a class of generic lemmas.
+Chapter~\ref{ch:hierarchy} adds other interfaces to the picture and organizes
 the bigop library around them.
 
 \begin{coq}{name=bigop}{}
@@ -1617,9 +1615,9 @@ This little section deals with two ``technological issues'' the reader
 may need to know in order to define overloaded notations or work
 comfortably with them.
 
-The first one is the necessity ot tune the behavior of the
+The first one is the necessity to tune the behavior of the
 simplification tactic (the \C{/=} switch) to avoid loosing the
-heand constant to which the overloaded notation is attached.
+head constant to which the overloaded notation is attached.
 For example the following term:
 
 \begin{coq}{name=infix,print}{}
@@ -1650,7 +1648,7 @@ leaving the expression untouched.  In the second example, it
 does reduce to \C{false} the test \C{(true == false)} in order to
 simplify the \C{||} connective.
 
-The converse technological issue may arise when cnaonical structure
+The converse technological issue may arise when canonical structure
 inference ``promotes'' ....
 
 \begin{coq}{name=infix,print}{width=5.3cm}
@@ -1679,8 +1677,8 @@ It is not uncommon to see \C{/=} switch in purely algebraic proofs
 of the current conjecture.
 
 
-TODO : Discuss also the dangers of breaking abstraction barriers, as a
-good practice.
+% TODO : Discuss also the dangers of breaking abstraction barriers, as a
+% good practice.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Implement \lstinline/[foo of nat]/}
 \mcbREQUIRE{Canonical}
@@ -1696,7 +1694,7 @@ interface, for example \C{[eqType of nat]} is another valid query to
 check if \C{nat} is equipped with a canonical comparison function.
 
 This mechanism can also be used to craft notations that assert
-if one of their argumets validates an inferface.  For example
+if one of their argumets validates an interface.  For example
 imagine one wants to define the concept of finite set as an
 alias of \C{seq T} but such that only values for \C{T} being
 \C{eqType}s are accepted.

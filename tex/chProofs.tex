@@ -30,12 +30,11 @@ Redirect "g2" Show.
 
 \Chapter{Statements and proofs}{ First steps in formal proofs}
 \label{ch:proofs}
-The scope of this chapter is to explain how to states a lemma,
+In this chapter we explain how to state a lemma,
 how to prove it, and how to search existing, loaded library.
 We focus here on simple proof commands, conventions and a first taste
 of boolean reflection. Views and the related tactics are postponed to the
 next chapter, and so are conjunctions and existential statements.
-
 
 \mcbLEARN{Stating basic theorems involving boolean statements,
   equalities, and arrows. Universal quantification is presented via
@@ -49,7 +48,7 @@ next chapter, and so are conjunctions and existential statements.
 \mcbsection{First formal statements}
 
 
-In this section, we illustrate how to state rather simple wannabe
+In this section, we illustrate how to state rather simple (tentative)
 theorems, starting with the simplest, and most pervasive, kind of
 mathematical sentences: identities.
 
@@ -905,10 +904,11 @@ m : nat
 (m.+1 == 0) || (0 == 0)
 \end{coqout}
 
-We will see in Section~\ref{} that this \C{//} switch can be used in
+% We will see in Section~\ref{} that
+This \C{//} switch can be used in
 more general contexts than just this special case of introduction patterns:
 it can actually punctuate more complex combinations of tactics,
-avoiding spurious branching in proofs in a similar manner.
+avoiding spurious branching in proofs in a similar manner~\cite{ssrman}.
 
 Now in the last remaining case, the right hand side evaluates to
 \C{true}, as the left argument of the disjunction is \C{false} (modulo
@@ -1225,7 +1225,7 @@ algorithm used by this tactic.
 
 Lemma \C{leq_def} in fact does not exist in the library. Indeed the
 identity it states holds by symbolic computation, and we have seen in
-Section~\ref{} that such a proof step can be omitted. However if we
+Section~\ref{ssec:proofcomp} that such a proof step can be omitted. However if we
 try to omit the first \C{rewrite !leq_def} command, then the next one,
 namely \C{rewrite -mulnBr} fails:
 
@@ -1340,14 +1340,14 @@ m, n1, n2 : nat
 
 \subsection{Universal quantification, first examples}
 \marginnote{LR: boolean predicate, not yet defined: we have just seen \C{eq} as a predicate in Prop}
-In Chapter~\ref{}, we have defined \emph{predicates}, as functions
+In Chapter~\ref{ch:prog}, we have defined \emph{predicates}, as functions
 with boolean values. For instance, the \C{leq} predicate is defined as
 a predicate on natural numbers, as:
 \begin{coq}{def=LeqDef}{title=Comparison Boolean Predicate}
 Definition |*leq*| n m := m - n == 0.
 \end{coq}
 
-We recall, as seen in Chapter~\ref{}, that this concise syntax stands
+We recall, as seen in Chapter~\ref{ch:prog}, that this concise syntax stands
 for:
 
 \begin{coq}{def=LeqDefFun}{title=Comparison Boolean Predicate}
@@ -1499,7 +1499,7 @@ Check (commutative addn).
 commutative addn : Prop
 \end{coqout}
 Indeed, the class of propositions is closed under universal quantification
-\C{forall} (and also under implication \C{->}). Chapter~\ref{} will
+\C{forall} (and also under implication \C{->}). Chapter~\ref{sec:ttch} will
 provide a more in-depth study of these propositions.
 
 \subsection{Quantified statements and implications}
@@ -1753,18 +1753,18 @@ a lemma easier to use under certain circumstances.
 The last general remark about naming convention worth making so early is that
 uninteresting and recurrent lemmas must have a short names easy to identify and
 disregard when reading a proof and at the same time easy to remember and short
-to type when writing a proof.\marginpar{this is a mantra somewhat}
+to type when writing a proof.\marginnote{this is a mantra somewhat}
 
 \marginnote{Tentative table of content for this section. Will be
   easier to see what is needed here once the exercises are there.}
 
-\subsection{Writing proof scripts}
+% \subsection{Writing proof scripts}
 
-indentation, naming, using closing tactics.
+% indentation, naming, using closing tactics.
 
-\subsection{Searching existing content}
+% \subsection{Searching existing content}
 
-END OF THE REVISED ORGANIZATION.
+% END OF THE REVISED ORGANIZATION.
 %%%--------------- oldies
 
 % \subsection{Stating and proving an equality}

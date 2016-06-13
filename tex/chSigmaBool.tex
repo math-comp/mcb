@@ -19,53 +19,54 @@ Redirect "g1" Show.
 Require Import tuple.
 \end{coqdef}
 
-\Chapter{Subtypes: terms with extra properties}{}\label{ch:sigmabool}
+\Chapter{Sub-Types: terms with extra properties}{}\label{ch:sigmabool}
 
-\begin{itemize}
-\item mixing data and proofs is possible
-\item get richer objects out of already existing ones without
-	redefining new objects
-\item need to inherit the theory of base objects
-\item handy to infer the extra property (easy to form)
-\item exzample 1 : ordinals (fintype)
-\item impact of ordinals on bigop
-\item finfun and matrixes
-\item example 2 : polynomials (need ringType)
-\end{itemize}
+% \begin{itemize}
+% \item mixing data and proofs is possible
+% \item get richer objects out of already existing ones without
+% 	redefining new objects
+% \item need to inherit the theory of base objects
+% \item handy to infer the extra property (easy to form)
+% \item exzample 1 : ordinals (fintype)
+% \item impact of ordinals on bigop
+% \item finfun and matrixes
+% \item example 2 : polynomials (need ringType)
+% \end{itemize}
 
-to build a large library one needs to reuse as much as possible what
-is available and build incrementally.  so far inductive types have
-been the only way to define a new object, while bool predicates the
-common way to define predicates.
+% To build a large library one needs to reuse as much as possible what
+% is available and build incrementally.  So far inductive types have
+% been the only way to define a new object, while bool predicates have been the
+% preferred way to define predicates.
 
-in CIC proofs are terms, so one can put together objects and proofs
-of properties to obtain new objects.  this operation is expensive in
-the sense that imposes on the user extra work whenever he has to build
-an inhabitant, so hat to be use with care.  some techniques to ease
-the creation of such types and of such inhabitants are provided. also
-crafting a new type lets one enrich its type to expose to the type
-system some piece of info.  type inference can use so to let one write
-very concisely statements.
+% In CIC proofs are terms, so one can put together objects and proofs
+% of properties to obtain new objects.  This operation is expensive in
+% the sense that imposes on the user extra work whenever he has to build
+% an inhabitant, so it must be used with care. Some techniques to ease
+% the creation of such types and of such inhabitants are provided. also
+% crafting a new type lets one enrich its type to expose to the type
+% system some piece of info. Type inference can be used so to let one write
+% very concisely statements.
 
-examples are the type of ordinals and the type of polynomials.
+% Prime examples of such \emph{refinement types} are the type of ordinals
+% and the type of polynomials.
 
-ordinals expose the size in their types and are finite.  This is for
-example useful to leave size constraints implicit in expressions about
-matrixes.  If a matrix is a function from in*im to x, then we can't
-possibly address elements in the matrix outside its dimensions, and we
-can write : determinant, biop switch sum prod.
+% Ordinals expose the size in their types and are finite. This is for
+% example useful to leave size constraints implicit in expressions about
+% matrixes. If a matrix is a function from $I_m\times I_n$ to $X$, then we can't
+% possibly address elements in the matrix outside its dimensions.
+%, and we can write : determinant, bigop switch sum prod.
 
-it is crucial that the theory is inherited. coercions and CS help
-here.  organizing the theories around a hirarchy in next chapter.
-ordinals inherit arithmetic.
-polynomials are lists of coefficients. one typically wants a canonical
-representation, so that equal polymonials can be proved eq.
-we can easily impose such proposerty in the proposed approach.
-we inherit all the operations on lists, and all the theory of eqType,
-via the subtype machinery.
+% It is crucial that the theory is inherited. coercions and CS help
+% here.  organizing the theories around a hirarchy in next chapter.
+% ordinals inherit arithmetic.
+% polynomials are lists of coefficients. one typically wants a canonical
+% representation, so that equal polymonials can be proved eq.
+% we can easily impose such proposerty in the proposed approach.
+% we inherit all the operations on lists, and all the theory of eqType,
+% via the subtype machinery.
 
 
-\section{xxxxxxxxxxxxxx old xxxxxxxxxxxxxxxxx}
+% \section{xxxxxxxxxxxxxx old xxxxxxxxxxxxxxxxx}
 
 % 0- tuple: reuse the theory of seq, + the invariant on the length
 % 1- seq is eqType -> tuple is eqType by <:
@@ -85,56 +86,55 @@ via the subtype machinery.
 % ?? use strings of pearls as an example (may be)
 
 
-Wild notes: the purpose of this chapter is to stress what is truely
-important and perennial, as opposed to technicalities too much tied to
-the present technology implemented in Coq... tentative list:
-\begin{itemize}
-\item Organization of classes from mixins
-\item Rationale of instances and heritage
-\item Respective roles of coercions and type inference
-\item Visibility of coercions and notations, which motivate the
-  \C{Module Import Export} discipline.
-\item Slightly advanced readers should be taught Pack, and which edges
-  are to be added to the graph of the hierarchy when a new
-  structure is added.
-\end{itemize}
-
+% Wild notes: the purpose of this chapter is to stress what is truely
+% important and perennial, as opposed to technicalities too much tied to
+% the present technology implemented in Coq... tentative list:
+% \begin{itemize}
+% \item Organization of classes from mixins
+% \item Rationale of instances and heritage
+% \item Respective roles of coercions and type inference
+% \item Visibility of coercions and notations, which motivate the
+%   \C{Module Import Export} discipline.
+% \item Slightly advanced readers should be taught Pack, and which edges
+%   are to be added to the graph of the hierarchy when a new
+%   structure is added.
+% \end{itemize}
 
 Organizing, structuring, knowledge is a delicate task. A successful
-path followed in mathematics is algebraization. The focus shifts
+approach followed in mathematics is algebraization. The focus shifts
 towards the relations among classes of similar objects and general
 theories that apply to all the objects of a given class.
 An experienced mathematician can use such structured
-knowledge by recognizing that his object of study belongs to a know
+knowledge by recognizing that his object of study belongs to a known
 class and hence a string of generic results holds for it.
 
-Given how popular this approach is in modern mathematics we can't
-really avoid modelling it in the \mcbMC{} library.  It is well known that
-modelling structured knowledge, like algebra, inside a proof assistant
+The \mcbMC{} library supports this popular modern mathematics approach.
+It is well known that modelling structured knowledge, like algebra,
+inside a proof assistant
 is hard, and in our case an extra problem arises: we need such
 modelling to scale up to a large library. This extra difficulty turns
 out to actually provide good directions for finding the right
-techniques.  Indeed, computer science too tackled the task of
-organizing large libraries of computer code, and did it for decades.
-One of the outcomes is object oriented programming (OOP).
-It is hard to give a comprehensive presentations of all the key
-principles behind OOP, but some of them match pretty well our needs.
+techniques.  Computer science has also tackled the task of
+organizing large libraries of computer code, and has done so for decades.
+One of the most successful techniques that emerged to tackle this challenge
+is object oriented programming (OOP).
+It is hard to give a comprehensive presentation of all the key
+principles underpinning OOP, but some of them are a good match for our needs.
 OOP advocates the use of interfaces (typically called classes) to
 organize a complex system into smaller parts, it enables one
 to declare relations between the interfaces to reuse and
 specialize them (inheritance).  Finally OOP language provides some
-magic glue to make all that work together, enabling one to mix and
+magic glue to make every work together, making it possible to mix and
 match data and code belonging to different but related interfaces, as
-long as it ``makes sense''.  What makes sense really means depends too
-much on the programming language details to be explained in general,
-and if we draw a parallel with mathematics this pretty much
-corresponds to the silent check an expert eye does when reading a text
-mixing different theories.
-When we look at functional programming languages, like the one
-provided in \mcbCIC{}, the aspect of this magic glue that is the most
-relevant here is \emph{sub-type} polymorphism.
+long as this match ``makes sense''.  What makes sense really means depends too
+much on the programming language details to be explained in general;
+an analogue in mathematics might be the silent check an expert
+eye does when reading a text that mixes different theories.
+In the theory of functional programming languages, such as the one
+provided by the \mcbCIC{}, this magic glue is known as
+\emph{sub-type} polymorphism.
 
-Its intuitive meaning can be explained with an example.  Take the two
+Let us use an example.  Take the two
 related notions (types) of a simple point \lstinline/P/ on the plane
 and the more refined concept of coloured point \lstinline/CP/.  To
 maximize code reuse we want the function \lstinline/move/, that shifts
@@ -145,43 +145,47 @@ can't use it on a coloured point \lstinline/c/, because
 We could try to assign to \lstinline/move/ the polymorphic type
 \lstinline/$\alpha$ -> $\alpha$/ (for all $\alpha$), but that would
 fail too. The function \lstinline/move/ really needs to know something
-about its input, like its coordinates, in order to perform.  The
-polymorphic type requires the implementation of \lstinline/move/
+about its input, namely its coordinates, in order to perform its operation.
+The polymorphic type requires the implementation of \lstinline/move/
 to bee too generic, and
 in practice we can only inhabit the type
 \lstinline/$\alpha$ -> $\alpha$/ with the identity
-function,\footnote{there is even a theory about that, called
-parametricity} that does not exactly move the point as one expects.
+function,\footnote{This can be proved using the parametricity theory.}
+that does cannot move the point.
 Sub-type polymorphism lets one assign a polymorphic type to
 \lstinline/move/ where the type variable $\alpha$ is constrained to be
 ``at least'' a point, a constraint satisfied by all coloured points.
 
-The record data types introduced in the previous chapter played the
-role of expressing a relation between a type and a function (the
-comparison one).  Being records dependently typed, their fields can
-also carry proofs testifying that some property holds on the value of
-the other fields.  This in turns makes it possible to use records to
-model precisely the concept of interface.  Programmable type inference
-can then serve as the glue that links an object with all the
-interfaces it satisfies.
+% To build a large library one needs to reuse as much as possible what
+% is available and build incrementally.  So far inductive types have
+% been the only way to define a new object, while bool predicates have been the
+% preferred way to define predicates.
 
-In this chapter we focus on the tricky construction of
-\emph{dependent pairs packaging data and proofs}.  To take
+In this chapter we address the implementation of sub-types using
+\emph{records packaging data and proofs}.  To take
 full advantage of this construction while doing proofs we
-implement the glue typical of OOP languages by \emph{programming
-type inference}.
-Inheritance among interfaces will be only sketched here: a complete
-treatment of it requires a full chapter, the next one.
+implement some the glue typical of OOP languages
+by \emph{programming type inference}.
+Inheritance among interfaces will be only sketched here;
+it is the object of the following chapter.
 
-Now \lstinline/eqType/ can be seen as an interface to access a
-theory of results.  Indeed we can finally state (and prove) the
-Hedberg theorem in its full generality.
+In the \mcbCIC{} proofs are terms, so one can use records to put
+together objects and proofs of some properties to represent the
+objects that have those properties.  This representation can be
+expensive in the sense that it imposes extra work (proofs!) to create
+a sub-type object, so it must be used with care.  The \mcbMC{} library
+provides several facilities that support the creation of record-based
+sub-types, and of their inhabitants.
+We shall in particular see how both type inference and dynamic tests
+can be used to supply the property proofs.
 
-\begin{coq}{name=hedberg}{title=Hedberg}
-Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
-\end{coq}
-\coqrun{name=hedberg}{ssr,hedberg,abort}
-
+Finally, let us point out that we have already encountered proof-carrying
+records in the previous chapter, with \C{eqType}.
+The \C{eqType} record played the role of an interface,
+expressing a relation between a type and a function (the comparison operation),
+and giving to access a whole theory of results through type inference.
+Many such interfaces can be extended to sub-types, and we shall see that
+the \mcbMC{} library provides facilities to automate this.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -292,14 +296,16 @@ involution, we have to prove the same property from scratch for
 
 Of course one can relate sequences and vectors by means of
 morphisms.  Even if the \mcbMC{} library provides adequate
-infrastructure for dealing with morphisms, its use is generally
-avoided when possible.  GIVE A BETTER INSIGHT.
+infrastructure for dealing with morphisms, their use is overhead best
+avoided.
 
-The conclusion is to drop the idea of defining a completely new data
-type, and try to reuse the one of sequences.  For example by packing a
-sequence with a proof that witnesses that its length is exactly
-\lstinline/n/.  Such construction, a dependent pair packing data
-and proofs, is tricky to get right in the \mcbCIC{}.  We start with
+The conclusion we draw is that we should refrain from defining a
+completely new data type and try to reuse the sequence type \C{seq}.
+The natural way of doing so is to bundle a sequence with a proof that
+witnesses that its length is exactly~\C{n}. In some sense this just
+shift the problem of representing the sub-type to that of representing
+the proof. The obvious way of doing this is to mimic the definition
+of the \C{vect} type, as in
 the following ``naive'' record type \lstinline/(lseq T n)/:
 
 \begin{coq}{name=haslen}{width=\textwidth,title=Simple dependent pair}
@@ -320,8 +326,8 @@ be accepted by the system.
 Note that so far records only contained types and terms, typically
 a function (like the comparison used to implement the overload
 \lstinline/==/ syntax).  Here the record contains \emph{a term and a proof}.
-Proofs are first class citizens in all meanings, and this may lead to
-a somewhat surprising behavior of the type theory.
+However, the tratment of proofs as ordinary data in the \mcbCIC{} can
+cause some rather surprising behavior.
 When we defined the function to compare pairs we had no
 doubts: both components of the pair play a role and must be taken into
 account.  When comparing two elements of \lstinline/lseq/ we would
@@ -349,10 +355,18 @@ prove such lemma again for the new predicate.
 
 To the rescue comes the result of Hedberg~\cite{Hedberg}
 that proves such property for a wide class of predicates.
-In particular he shows that any type with decidable identity
-has unique identity proofs.  If we pick the concrete example
-of \lstinline/bool/, then all proofs that \lstinline/(b = true)/
-for a fixed \lstinline/b/ are the same.
+In particular it implies that any type with decidable identity
+has unique identity proofs. This result can be proved in its full generality
+in the \mcbMC{} library, using to the \C{eqType} interface.
+
+\begin{coq}{name=hedberg}{title=Hedberg}
+Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
+\end{coq}
+\coqrun{name=hedberg}{ssr,hedberg,abort}
+
+If we pick the concrete example of \lstinline/bool/,
+then all proofs that \lstinline/(b = true)/
+for a fixed \lstinline/b/ are identical.
 As a direct application of this result we have that, as long as we can
 express the property defining the sub-type as a boolean predicate,
 we can reuse the same injectivity lemma.
@@ -363,9 +377,10 @@ Notation "n .-tuple T" := (tuple_of n T) (at level 2).
 \end{coq}
 \coqrun{name=r1}{ssr,tupx}
 
-Recall the hidden \lstinline/is_true/ coercion.  If we unfold
-its definition we clearly see that the predicate
-\lstinline/(size tval == n)/ is an equality on \lstinline/bool/.
+Recall that the statement \lstinline/(size tval == n)/
+is the argument of a hidden \lstinline/is_true/ coercion.
+If we unfold its definition we clearly see that the statement
+is an equality on \lstinline/bool/.
 
 In the \mcbMC{} library, where \emph{all predicates that can} be
 expressed as a boolean function \emph{are expressed as a boolean
@@ -411,7 +426,7 @@ Proof. by case: t. Qed.
 \end{coq}
 \coqrun{name=r2}{ssr,tup,sizetup}
 
-In other words each inhabitant of the tuple type brings with it,
+In other words each inhabitant of the tuple type carries,
 in the form of a proof, its length.  As test bench for the notion
 of tuple we pick this simple example: a tuple is processed using
 functions defined on sequences, namely \lstinline/rev/ and
@@ -477,11 +492,11 @@ assigning to it the type \lstinline/($\alpha$ -> P)/ for $\alpha$
 being at least a point.  We would like the function to return
 a data as rich as the one it takes in input.
 
-What happens if try to unify the left hand side of the
+Let us examine what happens if try to unify the left hand side of the
 \lstinline/size_tuple/ equation with the redex
-\lstinline/(rev t)/ (and we print coercions)?
+\lstinline/(rev t)/, using the following toolkit
 
-\begin{coq}{name=infrastructure}{title=Toolkit not belonging here}
+\begin{coq}{name=infrastructure}{title= Unification debugging toolkit}
 (* toolkit *)
 Notation "X (*...*)" := (let x := X in let y := _ in x)
   (at level 100, format "X  (*...*)").
@@ -494,12 +509,16 @@ Notation "[unify X 'with' Y ]" :=
    True).
 \end{coq}
 
-\begin{coq}{name=showunif}{title=Simulate rewrite size\_tuple}
+This simulation of \lstinline/rewrite size_tuple/
+\begin{coq}{name=showunif}{}
 Check forall T n (t : n.-tuple T),
  let LHS := [LHS of size_tuple _] in
  let RDX := size (rev t) in
  [unify LHS with RDX].
 \end{coq}
+
+generates the following diagnostic
+
 \coqrun{name=r5;fail}{ssr,tup,sizetup,infrastructure,showunif}
 \begin{coqout}{run=r5}{title=Response}
 Error:
@@ -526,11 +545,10 @@ tuple whose \lstinline/tval/ field
 is \lstinline/rev t/ (and whose other field contains a
 proof that such sequence has length \lstinline/?$_n$/).
 
-This unification problem falls in the class handled by
-canonical Canonical Structures: a record projection
-against a value.  We can declare Canonical Structures
-teaching Coq the effect of list operations over the length
-of their input.
+We have seen in the previous chapter that this is exactly the class of
+problems that is addressed by \C{Canonical} structure instances.
+We can thus use \C{Canonical} declarations to teach Coq
+the effect of list operations on the length of their input.
 
 \begin{coq}{name=t1}{}
 Lemma rev_tupleP n A (t : n.-tuple A) : size (rev t) = n.
@@ -717,15 +735,9 @@ Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
 \end{coq}
 \coqrun{name=tupc}{ssr,require-tuple,testtup}
 
-We did it by hand, but all that is schematic, any sigma type can be
-dealt with in the very same way.  When one has a base type T and a
-sub-type ST defined as a boolean sigma type, then one can build all
-the canonical instances by just knowing the name of the projection
-going from ST to T.
-
-The lirbary is equipped with all the canonical structures that
-possibly apply.  Only the reader willing to extend the library with
-new concepts is interested by what follows.
+Although all these proofs and definitions are specific to \C{tuple},
+they are obviously schematic and generalize to similarly defined types,
+as we'll see in the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
@@ -734,7 +746,13 @@ new concepts is interested by what follows.
 \mcbREQUIRE{}
 \mcbsection{The toolkit to declare a new sub-type}
 
-As simple as such
+When one has a base type T and a sub-type ST defined as a boolean
+sigma type, the \mcbMC{} library provides facilities to
+build all the applicable canonical instances from just
+the name of the projection going from ST to T.
+
+For example, for \C{tuple} and \C{tval}, we can replace all the end of the
+previous section with
 
 \begin{coq}{name=subt}{}
 Canonical tuple_subType := Eval hnf in [subType for tval].
@@ -742,46 +760,92 @@ Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
 Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
 \end{coq}
 
-maybe we can put here the nice trick for encoding a bizarre structure
-into a three and get the eqType out of it.  In such case we need to
-rename the section into: declaring a new eqType (not only for
-subtypes).
+Line 1 creates an instance of the \C{subType} structure that registers the
+relation between \C{tuple} and \C{seq}; line 2 accesses the \C{subType}
+interface to create an \C{eqMixin}.
+
+As we will see in the next section, the \C{subType} structure provides
+a generic notation \C{val} for the projector of a sub-type (i.e.,
+\C{tval} for \C{tuple}),
+with an overloaded injectivity lemma \lstinline/val_inj/.
+
+We also get a generic static constructor \C{Sub}, which takes a base
+type value and a proof, and more interestingly dynamic constructors
+\C{insub} and \C{insubd} that do not need a proof as they dynamically
+test the property, and offer an attractive encapsulation of the
+difficult \emph{convoy} dependent progamming pattern. The \C{insubd}
+constructor takes a default sub-type value which it returns if the
+tests fails, while \C{insub} takes only a base type value and returns
+an \C{option}; both are \emph{opaque} and will not evaluate the test,
+even for a ground base type value.  Both \C{Sub} and \C{insub} expect
+the typing context to specify the sub-type.
+
+Here are a few example uses, using \C{tuple}:
+\begin{coq}{name=insub}{}
+Variables (s : seq nat) (t : 3.-tuple nat).
+Hypothesis size3s : size s == 3.
+Let t1 : 3.-tuple nat := Sub s size3s.
+Let s2 := if insub s is Some t then val (t : 3.-tuple nat) else nil.
+Let t3 := insubd t s. (* : 3.-tuple nat *)
+\end{cog}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{3}
-\mcbLEARN{How sub-type works}
+\mcbLEARN{How subType works}
 \mcbPROVIDE{super CS skills}
 \mcbREQUIRE{CS}
-\mcbsection{The \lstinline/subType/ infrastructure}
+\mcbsection{The \C{subType} infrastructure}
+
+The \C{subType} structure describes a Boolean sigma-type in terms of
+its projector, constructor, and elimination rule:
 
 \begin{coq}{name=subtdef}{}
 Structure subType : Type := SubType {
   sub_sort :> Type;
   val : sub_sort -> T;
   Sub : forall x, P x -> sub_sort;
-  (* elim rule for the record *)
+  (* elimination rule for sub_sort *)
   _ : forall K (_ : forall x Px, K (@Sub x Px)) u, K u;
   _ : forall x Px, val (@Sub x Px) = x
 }.
-
-Notation "[ 'subType' 'for' v ]" := (SubType _ v _ inlined_sub_rect vrefl_rect)
- (at level 0, only parsing) : form_scope.
 \end{coq}
 
+Instances can provide unification hints for any of the three named fields,
+not just for \lstinline/sub_sort/. Hence, \lstinline/val \mcbimpl{u}/
+unifies with \lstinline/tval t/, and \lstinline/Sub \mcbimpl{x} \mcbimpl{xP}/ 
+unifies with \lstinline/Tuple s sP/, including in \C{rewrite} patterns.
+
+The \C{subType} constructor notation assumes the sub-type is isomorphic
+to a sigma-type, so that its elimination rule can be derived using \Coq{}'s
+generic destructuring \C{let}, and the projector-constructor
+identity can be proved by reflexivity.
+
+\begin{coq}{name=subtdecl}{}
+Local Notation inlined_sub_rect :=
+  (fun K K_S u => let (x, Px) as u return K u := u in K_S x Px).
+
+Lemma vrefl_rect {T} {P : pred T} x : P x -> x = x. Proof. by []. Qed.
+  
+Notation "[ 'subType' 'for' v ]" :=
+  (SubType _ v _ inlined_sub_rect vrefl_rect).
+\end{coq}
+
+Note how the value of \C{Sub} is determined by unifying the type
+of \lstinline/inlined_sub_rect/ with the type expected by \C{SubType}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{2}
-\mcbLEARN{curiosity}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Sub-types in HoTT}
+% \mcbLEVEL{2}
+% \mcbLEARN{curiosity}
+% \mcbPROVIDE{}
+% \mcbREQUIRE{}
+% \mcbsection{Sub-types in HoTT}
 
-Recent advances in HoTT identify the class of propositions that have a
-canonical proof, mere propositions, and such class is closed under
-forall quantification, while the one we use is not (only bounded
-forall) but the idea is pretty much the same.  Mere propositions can
-be easily used to form a subtype.
+% Recent advances in HoTT identify the class of propositions that have a
+% canonical proof, mere propositions, and such class is closed under
+% forall quantification, while the one we use is not (only bounded
+% forall) but the idea is pretty much the same.  Mere propositions can
+% be easily used to form a subtype.
 
-Also Cyril had other arguments on the fact that one can
-ask less (be more general) and recover all required properties later
-on, but I've to ask him again cause I've forgotten the example.
+% Also Cyril had other arguments on the fact that one can
+% ask less (be more general) and recover all required properties later
+% on, but I've to ask him again cause I've forgotten the example.
