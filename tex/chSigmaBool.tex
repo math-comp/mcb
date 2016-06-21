@@ -19,7 +19,7 @@ Redirect "g1" Show.
 Require Import tuple.
 \end{coqdef}
 
-\Chapter{Sub-Types: terms with extra properties}{}\label{ch:sigmabool}
+\Chapter{Sub-Types}{Terms with properties}\label{ch:sigmabool}
 
 % \begin{itemize}
 % \item mixing data and proofs is possible
@@ -198,24 +198,111 @@ the \mcbMC{} library provides facilities to automate this.
 \mcbREQUIRE{eqtype,CS}
 \mcbPROVIDE{fintype}
 \mcbNOTES{}
-\mcbsection{Finite types and ordinals}
+\mcbsection{The interface for finite types and the ordinal subtype}
 
-fintype as telescope on eqtype.
+The first example of sub-type we describe is the one of ordinals:
+natural numbers smaller than a given bound.  Such type has a finite
+number of elements, a property we associate to the following
+interface.
 
-define ordinals, prove them eqtype and fintype.
+\begin{coq}{name=fintype}{title=Interface for finite types}
+Module finite.
 
-\subsection{benefits of sigma bool}
+Definition axiom (T : eqType) e :=
+  forall x : T, count_mem x e = 1.
+
+Record mixin_of (T : eqType) := {
+  enum : seq T;
+  _ : axiom T enum;
+}
+
+Record class_of (T : eqType) := Class {
+  base : Equality.class_of T;
+  mixin : mixin_of (Equality.Pack base)
+}.
+
+Structure type : Type := Pack {
+  sort :> Type;
+  class : class_of sort;
+}
+
+End Finite.
+
+Notation finType := Finite.type.
+Notation enum T := (Finite.enum (Finite.mixin (Finite.class T))).
+\end{coq}
+
+The details of this interface are explained in details in the next
+chapter.  What is relevant to the current chapter is that \C{finType}
+adds on top of \C{eqType} an enumeration (a sequence of values) that
+lists exactly once all elements in the type.  Indeed \C{count_mem}
+counts how many elements of \C{e} are equal to \C{x}.
+
+The interface of \C{finType} comes equipped with a theory that, among
+other things, provides a caridinality operator \C{#|T|} and bounded
+quantifications like \C{[forall x, P]}.
+
+\begin{coq}{name=fintype-th}{title=Some theory for finType}
+Lemma cardT (T : finType) : #|T| = size (enum T).
+Lemma forallP (T : finType) (P : pred T) :
+  reflect (forall x, P x) [forall x, P x].
+\end{coq}
+
+Note that \C{[forall x, P x]} is a boolean expression, hence naturally
+enables reasoning by expluded middle.
+
+Apart from the aforementioned theory, finite types can serve as a
+powerful notational device for ranges.  For example one may want
+to state that a matrix of size $m \times n$ is only accessed inside
+its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
+be formulated in the \mcbMC{} library is by saying that that its row
+accessor accepts only inhabitants of a finite type of size $m$.
+Accessing a matrix out of its bounds becomes a type error.
+Of course one wants to access a matrix using integer coordinates, but
+integers are inifite.  Hence the first step is to define the sub-type
+of bounded integers.
 
 
-Unfortunately this fact is in general not true in \mcbCIC{}: all
-record components are relevant to equality.
-Luckily, for some inductive relations like \lstinline/has_len/, one
-can show that their inhabitants (that are proofs) are canonical.  In
-other words that two proofs of the same statement are equal.
-Unfortunately such proof, when possible, is not only tricky, but
-it also depends on the shape of the inductive relation.  Hence every
-time one wants to form a sub-type expressing a new property, he has to
-prove such lemma again for the new predicate.
+\begin{coq}{name=ordinals}{title=Ordinals}
+Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
+Notation "''I_' n" := (ordinal n)
+
+Coercion nat_of_ord i := let: Ordinal m _ := i in m.
+
+Definition ord_eqop n (i j : 'I_n) := i == j :> nat.
+Lemma ord_eqopP n : Equality.axiom (ord_eqop n).
+Definition ord_enum n : seq 'I_n := ... iota 0 n ...
+Lemma ord_enumP n : Finite.axiom (ord_enum n).
+
+Definition ord_eqMixin : Equality.mixin ...
+Canonical ord_eqType n := Equality.Pack (ord_eqMixin n).
+Definition ord_finMixin : Finite.mixin ...
+Canonical ord_finType n := Finite.Pack (ord_finMixin n).
+\end{coq}
+
+Last line is horrible without the sub-type kit explained afterwards.
+
+An example of ordinals here would be nice.
+
+Now we can declare ordinals an eqtype and a fintype, since we have the
+enumeration and comparison.  Note that the comparison simply ignores
+the proof component: two ordinals are equal iff their integer values
+are.
+
+Declaring eqType and finType for ordinals required some work.
+While the enumeration part is expected, indeed it is the property one
+gets by defining the new sub-type, the one about eqtype is not
+interesting.  Indeed the \mcbMC{} library provides a kit to transport
+properties of a type A to a sub-type of A (described in
+Section~\ref{sec:subtypekit}).  In this case the eqtype
+for nat in inherited by ordinals.
+
+\mcbLEVEL{2}
+\mcbsubsection{A note on boolean $\Sigma$-types}
+
+Unfortunately the irrelevance of proof components of records like
+ordinals is in general not true in \mcbCIC{}: all
+components are relevant to equality.
 
 To the rescue comes the result of Hedberg~\cite{Hedberg}
 that proves such property for a wide class of predicates.
@@ -232,11 +319,13 @@ If we pick the concrete example of \lstinline/bool/,
 then all proofs that \lstinline/(b = true)/
 for a fixed \lstinline/b/ are identical.
 
+Here we can see another crucial advantage of boolean reflection.
+Forming sub-types poses no complication from a logic perspective since
+proof of boolean identities are very simple, canonical, objects.
 
-
-subtypes are good to keep operations (on nat here) and develop
-a new theory.  ordinals mainly for notational purposes, tuples
-are handy to model some reasoning.
+In the \mcbMC{} library, where \emph{all predicates that can} be
+expressed as a boolean function \emph{are expressed as a boolean
+function}, forming sub-types is extremely easy.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -244,11 +333,16 @@ are handy to model some reasoning.
 \mcbREQUIRE{eqtype, fintype, CS}
 \mcbPROVIDE{tuple}
 \mcbNOTES{}
-\mcbsection{Tuples and proof search}
+\mcbsection{Intermezzo: Tuples and proof search}
 
-tuples
+Before detailing the took kit to define sub types we focus on
+another example of sub type: tuples.  Such type serves two roles.
+First, it is a building block for matrixes, as we will see in Section
+xx.  Second, it uses the idea of sub types to model invariants during
+proofs and provides handy automation.  This section focuses on the
+automation, that builds upon the rich type of tuples and is once again
+obtained by programming type inference.
 
-inference
 
 % Even if we leave on the side algebraic structures and
 % just look at modelling simple sets, some difficulties
@@ -398,9 +492,8 @@ inference
 % equal if they are equal as sequences, it does not matter \emph{how one
 % proved} that they have length \lstinline/n/.
 
-As a direct application of this result we have that, as long as we can
-express the property defining the sub-type as a boolean predicate,
-we can reuse the same injectivity lemma.
+A tuple is a sequence of values (of the same type) whose length is
+made explicit in the type.
 
 \begin{coq}{name=tupx}{width=\textwidth,title=Tuple sub-type of seq}
 Structure tuple_of n T :=  Tuple { tval :> seq T; _ : size tval == n }.
@@ -412,10 +505,6 @@ Recall that the statement \lstinline/(size tval == n)/
 is the argument of a hidden \lstinline/is_true/ coercion.
 If we unfold its definition we clearly see that the statement
 is an equality on \lstinline/bool/.
-
-In the \mcbMC{} library, where \emph{all predicates that can} be
-expressed as a boolean function \emph{are expressed as a boolean
-function}, forming sub-types is extremely easy.
 
 % For now we state only two instances of the general result of
 % Hedberg.  They are enough for the following section, were
@@ -434,26 +523,16 @@ function}, forming sub-types is extremely easy.
 % \mcbLEARN{CS = proof search}
 % \mcbsection{Working with sub-types}
 
-For the sake of this section, we will use this, equivalent, definition
-of the tuple type.  Note that we use \lstinline/=/ in place of
-\lstinline/==/.
-
-\begin{coq}{name=tup}{width=\textwidth,title=Tuple sub-type of seq}
-Structure tuple_of n T := Tuple { tval : seq T; _ : size tval = n }.
-Notation "n .-tuple T" := (tuple_of n T) (at level 2).
-\end{coq}
-
 % Such equality relates to natural numbers, hence the
 % \lstinline/nat\_irrelevance/ lemma will come handy later on.
 
-Now we focus on the use of the tuple type.  The key property of this
-type is that it tells us the length of its elements when seen as
-sequences:
+The key property of this type is that it tells us the length of its
+elements when seen as sequences:
 
 \begin{coq}{name=sizetup}{}
 Coercion tval : tuple_of >-> seq.
 Lemma size_tuple {T n} (t : n.-tuple T) : size t = n.
-Proof. by case: t. Qed.
+Proof. by case: t => s /eqP. Qed.
 \end{coq}
 \coqrun{name=r2}{ssr,tup,sizetup}
 
@@ -517,11 +596,9 @@ The type of \lstinline/rev/ for example is
 \lstinline/(forall T, seq T -> seq T)/.  The coercion \lstinline/tval/
 from \lstinline/tuple_of/ to \lstinline/seq/ make the
 expression \lstinline/(rev (tval t))/ well typed, but the output
-is of type \lstinline/(seq nat)/.  If we go back to our example
-of the \lstinline/move/ function for points in the plane, it is like
-assigning to it the type \lstinline/($\alpha$ -> P)/ for $\alpha$
-being at least a point.  We would like the function to return
-a data as rich as the one it takes in input.
+is of type \lstinline/(seq nat)/.  
+We would like the functions on sequences to return
+data as rich as the one taken in input.
 
 Let us examine what happens if try to unify the left hand side of the
 \lstinline/size_tuple/ equation with the redex
@@ -568,7 +645,7 @@ Unifying \lstinline/(size (tval ?$_n$ ?$_T$ ?$_t$))/
 with \lstinline/(size (rev (tval n T t)))/ is hard.
 Both term's head symbol is \lstinline/size/, but then
 the projection \lstinline/tval/ applied to unification
-variables has to unified with \lstinline/(rev ...)/,
+variables has to be unified with \lstinline/(rev ...)/,
 and both terms are in normal form.
 
 Such problem is nontrivial because to solve it one has to infer a
@@ -679,8 +756,8 @@ reasoning.
 \mcbREQUIRE{proof language}
 \mcbPROVIDE{an example of sub-type of eqType}
 \mcbLEARN{it is a schematic process}
-\mcbsection{Building the \lstinline/eqType/ for \lstinline/n.-tuples
-T/ via the \lstinline/subType/ kit}
+\mcbsection{The \lstinline/subType/ kit}
+\label{sec:subtypekit}
 
 We have that \lstinline/(seq T)/ is an \lstinline/eqType/ and
 we want to transport \lstinline/==/ on tuples.  First we need to
@@ -770,9 +847,35 @@ Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
 
 Although all these proofs and definitions are specific to \C{tuple},
 they are obviously schematic and generalize to similarly defined types,
-as we'll see in the next section.
+like ordinals.  The sub-type kit lets one write the following
 
-TODO: put here for the casual reader an example using the kit below.
+\begin{coq}{name=subt}{}
+Canonical tuple_subType := Eval hnf in [subType for tval].
+Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
+Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
+\end{coq}
+
+Line 1 registers \C{tval} as a canonical projection to obtain a known
+type out of the newly defined type of tuple.  Once the projection
+is registered the equality axiom can be proved automatically by
+\C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is reminescent of
+subtyping in functional languages like OCaml.
+
+This also works for ordinals.
+
+In addition to that the sub-type kit provides insub.
+
+\begin{coq}{name=subt}{}
+Definition ord_enum : seq ordinal := pmap insub (iota 0 n).
+
+Lemma val_ord_enum : map val ord_enum = iota 0 n.
+Proof.
+rewrite pmap_filter; last exact: insubK.
+by apply/all_filterP; apply/allP=> i; rewrite mem_iota isSome_insub.
+Qed.
+\end{coq}
+
+explain why this is better than the horror with dependent types.
 
 TODO: think if the following subsection has to be moved to the end
 of the chapter or stay here.
@@ -782,7 +885,7 @@ of the chapter or stay here.
 \mcbLEARN{Declare a new subtype and derive eqType}
 \mcbPROVIDE{usage of \lstinline/[subType for ...]/}
 \mcbREQUIRE{}
-\mcbsubsection{The toolkit to declare a new sub-type}
+\mcbsubsection{The sub-type kit in details}
 
 When one has a base type T and a sub-type ST defined as a boolean
 sigma type, the \mcbMC{} library provides facilities to
@@ -865,6 +968,8 @@ Notation "[ 'subType' 'for' v ]" :=
 Note how the value of \C{Sub} is determined by unifying the type
 of \lstinline/inlined_sub_rect/ with the type expected by \C{SubType}.
 
+Also explain \C{[newType for Sval]} for simple wrappers.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEVEL{2}
 % \mcbLEARN{curiosity}
@@ -888,10 +993,82 @@ of \lstinline/inlined_sub_rect/ with the type expected by \C{SubType}.
 \mcbREQUIRE{}
 \mcbsection{Finite functions}
 
-finite functions and the fact they form eq and fintype.
+\begin{coq}{name=subtdecl}{}
+Lemma tnth_default t : 'I_n -> T.
+Proof. by rewrite -(size_tuple t); case: (tval t) => [|//] []. Qed.
 
-bigop notations. reindexing.
+Definition tnth t i := nth (tnth_default t i) t i.
 
+Section Def.
+
+Variables (aT : finType) (rT : Type).
+
+Inductive finfun_type : predArgType := Finfun of #|aT|.-tuple rT.
+  
+Definition finfun_of of phant (aT -> rT) := finfun_type. 
+
+Identity Coercion type_of_finfun : finfun_of >-> finfun_type.
+
+Definition fgraph f := let: Finfun t := f in t.
+
+Canonical finfun_subType := Eval hnf in [newType for fgraph].
+
+End Def.
+
+Notation "{ 'ffun' fT }" := (finfun_of (Phant fT)).
+
+
+Local Notation fun_of_fin_def :=
+  (fun aT rT f x => tnth (@fgraph aT rT f) (enum_rank x)).
+
+Local Notation finfun_def := (fun aT rT f => @Finfun aT rT (codom_tuple f)).
+
+Notation "[ 'ffun' x : aT => F ]" := (finfun (fun x : aT => F))
+\end{coq}
+
+just recall newtype since it is in 1* section.
+recall Phant since the source must be finite and you just want to
+write ffun ordinal n.
+
+example playing with ffun.
+
+\begin{coq}{name=subtdecl}{}
+Check [ffun i : 'I_4 => i + 2]
+\end{coq}
+
+They are finite, hence == if codom is eqtype and fintype if codom is
+finite.  All that inherited from tuples.
+
+\begin{coq}{}{}
+Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
+Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
+
+Variables (n : nat) (T : finType).
+
+Canonical tuple_finMixin := Eval hnf in FinMixin (@FinTuple.enumP n T).
+Canonical tuple_finType := Eval hnf in FinType (n.-tuple T) tuple_finMixin.
+Canonical tuple_subFinType := Eval hnf in [subFinType of n.-tuple T].
+
+Lemma card_tuple : #|{:n.-tuple T}| = #|T| ^ n.
+\end{coq}
+
+See how easy one can add new datatypes and relate them to existing one
+via the subtype kit.
+
+An application of ffun is
+
+\begin{coq}{}{}
+Lemma bigA_distr_bigA (I J : finType) F :
+  \big[*%M/1]_(i : I) \big[+%M/0]_(j : J) F i j
+    = \big[+%M/0]_(f : {ffun I -> J}) \big[*%M/1]_i F i (f i).
+\end{coq}
+
+$$
+\prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
+$$
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbLEARN{}
 \mcbPROVIDE{}
@@ -900,6 +1077,85 @@ bigop notations. reindexing.
 
 all together to achieve compact notation.
 
-trace/determinant.
+\begin{coq}{}{}
+Inductive matrix : predArgType := Matrix of {ffun 'I_m * 'I_n -> R}.
 
+Definition mx_val A := let: Matrix g := A in g.
+
+Canonical matrix_subType := Eval hnf in [newType for mx_val].
+
+Coercion fun_of_matrix : matrix >-> Funclass.
+
+Definition mxtrace (A : 'M[R]_n) := \sum_i A i i.
+Local Notation "'\tr' A" := (mxtrace A) : ring_scope.
+
+\end{coq}
+
+note how ordinals infer everything in tr
+
+\begin{coq}{}{}
+Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
+   \tr (A *m B) = \tr (B *m A).
+Proof.
+have expand_trM C D: \tr (C *m D) = \sum_i \sum_j C i j * D j i.
+  by apply: eq_bigr => i _; rewrite mxE.
+rewrite !{}expand_trM exchange_big /=.
+by do 2!apply: eq_bigr => ? _; apply: mulrC.
+Qed.
+\end{coq}
+
+put gen have.
+
+another example is multiplication and matrix in extension
+
+\begin{coq}{}{}
+Notation "''M[' R ]_ ( m , n )" := (matrix R m n) (only parsing): type_scope.
+Notation "\matrix_ ( i  , j  ) E" := ...
+
+Definition mulmx {m n p} (A : 'M_(m, n)) (B : 'M_(n, p)) : 'M[R]_(m, p) :=
+  \matrix[mulmx_key]_(i, k) \sum_j (A i j * B j k).
+
+Local Notation "A *m B" := (mulmx A B) : ring_scope.
+\end{coq}
+
+note the type making it impossible to multiply wrong matrices
+
+determinant and ffun
+
+\begin{coq}{}{}
+
+(* The determinant, in one line with the Leibniz Formula *)
+Definition determinant n (A : 'M_n) : R :=
+  \sum_(s : 'S_n) (-1) ^+ s * \prod_i A i (s i).
+
+Lemma det_mulmx n (A B : 'M[R]_n) : \det (A *m B) = \det A * \det B.
+Proof.
+rewrite big_distrl /=.
+pose F := ('I_n ^ n)%type; pose AB s i j := A i j * B j (s i).
+transitivity (\sum_(f : F) \sum_(s : 'S_n) (-1) ^+ s * \prod_i AB s i (f i)).
+  rewrite exchange_big; apply: eq_bigr => /= s _; rewrite -big_distrr /=.
+  congr (_ * _); rewrite -(bigA_distr_bigA (AB s)) /=.
+  by apply: eq_bigr => x _; rewrite mxE.
+rewrite (bigID (fun f : F => injectiveb f)) /= addrC big1 ?add0r => [|f Uf].
+  rewrite (reindex (@pval _)) /=; last first.
+    pose in_Sn := insubd (1%g : 'S_n).
+    by exists in_Sn => /= f Uf; first apply: val_inj; apply: insubdK.
+  apply: eq_big => /= [s | s _]; rewrite ?(valP s) // big_distrr /=.
+  rewrite (reindex_inj (mulgI s)); apply: eq_bigr => t _ /=.
+  rewrite big_split /= mulrA mulrCA mulrA mulrCA mulrA.
+  rewrite -signr_addb odd_permM !pvalE; congr (_ * _); symmetry.
+  by rewrite (reindex_inj (@perm_inj _ s)); apply: eq_bigr => i; rewrite permM.
+transitivity (\det (\matrix_(i, j) B (f i) j) * \prod_i A i (f i)).
+  rewrite mulrC big_distrr /=; apply: eq_bigr => s _.
+  rewrite mulrCA big_split //=; congr (_ * (_ * _)).
+  by apply: eq_bigr => x _; rewrite mxE.
+case/injectivePn: Uf => i1 [i2 Di12 Ef12].
+by rewrite (determinant_alternate Di12) ?simp //= => j; rewrite !mxE Ef12.
+Qed.
+\end{coq}
+
+\mcbLEVEL{2}
+\mcbsubsection{blocks and casts}
+
+Casts and block\_mx.
 
