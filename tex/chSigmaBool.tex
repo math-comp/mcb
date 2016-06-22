@@ -21,168 +21,46 @@ Require Import tuple.
 
 \Chapter{Sub-Types}{Terms with properties}\label{ch:sigmabool}
 
-% \begin{itemize}
-% \item mixing data and proofs is possible
-% \item get richer objects out of already existing ones without
-% 	redefining new objects
-% \item need to inherit the theory of base objects
-% \item handy to infer the extra property (easy to form)
-% \item exzample 1 : ordinals (fintype)
-% \item impact of ordinals on bigop
-% \item finfun and matrixes
-% \item example 2 : polynomials (need ringType)
-% \end{itemize}
+Inductive data types have been used to both code data, like lists, and
+logical connectives, like and.  Properties were always expressed with
+boolean programs.  Now the question is, what stuts do we want to give
+to, say, lists of size 5,  or integers smaller than 7?  And which
+relation to put between integrs and integers smaller than 7.  And how
+to benefit from extra properties integers smaller than 7 have, like
+being a finite collection.
 
-% To build a large library one needs to reuse as much as possible what
-% is available and build incrementally.  So far inductive types have
-% been the only way to define a new object, while bool predicates have been the
-% preferred way to define predicates.
+In standard mathematics one would simple say that the integers are an
+infinite set (called \C{nat}), and that the integers smaller that 7
+form a finite subset of the integers (called \C{'I_7}).  Integers and
+integers smaller that 7 are interchangeable data: if \C{n:nat} and
+\C{i:'I_7} one can clearly add \C{n} with \C{i}, and eventually show
+that their sum is still smaller than 7.  Also, an informed reader
+knows which operations are compatible with a subset, eg \C{(i-1)}
+stays in \C{'I_7}, as well as \C{(i+n \%| 7)}.  So in a sense, subsets
+also provide a linguistic construct to ask the reader to track an
+easy invariant relieving the proof text from uninteresting details.
 
-% In CIC proofs are terms, so one can put together objects and proofs
-% of properties to obtain new objects.  This operation is expensive in
-% the sense that imposes on the user extra work whenever he has to build
-% an inhabitant, so it must be used with care. Some techniques to ease
-% the creation of such types and of such inhabitants are provided. also
-% crafting a new type lets one enrich its type to expose to the type
-% system some piece of info. Type inference can be used so to let one write
-% very concisely statements.
+The closest notion we have in \mcbCIC{} is the one of $\Sigma-$types,
+i.e. records.  One can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
+\leq 7.$  Indeed in the \mcbCIC{} proofs are terms, so one can easily
+pack together objects and proofs of some properties to
+represent the objects that have those properties.  For example $3$,
+when seen as an inhabitant of \C{'I_7} is represented by a dependent
+pair \C{(3,p)} where \C{(p : 3 <= 7)}.  Note that by forgetting the
+proof \C{p} one recovers a \C{nat} that can be passed to, say, the
+program computing the addition of natural numbers, or to theorems
+holding for any \C{nat}.  Still an inhabitant of \C{'I_7} can always
+be proved smaller than 7, since such evidence is part of the
+object itself.
+We call this construction a \emph{sub-type}.
 
-% Prime examples of such \emph{refinement types} are the type of ordinals
-% and the type of polynomials.
-
-% Ordinals expose the size in their types and are finite. This is for
-% example useful to leave size constraints implicit in expressions about
-% matrixes. If a matrix is a function from $I_m\times I_n$ to $X$, then we can't
-% possibly address elements in the matrix outside its dimensions.
-%, and we can write : determinant, bigop switch sum prod.
-
-% It is crucial that the theory is inherited. coercions and CS help
-% here.  organizing the theories around a hirarchy in next chapter.
-% ordinals inherit arithmetic.
-% polynomials are lists of coefficients. one typically wants a canonical
-% representation, so that equal polymonials can be proved eq.
-% we can easily impose such proposerty in the proposed approach.
-% we inherit all the operations on lists, and all the theory of eqType,
-% via the subtype machinery.
-
-
-% \section{xxxxxxxxxxxxxx old xxxxxxxxxxxxxxxxx}
-
-% 0- tuple: reuse the theory of seq, + the invariant on the length
-% 1- seq is eqType -> tuple is eqType by <:
-% 2- new interface fintype
-% 3- example: I_n (mainly to talk about finType)
-%    - is a eqType by <:
-%    - but we prove that it is a finType too
-% 4- we refine 'I_n/tuple do define ffun
-%    - is an eqType by <:
-%    - is a fintype with a proof from tuple (like 'I_n)
-% 5- we refine ffun to 'S_n that
-%    - is eqType by <:
-%    - is finType by <:
-% 6- spoiler for ch6: if we start an abstract theory on T:finType
-%    then == also works!! Magic?
-% ??- finset/card/enum, \in, \big_(x \in A)
-% ?? use strings of pearls as an example (may be)
-
-
-% Wild notes: the purpose of this chapter is to stress what is truely
-% important and perennial, as opposed to technicalities too much tied to
-% the present technology implemented in Coq... tentative list:
-% \begin{itemize}
-% \item Organization of classes from mixins
-% \item Rationale of instances and heritage
-% \item Respective roles of coercions and type inference
-% \item Visibility of coercions and notations, which motivate the
-%   \C{Module Import Export} discipline.
-% \item Slightly advanced readers should be taught Pack, and which edges
-%   are to be added to the graph of the hierarchy when a new
-%   structure is added.
-% \end{itemize}
-
-Organizing, structuring, knowledge is a delicate task. A successful
-approach followed in mathematics is algebraization. The focus shifts
-towards the relations among classes of similar objects and general
-theories that apply to all the objects of a given class.
-An experienced mathematician can use such structured
-knowledge by recognizing that his object of study belongs to a known
-class and hence a string of generic results holds for it.
-
-The \mcbMC{} library supports this popular modern mathematics approach.
-It is well known that modelling structured knowledge, like algebra,
-inside a proof assistant
-is hard, and in our case an extra problem arises: we need such
-modelling to scale up to a large library. This extra difficulty turns
-out to actually provide good directions for finding the right
-techniques.  Computer science has also tackled the task of
-organizing large libraries of computer code, and has done so for decades.
-One of the most successful techniques that emerged to tackle this challenge
-is object oriented programming (OOP).
-It is hard to give a comprehensive presentation of all the key
-principles underpinning OOP, but some of them are a good match for our needs.
-OOP advocates the use of interfaces (typically called classes) to
-organize a complex system into smaller parts, it enables one
-to declare relations between the interfaces to reuse and
-specialize them (inheritance).  Finally OOP language provides some
-magic glue to make every work together, making it possible to mix and
-match data and code belonging to different but related interfaces, as
-long as this match ``makes sense''.  In Coq the role of such glue is
-played by programmable type inference.
-
-% 
-% 
-% What makes sense really means depends too
-% much on the programming language details to be explained in general;
-% an analogue in mathematics might be the silent check an expert
-% eye does when reading a text that mixes different theories.
-% In the theory of functional programming languages, such as the one
-% provided by the \mcbCIC{}, this magic glue is known as
-% \emph{sub-type} polymorphism.
-
-% Let us use an example.  Take the two
-% related notions (types) of a simple point \lstinline/P/ on the plane
-% and the more refined concept of coloured point \lstinline/CP/.  To
-% maximize code reuse we want the function \lstinline/move/, that shifts
-% a point, to also work on points that happen to have a color.
-% If we assign the type \lstinline/P -> P/ to such function, then we
-% can't use it on a coloured point \lstinline/c/, because
-% \lstinline/(move c)/ would be ill-typed.
-% We could try to assign to \lstinline/move/ the polymorphic type
-% \lstinline/$\alpha$ -> $\alpha$/ (for all $\alpha$), but that would
-% fail too. The function \lstinline/move/ really needs to know something
-% about its input, namely its coordinates, in order to perform its operation.
-% The polymorphic type requires the implementation of \lstinline/move/
-% to bee too generic, and
-% in practice we can only inhabit the type
-% \lstinline/$\alpha$ -> $\alpha$/ with the identity
-% function,\footnote{This can be proved using the parametricity theory.}
-% that does cannot move the point.
-% Sub-type polymorphism lets one assign a polymorphic type to
-% \lstinline/move/ where the type variable $\alpha$ is constrained to be
-% ``at least'' a point, a constraint satisfied by all coloured points.
-
-% To build a large library one needs to reuse as much as possible what
-% is available and build incrementally.  So far inductive types have
-% been the only way to define a new object, while bool predicates have been the
-% preferred way to define predicates.
-
-In this chapter we address the implementation of sub-types using
-\emph{records packaging data and proofs}.  To take
-full advantage of this construction while doing proofs we
-implement some the glue typical of OOP languages
-by \emph{programming type inference}.
-Inheritance among interfaces will be only sketched here;
-it is the object of the following chapter.
-
-In the \mcbCIC{} proofs are terms, so one can use records to put
-together objects and proofs of some properties to represent the
-objects that have those properties.  This representation can be
-expensive in the sense that it imposes extra work (proofs!) to create
-a sub-type object, so it must be used with care.  The \mcbMC{} library
-provides several facilities that support the creation of record-based
-sub-types, and of their inhabitants.
-We shall in particular see how both type inference and dynamic tests
-can be used to supply the property proofs.
+Such representation can be expensive in the sense that it imposes
+extra work (proofs!) to create a sub-type object, so it must be used
+with care.  The \mcbMC{} library provides several facilities that
+support the creation of record-based sub-types, and of their
+inhabitants.  We shall in particular see how both type inference and
+dynamic tests can be used to supply the property proofs, modelling
+once again the eye of a trained reader.
 
 Finally, let us point out that we have already encountered proof-carrying
 records in the previous chapter, with \C{eqType}.
@@ -195,302 +73,18 @@ the \mcbMC{} library provides facilities to automate this.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbLEARN{}
-\mcbREQUIRE{eqtype,CS}
-\mcbPROVIDE{fintype}
-\mcbNOTES{}
-\mcbsection{The interface for finite types and the ordinal subtype}
-
-The first example of sub-type we describe is the one of ordinals:
-natural numbers smaller than a given bound.  Such type has a finite
-number of elements, a property we associate to the following
-interface.
-
-\begin{coq}{name=fintype}{title=Interface for finite types}
-Module finite.
-
-Definition axiom (T : eqType) e :=
-  forall x : T, count_mem x e = 1.
-
-Record mixin_of (T : eqType) := {
-  enum : seq T;
-  _ : axiom T enum;
-}
-
-Record class_of (T : eqType) := Class {
-  base : Equality.class_of T;
-  mixin : mixin_of (Equality.Pack base)
-}.
-
-Structure type : Type := Pack {
-  sort :> Type;
-  class : class_of sort;
-}
-
-End Finite.
-
-Notation finType := Finite.type.
-Notation enum T := (Finite.enum (Finite.mixin (Finite.class T))).
-\end{coq}
-
-The details of this interface are explained in details in the next
-chapter.  What is relevant to the current chapter is that \C{finType}
-adds on top of \C{eqType} an enumeration (a sequence of values) that
-lists exactly once all elements in the type.  Indeed \C{count_mem}
-counts how many elements of \C{e} are equal to \C{x}.
-
-The interface of \C{finType} comes equipped with a theory that, among
-other things, provides a caridinality operator \C{#|T|} and bounded
-quantifications like \C{[forall x, P]}.
-
-\begin{coq}{name=fintype-th}{title=Some theory for finType}
-Lemma cardT (T : finType) : #|T| = size (enum T).
-Lemma forallP (T : finType) (P : pred T) :
-  reflect (forall x, P x) [forall x, P x].
-\end{coq}
-
-Note that \C{[forall x, P x]} is a boolean expression, hence naturally
-enables reasoning by expluded middle.
-
-Apart from the aforementioned theory, finite types can serve as a
-powerful notational device for ranges.  For example one may want
-to state that a matrix of size $m \times n$ is only accessed inside
-its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
-be formulated in the \mcbMC{} library is by saying that that its row
-accessor accepts only inhabitants of a finite type of size $m$.
-Accessing a matrix out of its bounds becomes a type error.
-Of course one wants to access a matrix using integer coordinates, but
-integers are inifite.  Hence the first step is to define the sub-type
-of bounded integers.
-
-
-\begin{coq}{name=ordinals}{title=Ordinals}
-Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
-Notation "''I_' n" := (ordinal n)
-
-Coercion nat_of_ord i := let: Ordinal m _ := i in m.
-
-Definition ord_eqop n (i j : 'I_n) := i == j :> nat.
-Lemma ord_eqopP n : Equality.axiom (ord_eqop n).
-Definition ord_enum n : seq 'I_n := ... iota 0 n ...
-Lemma ord_enumP n : Finite.axiom (ord_enum n).
-
-Definition ord_eqMixin : Equality.mixin ...
-Canonical ord_eqType n := Equality.Pack (ord_eqMixin n).
-Definition ord_finMixin : Finite.mixin ...
-Canonical ord_finType n := Finite.Pack (ord_finMixin n).
-\end{coq}
-
-Last line is horrible without the sub-type kit explained afterwards.
-
-An example of ordinals here would be nice.
-
-Now we can declare ordinals an eqtype and a fintype, since we have the
-enumeration and comparison.  Note that the comparison simply ignores
-the proof component: two ordinals are equal iff their integer values
-are.
-
-Declaring eqType and finType for ordinals required some work.
-While the enumeration part is expected, indeed it is the property one
-gets by defining the new sub-type, the one about eqtype is not
-interesting.  Indeed the \mcbMC{} library provides a kit to transport
-properties of a type A to a sub-type of A (described in
-Section~\ref{sec:subtypekit}).  In this case the eqtype
-for nat in inherited by ordinals.
-
-\mcbLEVEL{2}
-\mcbsubsection{A note on boolean $\Sigma$-types}
-
-Unfortunately the irrelevance of proof components of records like
-ordinals is in general not true in \mcbCIC{}: all
-components are relevant to equality.
-
-To the rescue comes the result of Hedberg~\cite{Hedberg}
-that proves such property for a wide class of predicates.
-In particular it implies that any type with decidable identity
-has unique identity proofs. This result can be proved in its full generality
-in the \mcbMC{} library, using to the \C{eqType} interface.
-
-\begin{coq}{name=hedberg}{title=Hedberg}
-Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
-\end{coq}
-\coqrun{name=hedberg}{ssr,hedberg,abort}
-
-If we pick the concrete example of \lstinline/bool/,
-then all proofs that \lstinline/(b = true)/
-for a fixed \lstinline/b/ are identical.
-
-Here we can see another crucial advantage of boolean reflection.
-Forming sub-types poses no complication from a logic perspective since
-proof of boolean identities are very simple, canonical, objects.
-
-In the \mcbMC{} library, where \emph{all predicates that can} be
-expressed as a boolean function \emph{are expressed as a boolean
-function}, forming sub-types is extremely easy.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
 \mcbREQUIRE{eqtype, fintype, CS}
 \mcbPROVIDE{tuple}
 \mcbNOTES{}
-\mcbsection{Intermezzo: Tuples and proof search}
+\mcbsection{$n$-tuples, lists with an invariant on the length}
 
-Before detailing the took kit to define sub types we focus on
-another example of sub type: tuples.  Such type serves two roles.
-First, it is a building block for matrixes, as we will see in Section
-xx.  Second, it uses the idea of sub types to model invariants during
-proofs and provides handy automation.  This section focuses on the
-automation, that builds upon the rich type of tuples and is once again
-obtained by programming type inference.
-
-
-% Even if we leave on the side algebraic structures and
-% just look at modelling simple sets, some difficulties
-% immediately arise.  One of them is that sets play, at least
-% linguistically, two roles.  For example the set of natural numbers
-% $\mathbb{N}$ could be assimilated to the type of natural numbers
-% \mbox{\lstinline/nat/,} and the set of primes $\mathbb{P}$ as
-% a different type.
-% Types' most paradigmatic role is the one of avoiding confusion,
-% and as a result two different types signal different, incompatible,
-% objects.  Here we absolutely need all primes to
-% be numbers too, since we want to reuse on them all the operations and
-% theorems we already have on simple numbers.
-% The simplest approach to this problem comes from the
-% observation that $\mathbb{P}\subset\mathbb{N}$, and that $\mathbb{P}$
-% can be seen as a property, assumed or proved for some elements of
-% $\mathbb{N}$.  In other words model  $\mathbb{N}$ as a type and
-% $\mathbb{P}$ as a predicate.  While this idea is widely used
-% in the \mcbMC{} library it is not the silver bullet.
-%
-% As the concepts one models become more and more
-% sophisticated the number of properties and operations that
-% characterize them grow, and this very simple approach does not help in
-% organizing and structuring such knowledge.
-%
-% If we follow this approach the type of prime numbers can be seen
-% as a type that combines a natural number with a proof that such
-% number is prime.  Hence a prime, by forgetting such primality witness,
-% is a simple number and can be used as such.
-%
-%
-% This construction, a \emph{dependent pair packing data and proofs}, is
-% tricky to get right in the \mcbCIC{}, and the solution adopted in the
-% \mcbMC{} library is the subject of this chapter.  In the next chapter
-% we will see that such construction scales up surprisingly well, to the
-% point where it is also used to model carefully structured mathematics,
-% like algebra.
-
-% First of all, the \mcbCIC{} has no built-in notion of sub-typing and
-% what we propose ``implements'' the mechanics of sub-typing on top
-% of records and programmable type inference.  We begin by studying a
-% simple example of sub-type and reach our proposed encoding by first
-% showing some alternatives and discussing their drawbacks.
-% 
-% We pick the sub-type of sequences of a given length as our case study.
-% The objective is to ease the reasoning on sequences when manipulated
-% by operations that alters the length in a known way, while retaining
-% all the theory we already have on general sequences.
-% 
-% An approach to describe such data type that is possible in type
-% theories with indexed inductive families like the \mcbCIC{} is to
-% craft a new ad-hoc type, the type of vectors.
-% 
-% \begin{coq}{name=vect}{width=\textwidth,title=Vectors}
-% Inductive vect T : nat -> Type :=
-% | vnil : vect T 0
-% | vcons n of T & vect T n : vect T n.+1.
-% \end{coq}
-% 
-% In this construction the type carries the extra information we want.
-% For example \lstinline/(vect nat 7)/ describes a sequence of natural
-% numbers of length 7.
-% One can define operations on the \lstinline/vect/ data type that
-% signal, in their type, the effect they have on the length of the
-% vectors they manipulate.  For example one can read in the type of the
-% function that reverses a vector that it preserves the length
-% (\lstinline/n/ here).
-% 
-% \begin{coq}{name=vrev}{width=\textwidth,title=Vector reversal}
-% Definition vcast {T n w} (e : w = n) (v : vect T n) : vect T w :=
-%   let: erefl in _ = w := esym e return vect T w in v.
-%   Definition vrev {T n} (v : vect T n) : vect T n :=
-%   let fix aux m (acc : vect T m) n (v : vect T n) : vect T (m+n) :=
-%     if v isn't vcons n' x xs then vcast (addn0 m) acc
-%     else vcast (addnS m n') (aux m.+1 (vcons x acc) n' xs) in
-%   aux 0 (vnil T) n v.
-% \end{coq}
-% 
-% This means that there will be no need to convince Coq that
-% \lstinline/vrev/ preserves the length of the input vector
-% each time it is used: we morally prove it once an for all
-% when we define the operation.
-% 
-% \begin{coq}{name=vlen}{width=\textwidth,title=Vector assisted proof}
-% Definition vlength {T n} (v : vect T n) := n.
-% Lemma simple T n (v : vect T n) : vlength v = vlength (vrev v).
-% Proof. by []. Qed.
-% \end{coq}
-% \coqrun{name=vect2}{ssr,vect,vrev,vlen}
-% 
-% The drawback of this approach is that the type \lstinline/(vect T n)/
-% and \lstinline/(seq T)/ are different and we can't directly apply to a
-% vector an operation that is defined on sequences.  For example we
-% already have a reversal function for sequences called \lstinline/rev/,
-% but writing \lstinline/(rev vnil)/ results in a type error.  And when
-% new operations have to be defined, new proofs have to be done. For
-% example, even if we already proved that \lstinline/rev/ is an
-% involution, we have to prove the same property from scratch for
-% \lstinline/vrev/.
-% 
-% Of course one can relate sequences and vectors by means of
-% morphisms.  Even if the \mcbMC{} library provides adequate
-% infrastructure for dealing with morphisms, their use is overhead best
-% avoided.
-% 
-% The conclusion we draw is that we should refrain from defining a
-% completely new data type and try to reuse the sequence type \C{seq}.
-% The natural way of doing so is to bundle a sequence with a proof that
-% witnesses that its length is exactly~\C{n}. In some sense this just
-% shift the problem of representing the sub-type to that of representing
-% the proof. The obvious way of doing this is to mimic the definition
-% of the \C{vect} type, as in
-% the following ``naive'' record type \lstinline/(lseq T n)/:
-
-% \begin{coq}{name=haslen}{width=\textwidth,title=Simple dependent pair}
-% Inductive has_len (T : Type) : seq T -> nat -> Prop :=
-% | base : has_len [::] 0
-% | step n l a of has_len l n : has_len [:: a & l] n.+1.
-% 
-% Record lseq T n := Lseq { lval : seq T; llen : has_len lval n }.
-% \end{coq}
-% 
-% The advantage of this approach over the former is that the
-% \lstinline/lval/ projection can be used to get a \lstinline/seq/ out
-% of an \lstinline/lseq/ directly.  And using the \lstinline/Coercion/
-% mechanism the system would even insert it automatically.  Hence
-% writing \lstinline/(rev l)/ for \lstinline/(l : lseq T n)/ would
-% be accepted by the system.
-% 
-% Note that so far records only contained types and terms, typically
-% a function (like the comparison used to implement the overload
-% \lstinline/==/ syntax).  Here the record contains \emph{a term and a proof}.
-% However, the tratment of proofs as ordinary data in the \mcbCIC{} can
-% cause some rather surprising behavior.
-% When we defined the function to compare pairs we had no
-% doubts: both components of the pair play a role and must be taken into
-% account.  When comparing two elements of \lstinline/lseq/ we would
-% like the second component not to matter.  In other words we want this
-% lemma to be provable:
-% 
-% \begin{coq}{name=lval}{width=\textwidth,title=Injectivity of lval}
-% Lemma lval_inj T n (l1 l2 : lseq T n) : lval l1 = lval l2 -> l1 = l2.
-% \end{coq}
-% \coqrun{name=lval}{ssr,haslen,lval,abort}
-% 
-% Intuitively it says that two sequence of length \lstinline/n/ are
-% equal if they are equal as sequences, it does not matter \emph{how one
-% proved} that they have length \lstinline/n/.
+We begin by defining the type of tuples: sequences of a given length.
+In this section we focus on how tuples are defined, used as regular
+sequences and how to program type inference to track, for us, the
+invariant on a tuples' length.  Next section will complete the
+definition of the tuple sub-type by making the abstract theory
+attached to the \C{eqType} interface available on tuples whenver it is
+available on sequences.
 
 A tuple is a sequence of values (of the same type) whose length is
 made explicit in the type.
@@ -501,30 +95,10 @@ Notation "n .-tuple T" := (tuple_of n T) (at level 2).
 \end{coq}
 \coqrun{name=r1}{ssr,tupx}
 
-Recall that the statement \lstinline/(size tval == n)/
-is the argument of a hidden \lstinline/is_true/ coercion.
-If we unfold its definition we clearly see that the statement
-is an equality on \lstinline/bool/.
-
-% For now we state only two instances of the general result of
-% Hedberg.  They are enough for the following section, were
-% we see how, by programming type inference, one can take
-% full advantage of the tuple subtype.
-%
-% \begin{coq}{title=Two instances of Hedberg's theorem}
-% Theorem bool_irrelevance (x y : bool) : forall e1 e2 : x = y, e1 = e2.
-% Theorem nat_irrelevance (x y : nat) : forall e1 e2 : x = y, e1 = e2.
-% \end{coq}\marginnote{unkeyed...}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \mcbLEVEL{1}
-% \mcbREQUIRE{records + CS}
-% \mcbPROVIDE{working with tuples}
-% \mcbLEARN{CS = proof search}
-% \mcbsection{Working with sub-types}
-
-% Such equality relates to natural numbers, hence the
-% \lstinline/nat\_irrelevance/ lemma will come handy later on.
+% Recall that the statement \lstinline/(size tval == n)/
+% is the argument of a hidden \lstinline/is_true/ coercion.
+% If we unfold its definition we clearly see that the statement
+% is an equality on \lstinline/bool/.
 
 The key property of this type is that it tells us the length of its
 elements when seen as sequences:
@@ -756,7 +330,7 @@ reasoning.
 \mcbREQUIRE{proof language}
 \mcbPROVIDE{an example of sub-type of eqType}
 \mcbLEARN{it is a schematic process}
-\mcbsection{The \lstinline/subType/ kit}
+\mcbsection{$n$-tuples, a sub-type of sequences}
 \label{sec:subtypekit}
 
 We have that \lstinline/(seq T)/ is an \lstinline/eqType/ and
@@ -861,8 +435,6 @@ is registered the equality axiom can be proved automatically by
 \C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is reminescent of
 subtyping in functional languages like OCaml.
 
-This also works for ordinals.
-
 In addition to that the sub-type kit provides insub.
 
 \begin{coq}{name=subt}{}
@@ -877,15 +449,12 @@ Qed.
 
 explain why this is better than the horror with dependent types.
 
-TODO: think if the following subsection has to be moved to the end
-of the chapter or stay here.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
 \mcbLEARN{Declare a new subtype and derive eqType}
 \mcbPROVIDE{usage of \lstinline/[subType for ...]/}
 \mcbREQUIRE{}
-\mcbsubsection{The sub-type kit in details}
+\mcbsubsection{The sub-type kit}
 
 When one has a base type T and a sub-type ST defined as a boolean
 sigma type, the \mcbMC{} library provides facilities to
@@ -969,6 +538,149 @@ Note how the value of \C{Sub} is determined by unifying the type
 of \lstinline/inlined_sub_rect/ with the type expected by \C{SubType}.
 
 Also explain \C{[newType for Sval]} for simple wrappers.
+
+\mcbLEVEL{2}
+\mcbsubsection{A note on boolean $\Sigma$-types}
+
+Unfortunately the irrelevance of proof components of records like
+ordinals is in general not true in \mcbCIC{}: all
+components are relevant to equality.
+
+To the rescue comes the result of Hedberg~\cite{Hedberg}
+that proves such property for a wide class of predicates.
+In particular it implies that any type with decidable identity
+has unique identity proofs. This result can be proved in its full generality
+in the \mcbMC{} library, using to the \C{eqType} interface.
+
+\begin{coq}{name=hedberg}{title=Hedberg}
+Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
+\end{coq}
+\coqrun{name=hedberg}{ssr,hedberg,abort}
+
+If we pick the concrete example of \lstinline/bool/,
+then all proofs that \lstinline/(b = true)/
+for a fixed \lstinline/b/ are identical.
+
+Here we can see another crucial advantage of boolean reflection.
+Forming sub-types poses no complication from a logic perspective since
+proof of boolean identities are very simple, canonical, objects.
+
+In the \mcbMC{} library, where \emph{all predicates that can} be
+expressed as a boolean function \emph{are expressed as a boolean
+function}, forming sub-types is extremely easy.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{}
+\mcbREQUIRE{eqtype,CS}
+\mcbPROVIDE{fintype}
+\mcbNOTES{}
+\mcbsection{Finite types and their theory}
+
+The first example of sub-type we describe is the one of ordinals:
+natural numbers smaller than a given bound.  Such type has a finite
+number of elements, a property we associate to the following
+interface.
+
+\begin{coq}{name=fintype}{title=Interface for finite types}
+Module finite.
+
+Definition axiom (T : eqType) e :=
+  forall x : T, count_mem x e = 1.
+
+Record mixin_of (T : eqType) := {
+  enum : seq T;
+  _ : axiom T enum;
+}
+
+Record class_of (T : eqType) := Class {
+  base : Equality.class_of T;
+  mixin : mixin_of (Equality.Pack base)
+}.
+
+Structure type : Type := Pack {
+  sort :> Type;
+  class : class_of sort;
+}
+
+End Finite.
+
+Notation finType := Finite.type.
+Notation enum T := (Finite.enum (Finite.mixin (Finite.class T))).
+\end{coq}
+
+The details of this interface are explained in details in the next
+chapter.  What is relevant to the current chapter is that \C{finType}
+adds on top of \C{eqType} an enumeration (a sequence of values) that
+lists exactly once all elements in the type.  Indeed \C{count_mem}
+counts how many elements of \C{e} are equal to \C{x}.
+
+The interface of \C{finType} comes equipped with a theory that, among
+other things, provides a caridinality operator \C{#|T|} and bounded
+quantifications like \C{[forall x, P]}.
+
+\begin{coq}{name=fintype-th}{title=Some theory for finType}
+Lemma cardT (T : finType) : #|T| = size (enum T).
+Lemma forallP (T : finType) (P : pred T) :
+  reflect (forall x, P x) [forall x, P x].
+\end{coq}
+
+Note that \C{[forall x, P x]} is a boolean expression, hence naturally
+enables reasoning by expluded middle.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{}
+\mcbREQUIRE{eqtype,CS}
+\mcbPROVIDE{fintype}
+\mcbNOTES{}
+\mcbsection{The ordinal subtype}
+
+Apart from the aforementioned theory, finite types can serve as a
+powerful notational device for ranges.  For example one may want
+to state that a matrix of size $m \times n$ is only accessed inside
+its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
+be formulated in the \mcbMC{} library is by saying that that its row
+accessor accepts only inhabitants of a finite type of size $m$.
+Accessing a matrix out of its bounds becomes a type error.
+Of course one wants to access a matrix using integer coordinates, but
+integers are inifite.  Hence the first step is to define the sub-type
+of bounded integers.
+
+
+\begin{coq}{name=ordinals}{title=Ordinals}
+Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
+Notation "''I_' n" := (ordinal n)
+
+Coercion nat_of_ord i := let: Ordinal m _ := i in m.
+
+Definition ord_eqop n (i j : 'I_n) := i == j :> nat.
+Lemma ord_eqopP n : Equality.axiom (ord_eqop n).
+Definition ord_enum n : seq 'I_n := ... iota 0 n ...
+Lemma ord_enumP n : Finite.axiom (ord_enum n).
+
+Definition ord_eqMixin : Equality.mixin ...
+Canonical ord_eqType n := Equality.Pack (ord_eqMixin n).
+Definition ord_finMixin : Finite.mixin ...
+Canonical ord_finType n := Finite.Pack (ord_finMixin n).
+\end{coq}
+
+Last line is horrible without the sub-type kit explained afterwards.
+
+An example of ordinals here would be nice.
+
+Now we can declare ordinals an eqtype and a fintype, since we have the
+enumeration and comparison.  Note that the comparison simply ignores
+the proof component: two ordinals are equal iff their integer values
+are.
+
+Declaring eqType and finType for ordinals required some work.
+While the enumeration part is expected, indeed it is the property one
+gets by defining the new sub-type, the one about eqtype is not
+interesting.  Indeed the \mcbMC{} library provides a kit to transport
+properties of a type A to a sub-type of A (described in
+Section~\ref{sec:subtypekit}).  In this case the eqtype
+for nat in inherited by ordinals.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEVEL{2}
