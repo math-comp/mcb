@@ -23,33 +23,34 @@ Require Import tuple.
 
 Inductive data types have been used to both code data, like lists, and
 logical connectives, like and.  Properties were always expressed with
-boolean programs.  Now the question is, what stuts do we want to give
-to, say, lists of size 5,  or integers smaller than 7?  And which
-relation to put between integrs and integers smaller than 7.  And how
-to benefit from extra properties integers smaller than 7 have, like
-being a finite collection.
+boolean programs.  The questions addressed in this chapter are the
+following ones.  What
+stuts do we want to give to, say, lists of size 5,  or integers
+smaller than 7?  Which relation to put between integrs and
+integers smaller than 7.  How to benefit from extra properties
+integers smaller than 7 have, like being a finite collection?
 
 In standard mathematics one would simple say that the integers are an
 infinite set (called \C{nat}), and that the integers smaller that 7
 form a finite subset of the integers (called \C{'I_7}).  Integers and
-integers smaller that 7 are interchangeable data: if \C{n:nat} and
-\C{i:'I_7} one can clearly add \C{n} with \C{i}, and eventually show
-that their sum is still smaller than 7.  Also, an informed reader
-knows which operations are compatible with a subset, eg \C{(i-1)}
+integers smaller than 7 are interchangeable data: if \C{(n : nat)} and
+\C{(i : 'I_7)} one can clearly add \C{n} to \C{i}, and eventually show
+that the sum is still smaller than 7.  Also, an informed reader
+knows which operations are compatible with a subset. E.g. \C{(i-1)}
 stays in \C{'I_7}, as well as \C{(i+n \%| 7)}.  So in a sense, subsets
 also provide a linguistic construct to ask the reader to track an
-easy invariant relieving the proof text from uninteresting details.
+easy invariant and relieving the proof text from boring details.
 
-The closest notion we have in \mcbCIC{} is the one of $\Sigma-$types,
+The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
 i.e. records.  One can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
-\leq 7.$  Indeed in the \mcbCIC{} proofs are terms, so one can easily
+\leq 7.$  Indeed proofs are terms, so one can 
 pack together objects and proofs of some properties to
-represent the objects that have those properties.  For example $3$,
+represent the objects that have those properties.  For example $3$
 when seen as an inhabitant of \C{'I_7} is represented by a dependent
-pair \C{(3,p)} where \C{(p : 3 <= 7)}.  Note that by forgetting the
+pair \C{(3, p)} where \C{(p : 3 <= 7)}.  Note that by forgetting the
 proof \C{p} one recovers a \C{nat} that can be passed to, say, the
 program computing the addition of natural numbers, or to theorems
-holding for any \C{nat}.  Still an inhabitant of \C{'I_7} can always
+quantified on any \C{nat}.  Also, an inhabitant of \C{'I_7} can always
 be proved smaller than 7, since such evidence is part of the
 object itself.
 We call this construction a \emph{sub-type}.
@@ -78,10 +79,10 @@ the \mcbMC{} library provides facilities to automate this.
 \mcbNOTES{}
 \mcbsection{$n$-tuples, lists with an invariant on the length}
 
-We begin by defining the type of tuples: sequences of a given length.
+We begin by defining the type of $n$-tuples: sequences of length $n$.
 In this section we focus on how tuples are defined, used as regular
-sequences and how to program type inference to track, for us, the
-invariant on a tuples' length.  Next section will complete the
+sequences and how to program type inference to track for us the
+invariant on tuples' length.  Next section will complete the
 definition of the tuple sub-type by making the abstract theory
 attached to the \C{eqType} interface available on tuples whenver it is
 available on sequences.
@@ -111,10 +112,11 @@ Proof. by case: t => s /eqP. Qed.
 \coqrun{name=r2}{ssr,tup,sizetup}
 
 In other words each inhabitant of the tuple type carries,
-in the form of a proof, its length.  As test bench for the notion
-of tuple we pick this simple example: a tuple is processed using
+in the form of an equality proof, its length.  As test bench
+we pick this simple example: a tuple is processed using
 functions defined on sequences, namely \lstinline/rev/ and
-\lstinline/map/.
+\lstinline/map/.  These operations do preserve the invariant of
+tuples, i.e. they don't alter the length of the subjacent list.
 
 \begin{coq}{name=p1}{}
 Example seq_on_tuple n (t : n.-tuple nat) :
@@ -122,7 +124,7 @@ Example seq_on_tuple n (t : n.-tuple nat) :
 \end{coq}
 
 There are two ways to prove that lemma.  The first one is
-to ignore the fact that \lstinline/t/ is tuple, consider it
+to ignore the fact that \lstinline/t/ is a tuple, consider it
 as a regular sequence, and use only the theory of sequences.
 
 \begin{coq}{name=p2}{}
@@ -141,10 +143,11 @@ side, and we can conclude.
 
 This simple example shows that the theory of sequences is usable
 on terms of type tuple.  Still we didn't take any advantage of
-the fact that  \lstinline/t/ is tuple.
+the fact that  \lstinline/t/ is a tuple.
 
 The second way to prove this theorem is to rely on the rich type
-of \lstinline/t/ to actually compute the length of the sequence.
+of \lstinline/t/ to actually compute the length of the underlying 
+sequence.
 
 \begin{coq}{name=p3}{}
 Example just_tuple_attempt n (t : n.-tuple nat) :
@@ -162,8 +165,8 @@ Proof. rewrite size_tuple.
 \end{coqout}
 
 The rewriting replaces the right hand side with \lstinline/n/ as
-expected, but we can't go any further: the lemma is not replacing
-the right hand side with \lstinline/n/, even if we are working
+expected, but we can't go any further: the lemma does not
+apply (yet) the left hand side, even if we are working
 with a tuple \lstinline/t/.  Why is that?  In the left hand side
 \lstinline/t/ is processed using functions on sequences.
 The type of \lstinline/rev/ for example is
@@ -172,26 +175,27 @@ from \lstinline/tuple_of/ to \lstinline/seq/ make the
 expression \lstinline/(rev (tval t))/ well typed, but the output
 is of type \lstinline/(seq nat)/.  
 We would like the functions on sequences to return
-data as rich as the one taken in input.
+data as rich as the one taken in input, i.e. preserve the invariant
+expressed by the tuple type.  Or, alternative, we would like the
+system to recover such information.
 
 Let us examine what happens if try to unify the left hand side of the
 \lstinline/size_tuple/ equation with the redex
-\lstinline/(rev t)/, using the following toolkit
+\lstinline/(rev t)/, using the following toolkit:
 
 \begin{coq}{name=infrastructure}{title= Unification debugging toolkit}
 (* toolkit *)
-Notation "X (*...*)" := (let x := X in let y := _ in x)
-  (at level 100, format "X  (*...*)").
+Notation "X (*...*)" :=
+  (let x := X in let y := _ in x)   (at level 100, format "X  (*...*)").
 Notation "[LHS 'of' equation ]" :=
   (let LHS := _ in
-   let _infer_LHS := equation : LHS = _ in LHS)
-  (at level 4).
+   let _infer_LHS := equation : LHS = _ in LHS)   (at level 4).
 Notation "[unify X 'with' Y ]" :=
-  (let unification := erefl _ : X = Y in
-   True).
+  (let unification := erefl _ : X = Y in True).
 \end{coq}
 
-This simulation of \lstinline/rewrite size_tuple/
+We can now simulate the unification problem
+encountered by \lstinline/rewrite size_tuple/
 
 \begin{coq}{name=showunif}{}
 Check forall T n (t : n.-tuple T),
@@ -200,7 +204,7 @@ Check forall T n (t : n.-tuple T),
  [unify LHS with RDX].
 \end{coq}
 
-generates the following diagnostic
+The corresponding error message is the following one:
 
 \coqrun{name=r5;fail}{ssr,tup,sizetup,infrastructure,showunif}
 \begin{coqout}{run=r5}{title=Response}
@@ -229,26 +233,25 @@ is \lstinline/rev t/ (and whose other field contains a
 proof that such sequence has length \lstinline/?$_n$/).
 
 We have seen in the previous chapter that this is exactly the class of
-problems that is addressed by \C{Canonical} structure instances.
+problems that is addressed by canonical structure instances.
 We can thus use \C{Canonical} declarations to teach Coq
 the effect of list operations on the length of their input.
 
-\begin{coq}{name=t1}{}
-Lemma rev_tupleP n A (t : n.-tuple A) : size (rev t) = n.
+\begin{coq}{name=t1}{width=13cm}
+Lemma rev_tupleP n A (t : n.-tuple A) : size (rev t) == n.
 Proof. by rewrite size_rev size_tuple. Qed.
 Canonical rev_tuple n A (t : n.-tuple A) := Tuple (rev_tupleP t).
 
-Lemma map_tupleP n A B (f: A -> B) (t : n.-tuple A) : size (map f t) = n.
+Lemma map_tupleP n A B (f: A -> B) (t: n.-tuple A) : size (map f t) == n.
 Proof. by rewrite size_map size_tuple. Qed.
-Canonical map_tuple n A B f (t : n.-tuple A) : n.-tuple B :=
-  Tuple (map_tupleP f t).
+Canonical map_tuple n A B (f: A -> B) (t: n.-tuple A) := Tuple (map_tupleP f t).
 \end{coq}
 
 Even if it is not needed for the lemma we took as our test bench,
 we add another example where the length is not preserved.
 
 \begin{coq}{name=t2}{}
-Lemma cons_tupleP n A (t : n.-tuple A) x : size (x :: t) = n.+1.
+Lemma cons_tupleP n A (t : n.-tuple A) x : size (x :: t) == n.+1.
 Proof. by rewrite /= size_tuple. Qed.
 Canonical cons_tuple n A x (t : n.-tuple A) : n.+1 .-tuple A :=
   Tuple (cons_tupleP t x).
@@ -289,42 +292,6 @@ is not required to know the names of the lemmas:
 it the new concept of tuple that takes care of the size related
 reasoning.
 
-% Going back to the example of (coloured) points, once a coloured point
-% is defined as a record embedding a simple point
-% 
-% \begin{coq}{name=col}{}
-% Record CP := Coloured { coords_of :> P; colour_of : color }
-% \end{coq}
-% 
-% \noindent
-% the way we implement sub-type polymorphism between \lstinline/CP/
-% and \lstinline/P/ is by assigning the typed \lstinline/(P -> P)/ to
-% \lstinline/move/ but:
-% \begin{itemize}
-% \item thanks to the automatically inserted
-% 	\emph{forgetful coercion} \lstinline/coords_of/
-% 	we can apply \lstinline/move/ to a coloured point \lstinline/c/
-% 	obtaining \lstinline/(move (coords_of c))/
-% \item thanks to \emph{programmable type inference} such	expression
-% 	can be automatically injected back in the type of coloured
-% 	points by using the color of \lstinline/c/ and obtain
-% 	\lstinline/(Coloured (move (coords_of c))$~$(colour_of c))/
-% \end{itemize}
-% That is pretty much what ones expects \lstinline/move/ to do when
-% applied to a coloured point: act on its coordinates and leave
-% its colour untouched.
-% 
-% We have seen how to implement the glue that links a type (sequences)
-% with a sub-type (tuples), but only in a very simple case.
-% A tuple is trivially a sequence (by forgetting something), hence the
-% theory of sequences ``trivially'' applies to tuples.
-% 
-% We now revise the definition of \lstinline/eqType/, turning it into a
-% real interface bringing with it a specific theory.  Later we show that
-% since \lstinline/seq/ is an instance of that interfaces and since
-% \lstinline/tuple/ is a sub-type of \lstinline/seq/, then the theory
-% of \lstinline/eqType/ also applies to tuples.
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbREQUIRE{proof language}
@@ -333,9 +300,12 @@ reasoning.
 \mcbsection{$n$-tuples, a sub-type of sequences}
 \label{sec:subtypekit}
 
-We have that \lstinline/(seq T)/ is an \lstinline/eqType/ and
-we want to transport \lstinline/==/ on tuples.  First we need to
-defined a comparison function for tuples.
+We have seen that \lstinline/(seq T)/ is an \lstinline/eqType/
+whenever \C{T} is and we want to transport the \C{eqType} structure
+on tuples.  We first do it manually.  Then we provide a tookit
+to ease the declaration of sub-types.
+
+The first step is to define a comparison function for tuples.
 
 \begin{coq}{name=tupcmp}{title=Comparison of tuples}
 Definition tcmp n (T : eqType) (t1 t2 : n.-tuple T) :=
@@ -343,10 +313,8 @@ Definition tcmp n (T : eqType) (t1 t2 : n.-tuple T) :=
 \end{coq}
 \coqrun{name=tupcmp}{ssr,require-tuple,tupcmp}
 
-Here we reuse the one on sequences, and we ignore the
-proof part of tuples.
-
-We need now to prove
+Here we simply reuse the one on sequences, and we ignore the
+proof part of tuples.  What we need now to prove
 
 \begin{coqdef}{name=eqtupP}
 Lemma eqtupleP n (T : eqType) : Equality.axiom (@tcmp n T).
@@ -371,10 +339,13 @@ Qed.
 \end{coq}
 \coqrun{name=tupcmpP}{ssr,tup,tupcmp,eqtupP}
 
-The first direction is trivial
+The first direction is trivial by rewriting.
+The converse direction makes an essential use of
+the \lstinline/eq_irrelevance/ lemma, that is brefly discussed
+in~\ref{hedberg}.
 
-\begin{coqout}{run=tupcmpP;out=g1}{title=Response line 4,width=5cm}
-2 focused subgoals (shelved: 2)
+\begin{coqout}{run=tupcmpP;out=g1}{title=Response line 4,width=6cm}
+2 subgoals
 
 n : nat
 T : eqType
@@ -384,12 +355,9 @@ x = y -> tval x = tval y
 
 subgoal 2 is:
   tval x = tval y -> x = y
+$~$  
 \end{coqout}
-
-For the other one the crucial step is the use
-of \lstinline/eq_irrelevance/.
-
-\begin{coqout}{run=tupcmpP;out=g2}{title=Response line 6,width=7cm}
+\begin{coqout}{run=tupcmpP;out=g2}{title=Response line 6,width=6cm}
 1 subgoal
 
 n : nat
@@ -403,14 +371,15 @@ E : s2 = s1
 Tuple p2 = Tuple p1
 \end{coqout}
 
-We can then declare
+We can then declare the canonical \C{eqType} instance for tuples.
 
 \begin{coq}{name=canontup}{}
-Canonical tuple_eqType n T :=
+Canonical tuple_eqType n T : eqType :=
   Equality.Pack (Equality.Mixin (@eqtupleP n T)).
 \end{coq}
 
-Simple test
+As a simple test we check that the notations and the theory
+that equips \C{eqType} is available on tuples.
 
 \begin{coq}{name=testtup}{}
 Check forall (t : 3.-tuple nat), [:: t] == [::].
@@ -420,8 +389,10 @@ Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
 \coqrun{name=tupc}{ssr,require-tuple,testtup}
 
 Although all these proofs and definitions are specific to \C{tuple},
-they are obviously schematic and generalize to similarly defined types,
-like ordinals.  The sub-type kit lets one write the following
+it seems obvious that we are following a schema here, and that the
+parameters are three: the original type \C{seq T}, the sub type
+\C{n.-tuple T} and the projection \C{tval}.
+The sub-type kit lets one write the following:
 
 \begin{coq}{name=subt}{}
 Canonical tuple_subType := Eval hnf in [subType for tval].
@@ -435,8 +406,9 @@ is registered the equality axiom can be proved automatically by
 \C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is reminescent of
 subtyping in functional languages like OCaml.
 
-In addition to that the sub-type kit provides insub.
+MOVE that to FINTYPE ORD.
 
+\label{ordfintype}
 \begin{coq}{name=subt}{}
 Definition ord_enum : seq ordinal := pmap insub (iota 0 n).
 
@@ -447,7 +419,6 @@ by apply/all_filterP; apply/allP=> i; rewrite mem_iota isSome_insub.
 Qed.
 \end{coq}
 
-explain why this is better than the horror with dependent types.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
@@ -466,29 +437,28 @@ previous section with
 
 \begin{coq}{name=subt}{}
 Canonical tuple_subType := Eval hnf in [subType for tval].
-Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
-Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
 \end{coq}
-
-Line 1 creates an instance of the \C{subType} structure that registers the
-relation between \C{tuple} and \C{seq}; line 2 accesses the \C{subType}
-interface to create an \C{eqMixin}.
 
 As we will see in the next section, the \C{subType} structure provides
 a generic notation \C{val} for the projector of a sub-type (i.e.,
-\C{tval} for \C{tuple}),
-with an overloaded injectivity lemma \lstinline/val_inj/.
+\C{tval} for \C{tuple}), with an overloaded injectivity lemma
+\lstinline/val_inj/ saying that two objects equal in ST are also equal
+in T.
 
-We also get a generic static constructor \C{Sub}, which takes a base
-type value and a proof, and more interestingly dynamic constructors
+In addition to the generic projection we get a generic static
+constructor \C{Sub}, which takes a value in T and a proof.
+
+More interestingly the sub-type kit provides the dynamic constructors 
 \C{insub} and \C{insubd} that do not need a proof as they dynamically
-test the property, and offer an attractive encapsulation of the
-difficult \emph{convoy} dependent progamming pattern. The \C{insubd}
-constructor takes a default sub-type value which it returns if the
-tests fails, while \C{insub} takes only a base type value and returns
-an \C{option}; both are \emph{opaque} and will not evaluate the test,
-even for a ground base type value.  Both \C{Sub} and \C{insub} expect
-the typing context to specify the sub-type.
+test the property, and offer 
+an attractive encapsulation of the difficult \emph{convoy
+pattern}~\cite{AdamCPDT}.
+The \C{insubd} constructor takes a default
+sub-type value which it returns if the tests fails, while \C{insub}
+takes only a base type value and returns an \C{option}; both are
+\emph{opaque} and will not evaluate the test, even for a ground base
+type value.  Both \C{Sub} and \C{insub} expect the typing context to
+specify the sub-type.
 
 Here are a few example uses, using \C{tuple}:
 
@@ -499,6 +469,9 @@ Let t1 : 3.-tuple nat := Sub s size3s.
 Let s2 := if insub s is Some t then val (t : 3.-tuple nat) else nil.
 Let t3 := insubd t s. (* : 3.-tuple nat *)
 \end{coq}
+
+We put \C{insub} to good use in Section~\ref{ordfintype} when
+an enumeration for sub-types is to be defined.
 
 The \C{subType} structure describes a Boolean sigma-type in terms of
 its projector, constructor, and elimination rule:
@@ -515,8 +488,8 @@ Structure subType : Type := SubType {
 \end{coq}
 
 Instances can provide unification hints for any of the three named fields,
-not just for \lstinline/sub_sort/. Hence, \lstinline/val \mcbimpl{u}/
-unifies with \lstinline/tval t/, and \lstinline/Sub \mcbimpl{x} \mcbimpl{xP}/ 
+not just for \lstinline/sub_sort/. Hence, \lstinline/val $?_u$/
+unifies with \lstinline/tval t/, and \lstinline/Sub $?_x$ $?_{xP}$/ 
 unifies with \lstinline/Tuple s sP/, including in \C{rewrite} patterns.
 
 The \C{subType} constructor notation assumes the sub-type is isomorphic
@@ -537,18 +510,25 @@ Notation "[ 'subType' 'for' v ]" :=
 Note how the value of \C{Sub} is determined by unifying the type
 of \lstinline/inlined_sub_rect/ with the type expected by \C{SubType}.
 
-Also explain \C{[newType for Sval]} for simple wrappers.
+A useful variant of \C{[subType for tval]} is \C{[newType for Sval]}.
+Such specialized constructors forces the predicate defining the
+sub-type to be the trivial one: the sub-type ST adds no property to
+the type T, but the resulting type ST is different from T and
+inhabitants of ST cannot be mistaken by inhabitats of T.  Of course
+all the theory that equips T is also available on ST.  Aliasing a
+type is useful to attach to it different notations or coercions.
 
-\mcbLEVEL{2}
-\mcbsubsection{A note on boolean $\Sigma$-types}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbsubsection{A note on boolean $\Sigma$-types\label{hedberg}}
 
-Unfortunately the irrelevance of proof components of records like
-ordinals is in general not true in \mcbCIC{}: all
-components are relevant to equality.
+The \C{eq_irrelevace} theorem used to prove that tuples form an
+\C{eqType} is a delicate matter in the \mcbCIC{}.  In particular it
+is not valid in general: two proofs of the same predicate may not be
+provably equal.
 
 To the rescue comes the result of Hedberg~\cite{Hedberg}
 that proves such property for a wide class of predicates.
-In particular it implies that any type with decidable identity
+In particular it show that any type with decidable identity
 has unique identity proofs. This result can be proved in its full generality
 in the \mcbMC{} library, using to the \C{eqType} interface.
 
@@ -563,11 +543,14 @@ for a fixed \lstinline/b/ are identical.
 
 Here we can see another crucial advantage of boolean reflection.
 Forming sub-types poses no complication from a logic perspective since
-proof of boolean identities are very simple, canonical, objects.
+proofs of boolean identities are very simple, canonical, objects.
 
 In the \mcbMC{} library, where \emph{all predicates that can} be
 expressed as a boolean function \emph{are expressed as a boolean
 function}, forming sub-types is extremely easy.
+
+\mantra{It is convenient to define new types as sub-types of exinsting
+ones, since they inherit all the theory.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
