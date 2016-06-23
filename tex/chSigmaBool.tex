@@ -519,6 +519,7 @@ all the theory that equips T is also available on ST.  Aliasing a
 type is useful to attach to it different notations or coercions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
 \mcbsubsection{A note on boolean $\Sigma$-types\label{hedberg}}
 
 The \C{eq_irrelevace} theorem used to prove that tuples form an
@@ -560,56 +561,63 @@ ones, since they inherit all the theory.}
 \mcbNOTES{}
 \mcbsection{Finite types and their theory}
 
-The first example of sub-type we describe is the one of ordinals:
-natural numbers smaller than a given bound.  Such type has a finite
-number of elements, a property we associate to the following
-interface.
+Before describing other sub-types we introduce the interface of
+types equipped with a finite enumeration.  \marginnote{talk about
+count mem before}.
 
 \begin{coq}{name=fintype}{title=Interface for finite types}
 Module finite.
 
-Definition axiom (T : eqType) e :=
+Definition axiom (T : eqType) (e : seq T) :=
   forall x : T, count_mem x e = 1.
 
-Record mixin_of (T : eqType) := {
+Record mixin_of (T : eqType) := Mixin {
   enum : seq T;
   _ : axiom T enum;
 }
 
-Record class_of (T : eqType) := Class {
-  base : Equality.class_of T;
-  mixin : mixin_of (Equality.Pack base)
-}.
-
-Structure type : Type := Pack {
-  sort :> Type;
-  class : class_of sort;
-}
-
-End Finite.
-
-Notation finType := Finite.type.
-Notation enum T := (Finite.enum (Finite.mixin (Finite.class T))).
+End finite.
 \end{coq}
 
-The details of this interface are explained in details in the next
-chapter.  What is relevant to the current chapter is that \C{finType}
-adds on top of \C{eqType} an enumeration (a sequence of values) that
-lists exactly once all elements in the type.  Indeed \C{count_mem}
-counts how many elements of \C{e} are equal to \C{x}.
+The axiom asserts that any inhabitant of \C{T} occurs exactly once
+in the enumeration \C{e}.  We omit here the full definition of the
+interface, as it will be discussed in detail in the next chapter.
+What is relevant for the current section is that \C{finType} is the
+structure of types equipped with such enumeration, that any \C{finType}
+is also an \C{eqType} (see the parameter of the mixin), and that
+to declare a \C{finType} instance one can write:
+
+\begin{coq}{name=fintype}{title=Declare a finType}
+Definition mytype_finMixin := Finite.Mixin mytype_enum mytype_enumP.
+Canonical mytype_finType := @Finite.Pack mytype mytype_finMixin.
+\end{coq}
+
+Given that the most recurrent way of showing that an enumeration
+validates \C{Finite.axiom} is by proving that it both duplicate free
+and exhaustive, a conveniente mixin constructor is provided.
+
+\begin{coq}{name=fintype}{title=Declare a finType}
+Lemma myenum_uniq : uniq myenum.
+Lemma mem_myenum : forall x : T, x \in myenum.
+Definition mytype_finMixin := Finite.UniqFinMixin myenum_uniq mem_myenum.
+\end{coq}
 
 The interface of \C{finType} comes equipped with a theory that, among
 other things, provides a caridinality operator \C{#|T|} and bounded
-quantifications like \C{[forall x, P]}.
+boolean quantifications \C{[forall x, P]}.
 
 \begin{coq}{name=fintype-th}{title=Some theory for finType}
 Lemma cardT (T : finType) : #|T| = size (enum T).
-Lemma forallP (T : finType) (P : pred T) :
-  reflect (forall x, P x) [forall x, P x].
+Lemma forallP (T : finType) (P : pred T) : reflect (forall x, P x) [forall x, P x].
 \end{coq}
 
-Note that \C{[forall x, P x]} is a boolean expression, hence naturally
-enables reasoning by expluded middle.
+Give that \C{[forall x, P x]} is a boolean expression
+it enables reasoning by excluded middle and also combines well with
+other boolean connectives.
+
+What makes this formulation of finite types handy is the explicit
+enumeration.  It is hence easy to iterate over the inhabintants of the
+finite type, making them easy to integrate to the bigop library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -630,133 +638,204 @@ Of course one wants to access a matrix using integer coordinates, but
 integers are inifite.  Hence the first step is to define the sub-type
 of bounded integers.
 
-
 \begin{coq}{name=ordinals}{title=Ordinals}
 Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
 Notation "''I_' n" := (ordinal n)
 
 Coercion nat_of_ord i := let: Ordinal m _ := i in m.
 
-Definition ord_eqop n (i j : 'I_n) := i == j :> nat.
-Lemma ord_eqopP n : Equality.axiom (ord_eqop n).
-Definition ord_enum n : seq 'I_n := ... iota 0 n ...
-Lemma ord_enumP n : Finite.axiom (ord_enum n).
-
-Definition ord_eqMixin : Equality.mixin ...
-Canonical ord_eqType n := Equality.Pack (ord_eqMixin n).
-Definition ord_finMixin : Finite.mixin ...
-Canonical ord_finType n := Finite.Pack (ord_finMixin n).
+Canonical ordinal_subType := [subType for nat_of_ord].
+Definition ordinal_eqMixin := Eval hnf in [eqMixin of ordinal by <:].
+Canonical ordinal_eqType := Eval hnf in EqType ordinal ordinal_eqMixin.
 \end{coq}
 
-Last line is horrible without the sub-type kit explained afterwards.
+We start by making ordinals a subtype of natural numbers, and hence
+inherit the theory of \C{eqType}.  To show they form a \C{finType}
+we need to provide a good enumeration.
 
-An example of ordinals here would be nice.
+\begin{coq}{name=ordinals}{title=Enumerating a sub type via insub}
+Definition ord_enum n : seq (ordinal n) := pmap insub (iota 0 n).
+\end{coq}
 
-Now we can declare ordinals an eqtype and a fintype, since we have the
-enumeration and comparison.  Note that the comparison simply ignores
-the proof component: two ordinals are equal iff their integer values
-are.
+The \C{iota} function produces the sequence \C{[:: 0, 1, ... n.-1]}.
+Such sequence is mapped via \C{insub} that tests if an element \C{x}
+is smaller than \C{n}.  If it is the case it produces \C{(Some x)},
+where \C{x} is an ordinal, else \C{None}.  \C{pmap} drops all \C{None}
+items, and removes the \C{Some} constructor from the others.
 
-Declaring eqType and finType for ordinals required some work.
-While the enumeration part is expected, indeed it is the property one
-gets by defining the new sub-type, the one about eqtype is not
-interesting.  Indeed the \mcbMC{} library provides a kit to transport
-properties of a type A to a sub-type of A (described in
-Section~\ref{sec:subtypekit}).  In this case the eqtype
-for nat in inherited by ordinals.
+What \C{ord\_enum} produces is hence a sequence of ordinals, i.e.
+a sequence of terms like \C{(Ordinal m p)} where \C{m} is a natural
+number (as produces by \C{iota}) and \C{p} is a proof that \C{(m <=
+n)}.  What we are left to show is that such enumeration is complete
+and non redundant.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \mcbLEVEL{2}
-% \mcbLEARN{curiosity}
-% \mcbPROVIDE{}
-% \mcbREQUIRE{}
-% \mcbsection{Sub-types in HoTT}
+\begin{coq}{}{}
+Lemma val_ord_enum : map val ord_enum = iota 0 n.
+Proof.
+rewrite pmap_filter; last exact: insubK.
+by apply/all_filterP; apply/allP=> i; rewrite mem_iota isSome_insub.
+Qed.
 
-% Recent advances in HoTT identify the class of propositions that have a
-% canonical proof, mere propositions, and such class is closed under
-% forall quantification, while the one we use is not (only bounded
-% forall) but the idea is pretty much the same.  Mere propositions can
-% be easily used to form a subtype.
+Lemma ord_enum_uniq : uniq ord_enum.
+Proof. by rewrite pmap_sub_uniq ?iota_uniq. Qed.
 
-% Also Cyril had other arguments on the fact that one can
-% ask less (be more general) and recover all required properties later
-% on, but I've to ask him again cause I've forgotten the example.
+Lemma mem_ord_enum i : i \in ord_enum.
+Proof. by rewrite -(mem_map ord_inj) val_ord_enum mem_iota ltn_ord. Qed.
+\end{coq}
 
+It is worth pointing out how the \C{val\_ord\_enum} lemma
+shows that the ordinals in \C{ord\_enum} are exactly the
+natural nubers generatd by \C{(iota 0 n)}.  In particular,
+the \C{insub} construction completely removes the need for
+complex depent case analysis.
+
+\begin{coqout}{}{}
+2 subgoals
+n : nat
+============================
+[seq x <- iota 0 n | isSome (insub x)] = iota 0 n
+
+subgoal 2 is:
+  ocancel insub val
+\end{coqout}
+
+The view \C{all\_filterP} shows that
+\C{reflect ([seq x <- s | a x] = s) (all a s)} for any
+sequence \C{s} and predicate \C{a}.  After applying
+that view one has to prove that if \C{(i \\in iota 0 n)} then \C{(i <
+n)}, that is trivialized by \C{mem\_iota}.
+
+We can now declare the type of ordinals as a instance of \C{finType}.
+
+\begin{coq}{}{}
+Definition ordinal_finMixin n :=
+  Eval hnf in UniqFinMixin (ord_enum_uniq n) (mem_ord_enum n).
+Canonical ordinal_finType n :=
+  Eval hnf in FinType (ordinal n) (ordinal_finMixin n).
+\end{coq}
+
+An example of ordinals at work is the \C{tnth} function.
+It extracts the $n$-th element of a tuple exactly as
+\C{nth} for a sequence without requiring a default element.
+Indeed one can use ordinals to type the index making Coq statically
+check that the index is smaller than the size of the tuple.
+
+\begin{coq}{name=subtdecl}{}
+Lemma tnth_default T n (t : n.-tuple T) : 'I_n -> T.
+Proof. by rewrite -(size_tuple t); case: (tval t) => [|//] []. Qed.
+
+Definition tnth T n (t : n.-tuple T) (i : 'I_n) : T :=
+  nth (tnth_default t i) t i.
+\end{coq}
+
+Another use of ordinals is to express the position of an
+inhabitant of a \C{finType} in its enumeration.
+
+\begin{coq}{name=subtdecl}{}
+Definition enum_rank (T : finType) : T -> 'I_#|T|.
+\end{coq}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbLEARN{}
 \mcbPROVIDE{}
 \mcbREQUIRE{}
 \mcbsection{Finite functions}
 
+In standard mathematics functions that are pointwise equal are
+considered as equal.  This principle, that we call \emph{functional
+extensionality} is compatible with the \mcbCIC{} but is not built-in.
+Indeed, at the time of writing, only very recent variations of CIC,
+as Cubical Type Theory, include such principle.
+
+Still there is a class of functions for which such principle is
+provable in Coq.  These are the functions with a finite domain:
+given their graph is a finite set of points we can represent them
+as regular lists, and lists with the same values are indeed equal.
+
 \begin{coq}{name=subtdecl}{}
-Lemma tnth_default t : 'I_n -> T.
-Proof. by rewrite -(size_tuple t); case: (tval t) => [|//] []. Qed.
-
-Definition tnth t i := nth (tnth_default t i) t i.
-
-Section Def.
+Section FinFunDef.
 
 Variables (aT : finType) (rT : Type).
-
-Inductive finfun_type : predArgType := Finfun of #|aT|.-tuple rT.
-  
-Definition finfun_of of phant (aT -> rT) := finfun_type. 
-
-Identity Coercion type_of_finfun : finfun_of >-> finfun_type.
-
+Inductive finfun : Type := Finfun of #|aT|.-tuple rT.
 Definition fgraph f := let: Finfun t := f in t.
-
 Canonical finfun_subType := Eval hnf in [newType for fgraph].
+End FinFunDef.
+Notation "{ 'ffun' fT }" := (finfun fT).
+\end{coq}
 
-End Def.
+The actual definition in the \mcbMC{} library is sligthly more complex
+to statically check that the domain is finite using the tricks
+explained in~\ref{sec:phantom}.  I.e. Coq rejects \C{\{ffun nat -> nat\}}
+but accepts \C{\{ffun 'I_7 -> nat\}}.
 
-Notation "{ 'ffun' fT }" := (finfun_of (Phant fT)).
+Other utilities let one apply a finite function as a regular function
+or build a finite function from a regular function.
 
-
-Local Notation fun_of_fin_def :=
-  (fun aT rT f x => tnth (@fgraph aT rT f) (enum_rank x)).
-
-Local Notation finfun_def := (fun aT rT f => @Finfun aT rT (codom_tuple f)).
-
+\begin{coq}{name=subtdecl}{}
+Definition fun_of_fin aT rT f x := tnth (@fgraph aT rT f) (enum_rank x).
+Coercion fun_of_fin : finfun >-> FunClass.
+Definition finfun aT rT f := @Finfun aT rT (codom_tuple f).
 Notation "[ 'ffun' x : aT => F ]" := (finfun (fun x : aT => F))
 \end{coq}
 
-just recall newtype since it is in 1* section.
-recall Phant since the source must be finite and you just want to
-write ffun ordinal n.
+What \C{codom\_tuple} builds is a list of values \C{f} takes
+when applied to the values in the enumeration of its domain.
 
 example playing with ffun.
 
 \begin{coq}{name=subtdecl}{}
-Check [ffun i : 'I_4 => i + 2]
+Check [ffun i : 'I_4 => i + 2].
 \end{coq}
 
-They are finite, hence == if codom is eqtype and fintype if codom is
-finite.  All that inherited from tuples.
+Finite functions inherit from tuples the \C{eqType} structure
+whenever the codomain is an \C{eqType}.
 
 \begin{coq}{}{}
-Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
-Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
-
-Variables (n : nat) (T : finType).
-
-Canonical tuple_finMixin := Eval hnf in FinMixin (@FinTuple.enumP n T).
-Canonical tuple_finType := Eval hnf in FinType (n.-tuple T) tuple_finMixin.
-Canonical tuple_subFinType := Eval hnf in [subFinType of n.-tuple T].
-
-Lemma card_tuple : #|{:n.-tuple T}| = #|T| ^ n.
+Definition finfun_eqMixin aT (rT : eqType) :=
+  Eval hnf in [eqMixin of finfun aT rT by <:].
+Canonical finfun_eqType :=
+  Eval hnf in EqType (finfun aT rT) finfun_eqMixin.
 \end{coq}
 
-See how easy one can add new datatypes and relate them to existing one
-via the subtype kit.
+When the codomain is finite, the type of finite functions is itself
+finite.  This property is again inherited from tuples.
 
-An application of ffun is
+Is that snippet interesting?  One could ask to write such enum
+as exercise of ch 1.
+\begin{coq}{}{}
+Definition tuple_enum (T : finType) n : seq (n.-tuple T) :=
+  let extend e := flatten (codom (fun x => map (cons x) e)) in
+  pmap insub (iter n extend [::[::]]).
+
+Lemma enumP T n : Finite.axiom (tuple_enum T n).
+
+Definition tuple_finMixin := Eval hnf in FinMixin (@FinTuple.enumP n T).
+Canonical tuple_finType :=
+  Eval hnf in FinType (n.-tuple T) tuple_finMixin.
+ 
+Definition finfun_finMixin (aT rT : finType) :=
+  [finMixin of (finfun aT rT) by <:].
+Canonical finfun_finType  aT rT :=
+  Eval hnf in FinType (finfun aT rT) (finfun_finMixin aT rT).
+\end{coq}
+
+A relevant property of the finType of finite functions is its
+cardinality, begin \C{#|rT| ^ #|aT|}.
+
+\begin{coq}{}{}
+Lemma card_tuple (T : finType) : #|{: n.-tuple T }| = #|T| ^ n.
+\end{coq}
+
+An application of the type of finite functions is the following lemma.
 
 \begin{coq}{}{}
 Lemma bigA_distr_bigA (I J : finType) F :
   \big[*%M/1]_(i : I) \big[+%M/0]_(j : J) F i j
     = \big[+%M/0]_(f : {ffun I -> J}) \big[*%M/1]_i F i (f i).
 \end{coq}
+
+explain it states independence of i j.
 
 $$
 \prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
@@ -813,7 +892,8 @@ Definition mulmx {m n p} (A : 'M_(m, n)) (B : 'M_(n, p)) : 'M[R]_(m, p) :=
 Local Notation "A *m B" := (mulmx A B) : ring_scope.
 \end{coq}
 
-note the type making it impossible to multiply wrong matrices
+note the type making it impossible to multiply wrong matrices.
+this is not like in / 0, that we default.
 
 determinant and ffun
 
