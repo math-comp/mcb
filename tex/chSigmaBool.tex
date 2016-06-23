@@ -802,7 +802,8 @@ When the codomain is finite, the type of finite functions is itself
 finite.  This property is again inherited from tuples.
 
 Is that snippet interesting?  One could ask to write such enum
-as exercise of ch 1.
+as exercise of ch 1, and here simply add insub.
+
 \begin{coq}{}{}
 Definition tuple_enum (T : finType) n : seq (n.-tuple T) :=
   let extend e := flatten (codom (fun x => map (cons x) e)) in
@@ -824,7 +825,7 @@ A relevant property of the finType of finite functions is its
 cardinality, begin \C{#|rT| ^ #|aT|}.
 
 \begin{coq}{}{}
-Lemma card_tuple (T : finType) : #|{: n.-tuple T }| = #|T| ^ n.
+Lemma card_ffun (aT rT : finType) : #| {ffun aT -> rT} | = #|rT| ^ #|aT|.
 \end{coq}
 
 An application of the type of finite functions is the following lemma.
