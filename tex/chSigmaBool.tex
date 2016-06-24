@@ -828,7 +828,14 @@ cardinality, begin \C{#|rT| ^ #|aT|}.
 Lemma card_ffun (aT rT : finType) : #| {ffun aT -> rT} | = #|rT| ^ #|aT|.
 \end{coq}
 
-An application of the type of finite functions is the following lemma.
+Also, as expected, finite function validate extensionality.
+
+\begin{coq}{}{}
+Lemma ffunP aT rT (f1 f2 : {ffun aT -> rT}) : f1 =1 f2 <-> f1 = f2.
+\end{coq}
+
+An first application of the type of finite functions is the following
+lemma.
 
 \begin{coq}{}{}
 Lemma bigA_distr_bigA (I J : finType) F :
@@ -842,6 +849,56 @@ $$
 \prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
 $$
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{}
+\mcbPROVIDE{}
+\mcbREQUIRE{}
+\mcbsection{Permutations}
+
+The first application of finite functions is in the definition of
+the type of permutations.
+
+\begin{coq}{}{}
+Inductive perm_of (T : finType) : Type :=
+  Perm (pval : {ffun T -> T}) & injectiveb pval.
+Definition pval p := let: Perm f _ := p in f.
+Notation "{ 'perm' T }" := (perm_of T).
+\end{coq}
+
+Similarly to finite functions we can declare a coertion to let
+one write \C{(s x)} for \C{(s : \{perm T\})} to denote
+the result of applying the permutation \C{s} to \C{x}.
+
+Thanks to the sub-type kit it is easy to transport to the type
+\C{\{perm T\}} the \C{eqType} and \C{finType} structures of \C{ffun T
+-> T}.
+
+\begin{coq}{}{}
+Canonical perm_subType := Eval hnf in [subType for pval].
+Definition perm_eqMixin := Eval hnf in [eqMixin of perm_type by <:].
+Canonical perm_eqType := Eval hnf in EqType perm_type perm_eqMixin.
+Definition perm_finMixin := [finMixin of perm_type by <:].
+Canonical perm_finType := Eval hnf in FinType perm_type perm_finMixin.
+\end{coq}
+
+A special class of permutations that comes handy to express the
+calculation of a matrix determinant is the permutation of
+\C{'I_n}.
+
+\begin{coq}{}{}
+Notation "''S_' n" := {perm 'I_n}.
+\end{coq}
+
+A relevant result of the theory of permutations is about
+counting their number.  It is expressed on a subset \C{S} and
+counts only non-identity permutations.
+
+\begin{coq}{}{}
+Definition perm_on T S : pred {perm T} :=
+  fun s => [pred x | s x != x] \subset S.
+Lemma card_perm A : #|perm_on A| = #|A| `!.
+\end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -850,60 +907,139 @@ $$
 \mcbREQUIRE{}
 \mcbsection{Matrix}
 
-all together to achieve compact notation.
+We finally have all the bricks to define the the type of matrices
+and provide compact formulations for their most common operations.
 
 \begin{coq}{}{}
-Inductive matrix : predArgType := Matrix of {ffun 'I_m * 'I_n -> R}.
-
+Inductive matrix R m n : Type := Matrix of {ffun 'I_m * 'I_n -> R}.
 Definition mx_val A := let: Matrix g := A in g.
-
-Canonical matrix_subType := Eval hnf in [newType for mx_val].
-
-Coercion fun_of_matrix : matrix >-> Funclass.
-
-Definition mxtrace (A : 'M[R]_n) := \sum_i A i i.
-Local Notation "'\tr' A" := (mxtrace A) : ring_scope.
-
+Notation "''M[' R ]_ ( m , n )" := (matrix R m n).
+Notation "''M_' ( m , n )" := (matrix _ m n).
+Notation "''M[' R ]_ n" := (matrix R n n).
 \end{coq}
 
-note how ordinals infer everything in tr
+As for permutations and finite function we declare a coercion
+to let one denote \C{(A i j)} the coefficient in column j of 
+row i.  Note that type inference will play an important role
+here.  If \C{A} as a known type \C{'M[R]_(m,n)}, then type inference
+will infer that \C{(i : 'I_m)} and \C{(j : 'I_n)}.  In combination
+with the notations for iterated operations, this lets one
+define, for example, the trace of a square matrix as follows.
+
+\begin{coq}{}{}
+Definition mxtrace R n (A : 'M[R]_n) := \sum_i A i i.
+Local Notation "'\tr' A" := (mxtrace R n A).
+\end{coq}
+
+Note that, for the \C{\\sum} notation to work, \C{R} needs to be
+a type equipped with an addition, for example a \C{ringType}.
+We will decribe such type only in the next chapter.  From now
+on the reader shall interpret the \C{+} and \C{*} symbols on
+the matrix coefficients as (overloaded) ring operations, exactly
+as \C{==} is an overloaded \C{eqType} operation.
+
+Via the sub-type kit we can transport \C{eqType} and \C{finType}
+from \C{\{ffun 'I_m * 'I_n -> R\}} to \C{'M[R]_(m,n)}.  We omit
+the Coq code for brevity.
+
+A useful accessory is the notation to define matrices in
+their extension.  We provide a variant in which the matrix size
+is given and one in which it has to be inferred from the context.
+
+\begin{coq}{}{}
+Definition matrix_of_fun R m n F :=
+  Matrix [ffun ij : 'I_m * 'I_n => F ij.1 ij.2].
+Notation "\matrix_ ( i < m , j < n ) E" :=
+  (matrix_of_fun (fun (i : 'I_m) (j : 'I_n) => E))
+Notation "\matrix_ ( i , j ) E" := (matrix_of_fun (fun i j => E))
+Example diagonal := \matrix_(i < 3, j < 7) if i == j then 1 else 0.
+\end{coq}
+
+An interesting definition is the one of
+determinant using Leibnitz's formula.
+
+\begin{coq}{}{}
+Definition determinant n (A : 'M_n) : R :=
+  \sum_(s : 'S_n) (-1) ^+ s * \prod_i A i (s i).
+\end{coq}
+
+The \C{(-1) ^+ s} denotes signature of the permutation \C{s}:
+\C{s} can be used, thanks to a coercion, as natural number
+that is \C{0} if \C{s} is an even permutation, \C{1} otherise,
+and \C{^+} is ring exponentiation.  In other words the \C{(-1)}
+factor is annihilated when \C{s} is even.
+
+Matrix multiplication deserves a few comments too.
+
+\begin{coq}{}{}
+Definition mulmx m n p (A : 'M_(m, n)) (B : 'M_(n, p)) : 'M[R]_(m, p) :=
+  \matrix_(i, k) \sum_j (A i j * B j k).
+Notation "A *m B" := (mulmx A B) : ring_scope.
+\end{coq}
+
+First, the type of the operation makes such operation total, i.e. it
+statically detects multiplication of matrices which sizes don't match.
+
+This has to be compared with what was done for integer division, that
+was made total by returning a default value, namely \C{0}, outside
+its domain.  In the case of matrix a size annotation is enough to make
+the operation total, while for division a prof would be necessary.
+Working with rich types is not always easy, for example the type
+checker will not understand automatically that a suqare matrix of
+size \C{(m + n)} can be multiplied with a matrix of size \C{(m + n)}.
+In such case the user has to introduce explicit size casts,
+see~\ref{sec:castmx}.  At the same time type inference lets one omit
+size information most of the times, playing once again the role of a
+trained reader.
+
+I should conclude this reasoning by giving a rule of thumb I guess.
+
+\mcbLEVEL{1}
+\mcbsubsection{Two proofs about matices}
+
+Let's work out an example. ... Note size of B is inferred.
 
 \begin{coq}{}{}
 Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
    \tr (A *m B) = \tr (B *m A).
 Proof.
-have expand_trM C D: \tr (C *m D) = \sum_i \sum_j C i j * D j i.
+have -> : \tr (A *m B) = \sum_i \sum_j A i j * B j i.
   by apply: eq_bigr => i _; rewrite mxE.
-rewrite !{}expand_trM exchange_big /=.
+\end{coq}
+
+mkE unravels the body of \C{(A *m B) i i}
+
+but we have to do the same, with same proof up to A B.
+
+\begin{coq}{}{}
+Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
+   \tr (A *m B) = \tr (B *m A).
+Proof.
+gen have expand_trM, -> :
+  m n A B / \tr (A *m B) = \sum_i \sum_j A i j * B j i.
+  by apply: eq_bigr => i _; rewrite mxE.
+rewrite {}expand_trM exchange_big /=.
 by do 2!apply: eq_bigr => ? _; apply: mulrC.
 Qed.
 \end{coq}
 
-put gen have.
+describe gen have.  exchange big to align the indexes.
+then boils down to
 
-another example is multiplication and matrix in extension
+\begin{coqout}{}{}
+1 subgoal
+R : comRingType
+m, n : nat
+A : 'M_(m, n)
+B : 'M_(n, m)
+============================
+\sum_(j < n) \sum_(i < m) A i j * B j i =
+\sum_(i < n) \sum_(j < m) B i j * A j i
+\end{coqout}
 
-\begin{coq}{}{}
-Notation "''M[' R ]_ ( m , n )" := (matrix R m n) (only parsing): type_scope.
-Notation "\matrix_ ( i  , j  ) E" := ...
-
-Definition mulmx {m n p} (A : 'M_(m, n)) (B : 'M_(n, p)) : 'M[R]_(m, p) :=
-  \matrix[mulmx_key]_(i, k) \sum_j (A i j * B j k).
-
-Local Notation "A *m B" := (mulmx A B) : ring_scope.
-\end{coq}
-
-note the type making it impossible to multiply wrong matrices.
-this is not like in / 0, that we default.
-
-determinant and ffun
+Another commented example. maybe this one is too big.
 
 \begin{coq}{}{}
-
-(* The determinant, in one line with the Leibniz Formula *)
-Definition determinant n (A : 'M_n) : R :=
-  \sum_(s : 'S_n) (-1) ^+ s * \prod_i A i (s i).
-
 Lemma det_mulmx n (A B : 'M[R]_n) : \det (A *m B) = \det A * \det B.
 Proof.
 rewrite big_distrl /=.
@@ -931,7 +1067,7 @@ Qed.
 \end{coq}
 
 \mcbLEVEL{2}
-\mcbsubsection{blocks and casts}
+\mcbsubsection{blocks and casts}\label{sec:castmx}
 
 Casts and block\_mx.
 
