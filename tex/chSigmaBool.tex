@@ -26,7 +26,7 @@ logical connectives, like and.  Properties were always expressed with
 boolean programs.  The questions addressed in this chapter are the
 following ones.  What
 stuts do we want to give to, say, lists of size 5,  or integers
-smaller than 7?  Which relation to put between integrs and
+smaller than 7?  Which relation to put between integers and
 integers smaller than 7.  How to benefit from extra properties
 integers smaller than 7 have, like being a finite collection?
 
@@ -84,7 +84,7 @@ In this section we focus on how tuples are defined, used as regular
 sequences and how to program type inference to track for us the
 invariant on tuples' length.  Next section will complete the
 definition of the tuple sub-type by making the abstract theory
-attached to the \C{eqType} interface available on tuples whenver it is
+attached to the \C{eqType} interface available on tuples whenever it is
 available on sequences.
 
 A tuple is a sequence of values (of the same type) whose length is
@@ -184,7 +184,6 @@ Let us examine what happens if try to unify the left hand side of the
 \lstinline/(rev t)/, using the following toolkit:
 
 \begin{coq}{name=infrastructure}{title= Unification debugging toolkit}
-(* toolkit *)
 Notation "X (*...*)" :=
   (let x := X in let y := _ in x)   (at level 100, format "X  (*...*)").
 Notation "[LHS 'of' equation ]" :=
@@ -302,7 +301,7 @@ reasoning.
 
 We have seen that \lstinline/(seq T)/ is an \lstinline/eqType/
 whenever \C{T} is and we want to transport the \C{eqType} structure
-on tuples.  We first do it manually.  Then we provide a tookit
+on tuples.  We first do it manually.  Then we provide a toolkit
 to ease the declaration of sub-types.
 
 The first step is to define a comparison function for tuples.
@@ -341,7 +340,7 @@ Qed.
 
 The first direction is trivial by rewriting.
 The converse direction makes an essential use of
-the \lstinline/eq_irrelevance/ lemma, that is brefly discussed
+the \lstinline/eq_irrelevance/ lemma, that is briefly discussed
 in~\ref{hedberg}.
 
 \begin{coqout}{run=tupcmpP;out=g1}{title=Response line 4,width=6cm}
@@ -403,22 +402,8 @@ Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
 Line 1 registers \C{tval} as a canonical projection to obtain a known
 type out of the newly defined type of tuple.  Once the projection
 is registered the equality axiom can be proved automatically by
-\C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is reminescent of
-subtyping in functional languages like OCaml.
-
-MOVE that to FINTYPE ORD.
-
-\label{ordfintype}
-\begin{coq}{name=subt}{}
-Definition ord_enum : seq ordinal := pmap insub (iota 0 n).
-
-Lemma val_ord_enum : map val ord_enum = iota 0 n.
-Proof.
-rewrite pmap_filter; last exact: insubK.
-by apply/all_filterP; apply/allP=> i; rewrite mem_iota isSome_insub.
-Qed.
-\end{coq}
-
+\C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is reminiscent of
+sub-typing in functional languages like OCaml.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
@@ -494,7 +479,7 @@ unifies with \lstinline/Tuple s sP/, including in \C{rewrite} patterns.
 
 The \C{subType} constructor notation assumes the sub-type is isomorphic
 to a sigma-type, so that its elimination rule can be derived using \Coq{}'s
-generic destructuring \C{let}, and the projector-constructor
+generic destructing \C{let}, and the projector-constructor
 identity can be proved by reflexivity.
 
 \begin{coq}{name=subtdecl}{}
@@ -514,7 +499,7 @@ A useful variant of \C{[subType for tval]} is \C{[newType for Sval]}.
 Such specialized constructors forces the predicate defining the
 sub-type to be the trivial one: the sub-type ST adds no property to
 the type T, but the resulting type ST is different from T and
-inhabitants of ST cannot be mistaken by inhabitats of T.  Of course
+inhabitants of ST cannot be mistaken by inhabitants of T.  Of course
 all the theory that equips T is also available on ST.  Aliasing a
 type is useful to attach to it different notations or coercions.
 
@@ -550,7 +535,7 @@ In the \mcbMC{} library, where \emph{all predicates that can} be
 expressed as a boolean function \emph{are expressed as a boolean
 function}, forming sub-types is extremely easy.
 
-\mantra{It is convenient to define new types as sub-types of exinsting
+\mantra{It is convenient to define new types as sub-types of existing
 ones, since they inherit all the theory.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -594,7 +579,7 @@ Canonical mytype_finType := @Finite.Pack mytype mytype_finMixin.
 
 Given that the most recurrent way of showing that an enumeration
 validates \C{Finite.axiom} is by proving that it both duplicate free
-and exhaustive, a conveniente mixin constructor is provided.
+and exhaustive, a convenience mixin constructor is provided.
 
 \begin{coq}{name=fintype}{title=Declare a finType}
 Lemma myenum_uniq : uniq myenum.
@@ -616,7 +601,7 @@ it enables reasoning by excluded middle and also combines well with
 other boolean connectives.
 
 What makes this formulation of finite types handy is the explicit
-enumeration.  It is hence easy to iterate over the inhabintants of the
+enumeration.  It is hence easy to iterate over the inhabitants of the
 finite type, making them easy to integrate to the bigop library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -632,10 +617,10 @@ powerful notational device for ranges.  For example one may want
 to state that a matrix of size $m \times n$ is only accessed inside
 its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
 be formulated in the \mcbMC{} library is by saying that that its row
-accessor accepts only inhabitants of a finite type of size $m$.
+accessors accepts only inhabitants of a finite type of size $m$.
 Accessing a matrix out of its bounds becomes a type error.
 Of course one wants to access a matrix using integer coordinates, but
-integers are inifite.  Hence the first step is to define the sub-type
+integers are infinite.  Hence the first step is to define the sub-type
 of bounded integers.
 
 \begin{coq}{name=ordinals}{title=Ordinals}
@@ -685,9 +670,9 @@ Proof. by rewrite -(mem_map ord_inj) val_ord_enum mem_iota ltn_ord. Qed.
 
 It is worth pointing out how the \C{val\_ord\_enum} lemma
 shows that the ordinals in \C{ord\_enum} are exactly the
-natural nubers generatd by \C{(iota 0 n)}.  In particular,
+natural numbers generated by \C{(iota 0 n)}.  In particular,
 the \C{insub} construction completely removes the need for
-complex depent case analysis.
+complex dependent case analysis.
 
 \begin{coqout}{}{}
 2 subgoals
@@ -742,7 +727,7 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 \mcbREQUIRE{}
 \mcbsection{Finite functions}
 
-In standard mathematics functions that are pointwise equal are
+In standard mathematics functions that are point wise equal are
 considered as equal.  This principle, that we call \emph{functional
 extensionality} is compatible with the \mcbCIC{} but is not built-in.
 Indeed, at the time of writing, only very recent variations of CIC,
@@ -755,16 +740,17 @@ as regular lists, and lists with the same values are indeed equal.
 
 \begin{coq}{name=subtdecl}{}
 Section FinFunDef.
-
 Variables (aT : finType) (rT : Type).
+
 Inductive finfun : Type := Finfun of #|aT|.-tuple rT.
 Definition fgraph f := let: Finfun t := f in t.
 Canonical finfun_subType := Eval hnf in [newType for fgraph].
+
 End FinFunDef.
 Notation "{ 'ffun' fT }" := (finfun fT).
 \end{coq}
 
-The actual definition in the \mcbMC{} library is sligthly more complex
+The actual definition in the \mcbMC{} library is slightly more complex
 to statically check that the domain is finite using the tricks
 explained in~\ref{sec:phantom}.  I.e. Coq rejects \C{\{ffun nat -> nat\}}
 but accepts \C{\{ffun 'I_7 -> nat\}}.
@@ -782,8 +768,6 @@ Notation "[ 'ffun' x : aT => F ]" := (finfun (fun x : aT => F))
 What \C{codom\_tuple} builds is a list of values \C{f} takes
 when applied to the values in the enumeration of its domain.
 
-example playing with ffun.
-
 \begin{coq}{name=subtdecl}{}
 Check [ffun i : 'I_4 => i + 2].
 \end{coq}
@@ -799,16 +783,12 @@ Canonical finfun_eqType :=
 \end{coq}
 
 When the codomain is finite, the type of finite functions is itself
-finite.  This property is again inherited from tuples.
-
-Is that snippet interesting?  One could ask to write such enum
-as exercise of ch 1, and here simply add insub.
+finite.  This property is again inherited from tuples.  Recall
+the \C{all\_words} function in exercise \ref{ex:allwords}
 
 \begin{coq}{}{}
 Definition tuple_enum (T : finType) n : seq (n.-tuple T) :=
-  let extend e := flatten (codom (fun x => map (cons x) e)) in
-  pmap insub (iter n extend [::[::]]).
-
+  pmap insub (all_words n (enum T)).
 Lemma enumP T n : Finite.axiom (tuple_enum T n).
 
 Definition tuple_finMixin := Eval hnf in FinMixin (@FinTuple.enumP n T).
@@ -822,7 +802,7 @@ Canonical finfun_finType  aT rT :=
 \end{coq}
 
 A relevant property of the finType of finite functions is its
-cardinality, begin \C{#|rT| ^ #|aT|}.
+cardinality, begin equal to \C{#|rT| ^ #|aT|}.
 
 \begin{coq}{}{}
 Lemma card_ffun (aT rT : finType) : #| {ffun aT -> rT} | = #|rT| ^ #|aT|.
@@ -834,7 +814,7 @@ Also, as expected, finite function validate extensionality.
 Lemma ffunP aT rT (f1 f2 : {ffun aT -> rT}) : f1 =1 f2 <-> f1 = f2.
 \end{coq}
 
-An first application of the type of finite functions is the following
+A first application of the type of finite functions is the following
 lemma.
 
 \begin{coq}{}{}
@@ -843,7 +823,8 @@ Lemma bigA_distr_bigA (I J : finType) F :
     = \big[+%M/0]_(f : {ffun I -> J}) \big[*%M/1]_i F i (f i).
 \end{coq}
 
-explain it states independence of i j.
+Such lemma, rephrased in mathematical notation down below, 
+states that the indexes \C{i} and \C{j} are independently chosen.
 
 $$
 \prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
@@ -854,9 +835,83 @@ $$
 \mcbLEARN{}
 \mcbPROVIDE{}
 \mcbREQUIRE{}
+\mcbsection{Finite sets}
+
+We have seen how sub-types let one easily define a new type by, typically,
+enriches an existing one with some properties.  While this is very
+convenient for defining new types, it does not work well when the
+subject of study are sets and subsets of the type's inhabitants.
+In such case, it is rather inconvenient to define a new type for
+each subset, because one typically combines elements of
+two distinct subsets with homogeneous operations, like equality.
+
+The \mcbMC{} library provides an extensive library of finite sets and
+subsets that constitutes the pillar of finite groups.
+
+\begin{coq}{}{}
+Section finSetDef.
+Variable T : finType.
+Inductive set_type : Type := FinSet of {ffun pred T}.
+Definition finfun_of_set A := let: FinSet f := A in f.
+\end{coq}
+
+Using the sub-type kit we can easily transport the
+\C{eqType} and \C{finType} structure over finite sets.
+
+\begin{coq}{}{}
+Canonical set_subType := Eval hnf in [newType for finfun_of_set].
+Definition set_eqMixin := Eval hnf in [eqMixin of set_type by <:].
+Canonical set_eqType := Eval hnf in EqType set_type set_eqMixin.
+Definition set_finMixin := [finMixin of set_type by <:].
+Canonical set_finType := Eval hnf in FinType set_type set_finMixin.
+End finSetDef.
+Notation "{ 'set' T }" := (set_type T).
+\end{coq}
+
+We omit again the trick to statically enforce that \C{T} is
+a finite type whenever we write \C{\{set T\}}, exactly as we did for
+finite functions.  Finite sets do validate extensionality and 
+are equipped with subset-wise and point-wise operations:
+
+\begin{coq}{}{}
+Lemma setP A B : A =i B <-> A = B.
+
+Lemma example (T : finType) (x : T) (A : {set T}) :
+  (A \subset x |: A) && (A :==: A :&: A) && (x \in [set y | y == x])
+\end{coq}
+
+It is worth noticing that many ``set'' operations are actually defined
+on simpler structures we did not detail for conciseness.  In
+particular membership and subset are also applicable to
+predicates, i.e. terms that can be seen as functions from a type to
+\C{bool}.
+
+Since \C{T} is finite, values of type \C{\{set T\}} admit a
+complement and \C{\{set T\}} is closed under power set construction.
+
+\begin{coq}{}{}
+Lemma setCP x A : reflect (~ x \in A) (x \in ~: A).
+Lemma subsets_disjoint A B : (A \subset B) = [disjoint A & ~: B].
+Definition powerset D : {set {set T}} := [set A : {set T} | A \subset D].
+Lemma card_powerset (A : {set T}) : #|powerset A| = 2 ^ #|A|.
+\end{coq}
+
+We have seen how tuples can be used to carry an invariant over
+sequences. In particular type inference was programmed to
+automatically infer the effect of sequence operations over the
+size of the input tuple.  In a similar way finite groups can naturally
+be seen as sets and some set-wise operations, like intersection,
+do preserve the group structure and type inference can be programmed
+to infer so automatically.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbLEARN{}
+\mcbPROVIDE{}
+\mcbREQUIRE{}
 \mcbsection{Permutations}
 
-The first application of finite functions is in the definition of
+Another application of finite functions is the definition of
 the type of permutations.
 
 \begin{coq}{}{}
@@ -866,7 +921,7 @@ Definition pval p := let: Perm f _ := p in f.
 Notation "{ 'perm' T }" := (perm_of T).
 \end{coq}
 
-Similarly to finite functions we can declare a coertion to let
+Similarly to finite functions we can declare a coercion to let
 one write \C{(s x)} for \C{(s : \{perm T\})} to denote
 the result of applying the permutation \C{s} to \C{x}.
 
@@ -895,10 +950,13 @@ counting their number.  It is expressed on a subset \C{S} and
 counts only non-identity permutations.
 
 \begin{coq}{}{}
-Definition perm_on T S : pred {perm T} :=
-  fun s => [pred x | s x != x] \subset S.
+Definition perm_on T (S : {set T}) : pred {perm T} :=
+  fun s => [set x | s x != x] \subset S.
 Lemma card_perm A : #|perm_on A| = #|A| `!.
 \end{coq}
+\marginnote{here it uses a pred, but looks like to only shorten
+subsequent proofs since T is finite, so I write set here to avoid
+explaining more about pred}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -933,7 +991,7 @@ Local Notation "'\tr' A" := (mxtrace R n A).
 
 Note that, for the \C{\\sum} notation to work, \C{R} needs to be
 a type equipped with an addition, for example a \C{ringType}.
-We will decribe such type only in the next chapter.  From now
+We will describe such type only in the next chapter.  From now
 on the reader shall interpret the \C{+} and \C{*} symbols on
 the matrix coefficients as (overloaded) ring operations, exactly
 as \C{==} is an overloaded \C{eqType} operation.
@@ -956,7 +1014,9 @@ Example diagonal := \matrix_(i < 3, j < 7) if i == j then 1 else 0.
 \end{coq}
 
 An interesting definition is the one of
-determinant using Leibnitz's formula.
+determinant.  We base it on Leibniz's formula:
+$\sum_{\sigma \in S_n} \mbox{sgn}(\sigma) \prod_{i = 1}^n A_{i,
+\sigma(i)}$.
 
 \begin{coq}{}{}
 Definition determinant n (A : 'M_n) : R :=
@@ -965,9 +1025,17 @@ Definition determinant n (A : 'M_n) : R :=
 
 The \C{(-1) ^+ s} denotes signature of the permutation \C{s}:
 \C{s} can be used, thanks to a coercion, as natural number
-that is \C{0} if \C{s} is an even permutation, \C{1} otherise,
+that is \C{0} if \C{s} is an even permutation, \C{1} otherwise,
 and \C{^+} is ring exponentiation.  In other words the \C{(-1)}
 factor is annihilated when \C{s} is even.
+
+What makes this definition remarkable is the resemblance to the
+same formula typeset in \LaTeX:
+{\small
+\begin{verbatim}
+  \sum_{\sigma \in S_n} \sgn(\sigma) \prod_{i = 1}^n A_{i, \sigma(i)}
+\end{verbatim}
+}
 
 Matrix multiplication deserves a few comments too.
 
@@ -985,7 +1053,7 @@ was made total by returning a default value, namely \C{0}, outside
 its domain.  In the case of matrix a size annotation is enough to make
 the operation total, while for division a prof would be necessary.
 Working with rich types is not always easy, for example the type
-checker will not understand automatically that a suqare matrix of
+checker will not understand automatically that a square matrix of
 size \C{(m + n)} can be multiplied with a matrix of size \C{(m + n)}.
 In such case the user has to introduce explicit size casts,
 see~\ref{sec:castmx}.  At the same time type inference lets one omit
@@ -995,9 +1063,11 @@ trained reader.
 I should conclude this reasoning by giving a rule of thumb I guess.
 
 \mcbLEVEL{1}
-\mcbsubsection{Two proofs about matices}
+\mcbsubsection{A proof on matrices}
 
-Let's work out an example. ... Note size of B is inferred.
+As an example let's take a simple property of the trace.
+Note that we can omit the dimensions of \C{B} since it
+is multiplied by \C{A} to the left and to the right.
 
 \begin{coq}{}{}
 Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
@@ -1007,24 +1077,12 @@ have -> : \tr (A *m B) = \sum_i \sum_j A i j * B j i.
   by apply: eq_bigr => i _; rewrite mxE.
 \end{coq}
 
-mkE unravels the body of \C{(A *m B) i i}
-
-but we have to do the same, with same proof up to A B.
-
-\begin{coq}{}{}
-Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
-   \tr (A *m B) = \tr (B *m A).
-Proof.
-gen have expand_trM, -> :
-  m n A B / \tr (A *m B) = \sum_i \sum_j A i j * B j i.
-  by apply: eq_bigr => i _; rewrite mxE.
-rewrite {}expand_trM exchange_big /=.
-by do 2!apply: eq_bigr => ? _; apply: mulrC.
-Qed.
-\end{coq}
-
-describe gen have.  exchange big to align the indexes.
-then boils down to
+The idea of the proof is to lift the commutativity property
+of the multiplication in the coefficient's ring.
+The first step is to prove an equation that expands the trace of
+matrix product.  The plan is to expand it on both sides, then
+exchange the summations and compare the coefficients
+pairwise.
 
 \begin{coqout}{}{}
 1 subgoal
@@ -1033,41 +1091,56 @@ m, n : nat
 A : 'M_(m, n)
 B : 'M_(n, m)
 ============================
-\sum_(j < n) \sum_(i < m) A i j * B j i =
-\sum_(i < n) \sum_(j < m) B i j * A j i
+\sum_j \sum_i A i j * B j i = \tr (B *m A)
 \end{coqout}
 
-Another commented example. maybe this one is too big.
+It is worth noticing that the equation we used to expand the left hand
+side and the one we need to expand the right hand side are very
+similar.  Actually the sub proof following \C{have}
+can be generalized to any pair of matrices \C{A} and \C{B}.  The
+ssreflect proof language provides the \C{gen} modifier tell \C{have}
+to abstract the given formula over list of context entries, here \C{m
+n A B}.
 
 \begin{coq}{}{}
-Lemma det_mulmx n (A B : 'M[R]_n) : \det (A *m B) = \det A * \det B.
+Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
+   \tr (A *m B) = \tr (B *m A).
 Proof.
-rewrite big_distrl /=.
-pose F := ('I_n ^ n)%type; pose AB s i j := A i j * B j (s i).
-transitivity (\sum_(f : F) \sum_(s : 'S_n) (-1) ^+ s * \prod_i AB s i (f i)).
-  rewrite exchange_big; apply: eq_bigr => /= s _; rewrite -big_distrr /=.
-  congr (_ * _); rewrite -(bigA_distr_bigA (AB s)) /=.
-  by apply: eq_bigr => x _; rewrite mxE.
-rewrite (bigID (fun f : F => injectiveb f)) /= addrC big1 ?add0r => [|f Uf].
-  rewrite (reindex (@pval _)) /=; last first.
-    pose in_Sn := insubd (1%g : 'S_n).
-    by exists in_Sn => /= f Uf; first apply: val_inj; apply: insubdK.
-  apply: eq_big => /= [s | s _]; rewrite ?(valP s) // big_distrr /=.
-  rewrite (reindex_inj (mulgI s)); apply: eq_bigr => t _ /=.
-  rewrite big_split /= mulrA mulrCA mulrA mulrCA mulrA.
-  rewrite -signr_addb odd_permM !pvalE; congr (_ * _); symmetry.
-  by rewrite (reindex_inj (@perm_inj _ s)); apply: eq_bigr => i; rewrite permM.
-transitivity (\det (\matrix_(i, j) B (f i) j) * \prod_i A i (f i)).
-  rewrite mulrC big_distrr /=; apply: eq_bigr => s _.
-  rewrite mulrCA big_split //=; congr (_ * (_ * _)).
-  by apply: eq_bigr => x _; rewrite mxE.
-case/injectivePn: Uf => i1 [i2 Di12 Ef12].
-by rewrite (determinant_alternate Di12) ?simp //= => j; rewrite !mxE Ef12.
+gen have trE, trAB : m n A B / \tr (A *m B) = \sum_i \sum_j A i j * B j i.
+  by apply: eq_bigr => i _; rewrite mxE.
+rewrite trAB trE.
+\end{coq}
+
+The \C{gen have} step now generates two equations, a general one
+called \C{trE}, and its instance to \C{A} and \C{B} called \C{trAB}.
+
+\begin{coqout}{}{}
+1 subgoal
+R : comRingType
+m, n : nat
+A : 'M_(m, n)
+B : 'M_(n, m)
+trAB : \tr (A *m B) = \sum_i \sum_j A i j * B j i
+trE : forall m n (A : 'M_(m, n)) B, \tr (A *m B) = \sum_i \sum_j A i j * B j i
+============================
+\sum_j \sum_i A i j * B j i = \sum_i \sum_j B i j * A j i
+\end{coqout}
+
+The proof is then concluded by exchanging the summations, i.e.
+summing
+on both sides first on \C{i} then on \C{j}, and then proving their
+equality by showing the identity on the summands.
+
+\begin{coq}{}{}
+rewrite exchange_big /=.
+by do 2!apply: eq_bigr => ? _; apply: mulrC.
 Qed.
 \end{coq}
 
 \mcbLEVEL{2}
 \mcbsubsection{blocks and casts}\label{sec:castmx}
 
-Casts and block\_mx.
+I think it is good to mention here the problem and the remedy, but I
+don't find a decent example (for cast).
+
 
