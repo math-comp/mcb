@@ -16,7 +16,37 @@
 
 \input{ch0.tex}
 
-\part{The art of formalizing}
+\part{Definitions and proof}
+
+This part introduces two languages and a formalization approach.
+
+The first language is \emph{Gallina}, the mathematical foundation of the Coq
+system.  For the expert reader: the type theory called \mcbCIC{}.  Such
+language is both a programming and a specification language: it is used to
+declare data, define programs, specify their behavior and represent their
+correctness proofs.  Its most intriguing features are two: a rich system of
+types, that can depend on other types or even values, and the notion of
+computation, that is considered a first class citizen, i.e. a true form of
+proof.
+
+The second language, \mcbSSR{} (\emph{Ssreflect} for short), is used to write
+proofs.  Its most characterizing features are two: it lets one write
+concise and stable proof scripts enabling the development of large
+libraries over a long time frame, and provides good support for the
+formalization approach the \mcbMC{} library is based on, from which
+its name is also taken.
+
+The \emph{\mcbSSR{}} approach was initially conceived for the formal proof
+of the Four Colors Theorem, and it later served as the pillar for
+the \mcbMC{} library and the formal proof of the Odd Order Theorem.
+Such approach takes major advantage from the symbolic computation
+capabilities provided by Gallina.
+
+The \Coq{} system provides a rich platform in which all this is
+put together.  \Coq{} implements the Gallina language, and a checker for it.
+It also provides a platform for the Ssreflect proof language and
+many other facilities that are crucial for the \mcbMC{} library like
+type inference.
 
 \input{chProgramming}
 \input{chProofs}
@@ -25,32 +55,52 @@
 
 \part{Formalization techniques}
 
+This part provides the tools to build a large library of formalized
+mathematics.  In particular it presents a powerful form of automation
+and a formalization technique that makes it possible to organize
+concepts in a ration way and easily define new ones by linking them
+to the already existing ones.
+
+Automation is provided by \emph{programming type inference}.
+The \Coq{} system provides a user-extensible type inference
+algorithm.  It can be extended with declarative programs,
+giving canonical solutions to otherwise unsolvable problems.
+Such solutions typically involve notions and theorems that
+are part of the \mcbMC{} library.  By programming type inference
+one can hence teach \Coq{} the contents of the library.  The system
+is then able to reconstruct non-trivial missing piece of information,
+and an informed reader typically does when reading a mathematical text.
+
+Formalized knowledge is organized by means of interfaces (in the spirit of
+algebraic structures) and relations between them.  Type inference is programmed
+to play the role of an librarian and recognize when an abstract theory has the
+right to apply to a specific example.
+
+Finally the rich language of \Coq{} lets one define new concepts
+by refining existing ones, typically by gluing an object with
+a proof of some extra property.  Type inference is programmed
+to transport all the theory available on
+the original concept to the derived one.
+
 \input{chTypeInference}
 \input{chSigmaBool}
 \input{chHierarchy}
 
-% \mantra{
-% 	if you have a proof in mind, don't let the system drive you
-%         to another, less clean and abstract, proof.
-% }
-
-% Declaring an instance is hard... we need to document the multuiple processes
-% for each structure in each hierarchy and possibily make a program out of it.
-
-% \chapter{Larger scale reflection (out of place)}
-% Four colours, decomposition in primes, example in peterfalvi. In
-% particular example where a case analysis does not follow the
-% constructors of an existing inductive type: then craft an ad hoc one
-% to hint the proof. This topic is probably at a wrong place.
-
 \part{Mathematics in Mathematical Components}
+
+This part provides a, unfinished by design, panoramic view of the
+\mcbMC{} library.  It interleaves a catalog of formalized theories with
+formalization choices that play a crucial role in the
+definition of the formal object.
+
+OLD STUFF:
 
 \mantra{
 	if you have a proof in mind, don't let the system drive you
         to another, less clean and abstract, proof.
 }
 
-\section{STYLE of these chapters}
+\section*{STYLE of these chapters}
 These chapters hopefully in the following style:
 \begin{itemize}
 \item first math mode to review the (not so standard) definitions and
