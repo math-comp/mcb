@@ -35,7 +35,7 @@ Redirect "g2" Show.
 % We focus here on simple proof commands, conventions and a first taste
 % of boolean reflection. Views and the related tactics are postponed to the
 % next chapter, and so are conjunctions and existential statements.
-The Coq system lets one not only define data types and programs, but
+The \Coq{} system lets one not only define data types and programs, but
 also prove properties about them.  In this chapter we explain how
 theorems are stated and proved.  We focus on simple statements and
 basic proof commands.  Stating a lemma is a very delicate matter.  Even if two
@@ -1374,18 +1374,44 @@ proof by contraposition:
 Lemma |*contraL*| (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
 \end{coq}
 
-We see it in action IN FIXME INFINITY OF PRIMES.
+We see this how this lemmas is used in an excerpt of the proof
+that there are infinitely many primes.  Given a number \C{m}
+we show that any prime divisor \C{p} of \C{(m `! + 1}) is greater than \C{m},
+or better that it is not the case \C{m} is bigger.
 
-The action performed by the command \C{apply: contraL} is
-the following one:
+\begin{coq}{}{}
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+\end{coq}
+We start our formal writing of such
+proof by naming the hypothesis \C{(prime p)}, which means that we add it to the
+current context of the goal. The dedicated tactic for this naming step is
+\C{move=>} followed by the name given to the hypothesis.
 
-\begin{coqout}{}{width=6cm,title=Before}
+\begin{coq}{}{width=6cm}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p.
+\end{coq}
+\begin{coqout}{}{width=6cm}
 m, p : nat
 prime_p : prime p
 ====================
 p %| m `! + 1 -> ~~ (p <= m)
 \end{coqout}
-\begin{coqout}{}{width=6cm,title=after}
+
+By reasoning by contraposition, via \C{apply: contraL}, we are left to
+prove that \C{p} is not a divisor of \C{(m `! + 1)} under the assumption
+that \C{p} is smaller then \C{m}:
+
+\begin{coq}{}{width=6cm}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p.
+apply: contraL.
+\end{coq}
+\begin{coqout}{}{width=6cm}
 m, p : nat
 prime_p : prime p
 ====================
@@ -1396,45 +1422,51 @@ First observe that the \C{apply:} tactic has found the correct values
 of the two parameters \C{c, b} of lemma \C{contraL}, namely
 \C{(p <= m)} and \C{(p \%| m `! + 1)}, by unifying the statement to be
 proved with the conclusion \C{(b -> ~~ c)} of the statement of the lemma.
-Indeed lemma \C{contraL} provide a sufficient condition for a
+Indeed lemma \C{contraL} provides a sufficient condition for a
 statement of this shape to hold. After the execution of the tactic, we
 are hence left with proving this sufficient condition.
 
-The rest of proof informally goes as follows: if $p <= m$, then $p$
-certainly divides $m!$. But then $p\ |\ !m + 1$ iff $p\ |\ 1$. But
-since $p$ is a prime, $p$ cannot be $1$.
+The rest of proof informally goes as follows: if $p \le m$, then $p$ certainly
+divides $m!$. But then $p$ divides $m! + 1$ if and only if $p$ divides $1$.
+Since $p$ is a prime, it cannot be $1$.  We start our formal writing of such
+proof by naming the hypothesis \C{(p <= m)}.
 
-We hence start our formal proof by naming hypothesis \C{p <= m}, which
-means that we add it to the current context of the goal. The dedicated
-tactic for this naming step is \C{move=>}.
-
-\begin{coq}{}{width=5cm}
+\begin{coq}{}{width=6cm}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p.
+apply: contraL.
 move=> leq_p_m.
 \end{coq}
-\begin{coqout}{}{width=7cm}
+\begin{coqout}{}{width=6cm}
 m, p : nat
 prime_p : prime p
 leq_p_m :  p <= m
 ====================
  ~~ (p %| m `! + 1)
 \end{coqout}
-
-The next step is implemented by using lemma:
+The next step is to use the following lemma:
 
 \begin{coq}{}{}
 Lemma |*dvdn_addr*| m d n : d %| m -> (d %| m + n) = (d %| n).
 \end{coq}
-
-which states a conditional equivalence, expressed as a conditional identity.
+It states a conditional equivalence, expressed as a conditional identity.
 We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting (the
-appropriate instance of) this identity but this operation will open an
-extra goal requiring a proof of (corresponding instance of) the side condition.
+appropriate instance of) this identity.  This operation will open an
+extra goal requiring a proof of (corresponding instance of) the side
+condition.
 
-\begin{coq}{}{width=5cm}
+\begin{coq}{}{width=6cm}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p.
+apply: contraL.
 move=> leq_p_m.
 rewrite dvdn_addr.
 \end{coq}
-\begin{coqout}{}{width=7cm}
+\begin{coqout}{}{width=6cm}
 2 subgoals
 
   m, p : nat
@@ -1446,50 +1478,180 @@ rewrite dvdn_addr.
 subgoal 2 is:
  p %| m`!
 \end{coqout}
-
 Observe the remainder at the bottom of the buffer which displays the
 statement of the side condition to be proved later. The context of
 this extra (sub)goal is ommited but we do not really need to see it:
-we know that statement \C{p \%| m!} holds because \C{p <= m}, as
+we know that statement \C{p \%| m!} holds because \C{p <= m}.
+This can be proved combining the following lemmas:
 stated by lemma:
 
-\marginnote{Cheat here: state dvdnfact currified and treat subgoals in
-order, with apply. Then show how to linearize the script using rewrite
-and switches. Hence rename or split the section.}
+\begin{coq}{}{}
+Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
+Lemma prime_gt1 p : prime p -> 1 < p.
+\end{coq}
 
+The first goal can be solve by appealing to the following lemmas:
 
-Conversely, proving an implication (or a universal statement) requires
-\emph{introduction} (is it the right place to speak about this?). This
-is what \C{move=>} does (same as in \C{case}, but no branch).\marginnote{example?}
+\begin{coq}{}{}
+Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
+Lemma prime_gt0 p : prime p -> 0 < p.
+\end{coq}
+The resulting script would then be:
+
+\begin{coq}{}{}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p.
+apply: contraL.
+move=> leq_p_m.
+rewrite dvdn_addr.
+  rewrite gtnNdvd.
+    by [].  (* ~~ false *)
+    by [].  (* 0 < 1 *)
+  by apply: prime_gt1.  (* 1 < p *)
+apply: dvdn_fact.
+  by apply: prime_gt0. (* 0 < p *)
+by []. (* p <= m *)
+Qed.
+\end{coq}
+For brevity we report in comments the goals solved by tactics.
+
+We improve such script in two steps.  First, we take advantage of
+\C{rewrite} simplification flags.  It is quite common
+for an equation to be conditional, hence for\C{rewrite} to generate side
+conditions.  It is good practice to solve such side conditions
+as soon as possible.  The first two side conditions are indeed
+trivial, and, as we did for \C{case}, can be solved by \C{//}.
+
+\begin{coq}{}{}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p; apply: contraL; move=> leq_p_m.
+rewrite dvdn_addr.
+  rewrite gtnNdvd //.
+  by apply: prime_gt1.  (* 1 < p *)
+\end{coq}
+If one carefully compares the conclusion of \C{gtnNdvd} and
+\C{prime_gt1} he can spot they are both rewriting rules.  While
+the former features an explicit ``\C{.. = false}'', in the
+latter one the ``\C{.. = true}'' part is hidden.  This means
+both lemmas can be used as rewriting rules.  Rewriting with
+\C{prime_gt1} leaves open the trivial goal \C{true} (i.e. \C{(true = true)}),
+and the side condition \C{(prime p)}.  Both are trivial, hence
+solved prefixing the line with \C{by}.
+
+\begin{coq}{}{}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p; apply: contraL; move=> leq_p_m.
+rewrite dvdn_addr.
+  by rewrite gtnNdvd // prime_gt1.
+\end{coq}
+The same considerations hold for the last goal.
+
+\begin{coq}{}{}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p; apply: contraL; move=> leq_p_m.
+rewrite dvdn_addr.
+  by rewrite gtnNdvd // prime_gt1.
+by rewrite dvdn_fact // prime_gt0.
+Qed.
+\end{coq}
+
+To sum up, both \C{apply:} and \C{rewrite} are able to find the right
+instance of a quantified lemma and to generate sub goals
+for its eventual premises.  Hypotheses can be named using \C{move=>}.
 
 \subsection{Proofs by induction}\label{ssec:ind}
 
-Induction means applying an induction scheme. Here is how we formalize this.
-In fact it is even possible to quantify over predicates, and
-this is how reasoning by induction is formalized. For instance, the
-possibility to reason by recurrence on a natural numbers is formalized
-by the following sentence:
+Lets take the well known induction principle for Peano's natural numbers
+and lets formalize it in the language of \Coq{}.  It reads:
+let $\mathcal{P}$ be a property of natural numbers, if
+$\mathcal{P}$ holds on $0$ and if for all natural number $n$
+if $\mathcal{P}$ hold on $n$ then it also hold on $n+1$, then $\mathcal{P}$
+holds for any $n$.  Induction is typically regarded as a schema, where
+the variable $\mathcal{P}$ stands for any property we could think about.
 
-\begin{coq}{}{title=Query,width=4cm}
+The language of \Coq{} gives to $\mathcal{P}$ a regular status, and induction,
+instead of being a ``schema'' it is a regular lemma.
+
+\begin{coq}{}{title=Query,width=3.5cm}
 About nat_ind.
 \end{coq}
-\begin{coqout}{}{title=Response,width=8cm}
-nat_ind :
-  forall P : nat -> Prop,
-  P 0 -> (forall n : nat, P n -> P n.+1) ->
-    forall n : nat, P n
+\begin{coqout}{}{title=Response,width=9cm}
+nat_ind : forall P : nat -> Prop,
+  P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n
 \end{coqout}
-Observe the different nature of universal
-quantification.\marginnote{Is it too early? What to say with Prop here?}
+Here \C{P} is quantified exactly as \C{n} is, but its type is a bit more
+complex and deserves an explanation.  As we have seen in the first
+chapter the \C{->} denotes the type of functions, hence \C{P} is a
+function from \C{nat} to \C{Prop}.  Recall that \C{Prop} is the type
+of \emph{propositions}, i.e. something we may want to prove.  At the
+light of that \C{P} is a function producing a proposition out of a natural
+number.  For example the property of being an odd prime can be written as
+follows:
 
-This amounts to applying an induction scheme. Observe that the
-unification problem is more difficult. The \C{elim}
-tactic can be decomposed into: finding the elimination predicate from
-the type of the term, and applying it with a suitable heuristic to
-find the predicate. Examples, examples of loaded inductions, examples
-with alternate, crafted induction schemes. For the braves, rewriting
-is an instance of this.
+\begin{coq}{}{}
+(fun n : nat => odd n && prime n)
+\end{coq}
+Indeed if we take such function as the value for \C{P}, the first premise
+of \C{nat_ind} becomes
 
+\begin{coq}{}{width=6.5cm,title=P 0}
+(fun n : nat => odd n && prime n) 0
+\end{coq}
+\begin{coq}{}{width=5.5cm,title=Equivalent by computation}
+odd 0 && prime 0
+\end{coq}
+While the language of \Coq{} lets one express the induction principle
+for natural numbers in a general way, the shape of the lemma is
+tied to such data type.  For example the induction principle over
+sequences is similar, but not identical.
+
+\begin{coq}{}{title=Query,width=3.5cm}
+About list_ind.
+\end{coq}
+\begin{coqout}{}{title=Response,width=9cm}
+list_ind : forall A : Type, forall P : list A -> Prop,
+  P nil -> (forall x xs, P xs -> P (x :: xs)) -> forall l, P l.
+\end{coqout}
+
+At the light of that, reasoning by induction on a term \C{t} means
+finding the induction lemma associated to the type of \C{t} and synthesizing
+the right predicate \C{P}.  The \C{elim:} tactic provides such
+functionalities, while \C{apply:} does not.  Hence \C{elim:}
+has to be used when reasoning by induction.
+
+The first service provided by \C{elim:} is to let one \emph{generalize}
+the goal.  It is typically needed when the goal mention a recursive function
+that uses an accumulator: its value is going to change during recursive calls,
+hence the induction hypothesis must be general.
+
+Another service provided by \C{elim:} is specifying an alternative
+induction principle, for example one may reason by induction on
+a list starting from its end.  For example to relate the
+\C{foldr} and \C{foldl} iterators as follows:
+
+\begin{coq}{}{}
+Lemma foldl_rev z s : foldl z (rev s) = foldr (fun x z => f z x) z s.
+Proof.
+elim/last_ind: s z => [|s x IHs] z //.
+by rewrite rev_rcons -cats1 foldr_cat -IHs.
+Qed.
+\end{coq}
+
+Here ``\C{elim/last_ind: s z}'' performs the induction using the
+\C{last_ind} lemma on \C{s} after having generalized the initial value of
+the accumulator \C{z}.  The resulting value for \C{P} is hence
+
+\begin{coq}{}{}
+(fun s => forall z, foldl z (rev s) = foldr (fun x z => f z x) z s)
+\end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Searching the library}
@@ -1544,8 +1706,63 @@ uninteresting and recurrent lemmas must have a short names easy to identify and
 disregard when reading a proof and at the same time easy to remember and short
 to type when writing a proof.\marginnote{this is a mantra somewhat}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsection{Rewrite, a swiss army knife}
+
+Approximatively one third of the proof script in the \mcbMC{} library are
+invocations of the \C{rewrite} tactic.  Such proof command provides many
+features we cannot extensively cover here.  We just sketch a very common idiom
+involving conditional rewrite rules and the mention the \C{RHS} pattern for
+the casual reader.  The interested reader can find more about the pattern
+language in Section~\ref{sec:rewrite2} or in the user manual of the
+Ssreflect language~\cite{ssrman}.
+
+So far we have solved side conditions using the simplification item \C{//}.
+When this does not suffice, one can invoke another rewrite rule using
+the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
+all goals zero-or-more time.  For example, one could consider the
+second sub goal that follows \C{rewrite dvdn_addr} a side condition
+and solve it on the same line.
+
+\begin{coq}{}{}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p; apply: contraL; move=> leq_p_m.
+rewrite dvdn_addr.
+  by rewrite gtnNdvd // prime_gt1.
+by rewrite dvdn_fact // prime_gt0.
+Qed.
+\end{coq}
+
+Optionally rewriting with \C{dvdn_fact} on all goals affects only
+the side condition, since the main goal mentions no divides predicate.
+The same holds for \C{prime_gt0}.
+
+\begin{coq}{}{}
+Lemma example m p : prime p ->
+  p %| m `! + 1 -> ~~ (p <= m).
+Proof.
+move=> prime_p; apply: contraL; move=> leq_p_m.
+rewrite dvdn_addr ?dvdn_fact ?prime_gt0 //.
+by rewrite gtnNdvd // prime_gt1.
+Qed.
+\end{coq}
+
+Another functionality offered by \C{rewrite} is the possibility
+to focus the search for the term to be replaced by providing a
+context.  For example the most frequent context is \C{RHS} (for right
+hand side) and is used to force rewrite to operate only on the right
+hand side of an equational goal.
+
+\begin{coq}{}{}
+Lemma silly_example m : n + 0 = (n + 0) + 0.
+Proof. by rewrite [in RHS]addn0. Qed.
+\end{coq}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{3}
-\mcbsection{Rewrite, second dan}\label{sec:rewrite2}
+\mcbsubsection{Rewrite contextual patterns}\label{sec:rewrite2}
 
 This example illustrates how the \C{rewrite} tactic, provided a
 rewrite rule like \C{leq_def}, \C{mulnBr} or \C{muln_eq0}, is able
