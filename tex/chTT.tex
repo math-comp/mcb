@@ -49,7 +49,8 @@ terms can be formed.
 
 Regarding types, the primitive type formers we have seen are the function space
 $\to$, also logical implication, and the universal quantification
-$\forall$, used to describe polymorphic function as well as parametric lemmas.
+$\forall$, used to describe polymorphic function as well as parametric lemmas
+(like induction principles).
 Standard logical rules describing how one can prove formulas involving these
 connectives are:
 
@@ -135,10 +136,13 @@ can be instantiated by simply passing arguments to them.  Exactly as one can
 pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
 can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
 \C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
-shows up in the type of the resulting term \C{(addnC 3)}:  The type of the
-\C{addnC} program depends on the value the program is applied to.  Note that
-the $\forall$ quantification specifies the type of the bound variable, and that
-the $\forall_E$ checks the term $t$ has the right type.
+shows up in the type of the resulting term \C{(addnC 3)}:  the type of the
+\C{addnC} program depends on the value the program is applied to.  That is the
+difference between the \emph{dependent function space} ($\forall$)
+and the standard function space ($\to$).
+
+Finally note that the $\forall$ quantification specifies the type of the bound
+variable, and that the $\forall_E$ checks the term $t$ has the right type.
 
 \subsection{Inductive types}\label{ssec:indtypes}
 
@@ -149,8 +153,7 @@ can represent a ``proof'' of \C{nat}.  For data types we prefer to say
 \emph{inhabited} rather than \emph{proved}, but there is no real difference.
 
 Inductive ``data'' types can be used to represent logical connectives, in
-particular the ones we miss so far, the existential quantifier in particular.
-But lets start by the simple conjunction.
+particular the ones we miss so far, lie the existential quantifier.
 
 \begin{center}
 \AxiomC{$A$} \AxiomC{$B$}
@@ -172,8 +175,8 @@ In Coq such connective can be characterized by the following
 inductive definition.
 
 \begin{coq}{name=And}{}
-Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B)
-where "A /\ B" := (and A B).
+Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B).
+Notation "A /\ B" := (and A B).
 \end{coq}
 
 Remark that the ``data'' type \C{And} is tagged as \C{Prop}, i.e.  we declare
@@ -182,11 +185,16 @@ only constructor \C{conj} that can be used to inhabit \C{and} takes two
 arguments, a proof of \C{A} and a proof of \C{B}, faithfully modelling the
 logical rule \C{$\wedge_I$}.  Note that \C{A} and \C{B} are parameters of the
 inductive definition, similarly to the definition of polymorphic lists
-or pairs.  Finally note that the definition of the pair data type is very
-similar to the one of the conjunction.
-\marginnote{The observation on pairs deserves more hammering. May be
-  recall the code of the polymorphic pairs here. And in any case,
-  ensure that this data structure has been seen in chapter~\ref{ch:prog}}
+or pairs.  
+
+It is worth to note that the definition of the pair data type,
+Exercise~\ref{ex:pair}, is almost identical to the one of \C{and}.
+
+\begin{coq}{}{}
+Inductive prod (A B : Type) := pair (a : A) (b : B).
+\end{coq}
+The striking similarity witnesses how programs (and data) are used in \Coq{}
+to represent proofs.
 
 Pattern matching provides a way to express the elimination rule for
 conjunction.  In particular the elimination rule is just a projection.
@@ -200,10 +208,12 @@ Now recall the similarity between $\to$ and $\forall$, where the former is the
 simple, non dependent, case of the latter.  If we check the type of
 the \C{conj} constructor
 
-\begin{coq}{name=Ande1}{}
-Check conj. (* forall A B : Prop, A -> B -> A /\ B *)
+\begin{coq}{name=Ande1}{width=4cm}
+About conj. 
 \end{coq}
-
+\begin{coqout}{}{width=8cm}
+aonj: forall A B : Prop, A -> B -> A /\ B
+\end{coqout}
 we may wonder what happens if the type of the second argument (i.e. \C{B}) is
 made dependent on the value of the first argument (of type \C{A}).
 What we obtain is the inductive definition corresponding to the
@@ -233,8 +243,8 @@ We quickly see the inductive definition of the disjunction.
 \begin{coq}{name=Or}{}
 Inductive or (A B : Prop) : Prop :=
   | or_introl (a : A)
-  | or_intror (b : B)
-where "A \/ B" := (or A B).
+  | or_intror (b : B).
+Notation "A \/ B" := (or A B).
 \end{coq}
 
 The elimination rule can again be expressed by pattern matching:
@@ -281,7 +291,7 @@ equality, as we have seen in the previous chapters, is an open notion
 in the following sense.  Terms that compute to the same syntactic expression
 are considered as equal, and this is true for any program the user may write.
 Hence such notion of equality needs to be somewhat primitive, as
-\C{match} and \C{Fixpoint} are.  One also expects such notion to come
+\C{match} and \C{fun} are.  One also expects such notion to come
 with a substitutivity property: replacing equals by equals must be licit.
 
 The way this internal notion is exposed is via the concept of index
@@ -292,15 +302,16 @@ Inductive eq (A:Type) (x:A) : A -> Prop := erefl : x = x
 where "x = y" := (@eq _ x y) : type_scope.
 \end{coq}
 
-This is the first time we see a function type after the \C{:}.
+This is the first time we see a function type after the \C{:} symbol, line 1.
 The \C{eq} type constructor takes three arguments: a type \C{A} and
-two terms of that type.  Hence one can write \C{a=b} whenever \C{a} and \C{b}
+two terms of that type (the former is named \C{x}).
+Hence one can write \C{(a = b)} whenever \C{a} and \C{b}
 have the same type.
 The \C{erefl} constructor takes no arguments, as \C{I}, but its type
-annotation says it can be used to inhabit only the type \C{x = x}.
-Hence one is able to prove \C{a=b} it only when \C{a} and \C{b} are
+annotation says it can be used to inhabit only the type \C{(x = x)}.
+Hence one is able to prove \C{(a = b)} it only when \C{a} and \C{b} are
 equal up to computation.  Conversely by eliminating a term
-of type \C{a=b} one discovers that  \C{a} and \C{b} are
+of type \C{(a = b)} one discovers that  \C{a} and \C{b} are
 equal and \C{b} can be freely replaced by \C{a}.
 
 \begin{coq}{name=EqInd}{}
@@ -321,7 +332,7 @@ is automatically replaced by \C{x}.
 
 Since proofs are just terms, one can hardly use the term language to
 write long proofs.   The proof commands we have seen so far, like
-\C{case:} for example, provide a much more compact syntax for proofs and can be explain in terms of the proof terms they generate behind the scenes.
+\C{case:} for example, provide a much more compact syntax for proofs and can be explained in terms of the proof terms they generate behind the scenes.
 
 For example \C{case: n} writes for you a \C{match} expression with the right
 shape by looking at the type of \C{n}.  If \C{n} is a natural number then there
@@ -332,7 +343,8 @@ and inductive predicate.
 
 The \C{apply:} tactic generates an application.  For example \C{apply: addnC}
 generates the term \C{addnC t1 t2} by figuring out the correct values of
-\C{t1} and \C{t2}, or opening new goals when this cannot be done.
+\C{t1} and \C{t2}, or opening new goals when this cannot be done, i.e.
+if the lemma takes in input proofs, like \C{contraL}.
 
 There is a list of proof commands that are shorthands for \C{apply:}
 and is only worth mentioning here briefly. \C{split} proves a conjunction
@@ -357,8 +369,8 @@ is oversimplified.  While \C{case} is indeed the proof command in
 charge of performing case analysis the ``\C{: n}'' and ``\C{=> [|m]}''
 parts are decorators to prepare the goal and post process the result of
 the proof command.  These decorators deal with what we typically call
-\emph{bookkeeping}: actions that are necessary to obtain readable and
-robust proof scripts but that are too frequent to require a move verbose
+\emph{bookkeeping}: actions that are necessary in order to obtain readable and
+robust proof scripts but that are too frequent to benefit from a move verbose
 syntax.  Bookkeeping actions do convoy a lot of information, like where
 names are given to assumptions, but also let one deal with annoying details
 using a compact, symbolic, language.  Note that all bookkeeping action
@@ -451,10 +463,10 @@ to visually link the function and name assigned to its output.  Note that
 \C{/prime\_gt1} is a complete action in itself, and its output is placed on the
 stack.
 
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{width=6cm}
 move=> [x y] /= /prime_gt1.
 \end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
+\begin{coqout}{name=Stack2}{width=6cm}
  x, y : nat
  ========================
  1 < x -> odd y -> 2 < y + x
@@ -488,9 +500,12 @@ by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 We finally conclude with the \C{apply:} command that here we use
 with two arguments: a function and its last argument.
 
-\begin{coq}{}{}
-About ltn_addl. (* forall m n p : nat, m < n -> m < p + n *)
+\begin{coq}{}{width=4cm}
+About ltn_addl.
 \end{coq}
+\begin{coqout}{}{width=8cm}
+ltn_addl : forall m n p : nat, m < n -> m < p + n
+\end{coqout}
 
 \C{apply:} will fill in the blanks between the function (the lemma name)
 and the argument provided.  Note that by passing \C{x\_gt1}, the
@@ -511,7 +526,7 @@ sacrifices readability in favour of compactness: what would you learn by
 reading a trivial proof?  Of course,
 finding the right balance only comes with experience.
 
-TODO: arrow and specialize.
+TODO: arrow and specialize. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 We have seen how to pull items from the stack to the context.  Now let's see
 how to perform the converse via the \C{:} operator.  Such operator decorates
@@ -627,14 +642,16 @@ The only missing piece is recursive programs.  For example
 function taking in input two numbers and producing a third one.
 We can write programs by recursion that take in input, among regular  data,
 proofs and produce in output other proofs.  Let's look at the
-induction principle for natural numbers
+induction principle for natural numbers trough the looking glasses of the
+Curry-Howard isomorphism.
 
-\begin{coq}{}{}
+\begin{coq}{}{title=Query,width=3.5cm}
 About nat_ind.
-(* nat_ind :
-forall P : nat -> Prop, P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n *)
 \end{coq}
-
+\begin{coqout}{}{title=Response,width=9cm}
+nat_ind : forall P : nat -> Prop,
+  P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n
+\end{coqout}
 \C{nat\_ind} is a program that produces a proof of \C{(P n)} for any \C{n}
 proviso a proof for the base case \C{(P 0)}, and a proof
 of the inductive step \C{(forall n : nat, P n -> P n.+1)}.
@@ -649,10 +666,80 @@ Fixpoint nat_ind (P : nat -> Prop)
   else p0.
 \end{coq}
 
-Every inductive comes with such an induction principle, the job of elim is
-to find a suitable value for \C{P} in order to \C{apply} the induction
-principle. Typically P can be obtained by taking the goal and generalizing
-it.  Complex \C{elim} like \C{elim: {2}n (leqnn n)}.
+The \Coq{} system generates such program when the \C{nat} data type
+is defined.  Recall that recursive functions are checked for termination:
+trough the lenses of the proofs as programs correspondence this means
+that the induction principle just coded is sound.
+
+As an exercise we show how the \C{elim} tactic combined with the bookkeeping
+operator \C{:} lets one perform, on the fly, a stronger variant of
+induction called ``course of values''.
+
+We will show that every amount of postage that is at least 12 cents
+can be made from 4-cent and 5-cent stamps.  The proof in the inductive
+step goes as follows.  There are obvious solutions for a postage between
+12 and 15 cents, so we can assume it is at least 16 cents.  Since
+the postage amount is at least 16, by using a 4-cents stamp we are back
+at a postage amount that, by induction, can be obtained as claimed.
+
+The trick is that we want to apply the induction hypothesis not
+on $n-1$, as usual, but on $n-4$, since we know how to turn a
+solution for a stamping amount problem $n$ to one for a problem of
+size $n+4$.  The induction hypothesis provided by \C{nat_ind}
+is not strong enough.  However we can use the \C{:} operator
+to load the goal before performing the induction.
+
+\begin{coq}{}{}
+Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
+Proof.
+elim: n {-2}n (leqnn n) =>[|n IHn]; first by case.
+do 12! [ case; first by [] ]. (* < 12c *)
+case; first by exists 3, 0.   (* 12c = 3 * 4c *)
+case; first by exists 2, 1.   (* 13c = 2 * 4c + 1 * 5c *)
+case; first by exists 1, 2.   (* 14c = 1 * 4c + 2 * 5c *)
+case; first by exists 0, 3.   (* 15c = 3 * 5c *)
+move=> m'; set m := _.+1; move=> mn m11.
+case: (IHn (m-4) _ isT) => [|s4 [s5 def_m4]].
+  by rewrite leq_subLR (leq_trans mn) // addSnnS leq_addl.
+by exists s4.+1, s5; rewrite mulSn -addnA def_m4 subnKC.
+Qed.
+\end{coq}
+
+Just before the induction step the goal is the following one:
+
+\begin{coq}{}{}
+forall n m : nat,
+  m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m	
+\end{coq}
+The corresponding induction hypothesis \C{IHn} is:
+
+\begin{coq}{}{}
+IHn : forall m : nat,
+      m <= n ->
+      11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
+\end{coq}
+Such hypothesis is accessible for each \C{m} that is at least \C{12}
+and smaller than \C{n}.
+
+Loading the goal works as follows: first \C{(leqnn n)} is pushed on
+the stack, then all occurrences of \C{n} but the second one are push
+on the stack obtaining
+
+\begin{coq}{}{}
+forall m : nat,
+  m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
+\end{coq}
+Finally \C{n} is pushed on the stack so that induction is performed
+on such quantified variable.
+
+Lines 4, 9 and 10 deserve a few comments.  Line 4 repeats a tactic
+12 times.  Line 9 uses the \C{set} proof command to name \C{m} a
+term of the form \C{_.+1} where \C{_} is a wildcard. It names
+\C{m} the term \C{m'.+16}.  Line 10 passes to the induction
+hypothesis \C{(m-4)}, then a placeholder for a missing proof
+of \C{(m-4 < n)}, finally a proof that \C{(11 < m-4)}.  The introduction
+pattern in line 10 names \C{s4} and \C{s5} the quantities of
+4-cents and 5-cents stamps needed to cover the amount of postage \C{(m-4)}.
 
 \section{Axioms of the logic we work with}
 
