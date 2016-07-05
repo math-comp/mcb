@@ -24,16 +24,15 @@ predicate ``the sequence \C{s} has at least one element satisfying the
 (boolean) predicate \C{a}'', we can either use a boolean predicate:
 
 \begin{coq}{}{}
-Fixpoint |*has*| {T : Type} (a : T -> bool) (s : seq T) : bool :=
+Fixpoint |*has*| T (a : T -> bool) (s : seq T) : bool :=
   if s is x :: s' then a x || has s' else false.
 \end{coq}
 
-or we can use an alternate formula, like for instance:\marginnote{Is
-  exists2 presented in the previous section?}
+or we can use an alternate formula, like for instance:
 
 \begin{coq}{}{}
-Definition |*has_prop*|  {T : Type} (a : T -> bool) (x0 : T) (s : seq T) :=
-   exists2 i, i < size s & a (nth x0 s i)
+/Definition |*has_prop*|  T (a : T -> bool) (x0 : T) (s : seq T) :=
+   exists i, i < size s /\ a (nth x0 s i)
 \end{coq}
 
 Term \C{(has a s)} is a boolean value, hence a hypothesis
@@ -55,7 +54,7 @@ other hand, this phrasing of the hypothesis easily gives access to the
 value of the index at which the witness is to be found:
 
 \begin{coq}{}{}
-case: s_has_aP => [n asn].
+case: s_has_aP => [n [n_in_s asn]].
 \end{coq}
 introduces in the context of the goal a natural number \C{n : nat} and
 the fact \C{asn : a (nth x0 s n)}. In order to establish that
@@ -71,7 +70,7 @@ automation by computation\footnote{They moreover allow for
   proof-irrelevant specifications. This feature is largely used
   throughout the Mathematical Components library but beyond the scope
   of the present chapter: it will be the topic of
-  Chapter~\ref{ch:sigmabool}.}. Specification in the \C{Prop} sort
+  Chapter~\ref{ch:sigmabool}.}. Specifications in the \C{Prop} sort
 are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
 statements), subformulae (of conjunctions),... They are proved by
@@ -80,7 +79,8 @@ logic. Formalizing a predicate by the means of a boolean specification
 requires implementing a form of decision
 procedure and possibly proving a specification lemma if
 the code of the procedure is not a self-explanatory description of the
-standard axiomatic description of the mathematical notion. For instance a
+%standard axiomatic description of the 
+mathematical notion. For instance a
 boolean definition \C{|*prime*| : nat -> bool} implements a complete
 primality test, which requires a companion lemma proving that it is
 equivalent to the usual definition in terms of proper
@@ -91,18 +91,22 @@ principle holds on the corresponding predicate.
 The boolean reflection methodology proposes to avoid
 committing to one or the other of these options, providing enough
 infrastructure to ease the bureaucracy of navigating between the two.
-The \C{is_true} correction, which we have been using since the early
-pages of Chapter~\ref{ch:proofs} is in fact one ingredient of this
-infrastructure.\marginnote{We should now decide what is said in the
-  previous chapter and what we say here about this coercion.} Indeed
-this coercion turns a boolean value into a \C{Prop} statement, that
-can be used as the statement of a theorem or of a hypothesis. It
-hides however an equality than can also be used with the \C{rewrite}
-tactic, for instance to perform local modification in goals that can
-incidentally trigger larger simplifications when they combine well with
-computations. \marginnote{Give an example here. Do we need to mention
-  setoid rewriting here for Coq users?}
+The \C{is_true} coercion, which we have been using since the early
+pages of Chapter~\ref{ch:proofs}, is in fact one ingredient of this
+infrastructure.
 
+\begin{coq}{}{title=The is\_true coercion}
+Definition is_true (b : bool) : Prop := b = true.
+Coercion is_true : bool >-> Sortclass.
+\end{coq}
+The \C{is_true} function is automatically inserted by \Coq{} to
+turn a boolean value into a \C{Prop}, i.e. into a regular statement
+of a theorem.
+More on this mechamism will be told in Section~\ref{sec:coercions}.
+
+% It is worth recalli body of the \C{is_true} function is just an equality, and hence
+% can be used to replace the boolean expression by its truth value with the
+% \C{rewrite} tactic.
 
 \section{Views}
 
@@ -125,20 +129,30 @@ use its companion version \C{b = false <-> ~ P}. The following proof
 script illustrates the kind of undesirable bureaucracy entailed by
 this wording:
 
-\begin{coq}{}{}
+\begin{coq}{}{width=7cm}
 Lemma |*test_bool_Prop_equiv*| b P : bool_Prop_equiv P b -> P \/ ~ P.
 Proof.
-rewrite /bool_Prop_equiv; case: b; case => hlr hrl.
-  left; exact: hlr.
+case: b; case => hlr hrl.
+  by left; apply: hlr.
 by right => hP; move: (hrl hP).
 Qed.
 \end{coq}
-
+\begin{coqout}{}{width=5cm,title=Last goal}
+1 subgoal
+P : Prop
+hlr : false = true -> P
+hrl : P -> false = true
+========================
+P \/ ~ P
+\end{coqout}
 We could try
 alternate formulations based on the connectives seen in
-section~\ref{sec:ttch}, like for instance
-\C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but a better solution is
-to use an ad-hoc inductive definition, that ressembles this
+Section~\ref{sec:ttch}, like for instance
+\C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
+would be non negligible.
+
+A better solution is
+to use an ad-hoc inductive definition that resembles a
 disjunction of conjunctions: we inline the two constructors of a
 disjunction and each of these constructors has the two arguments of
 the conjunction's single constructor:
@@ -150,18 +164,12 @@ Inductive |*reflect*| (P : Prop) (b : bool) : Prop :=
 \end{coq}
 
 We can prove that the statement \C{reflect P b} is actually equivalent
-to the double implication. Exercise, prove:
-
-\begin{coq}{}{width=13cm}
-Lemma |*iffP_lr*| (P : Prop) (b : bool) : (P -> b) -> (b -> P) -> reflect P b.
-
-Lemma |*iffP_rl*| (P : Prop) (b : bool) : reflect P b -> ((P -> b) /\ (b -> P)).
-\end{coq}
+to the double implication, see Exercise~\ref{ex:iffp}.
 
 Let us illustrate the benefits of this alternate specialized double
 implication:
 
-\begin{coq}{}{width=5cm}
+\begin{coq}{}{width=6cm}
 Lemma |*test_reflect*| b P :
   reflect P b -> P \/ ~ P.
 Proof.
@@ -173,24 +181,31 @@ case.
   ============================
    P -> b = true -> P \/ ~ P
 
-subgoal 2 (ID 100) is:
+subgoal 2 is:
  ~ P -> b = false -> P \/ ~ P
 \end{coqout}
 
 A simple case analysis on the hypothesis \C{(reflect P b)} exposes in
-each branch both versions of the statement: one in its \C{Prop}
-version, and the corresponding boolean equation. Note that the actual
-\C{reflect} predicate defined in the \C{ssrbool} library is actually
-slightly different from the one we give in Listing~\ref{lst:reflect1}:
-this version misses an ultimate refinement\footnote{Moreover the \C{reflect}
-predicate is in fact in sort \C{Type}, which will hopefully make sense
-when reading Chapter~\ref{ch:sigmabool}}, that will be presented in
-Section~\ref{ssec:specs}. Until we reach Section~\ref{ssec:specs}, we
-will act as if Listing~\ref{lst:reflect1} was the official definition
-of \C{reflect}.
+each branch both versions of the statement.
+%: one in its \C{Prop}
+%version, and the corresponding boolean equation. 
+Note that the actual
+\C{reflect} predicate defined in the \C{ssrbool} library is 
+slightly different from the one we give here:
+%Listing~\ref{lst:reflect1}:
+this version misses an ultimate refinement
+%\footnote{Moreover the \C{reflect}
+%predicate is in fact in sort \C{Type}, which will hopefully make sense
+%when reading Chapter~\ref{ch:sigmabool}}, 
+that will be presented in
+Section~\ref{ssec:specs}. 
+%Until then, we 
+%we reach Section~\ref{ssec:specs}, we
+%act as if Listing~\ref{lst:reflect1} is the official definition
+%of \C{reflect}.
 
-\marginnote{Do not really know how to make this clearer... Plus the
-  LaTeX counter for listings could be improved.}
+%\marginnote{Do not really know how to make this clearer... Plus the
+%  LaTeX counter for listings could be improved.}
 
 We start our collection of links between boolean and \C{Prop}
 statements with the lemmas relating boolean connectives with their
@@ -213,7 +228,8 @@ generally, a theorem stating an equivalence between a boolean
 expression and a \C{Prop} statement is called a \emph{view}. Next
 section is devoted to the proof and usage of more involved views.
 
-\subsection{Proving and using views}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proving views}
 
 Views are also used to specify types equipped with a
 \emph{decidable equality}, by showing that the equality predicate
@@ -256,40 +272,38 @@ help here.
 
 In order to trigger this braching in the proof tree, we resort to the
 bridge between the \C{reflect} predicate and a double implication.
-The \C{ssrbool} library actually provides a more general version of
-this bridge than the one we proved in exercise in
-Section~\ref{ssec:boolProp}:
+The \C{ssrbool} library provides a general version of
+this bridge:
+% than the one we proved in Exercise~\ref{}
+% Section~\ref{ssec:boolProp}:
 
-\begin{coq}{}{}
+\begin{coq}{}{width=4cm}
 About iffP.
 \end{coq}
-
-\begin{coqout}{}{}
-|*iffP*| :
-forall (P Q : Prop) (b : bool),
-reflect P b -> (P -> Q) -> (Q -> P) -> reflect Q b
-
-Arguments P, Q, b are implicit
+\begin{coqout}{}{width=8cm}
+|*iffP*| : forall (P Q : Prop) (b : bool),
+  reflect P b -> (P -> Q) -> (Q -> P) -> reflect Q b
 \end{coqout}
 Lemma \C{|*iffP*|} indeed relates two equivalences \C{(reflect P b)}
 and \C{(reflect Q b)} involving a same boolean \C{b} but different
 \C{Prop} statements \C{P} and \C{Q}, as soon as one
 provides a proof of the usual double implication between \C{P} and
-\C{Q}. \marginnote{Prove it as an exercise?}
+\C{Q}. 
+%\marginnote{Prove it as an exercise?}
+% Statement \C{(@iffP_lr P b)} in the exercise can be obtained as the
+% specialization \C{(@iffP _ _ (@idP b))} where \C{|*idP*|} is the
+% trivial reflexive\footnote{Note that the first occurrence of \C{b} is
+% coerced to \C{Prop} by \C{is\_true}} equivalence:
 
-Statement \C{(@iffP_lr P b)} in the exercise can be obtained as the
-specialization \C{(@iffP _ _ (@idP b))} where \C{|*idP*|} is the
-trivial reflexive\footnote{Note that the first occurrence of \C{b} is
-coerced to \C{Prop} by \C{is\_true}} equivalence:
+The trivial view is called \C{idP} and is seldom used
+in conjunction with \C{iffP}.
 
 \begin{coq}{}{}
 Lemma |*idP*| {b : bool} : reflect b b.
 \end{coq}
-
+ \marginnote{The tuning of implicits is crucial for the \C{apply: (iffP idP)} to behave correctly.}
 We can now come back to the proof of lemma \C{eqnP}, and start its
-proof script with:
-\marginnote{The tuning of implicits is crucial for the
-\C{apply: (iffP idP)} to behave correctly.}
+proof script by applying \C{iffP}.
 
 \begin{coq}{}{width=7cm}
 Lemma |*eqnP*| {n m : nat} :
@@ -303,20 +317,21 @@ m : nat
 ===================
  m = n -> eqn m n
 
-subgoal 2 (ID 365) is:
+subgoal 2 is:
  eqn m n -> m = n
 \end{coqout}
-Exercise: finish the proof.
+The proof is now an easy induction, and is left as Exercise~\ref{ex:eqnP}.
 
-In fact the library does not feature the specialization \C{iffP_lr},
-and the idiom to remember in order to prove a reflection lemma by
-double implication is the \C{apply: (iffP idP)} command. Let us now
-showcase the usage of the more genral for of \C{iffP} by proving
-that a type equipped with an injection in type \C{nat} can be equipped
-with a decidable equality:
+% In fact the library does not feature the specialization \C{iffP_lr},
+% and the idiom to remember in order to prove a reflection lemma by
+% double implication is the \C{apply: (iffP idP)} command. 
+Let us now
+showcase the usage of the more general form of \C{iffP} by proving
+that a type equipped with an injection in type \C{nat} has a
+decidable equality:
 
 \begin{coq}{}{}
-Lemma |*nat_inj_eqAxiom*| (T : Type) (f : T -> nat) :
+Lemma |*nat_inj_eq*| T (f : T -> nat) x y :
   injective f -> reflect (x = y) (eqn (f x) (f y)).
 \end{coq}
 The equality decision procedure indeed just consists in pre-applying
@@ -329,102 +344,95 @@ implications, replacing on the fly the evaluation
 \C{(eqn (f x) (f y))} by the \C{Prop} equality \C{f x = f y}:
 
 \begin{coq}{}{width=7.7cm}
-Lemma |*nat_inj_eq*| (T : Type) (f : T -> nat) :
-injective f ->
-  reflect (x = y) (eqn (f x) (f y)).
+Lemma nat_inj_eq T (f : T -> nat) x y :
+  injective f ->
+    reflect (x = y) (eqn (f x) (f y)).
 Proof.
 move=> f_inj.
 apply: (iffP eqnP).
 \end{coq}
 \begin{coqout}{}{width=4.3cm}
-x : T
-y : T
+T : Type
+f : T -> nat
 f_inj : injective f
+x, y : T
 ====================
 x = y -> f x = f y
 
-subgoal 2 (ID 403) is:
+subgoal 2 is:
  f x = f y -> x = y
 \end{coqout}
-Exercise: finish the proof.
+Note that \C{eqn}, being completely specified by \C{eqnP}, is not
+anymore part of the picture.  Finishing the proof is left as
+Exercise~\ref{ex:eqnPinj}.
 
 The latter example illustrates the convenience of combining an action
 on a goal, here breaking an equivalence into one subgoal per
 implication, with a change of viewpoint, here by the means of the
 \C{eqnP} view. This combination of atomic proof steps is pervasive in
 a library designed using the boolean reflection methodology: the
-ssreflect tactic language therefore provides so-called view features,
-designed to facilitate more generally the combination of a tactic or
-intro-pattern with the application of a view.
+Ssreflect tactic language lets one use view lemmas freely
+in the middle of intro-patterns.
 
-For instance, suppose that one wants to access the components of a
-conjunctive hypothesis, stated as a boolean conjunction like in:
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Using views in intro patterns}
 
-\begin{coq}{}{}
-Lemma example n m k : k <= n -> (n <= m) && (m <= k) -> n = k.
-\end{coq}
+Suppose that one wants to access the components of a
+conjunctive hypothesis, stated as a boolean conjunction.
+We can use lemma \C{andP} in a \emph{view intro-pattern}:
 
-Then we can use lemma \C{andP} in a \emph{view intro-pattern}:
-
-\begin{coq}{}{width=7cm}
-Lemma example n m k :
-  k <= n ->
-    (n <= m) && (m <= k) -> n = k.
+\begin{coq}{}{width=6cm}
+Lemma example n m k : k <= n ->
+  (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP.
 \end{coq}
-\begin{coqout}{}{width=5cm}
-n : nat
-m : bool
-k : nat
+\begin{coqout}{}{width=6cm}
+n, m, k : nat
 lekn : k <= n
 ==========================
- n <= m /\ m <= k ->
-   n = k
+ n <= m /\ m <= k -> n = k
 \end{coqout}
 
 The view intro-pattern \C{/andP} has \emph{applied} view \C{andP} to
-the head hypothesis \C{(n <= m) && (m <= k)} and tranformed it into
+the top entry of the stack \C{(n <= m) && (m <= k)} and transformed it into
 its equivalent form \C{(n <= m) /\\ (m <= k)}. Note that strictly
 speaking, view \C{andP} does not have the shape of an implication,
 that can be fed with a proof of its premise: it is (isomorphic to) the
 conjunction of \emph{two} such implications. The \emph{view mechanism}
 implemented in the tactic language has automatically guessed and
-inserted a term which plays the role of an adaptator, which acts as if
-the right direction of the double implication has been guessed, as
-well as the possible missing arguments of the view.
+inserted a term, called \emph{hint view}, which plays the role of an
+adaptor.
 
-More precisely in this case, the \C{/andP} intro pattern has changed
-hypothesis \C{top : (n <= m) && (m <= k) (* = true *)} into
-\C{elimTF andP top : (n <= m) /\\ (m <= k)},
-where \C{elimTF} is the ``adaptator'' which has been
-inserted\footnote{Adaptators are in fact called \C{Hint Views},
-  registered by the eponym vernacular command. See~\cite{ssrman} for
-  more details}:
+More precisely the \C{/andP} intro pattern has wrapped the top
+stack item, called \C{top} here, of type \C{((n <= m) && (m <= k))} into
+\C{(elimTF andP top)} obtaining a term of type
+\C{((n <= m) /\\ (m <= k))}.
 
 \begin{coq}{}{}
-Lemma |*elimTF*| {P Q : Prop} {b c : bool} :
+Lemma |*elimTF*| (P Q : Prop) (b c : bool) :
   reflect P b -> b = c -> if c then P else ~ P.
 \end{coq}
-Term \C{elimTF andP top} hence has type
-\C{if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\\ (m <= k))},
-which reduces to \C{((n <= m) /\\ (m <= k))}.
+Term \C{(elimTF andP top)} hence has type
 
-\marginnote{Show other examples of inserted hint views? Like negation...}
+\begin{coq}{}{}
+if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\\ (m <= k))
+\end{coq}
+which reduces to \C{((n <= m) /\\ (m <= k))} since \C{c} is \C{true}
+(recall the hidden ``\C{.. = true}'' in the type of \C{top}).  
+%\marginnote{Show other examples of inserted hint views? Like negation...}
 
-Going back to  our example: we can then chain this view with a casing
+Going back to  our example: we can then chain this view with a case
 intro-pattern to break the conjunction and introduce its components:
 
-\begin{coq}{}{width=7cm}
-Lemma example n m k :
-  k <= n -> (n <= m) && (m <= k) -> n = k.
+\begin{coq}{}{width=6cm}
+Lemma example n m k : k <= n ->
+  (n <= m) && (m <= k) -> n = k.
 Proof.
-move=> lekn /andP [lenm lemk].
+move=> lekn /andP[lenm lemk].
 \end{coq}
-\begin{coqout}{}{width=5.1cm}
-n : nat
-m : bool
-k : nat
+\begin{coqout}{}{width=6cm}
+n, m, k : nat
 lekn : k <= n
 lenm : n <= m
 lemk : m <= k
@@ -432,9 +440,9 @@ lemk : m <= k
 n = k
 \end{coqout}
 
-As \C{(n <= m)} is a notation for \C{n - m == 0}, we can use view
-\C{eqnP} in order to transform this hypothesis on the fly. Observe the
-new shape of the \C{leqnm} hypothesis:
+As \C{(n <= m)} is by definition \C{(n - m == 0)}, we can use the view
+\C{eqnP} in order to transform this hypothesis into a proper equation.
+Observe the new shape of the \C{leqnm} hypothesis:
 
 \begin{coq}{}{width=7cm}
 Lemma example n m k :
@@ -458,8 +466,15 @@ the ease to reason by equivalence via rewriting of boolean identities
 leads to concise proofs and proof scripts and prevent from too low
 level proof steps. 
 
-Let us now move to a non artificial example and dissect the proof that
-\C{(_ <= _)} is a total relation, expressed as a boolean statement:
+Let us now move to a non artificial example to see how the Ssreflect
+tactic language supports the combination of views with the \C{apply},
+\C{case} and \C{rewrite} tactics.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Using views with tactics}
+
+We dissect the proof that \C{<=} is a total relation.
+As usual the statement is expressed as a boolean formula:
 
 \begin{coq}{}{}
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
@@ -474,8 +489,7 @@ Proof.
 rewrite -implyNb.
 \end{coq}
 \begin{coqout}{}{width=4.7cm}
-m : nat
-n : nat
+m, n : nat
 =====================
 ~~ (m <= n) ==> (n <= m)
 \end{coqout}
@@ -488,8 +502,7 @@ Proof.
 rewrite -implyNb -ltnNge.
 \end{coq}
 \begin{coqout}{}{width=4.5cm}
-m : nat
-n : nat
+m, n : nat
 =====================
 (n < m) ==> (n <= m)
 \end{coqout}
@@ -506,8 +519,7 @@ Proof.
 rewrite -implyNb -ltnNge; apply/implyP.
 \end{coq}
 \begin{coqout}{}{width=4.5cm}
-m : nat
-n : nat
+m, n : nat
 =====================
 (n < m) -> (n <= m)
 \end{coqout}
@@ -518,10 +530,13 @@ We can now conclude the proof:
 Lemma |*leq_total*| m n : (m <= n) || (m >= n).
 Proof. by rewrite -implyNb -ltnNge; apply/implyP; apply: ltnW. Qed.
 \end{coq}
+\\
 
-The \C{case} tactic also combines with the \C{view} mechansism, which
+The \C{case} tactic also combines well with the \C{view} mechanism, which
 eases reasoning by cases along a disjunction expressed with a boolean
-statement, like \C{leq_total}. Example:
+statement, like the just proved \C{leq_total}.  For example we
+may want to start the proof of the following lemma by distinguishing
+two cases: \C{n1 <= n2} and \C{m2 <= n1}.
 
 \begin{coq}{}{}
 Lemma |*leq_max m n1 n2*| :
@@ -529,34 +544,34 @@ Lemma |*leq_max m n1 n2*| :
 Proof.
 case/orP: (leq_total n2 n1) => le_n12.
 \end{coq}
-
 That results in:
 
 \begin{coqout}{}{}
-m : nat
-n1 : nat
-n2 : nat
+m, n1, n2 : nat
 le_n12 : n2 <= n1
 ============================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 
-subgoal 2 (ID 478) is:
+subgoal 2 is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
+Even if it is not displayed here, subgoal 2 has \C{n1 <= n2}
+in its context.
 
-Finally, the \C{rewrite} tactic can also be used to work with views:
+Finally, the \C{rewrite} tactic also handles views that relate a 
+equation in \C{Prop} with a boolean formula.
 
 \begin{coq}{}{}
 Lemma |*maxn_idPl*| {m n} : reflect (maxn m n = m) (m >= n).
-Proof. (* exercise *) Qed.
-
 Lemma |*leq_max m n1 n2*| :
   (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
-case/orP: (leq_total n2 n1) => le_n12. rewrite (maxn_idPl le_n12).
+case/orP: (leq_total n2 n1) => le_n12.
+  rewrite (maxn_idPl le_n12).
 \end{coq}
-
-Leading to:
+The tactic sees \C{(maxn_idPl le_n12)} as the equation corresponding
+to the boolean formula \C{le_n12}, namely \C{(maxn n1 n2 = n1)},
+and rewrites with it obtaining:
 
 \begin{coqout}{}{}
 
@@ -567,13 +582,16 @@ Leading to:
   ============================
    (m <= n1) = (m <= n1) || (m <= n2)
 
-subgoal 2 (ID 478) is:
+subgoal 2 is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
 
-\marginnote{We could propose another exercise in next section in order
-to factor this proof with a \C{wlog}.}
-\begin{itemize}
+The full proof of \C{leq_max} is quite interesting and will be fully
+detailed in Section~\ref{sec:realproofs}
+
+% \marginnote{We could propose another exercise in next section in order
+% to factor this proof with a \C{wlog}.}
+% \begin{itemize}
 
 % \item Example of \C{eqnP}, that is \C{eqP} specialized to
 %   \C{nat}. Proof using \C{(iffP idP)}. Explain \C{iffP} and \C{idP} is
@@ -591,23 +609,23 @@ to factor this proof with a \C{wlog}.}
 % \item Then show the cute proof of \C{leq_total}, which features
 %   \C{apply/implyP}.
 
-\item Finally, show \C{case/orP: (leq_total n m)}. May be a first
-  simple and dummy example. Then one possibility is
-  to show a simplified version of the proof of \C{leq_max}, removing
-  the \C{without loss}. This features \C{case/orP: (leq_total n2 n1)}
-  and \C{rewrite (maxn_idPl le_n21)} which uses the \C{elimT} coercion.
-  This could be reused in the next section, to illustrate \C{wlog}.
+% \item Finally, show \C{case/orP: (leq_total n m)}. May be a first
+%   simple and dummy example. Then one possibility is
+%   to show a simplified version of the proof of \C{leq_max}, removing
+%   the \C{without loss}. This features \C{case/orP: (leq_total n2 n1)}
+%   and \C{rewrite (maxn_idPl le_n21)} which uses the \C{elimT} coercion.
+%   This could be reused in the next section, to illustrate \C{wlog}.
+% 
+% 
+% \item There are more adaptors than \C{introT, introF, elimT, elimF},
+%   in particular with negations \C{elimN,...} and \C{apply/v1/v2}.
 
+% \end{itemize}
 
-\item There are more adaptors than \C{introT, introF, elimT, elimF},
-  in particular with negations \C{elimN,...} and \C{apply/v1/v2}.
-
-\end{itemize}
-
-Note that the view feature in the tactic language is there to combine an
-action (tactic or intro pattern) with a change of world. Order in
-which we could introduce it: \C{/eqP ->}, \C{/andP [h1 h2]},
-\C{/orP [h1 | h2]}. May be mention \C{=> /v1 /v2} as a side remark.
+% Note that the view feature in the tactic language is there to combine an
+% action (tactic or intro pattern) with a change of world. Order in
+% which we could introduce it: \C{/eqP ->}, \C{/andP [h1 h2]},
+% \C{/orP [h1 | h2]}. May be mention \C{=> /v1 /v2} as a side remark.
 
 % It is the fragment of decidable stuff (EM as case).
 % It is a concrete data type on which you can program (SSR), automation by
@@ -689,36 +707,38 @@ which we could introduce it: \C{/eqP ->}, \C{/andP [h1 h2]},
 % help the reader with typographical comments, like leaving an empty
 % line in latex (here we use bullets).
 
-Not everything needs to be a tactic, the logic is powerful
-enough to express special connectives that induce a line of
-reasoning. Hence the next section.
-
 \section{Advanced, practical, statements}
 
-general talk about the fact that statements/definition do matter: not only for
+TODO: Not everything needs to be a tactic, the logic is powerful
+enough to express special connectives that induce a line of
+reasoning. Hence this section.
+General talk about the fact that statements/definition do matter: not only for
 their meaning but also because they have implications on the
 usability/practicality in the rest of the library.  At least two classes of
 techniques, the ones based on the logic (bool refl, reflect, classically, order
 of forall when instantiation done via CH) and the ones based on the support of
 the prover (implicit args, type inference CS, Hint Resolve).
-
 More in general, this has to be mentioned in the main intro of the book, here
 we revise the idea.
 
 \subsection{Inductive specs with indices}\label{ssec:specs}
 What we did for reflect, an ad hoc connective, to model a line of reasoning is
-a recurrent pattern in the \mcbMC{} library: the ``spec'' predicates.  Specs
-are particularly handy  because inductive predicates, via their elimination
-rule, accesses a special feature of the type theory of Coq: implicit equations
-/ automatic substitution.
+a recurrent pattern in the \mcbMC{} library.  Such class of inductive
+predicates is called ``spec'', for \emph{specification}.
+
+Spec predicates are inductive families with indexes, exactly
+as the \C{eq} predicate seen in Section~\ref{ssec:indtypes}.
+In particular their elimination rule encapsulate the notion
+of substitution, and that operation is performed automatically by
+the logic.
 
 If we look at reflect, and its use, one is very likely to substitute b
 for its value in each branch of the case.
 
 \begin{coq}{}{}
 Inductive |*reflect*| (P : Prop) (b : bool) : Prop :=
-|ReflectT (p : P)    (e : b = true)
-|ReflectF (np : ~ P) (e : b = false)
+| ReflectT (p : P)    (e : b = true)
+| ReflectF (np : ~ P) (e : b = false)
 \end{coq}
 
 This alternative formulation makes the equation implicitly stated and
@@ -726,61 +746,52 @@ also automatically substituted during case analysis.
 
 \begin{coq}{}{}
 Inductive |*reflect*| (P : Prop) : bool -> Prop :=
-|ReflectT (p : P)    : reflect P true
-|ReflectF (np : ~ P) : reflect P false
+| ReflectT (p : P)    : reflect P true
+| ReflectF (np : ~ P) : reflect P false
 \end{coq}
 
 Here the second argument of \C{reflect} is said to be an \emph{index}
 and it is allowed to vary depending on the constructor: \C{ReflecT} always
 builds a term of type \C{(reflect P true)} while \C{ReflectF} builds
-a term of type \C{(reflect P false)}.
+a term of type \C{(reflect P false)}.  When one reasons
+by cases on a term of type \C{(reflect P b)} he obtains two proof
+branches, in the first one \C{b} is replaces by \C{true}, since it
+corresponds to the \C{ReflectT} constructor.  Conversely,
+\C{b} is replaced by\C{false} in the second branch.
+
 Example:
 
-\begin{coq}{}{}
-case: (andP a b) => [ab|nab]
+\begin{coq}{}{width=6cm}
+Lemma example a b :
+  a && b ==> (a == b)
+Proof.
+case: (andP a b) => [ab|nab].
 \end{coq}
-
-\begin{coqout}{}{width=6cm}
-a, b : bool
-========================
-a && b ==> (a == b)
-\end{coqout}
 \begin{coqout}{}{width=6cm}
 a, b : bool
 ab : a /\ b
 ========================
-true || a == b
+true ==> (a == b)
 
 subgoal 2 is:
-false || a == b
+false ==> (a == b)
 \end{coqout}
 
-Every time a term of type \C{(reflect (a /\\ b) (a && b))} is eliminated, the
-following happens:
-\begin{enumerate}
-\item 2 subgoals are generated
-\item in the first one (corresponding to \C{ReflectT}) a new hyp is
-  available (\C{(a /\\ b)}) and all occurrences of the boolean
-  expression \C{(a && b)} are replaced by \C{true} (the value of the index
-  for \C{ReflectT}).
-\item in the first one (corresponding to \C{ReflectF}) a new hyp is
-  available (\C{\~(a /\\ b)}) and all occurrences of the boolean
-  expression \C{(a && b)} are replaced by \C{false}, the value of
-  the index for \C{ReflectF}.
-\end{enumerate}
-
-The second goal becomes trivial, hence we can finish
+Remark that the automatic substitution trivializes the
+second goal.  The first one can be solved by replacing
+both \C{a} and \C{b} by their truth values, once \C{ab}
+is destructed.  Hence the full proof script is:
 
 \begin{coq}{}{}
 case: (andP a b) => [[-> ->] | //]
 \end{coq}
+One can also omit \C{a} and \C{b}, as in:
 
-An even better tactic is
+FINISH
 
 \begin{coq}{}{}
 case: (andP _ _) => [[-> ->] | //]
 \end{coq}
-
 In this case the boolean expression replaced by true/false is \C{(_ && _)}.
 Trailing \C{_} are also added automatically by \C{case} leading to the
 idiomatic
@@ -788,8 +799,8 @@ idiomatic
 \begin{coq}{}{}
 case: andP => [[-> ->] | //]
 \end{coq}
-
-Note the similarity between matching \C{(_ && _)} and the job of rewrite.
+Note the similarity between matching \C{(_ && _)} and the pattern
+matching rewrite.
 
 On the same line, we present \C{leqP} that still models a case split but
 this time specialized to the order relation (and its negation) substituting
@@ -827,7 +838,7 @@ Also show the adaptor altP, that is particularly useful with eqnP and boolP.
 % \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Towards real proofs}
+\section{Towards real proofs}\label{sec:realproofs}
 
 Real proofs also deal with structure (readability, naming, context handling and
 robustness), repetitions (like symmetry).  This section works out a few
@@ -1288,3 +1299,109 @@ forget some fields of a structure to obtain a simpler one.  What
 is hard is to reconstruct the missing fields of a structure
 or compare two structures finding the minimum super structure.
 These tasks are mainly implemented using canonical structures.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Exercises}
+
+%%%%%%%%
+\begin{Exercise}[label=ex:iffp,difficulty=0,title={reflect}]
+Prove the following lemmas.  In particular prove the first
+one with and without using \C{iffP}.
+\begin{coq}{}{}
+Lemma iffP_lr (P : Prop) (b : bool) :
+  (P -> b) -> (b -> P) -> reflect P b.
+Lemma iffP_rl (P : Prop) (b : bool) :
+  reflect P b -> ((P -> b) /\ (b -> P)).
+\end{coq}
+\end{Exercise}
+
+%%%%%%%
+\begin{Exercise}[label=ex:eqnP,difficulty=0,title={eqnP}]
+Finish this proof.
+\begin{coq}{}{}
+Lemma eqnP n m : reflect (n = m) (eqn n m).
+Proof.
+apply: (iffP idP).
+\end{coq}
+\end{Exercise}
+
+
+%%%%%%%
+\begin{Exercise}[label=ex:eqnPinj,difficulty=0,title={Injectivity to nat}]
+Finish this proof.
+\begin{coq}{}{}
+Lemma nat_inj_eq T (f : T -> nat) x y :
+  injective f ->
+    reflect (x = y) (eqn (f x) (f y)).
+Proof.
+move=> f_inj; apply: (iffP eqnP).
+\end{coq}
+\end{Exercise}
+
+%%%%%%%
+\begin{Exercise}[label=ex:maxnidP,difficulty=0,title={Characterization of max}]
+Prove the following lemma.
+\begin{coq}{}{}
+Lemma maxn_idPl m n : reflect (maxn m n = m) (m >= n).
+\end{coq}
+\end{Exercise}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Solutions}
+
+%%%%%%%%%%
+\begin{Answer}[ref=ex:iffp]
+
+\begin{coq}{}{}
+Lemma iffP_lr (P : Prop) (b : bool) :
+  (P -> b) -> (b -> P) -> reflect P b.
+Proof.
+by case: b => [_ H|H _]; [left; apply H | right=> p; move: (H p)].
+(* with iffP: by move=> *; apply: (iffP idP). *)
+Qed.
+
+Lemma iffP_rl (P : Prop) (b : bool) :
+  reflect P b -> ((P -> b) /\ (b -> P)).
+Proof. by case: b; case=> p; split. Qed.
+\end{coq}
+
+\end{Answer}
+
+%%%%%%%%%
+\begin{Answer}[ref=ex:eqnP]
+
+\begin{coq}{}{}
+Lemma eqnP n m : reflect (n = m) (eqn n m).
+Proof.
+apply: (iffP idP) => [|->]; last by elim: m.
+by elim: n m => [[]|n IH [//|m] /IH ->].
+Qed.
+\end{coq}
+
+\end{Answer}
+
+
+%%%%%%%
+\begin{Answer}[ref=ex:eqnPinj]
+\begin{coq}{}{}
+Lemma nat_inj_eq T (f : T -> nat) x y :
+  injective f ->
+    reflect (x = y) (eqn (f x) (f y)).
+Proof. by move=> f_inj; apply: (iffP eqnP) => [/f_inj|->]. Qed.
+\end{coq}
+
+\end{Answer}
+
+%%%%%%%
+\begin{Answer}[ref=ex:maxnidP]
+\begin{coq}{}{}
+Lemma maxn_idPl m n : reflect (maxn m n = m) (m >= n).
+Proof.
+by rewrite -subn_eq0 -(eqn_add2l m) addn0 -maxnE; apply: eqP.
+Qed.
+
+\end{coq}
+\end{Answer}
+
