@@ -1618,7 +1618,7 @@ About list_ind.
 \end{coq}
 \begin{coqout}{}{title=Response,width=9cm}
 list_ind : forall A : Type, forall P : list A -> Prop,
-  P nil -> (forall x xs, P xs -> P (x :: xs)) -> forall l, P l.
+  P [::] -> (forall x s, P s -> P (x :: s)) -> forall s, P s.
 \end{coqout}
 
 At the light of that, reasoning by induction on a term \C{t} means
@@ -1641,7 +1641,7 @@ a list starting from its end.  For example to relate the
 Lemma foldl_rev z s : foldl z (rev s) = foldr (fun x z => f z x) z s.
 Proof.
 elim/last_ind: s z => [|s x IHs] z //.
-by rewrite rev_rcons -cats1 foldr_cat -IHs.
+by rewrite -cats1 foldr_cat -IHs cats1 rev_rcons.
 Qed.
 \end{coq}
 
@@ -1652,6 +1652,24 @@ the accumulator \C{z}.  The resulting value for \C{P} is hence
 \begin{coq}{}{}
 (fun s => forall z, foldl z (rev s) = foldr (fun x z => f z x) z s)
 \end{coq}
+
+Thanks to the generalization, \C{IHs} states:
+
+\begin{coq}{}{}
+IHs : forall z : T, foldl f z (rev s) = foldr (fun x z => f z x) z s
+\end{coq}
+The quantification on \C{z} is crucial since the goal in the induction step,
+just before we use \C{IHs} is the following one:
+
+\begin{coqout}{}{}
+foldl f z (rev (s ++ [:: x])) =
+  foldr (fun y w => f w y) (foldr (fun y w => f w y) z [:: x]) s
+\end{coqout}
+
+The instance of the induction hypothesis that we need is
+one where \C{z} takes \C{(foldr (fun y w => f w y) z [:: x])},
+i.e. the value of the accumulator to \C{fold} for a list
+which last element is \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Searching the library}
