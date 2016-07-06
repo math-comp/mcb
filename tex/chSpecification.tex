@@ -802,6 +802,9 @@ case: andP => [[-> ->] | //]
 Note the similarity between matching \C{(_ && _)} and the pattern
 matching rewrite.
 
+TODO : Arguments add the _
+
+
 On the same line, we present \C{leqP} that still models a case split but
 this time specialized to the order relation (and its negation) substituting
 both with true/false.  Just mention \C{ltngtP}, that is the proof that
@@ -817,6 +820,8 @@ to it}
 Just show a use of \C{ifP} and/or \C{ifPn} and the fact that its pattern is
 quite smart/small wrt the expression it typically handles (3 chars in place of\\
 \C{(if cond then branch else alternative)}).
+
+TODO: sameP
 
 Also show the adaptor altP, that is particularly useful with eqnP and boolP.
 
