@@ -1,4 +1,4 @@
-\Chapter{Type Theory}{ The Curry-Howard correspondence}
+\Chapter{Type Theory}{The Curry-Howard correspondence}
 \label{sec:ttch}
 
 By now, the informed reader is likely to wonder when the authors of the book
@@ -670,6 +670,10 @@ The \Coq{} system generates such program when the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
 trough the lenses of the proofs as programs correspondence this means
 that the induction principle just coded is sound.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsection{Strong induction}
 
 As an exercise we show how the \C{elim} tactic combined with the bookkeeping
 operator \C{:} lets one perform, on the fly, a stronger variant of

@@ -1336,7 +1336,9 @@ Indeed, the class of propositions is closed under universal quantification
 \C{forall} (and also under implication \C{->}). Chapter~\ref{sec:ttch} will
 provide a more in-depth study of these propositions.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Quantified statements and implications}
+\label{sec:quantifiedst}
 
 In order to use a lemma with a parameter, we can use the \C{apply}
 tactic, which finds the appropriate instance (as the \C{rewrite}
@@ -1375,7 +1377,8 @@ Lemma |*contraL*| (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
 \end{coq}
 
 We see this how this lemmas is used in an excerpt of the proof
-that there are infinitely many primes.  Given a number \C{m}
+that there are infinitely many primes (the full proof will be
+object of study in Section~\ref{sec:infprimes}).  Given a number \C{m}
 we show that any prime divisor \C{p} of \C{(m `! + 1}) is greater than \C{m},
 or better that it is not the case \C{m} is bigger.
 
