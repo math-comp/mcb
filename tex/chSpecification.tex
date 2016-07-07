@@ -1278,14 +1278,14 @@ Indeed the simplification tactic \C{/=} may unfold too aggressively.
 Rewriting with such equations gives better control on how many
 unfold steps one performs.
 
+The statement uses a let-in construct to name an expression used multiple
+times, in this case the result of the division of \C{m} by \C{d}.
+
 \begin{coq}{}{}
 Lemma edivnP m d (ed := edivn m d) :
   ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
 Proof.
 \end{coq}
-
-The statement uses a let-in construct to name an expression used multiple
-times, in this case the result of the division of \C{m} by \C{d}.
 
 As one expects, being \C{edivn} a recursive program, its specification
 needs to be proved by induction.  Given that the recursive call is on
@@ -1330,6 +1330,9 @@ le_mn : m < n.+1
 let ed := edivn_rec d m.+1 q in
   (ed.2 < d.+1) && (q * d.+1 + m.+1 == ed.1 * d.+1 + ed.2)
 \end{coqout}
+Note that the induction touches variables used in \C{ed} that
+is hence pushed on the goal stack.  The \C{@} modifies tells Ssreflect
+to keep the body of the let-in.
 
 Line 5 unfolds the recursive function and uses the following lemma to push the
 subtraction into the branches of the if statement. Then it reasons by cases
@@ -1346,8 +1349,7 @@ The else branch corresponds to the non recursive case of
 the division algorithm and is trivially solved in line 6.
 The recursive call is done on \C{(m-d)}, hence the need for a strong
 induction.  In order to satisfy the premise of the induction hypothesis,
-line 7 shows that \C{(m - d <= n)}.  Line 8 concludes using
-the induction hypothesis.
+line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
 
 % \section{STOP HERE}
 % 
