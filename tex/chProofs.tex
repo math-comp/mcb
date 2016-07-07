@@ -1502,8 +1502,7 @@ Lemma prime_gt0 p : prime p -> 0 < p.
 The resulting script would then be:
 
 \begin{coq}{}{}
-Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p.
 apply: contraL.
@@ -1528,8 +1527,7 @@ as soon as possible.  The first two side conditions are indeed
 trivial, and, as we did for \C{case}, can be solved by \C{//}.
 
 \begin{coq}{}{}
-Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr.
@@ -1556,8 +1554,7 @@ rewrite dvdn_addr.
 The same considerations hold for the last goal.
 
 \begin{coq}{}{}
-Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr.
@@ -1583,10 +1580,10 @@ the variable $\mathcal{P}$ stands for any property we could think about.
 The language of \Coq{} gives to $\mathcal{P}$ a regular status, and induction,
 instead of being a ``schema'' it is a regular lemma.
 
-\begin{coq}{}{title=Query,width=3.5cm}
+\begin{coq}{}{width=3.5cm}
 About nat_ind.
 \end{coq}
-\begin{coqout}{}{title=Response,width=9cm}
+\begin{coqout}{}{width=9cm}
 nat_ind : forall P : nat -> Prop,
   P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n
 \end{coqout}
@@ -1616,10 +1613,10 @@ for natural numbers in a general way, the shape of the lemma is
 tied to such data type.  For example the induction principle over
 sequences is similar, but not identical.
 
-\begin{coq}{}{title=Query,width=3.5cm}
+\begin{coq}{}{width=3.5cm}
 About list_ind.
 \end{coq}
-\begin{coqout}{}{title=Response,width=9cm}
+\begin{coqout}{}{width=9cm}
 list_ind : forall A : Type, forall P : list A -> Prop,
   P [::] -> (forall x s, P s -> P (x :: s)) -> forall s, P s.
 \end{coqout}
@@ -1637,8 +1634,36 @@ hence the induction hypothesis must be general.
 
 Another service provided by \C{elim:} is specifying an alternative
 induction principle, for example one may reason by induction on
-a list starting from its end.  For example to relate the
+a list starting from its end.
+
+
+\begin{coq}{}{width=3.5cm}
+About last_ind.
+\end{coq}
+\begin{coqout}{}{width=9cm}
+last_ind : forall A : Type, forall P : list A -> Prop,
+  P [::] -> (forall s x, P s -> P (rcons x s)) -> forall s, P s
+\end{coqout}
+where \C{rcons} is a name for the operation of concatenating
+a sequence with an element, as in \C{(s ++ [::x])}.
+
+For example \C{las_ind} can be used to relate the
 \C{foldr} and \C{foldl} iterators as follows:
+
+\begin{coq}{}{}
+Lemma foldl_rev z s : foldl z (rev s) = foldr (fun x z => f z x) z s.
+\end{coq}
+
+The proof uses the following lemmas:
+
+\begin{coq}{}{title=Tools}
+Lemma cats1 T s (z : T) : s ++ [:: z] = rcons s z.
+Lemma foldr_cat T f (s1 s2 : seq T) :
+  foldr f z0 (s1 ++ s2) = foldr f (foldr f z0 s2) s1.
+Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
+\end{coq}
+
+The complete proof script follows:
 
 \begin{coq}{}{}
 Lemma foldl_rev z s : foldl z (rev s) = foldr (fun x z => f z x) z s.
@@ -1746,8 +1771,7 @@ second sub goal that follows \C{rewrite dvdn_addr} a side condition
 and solve it on the same line.
 
 \begin{coq}{}{}
-Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr.
@@ -1761,8 +1785,7 @@ the side condition, since the main goal mentions no divides predicate.
 The same holds for \C{prime_gt0}.
 
 \begin{coq}{}{}
-Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr ?dvdn_fact ?prime_gt0 //.

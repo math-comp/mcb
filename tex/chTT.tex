@@ -382,6 +382,10 @@ components can hardly be a relevant step in a proof, so one may prefer to
 perform such bookkeeping action with a symbolic, compact, notation
 corresponding to the same \C{case} functionality.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsubsection{Pulling from the stack}
+
 Lets start with the post processing phase, called \emph{introduction pattern}.
 The postfix ``\C{=> ...}'' syntax can be used in conjunction with any proof
 command, and it performs a sequence of actions on the first goal assumption or
@@ -459,18 +463,7 @@ move=> [x y] /= /prime_gt1-x_gt1 odd_y
 
 The leading \C{/} makes \C{prime\_gt1} do as a function instead of
 as a name to be assigned to the top of the stack.  The \C{-} has no effect but
-to visually link the function and name assigned to its output.  Note that
-\C{/prime\_gt1} is a complete action in itself, and its output is placed on the
-stack.
-
-\begin{coq}{}{width=6cm}
-move=> [x y] /= /prime_gt1.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=6cm}
- x, y : nat
- ========================
- 1 < x -> odd y -> 2 < y + x
-\end{coqout}
+to visually link the function and name assigned to its output. 
 
 One could also examine \C{y}: it can't be \C{0}, since it would contradict
 the assumption saying that \C{y} is \C{odd}.
@@ -526,7 +519,78 @@ sacrifices readability in favour of compactness: what would you learn by
 reading a trivial proof?  Of course,
 finding the right balance only comes with experience.
 
-TODO: arrow and specialize. XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsubsection{Working on the stack}
+
+The stack can also be used as a work place.  Indeed there is
+no need to pull from the stack all items.  If we take the previous example
+
+\begin{coqout}{name=Stack}{}
+========================
+forall x, prime x.1 -> odd x.2 -> 2 < x.2 + x.1
+\end{coqout}
+and we stop just after applying the view, we end up is a valid situation.
+
+\begin{coq}{}{width=6cm}
+move=> [x y] /= /prime_gt1.
+\end{coq}
+\begin{coqout}{name=Stack2}{width=6cm}
+ x, y : nat
+ ========================
+ 1 < x -> odd y -> 2 < y + x
+\end{coqout}
+
+One can also chain multiple views on the same stack item.
+
+\begin{coq}{}{width=6cm}
+move=> [x y] /= /prime_gt1/ltnW.
+\end{coq}
+\begin{coqout}{name=Stack2}{width=6cm}
+ x, y : nat
+ ========================
+ 0 < x -> odd y -> 2 < y + x
+\end{coqout}
+
+Two other operations are available on the top stack item: specialization
+and substitution.  Let's take the following conjecture.
+
+\begin{coqout}{}{}
+========================
+(forall n, n * 2 = n + n) -> 6 = 3 + 3
+\end{coqout}
+
+The top stack item is a quantified assumption.  To specialize it to, say,
+3 one can write as follows:
+
+\begin{coq}{}{width=4cm}
+move=> /(_ 3).
+\end{coq}
+\begin{coqout}{}{width=8cm}
+========================
+3 * 2 = 3 + 3 -> 6 = 3 + 3
+\end{coqout}
+The idea behind the notation is that when applies a view to the top
+stack item, as in \C{/v}, he is forming the term \C{(v top)}, while
+when oen specializes the top assumption as in \C{/(_ x)} he is forming the
+term \C{(top x)}.  The \C{_} is a plce holder for the top item.
+
+When the top stack item is an equation one can substitute it using \C{<-}
+and \C{->} for right-2-left and left-2-right respectively.
+
+\begin{coq}{}{width=4cm}
+move=> /(_ 3) <-.
+\end{coq}
+\begin{coqout}{}{width=8cm}
+========================
+6 = 3 * 2
+\end{coqout}
+In other words, the arrows are just a compact syntax for rewriting,
+as in the \C{rewrite} tactic, with the top assumption.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsubsection{Pushing to the stack}
 
 We have seen how to pull items from the stack to the context.  Now let's see
 how to perform the converse via the \C{:} operator.  Such operator decorates
@@ -679,12 +743,12 @@ As an exercise we show how the \C{elim} tactic combined with the bookkeeping
 operator \C{:} lets one perform, on the fly, a stronger variant of
 induction called ``course of values''.
 
-We will show that every amount of postage that is at least 12 cents
+Claim: every amount of postage that is at least 12 cents
 can be made from 4-cent and 5-cent stamps.  The proof in the inductive
 step goes as follows.  There are obvious solutions for a postage between
 12 and 15 cents, so we can assume it is at least 16 cents.  Since
 the postage amount is at least 16, by using a 4-cents stamp we are back
-at a postage amount that, by induction, can be obtained as claimed.
+at a postage amount that, by induction, can be obtained as claimed.\hfill$\square$
 
 The trick is that we want to apply the induction hypothesis not
 on $n-1$, as usual, but on $n-4$, since we know how to turn a
