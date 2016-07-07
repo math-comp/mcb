@@ -1,4 +1,4 @@
-\Chapter{Boolean reflection}{Formalization techniques and real proofs}
+\Chapter{Boolean reflection}{Towards real proofs}
 \label{ch:boolrefl}
 
 % in addition to the photos:
@@ -894,16 +894,14 @@ euclidean division algorithm.
 \mcbLEVEL{1}
 \mcbsubsection{Primes, a never ending story}\label{sec:infprimes}
 
-We prove that for any natural $m$, there exists a prime greater than $m$.
-We state it using a ``synonym'' of the exists quantifier that is specialized
-to carry two properties.  This way the statement is simpler to destruct.
-
-The proof goes like that: every natural number greater than 1 has at least one
-prime divisor.  If we take $m! + 1$, then such divisor $p$ can be shown to
-be grater than $m$ as follows.  By contra position we assume
-$p \leq m$ and we show $p \nmid m!+1$.  Being smaller than $m$,
-$p | m!$, hence to divide $m!+1$, $p$ should divide $1$, that is not
-possible since $p$ is prime, hence greater than 1. \hfill$\square$
+Saying that primes are infinite can be phrased as: for any natural number
+$m$, there exists a prime greater than $m$.  The proof of this claim goes like
+that: every natural number greater than 1 has at least one prime divisor.  If
+we take $m! + 1$, then such divisor $p$ can be shown to be grater than $m$ as
+follows.  By contra position we assume $p \leq m$ and we show $p \nmid m!+1$.
+Being smaller than $m$, $p | m!$, hence to divide $m!+1$, $p$ should divide
+$1$, that is not possible since $p$ is prime, hence greater than 1.
+\hfill$\square$
 
 We first show that any positive number smaller than $n$ divides $n!$.
 
@@ -924,20 +922,38 @@ IHn : m < n -> m.+1 %| n`!
 (m == n) || (m < n) -> m.+1 %| (n.+1)`!	
 \end{coqout}
 The case analysis rules out the case \C{m} zero, and simplifies the hypothesis
-to \C{(m < n)}.  Note that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
+to \C{(m <= n)}.  Note that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
 (y <= z))}, hence when the first inequality evaluates to true (e.g. when \C{x}
-is 0, then the conjunction simplifies to the second conjunct.
+is 0) the conjunction simplifies to the second conjunct.  The \C{leq_eqVlt}
+rewrite rule rephrases \C{<=} as a disjunction.
 
-If we reason by cases on the top assumption we face two easy goals, both
-easy to solve if we look at the development of the factorial, i.e.
-\C{(n.+1 * n`!)}.  The former amounts to show what
-\C{(n.+1 \%| n.+1 * n`!)}, the latter that \C{(m.+1 \%| n.+1 * n`!)}
-under the (inductive) hypothesis that \C{(m.+1 \%| n`!)}.
+When we reason by cases on the top assumption we face two goals, both
+easy to solve if we look at the development of the factorial of \C{n.+1},
+i.e. \C{(n.+1 * n`!)}.  The former amounts to show that
+\C{(n.+1 \%| n.+1 * n`!)}, while the latter to show that \C{(m.+1 \%| n.+1 *
+n`!)} under the (inductive) hypothesis that \C{(m.+1 \%| n`!)}.
 
-We can now prove the main result.  The first step is to prove that
-$m! + 1$, a triviality.  Still it gives us the occasion to explain the
-\C{have} tactic, that let us augment the proof context with a new fact,
-typically an intermediate step of out proof.
+What is paradigmatic in this little proof is the use of the goal stack
+as a work space.  In other words the proof script would be much more involved
+if we started by introducing in the proof context all assumptions.
+\\
+
+We can now move to the proof of the main result.  We state it using a
+``synonym'' of the exists quantifier that is specialized to carry two
+properties.  This way the statement is simpler to destruct: with just one
+case analysis we obtain the witness and the two properties.
+We will also resort to the following lemmas.
+
+\begin{coq}{}{title=Tools}
+Lemma fact_gt0 n : 0 < n`!.
+Lemma pdivP n : 1 < n -> exists2 p, prime p & p %| n,
+Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
+Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
+\end{coq}
+The first step is to prove that $m! + 1$ is greater than $1$, a triviality.
+Still it gives us the occasion to explain the \C{have} tactic, that let us
+augment the proof context with a new fact, typically an intermediate step of
+out proof.
 
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
@@ -950,18 +966,8 @@ Its syntax is similar to the one of the \C{Lemma} command: it takes a name, a
 statement and starts a (sub) proof.  Since the proof is so short, we will
 put it on the same line, and remove the full stop.
 
-The next step would be to use the \C{pdivP} lemma, maybe as a view,
-and destruct its result.
-
-\begin{coq}{}{width=6cm}
-About pdivP.
-\end{coq}
-\begin{coqout}{}{width=6cm}
-pdivP : forall n : nat,
-  1 < n -> {p : nat | prime p & p %| n}
-\end{coqout}
-
-We could hence end up with the following script.
+The next step is to use the \C{pdivP} lemma to gather a prime divisor of
+\C{m`!.+1}.  We end up with the following, rather unsatisfactory, script.
 
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
@@ -970,13 +976,15 @@ have m1_gt1: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
 case: (pdivP m1_gt1) => [p pr_p p_dv_m1].
 \end{coq}
 
-It is rather unsatisfactory.  In our proof, what plays an
+It is unsatisfactory because,  in our paper proof what plays an
 interesting role is the \C{p} that we obtain in the second line,
 and not the \C{m1_gt1} fact we proved as an intermediate fact.
+
 We can resort to the flexibility of \C{have} to obtain a more
 pertinent script: the first argument to have, here a name, can
-actually be an introduction pattern, i.e. what typically follows
-the \C{=>} operator.  At the light of that, the script can be
+actually be any introduction pattern, i.e. what follows
+the \C{=>} operator, for example a view application.
+At the light of that, the script can be
 rearranged as follows.
 
 \begin{coq}{}{}
@@ -992,14 +1000,18 @@ Here the first line obtains a prime \C{p} as desired, the second
 one begins to shows it fits by contrapositive reasoning, and the
 third one, already commented in Section~\ref{sec:quantifiedst}, concludes.  
 
+A motto accompanying the proof script style we propose that is
+that a full line should represent a meaningful reasoning step
+(for a human being).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
 \mcbsubsection{Order and max, a matter of symmetry}\label{sec:leqmax}
 
 It is quite widespread in paper proofs to appeal to the reader's intelligence
 pointing out that a missing part of the proof can be obtained by symmetry.
-The worst thing one can do when formalizing such an argument is to use
-the worst invention of computer science: copy-paste.  The language of
+The worst thing one can do when formalizing such an argument on a computer
+is to use the worst invention of computer science: copy-paste.  The language of
 \Coq{} is sufficiently expressive to model symmetries, and the
 Ssreflect proof language provides facilities to write symmetric arguments.
 
@@ -1024,13 +1036,13 @@ boolean expressions:
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 \end{coq}
 
-The proof uses the following lemmas.  Pay attention to
-\C{orb_idr}.
+The proof uses the following lemmas.  Pay attention to the premise of
+\C{orb_idr} that is an implication.
 
 \begin{coq}{}{title=Tools}
 Lemma orb_idr (a b : bool) : (b -> a) -> a || b = a.
-Lemma maxn_idPl {m n} : reflect (maxn m n = m) (m >= n).
-Lemma leq_total m n : (m <= n) || (m >= n).
+Lemma maxn_idPl {m n} : reflect (maxn m n = m) (n <= m).
+Lemma leq_total m n : (m <= n) || (n <= m).
 \end{coq}
 
 Our first attempt takes no advantage of the symmetry argument:
@@ -1064,9 +1076,9 @@ subgoal 2 is:
 \end{coqout}
 
 The first goal is simplified by
-rewriting with \C{maxn_idPl} (as we did in Section~\ref{sec:tacview}).
+rewriting with \C{maxn_idPl} (as we did in Section~\ref{sec:viewtac}).
 Then \C{orb_idr} trivializes the main goal and generates a side condition with
-an extra hyp we name \C{le_mn2}
+an extra hypothesis we name \C{le_mn2}.
 
 \begin{coqout}{}{title=Output line 3a,width=6.7cm}
 2 subgoals
@@ -1091,11 +1103,11 @@ subgoal 2 is: ...
 Line 4 combines by transitivity the two hyps to conclude.  Since it closes the
 proof branch we use the prefix \C{by} to asserts the goal is solved and
 visually signal the end of the paragraph.  Line 5 commutes \C{max} and \C{||}.
-We can then conclude by copy paste.
+We can then conclude by copy-paste.
 
 
-To avoid copy pasting, shrink the proof script and finally make the
-symmetry step step we can resort to the \C{have} tactic. 
+To avoid copy-pasting, shrink the proof script and finally make the
+symmetry step visible we can resort to the \C{have} tactic. 
 In this case the statement is a variation of what we need to prove.
 Remark that as for \C{Lemma}, we can place parameters, \C{x} and \C{y}
 here, before the \C{:} symbol.
@@ -1110,11 +1122,13 @@ by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
 Qed.
 \end{coq}
 
-The proof for the \C{th_sym} sub proof is the text we used to copy paste.
+The proof for the \C{th_sym} sub proof is the text we copy-paste in the
+previous script, while here it is factored out.
 Once we have such extra fact in our context we reason by cases on
 the order relation and we conclude.  Remark that the last line instantiates
 \C{th_sym} \emph{in each branch} using the corresponding
 hypothesis on \C{n1} and \C{n2} generated by the case analysis.
+As expected the two instances are symmetric.
 
 \begin{coqout}{}{}
 2 subgoals
@@ -1133,7 +1147,7 @@ This is exactly what is needed in the first branch of the case analysis.
 The last subgoal just requires commuting \C{max} and \C{||}.
 
 We can further improve the script.  For example we could rephrase 
-the proof putting in fron the justifyication of the symmetry, and
+the proof putting in front the justification of the symmetry, and
 then prove one case when we pick $x$ to be smaller than $y$.
 
 \begin{coq}{}{}
@@ -1145,8 +1159,11 @@ move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
 Qed.
 \end{coq}
-The \C{suff} tactic is like \C{have} but swaps the two goals.  Note
-that here the sub proof is now the shortest block.
+The \C{suff} tactic is like \C{have} but swaps the two goals.  
+
+Note that here the sub proof is now the shortest paragraph.  
+This is another recurrent characteristic of the proof script style
+we adopt in the \mcbMC{} library.
 
 There is still a good amount of repetition in the current script.
 In particular the main conjecture has been almost copy-pasted in
@@ -1169,11 +1186,30 @@ and which portion of the context needs to be abstracted, here \C{n1} and
 \C{n2}.  The sub goal to be proved is the following one.
 
 \begin{coqout}{}{}
-	....
+2 subgoals
+m, n1, n2 : nat
+th_sym : forall n1 n2 : nat, n2 <= n1 ->
+           (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+========================
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+
+
+subgoal 2 is:
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
 
-To keep the script similar to the previous one, we named explicilty
-\C{th_sym}.  This is rarely the case in proof scripts of the library.
+To keep the script similar to the previous one, we named explicitly
+\C{th_sym}, to better link the final script to the previous attempts.
+This is rarely the case in proof scripts of the library, since one typically
+uses the \C{/(_ ...)} intro patter to specialize the top of the stack.
+
+Shrinking proof scripts is a never ending game.  The avid reader can
+see how intro patterns let one squeeze the last two lines into a single
+one.  Indeed there are three steps in this script: remarking we can
+assume \C{(n2 <= n1)} without losing generality, its justification in
+terms of totality of the order relation and commutativity of \C{max}
+and \C{||}, and finally proving, by transitivity, what is left
+when \C{max} is computed away thanks to the extra \C{(n2 <= n1)} assumption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{3}
@@ -1204,13 +1240,15 @@ the view application, he sees the following stack:
 (forall b, n2 <= b -> m <= b) -> m <= n1.
 \end{coq}
 
-Rewriting it fixes \C{b} to \C{n1}, trivialized the goal \C{(m <= n1)}
-to \C{true} and opens a trivial side condition \C{(n2 <= n1)}.
+Rewriting the top assumption fixes \C{b} to \C{n1}, trivializes 
+the goal \C{(m <= n1)} to \C{true} and opens a trivial side
+condition \C{(n2 <= n1)}.
 
-This very compact idiom is quite frequent in the \mcbMC{} library.
+This very compact idiom \C{/leq_trans->} is quite frequent in the
+\mcbMC{} library.
 
 %%%%%%%%%%%%%%%5
-\mcbLEVEL{2}
+\mcbLEVEL{3}
 \mcbsubsection{Euclidean division, simple and correct}
 
 Euclidean division is defined as one expects: iterating subtraction.
@@ -1228,9 +1266,20 @@ is a parameter of \C{edivn_rec} that does not change during recursion.
 The \C{edivn} program handles the case of a null divisor, producing
 the dummy pair \C{(0,m)} for the quotient and the reminder respectively.
 
+We start by showing the following equation.
+
 \begin{coq}{}{}
-Lemma edivnP m d :
-  let ed := edivn m d in
+Lemma edivn_recE d m q :
+ edivn_rec d m q = if m - d is m'.+1 then edivn_rec d m' q.+1 else (q,m).
+Proof. by elim: m. Qed.
+\end{coq}
+It is often useful to state and prove unfolding equations like this one.
+Indeed the simplification tactic \C{/=} may unfold too aggressively.
+Rewriting with such equations gives better control on how many
+unfold steps one performs.
+
+\begin{coq}{}{}
+Lemma edivnP m d (ed := edivn m d) :
   ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
 Proof.
 \end{coq}
@@ -1238,36 +1287,30 @@ Proof.
 The statement uses a let-in construct to name an expression used multiple
 times, in this case the result of the division of \C{m} by \C{d}.
 
+As one expects, being \C{edivn} a recursive program, its specification
+needs to be proved by induction.  Given that the recursive call is on
+the subtraction of the input, we need to perform a strong induction.
+
+Bet let's start by dealing with the trivial case of a null divisor.
+
 \begin{coq}{}{}
-move E: (edivn m d) => ed /=.
-case: d => [|d /=] in E *; first by rewrite -E eqxx.
-rewrite /edivn /= in E; rewrite -[m]/(0 * d.+1 + m).
-elim: m {-2}m 0 (leqnn m) E => [|n IHn] [??<-|m] //= q le_mn.
-rewrite subn_if_gt; case: ifP => [le_dm|lt_md <- /=]; last first.
-  by rewrite ltnS ltnNge lt_md eqxx.
-have le_mdn : m - d <= n by rewrite (leq_trans (leq_subr d m)).
-by move=> /(IHn _ _ le_mdn); rewrite mulSnr -addnA -subSS subnKC.
+case: d => [|d /=] in ed *; first by rewrite eqxx.
+rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
+rewrite -[m]/(0 * d.+1 + m).
+elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
+rewrite edivn_recE subn_if_gt; case: ifP => [le_dm|lt_md]; last first.
+  by rewrite /= ltnS ltnNge lt_md eqxx.
+have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
+by rewrite /= mulSnr -addnA -subSS subnKC.
 Qed.
 \end{coq}
-
-The first line uses the remembering feature of the \C{:} operator
-to generate an equation for the specified value (see~\cite[Section
-5.5]{ssrman}) obtaining the following status:
-
-\begin{coqout}{}{}
-m, d : nat
-ed : nat * nat
-E : edivn m d = ed
-========================
-((0 < d) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2)
-\end{coqout}
-Line 2 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
+Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
 can be appended to each tactic in order to push on the stack the specified
 hypotheses before running the tactic and pushing them back afterwards (see~\cite[Section 6.5]{ssrman}).
 The \C{*} means that the goal is also affected by the tactic, and not just
-the hypotheses explicitely selected.
+the hypotheses explicitly selected.
 
-Line 3 prepares the induction by unfolding the definition of
+Lines 2 and 3 prepare the induction by unfolding the definition of
 \C{edivn} (to expose the initial value of the accumulators of \C{edivn_rec})
 and makes the invariant of the division loop explicit replacing
 \C{m} by \C{(0 * d.+1 + m)}.  Recall the case \C{d} being \C{0} has
@@ -1275,24 +1318,23 @@ already been handled.
 
 Line 4 performs a strong induction, also generalizing the initial
 value of the accumulator, leading to the following goal:
-\marginnote{if-is not printed correctly.}
 
 \begin{coqout}{}{}
-ed : nat * nat
 d, n : nat
-IHn : forall m n0 : nat, m <= n -> edivn_rec d m n0 = ed ->
+IHn : forall m n0 : nat, m <= n ->
+      let ed := edivn_rec d m n0 in
         (ed.2 < d.+1) && (n0 * d.+1 + m == ed.1 * d.+1 + ed.2)
 m, q : nat
 le_mn : m < n.+1
 ========================
-if m.+1 - d is m'.+1 then edivn_rec d m' q.+1 else (q, m.+1) = ed ->
-  (ed.2 < d.+1) && (q * d.+1 + m.+1 == ed.1 * d.+1 + ed.2)	
+let ed := edivn_rec d m.+1 q in
+  (ed.2 < d.+1) && (q * d.+1 + m.+1 == ed.1 * d.+1 + ed.2)
 \end{coqout}
-Remark that if \C{m} is zero, the base case, the conclusion is trivial
-by computation.
 
-Line 5 uses the following lemma to push the subtraction into the
-branched of the if statement, then reasons by cases on the if condition.
+Line 5 unfolds the recursive function and uses the following lemma to push the
+subtraction into the branches of the if statement. Then it reasons by cases
+on the guard of the if-then-else statement.
+\marginnote{Should we embed this lemma in the unfolding equation?}
 
 \begin{coq}{}{}
 Lemma subn_if_gt T m n F (E : T) :
@@ -1301,7 +1343,7 @@ Lemma subn_if_gt T m n F (E : T) :
 \end{coq}
 
 The else branch corresponds to the non recursive case of
-the division algorithm and is trivially solve in line 6.
+the division algorithm and is trivially solved in line 6.
 The recursive call is done on \C{(m-d)}, hence the need for a strong
 induction.  In order to satisfy the premise of the induction hypothesis,
 line 7 shows that \C{(m - d <= n)}.  Line 8 concludes using

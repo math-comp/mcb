@@ -38,18 +38,27 @@ wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
 by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
 Qed.
 
-Lemma edivnP m d :
-  let ed := edivn m d in
+Definition edivn_rec d := 
+  fix loop m q := if m - d is m'.+1 then loop m' q.+1 else (q, m).
+
+Definition edivn m d := if d > 0 then edivn_rec d.-1 m 0 else (0, m).
+
+Lemma edivn_recE d m q :
+  edivn_rec d m q =
+    if m - d is m'.+1 then edivn_rec d m' q.+1 else (q, m).
+Proof. by elim: m. Qed.
+
+Lemma edivnP m d (ed := edivn m d) :
   ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
 Proof.
-move E: (edivn m d) => ed /=.
-case: d => [|d /=] in E *; first by rewrite -E eqxx.
-rewrite /edivn /= in E; rewrite -[m]/(0 * d.+1 + m).
-elim: m {-2}m 0 (leqnn m) E => [|n IHn] [??<-|m] //= q le_mn.
-rewrite subn_if_gt; case: ifP => [le_dm|lt_md <- /=]; last first.
-  by rewrite ltnS ltnNge lt_md eqxx.
-have le_mdn : m - d <= n by rewrite (leq_trans (leq_subr d m)).
-move=> /(IHn _ _ le_mdn); rewrite mulSnr -addnA -subSS subnKC.
+case: d => [|d /=] in ed *; first by rewrite eqxx.
+rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
+rewrite -[m]/(0 * d.+1 + m).
+elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
+rewrite edivn_recE subn_if_gt; case: ifP => [le_dm|lt_md]; last first.
+  by rewrite /= ltnS ltnNge lt_md eqxx.
+have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
+by rewrite /= mulSnr -addnA -subSS subnKC.
 Qed.
 
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
