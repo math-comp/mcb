@@ -2,8 +2,10 @@
 
 \input{mymacros.tex}
 \input{myacronyms.tex}
-% \renewcommand\marginnote[1]{}
-% \renewcommand\marginpar[1]{}
+
+\makeindex[name=ssr,title=Index: Ssreflect tactics,intoc]
+\makeindex[name=coq,title=Index: Coq terms,intoc]
+\makeindex[name=vernac,title=Index: Coq commands,intoc]
 
 \title{The Book}
 \author{Assia, Enrico, \ldots (you are welcome)}
@@ -180,7 +182,11 @@ suggestions:
 
 \chapter{Naming conventions}
 
-\chapter{Index of notations}
+%\clearpage
+%\addcontentsline{toc}{chapter}{Index}
+\printindex[ssr]
+\printindex[coq]
+\printindex[vernac]
 
 \bibliographystyle{plain}
 \bibliography{biblio}

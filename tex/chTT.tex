@@ -178,6 +178,7 @@ inductive definition.
 Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B).
 Notation "A /\ B" := (and A B).
 \end{coq}
+\index[vernac]{\C{Inductive} (predicate)}
 
 Remark that the ``data'' type \C{And} is tagged as \C{Prop}, i.e.  we declare
 the intention to use it as a logical connective rather than a data type.  The
@@ -756,6 +757,7 @@ solution for a stamping amount problem $n$ to one for a problem of
 size $n+4$.  The induction hypothesis provided by \C{nat_ind}
 is not strong enough.  However we can use the \C{:} operator
 to load the goal before performing the induction.
+\index[ssr]{\C{set}}
 
 \begin{coq}{}{}
 Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.

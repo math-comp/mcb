@@ -83,6 +83,7 @@ performed, in the following manner:
 \begin{coq}{name=exdef}{}
 Definition f := fun x => x + 1.
 \end{coq}
+\index[vernac]{\C{Definition}}
 An alternative syntax for exactly the same definition is as follows,
 this alternative syntax is actually preferred.
 
@@ -115,6 +116,7 @@ $~$
 f : nat -> nat
 Argument scope is [nat_scope] ...
 \end{coqout}
+\index[vernac]{\C{About}}
 This response confirms that \C{f} is a function from
 \({\mathbb{N}}\) to \({\mathbb{N}}\).
 We also learn that the \Coq{} system will pay attention to
@@ -136,6 +138,7 @@ $~$
 f = fun x : nat => x + 1
   : nat -> nat
 \end{coqout}
+\index[vernac]{\C{Print}}
 
 We see in this example that {\em type information} is an important
 feature of the language.  Type information is given twice in the
@@ -196,6 +199,7 @@ Eval compute in (repeat_twice f 2).
 \begin{coqout}{run=eval_f_run}{title=Response,width=5cm}
   = 4 : nat
 \end{coqout}
+\index[vernac]{\C{Eval compute}}
 From the syntax point of view, we wrote three subexpressions only
 separated by space.  By default, the parser understands this as
 \C{((repeat_twice f) 2)}, so we actually have a first subexpression
@@ -229,6 +233,7 @@ notion defined as follows.
 \begin{coq}{name=print_bool}{title=Declaration of bool}
 Inductive bool := true | false
 \end{coq}
+\index[vernac]{\C{Inductive} (data type)}
 \marginnote{I guess we should use Type, also for bool, and not even mention Set}
 This declaration states explicitely that there are only two cases for
 elements of type \C{bool}.  the first case is given by the constant
@@ -252,6 +257,7 @@ Check true.
 \begin{coqout}{run=check_true_run}{width=6cm,title=Response}
 true : bool
 \end{coqout}
+\index[vernac]{\C{Check}}
 
 To use boolean values in computations, we need a construct that makes
 it possible to build different values depending on whether some
@@ -261,6 +267,7 @@ boolean input is \C{true} or \C{false}.  This construct is written
 \begin{coq}{name=if_example}{}
 if true then 3 else 2
 \end{coq}
+\index[coq]{\C{if-then-else}}
 More generally, we can define a function that takes a boolean value as
 input and returns one of two possible natural numbers in the following
 manner:
@@ -301,6 +308,7 @@ the preamble files:
 \begin{coq}{name=define_andb}{}
 Definition andb b1 b2 := if b1 then b2 else false
 \end{coq}
+\index[coq]{\C{andb}}
 
 % \subsubsection{TODO : A note on associativity for notations}
 
@@ -322,6 +330,7 @@ the successor operation is given in the definition of the type
 \begin{coq}{}{}
 Inductive nat := O | S (n : nat)
 \end{coq}
+\index[coq]{\C{nat}}
 
 This declaration states that the only ways to produce natural numbers
 are by using the constant \C{O}, or by applying the function \C{S} to
@@ -356,6 +365,8 @@ Locate ".+4".
 fun x => f x.+1 : nat -> nat
 Notation "n.+4" := S (S (S (S n)))
 \end{coqout}
+\index[coq]{\C{.+1}}
+\index[vernac]{\C{Locate}}
 
 When writing functions that compute on natural numbers, we can
 proceed by cases, as was done in the previous section for boolean
@@ -370,6 +381,7 @@ computation.  Here is an example:
 \begin{coq}{name=pattern_on_nat}{}
 match n with 0 => true | p.+1 => false end
 \end{coq}
+\index[coq]{\C{match-with-end}}
 In this expression we describe a computation where some decision is
 taken depending on the value of the number \C{n}.  The fragment 
 ``\C{0 => true}'' expresses that when \C{n} is \C{0}, the final value is
@@ -390,12 +402,13 @@ match n with 0 => true | _.+1 => false end
 The symbol \C{_} is used to represent a pattern whose value will never be
 used.
 
-This pattern can also be written using an ``\C{if .. then .. else}''
+This pattern can also be written using an ``\C{if .. then .. else}'' like
 syntax:
 
 \begin{coq}{name=pattern_on_nat_0}{}
 if n is 0 then true else false
 \end{coq}
+\index[coq]{\C{if-is-then-else}}
 
 For an example where the pattern variable is actually used, we can
 observe the function that returns the predecessor of a natural number
@@ -533,6 +546,7 @@ following manner:
 Fixpoint addn n m :=
   if n is p.+1 then (addn p m).+1 else m
 \end{coq}
+\index[vernac]{\C{Fixpoint}}
 In this line, we learn that the keyword for defining a recursive
 function is \C{Fixpoint}.  We see also that the function being
 defined, here called \C{addn}, is used in the definition of the
@@ -569,6 +583,7 @@ Fixpoint addn n m :=
   | p.+1 => (addn p m).+1
   end.
 \end{coq}
+\index[coq]{\C{addn}}
 With this way of writing the recursive function, it becomes obvious that
 pattern-matching rules describe equalities between two symbolic
 expressions, but these equalities are always used from left to right during
@@ -618,6 +633,7 @@ Fixpoint subn m n :=
   | _ , _ => m
   end.
 \end{coq}
+\index[coq]{\C{subn}}
 From a mathematical point of view, this definition can be quite
 unsettling.  The second pattern matching rule indicates that when
 the second argument of the subtraction is \C{0}, then the result is
@@ -906,6 +922,7 @@ elements in a sequence.
 Fixpoint size A (s : seq A) :=
   if s is _ :: s' then (size s').+1 else 0.
 \end{coq}
+\index[coq]{\C{size}}
 During computation on a given sequence, this function will traverse
 the whole list, adding 1 to the result for ever
 \C{cons} pattern that is encountered.  It should be noted that in this
@@ -927,6 +944,7 @@ manner.
 Fixpoint map A B (f : A -> B) s :=
   if s is e :: s' then f e :: map f s' else nil.
 \end{coq}
+\index[coq]{\C{map}}
 With this function it is also interesting to understand how we can
 improve the notations.  For instance, we will add a notation that
 makes it more apparent that the result is {\em the sequence of all
@@ -980,6 +998,8 @@ Fixpoint foldr a s :=
 
 End iterators.
 \end{coq}
+\index[vernac]{\C{Section}}
+\index[coq]{\C{foldr}}\index[coq]{\C{iter}}
 The \C{Section} and \C{End} keyword delimit a scope in which
 the variables \C{T}, \C{A} and \C{f} are available.  Such variables
 are used in the definition of \C{iter} and \C{fold}.  When the section is
@@ -1101,6 +1121,7 @@ definition of the addition between natural numbers
 \begin{coq}{}{}
 Fixpoint add m n := if m is m'.+1 then add m' n.+1 else n.
 \end{coq}
+\index[coq]{\C{add}}
 
 It is a sensible definition, and we can show that the two additions
 are equivalent.  Still, their computational behavior differ.
@@ -1146,7 +1167,8 @@ They can both be faithfully represented by using \C{foldr}.
 Fixpoint iota m n := if n is n'.+1 then m :: iota m.+1 n' else [::].
 Notation "\sum_ ( m <= i < n ) F" :=
   (foldr (fun i a => F + a) 0 (iota m (n-m)).
-\end{coq}{}{}
+\end{coq}
+\index[coq]{\C{iota}}
 
 The \C{iota} function generates the list of natural numbers
 corresponding to the range of the summation.  We also provide

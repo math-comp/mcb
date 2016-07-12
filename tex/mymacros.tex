@@ -4,13 +4,6 @@
 \usepackage{amssymb}
 \usepackage{xcolor}
 \usepackage{colortbl}
-\usepackage{hyperref}
-\hypersetup{
-    colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
-}
 \usepackage{marginnote}
 \usepackage{wrapfig}
 \usepackage{graphicx}
@@ -20,7 +13,14 @@
 \usepackage{environ}
 \usepackage{bussproofs}
 \usepackage{exercise}
-
+\usepackage{imakeidx}
+\usepackage{hyperref} % must be the last one
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
 \renewcommand{\ExerciseHeader}{\medskip\noindent\textbf{\ExerciseName~\ExerciseHeaderNB.~\ExerciseHeaderDifficulty}\emph{\ExerciseHeaderTitle}\\~\\}
 \renewcommand{\AnswerHeader}{\medskip\noindent{\textbf{Answer of \ExerciseName~\ExerciseHeaderNB}\\}}
 
@@ -31,8 +31,8 @@
 \definecolor{dkgreen}{rgb}{0,0.4,0}
 \definecolor{dk2green}{rgb}{0.4,0,0}
 \definecolor{dkviolet}{rgb}{0.6,0,0.8}
-\definecolor{mantra}{rgb}{1.0,0.5,0}
-\definecolor{gotcha}{rgb}{1.0,0.2,0}
+\definecolor{mantra}{rgb}{0.2,0.6,0.2}
+\definecolor{gotcha}{rgb}{0.8,0.2,0}
 
 \def\lstlanguagefiles{defManSSR.tex}
 \lstset{language=SSR}
@@ -56,7 +56,7 @@
 \begin{center}
 \begin{tcolorbox}[colframe=gotcha,
 	center title,
-	title={\textcolor{white}{\textsf{\Large\textbf{Gotcha}}}}]
+	title={\textcolor{white}{\textsf{\Large\textbf{Warning}}}}]
 \begin{tabular}{lV}
 \begin{minipage}{0.86\textwidth}
 \vspace{1em}
@@ -186,7 +186,7 @@
 	before={\noindent},
 	after={\hfill},
 	listing only,
-	fonttitle=\sffamily\bfseries,
+	fonttitle=\small\sffamily,%\bfseries,
 	#2
 }
 \newtcblisting{coqout}[2]{
@@ -197,6 +197,6 @@
 	before={\noindent},
 	after={\hfill},
 	listing only,
-	fonttitle=\sffamily\bfseries,
+	fonttitle=\small\sffamily,%\bfseries,
 	#2
 }

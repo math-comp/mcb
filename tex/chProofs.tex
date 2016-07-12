@@ -468,6 +468,7 @@ Proof. by [].
 No more subgoals.
 $~$
 \end{coqout}
+\index[ssr]{\C{by []}}
 
 Indeed, this statement trivially holds, because the two hand sides of
 the equality are the same. The tactic \C{by []} is the command that
@@ -546,6 +547,7 @@ For instance the proof of the \C{addSn} identity:
 \begin{coq}{name=addSn}{title=Reflexevity by symbolic computation}
 Lemma addSn m n : m.+1 + n = (m + n).+1. Proof. by []. Qed.
 \end{coq}
+\index[coq]{\C{addSn}}
 is trivial because it is a direct application of one of the branches
 of the definition of the \C{addn} function. Statements like
 \C{(0 + n = n)} or \C{(0 <= n.+1)} can be proved in a similar way, but
@@ -576,6 +578,7 @@ Proof. by [].
 \begin{coqout}{run=negbKerr}{width=5cm, title=Failing proof script}
 Error: No applicable tactic.
 \end{coqout}
+\index[coq]{\C{negbK}}
 
 Indeed, proving this identity requires not only unfolding the
 definition of the \C{negb}, but also performing a \emph{case analysis}
@@ -604,6 +607,7 @@ $~$
 subgoal 2 is:
  ~~ ~~ false = false
 \end{coqout}
+\index[ssr]{\C{case}}
 
 \marginnote{ Say somewhere later that this substitution only happens
   in the goal and not in the hypotheses. BTW Ssr fails if the
@@ -691,6 +695,7 @@ n : nat
 =====================
   (n <= 0) = (n == 0)
 \end{coqout}
+\index[coq]{\C{leqn0}}
 
 The proof requires unfolding the definition of the comparison operations
 \C{<=} and \C{==}, both defined by case analysis on their first
@@ -754,6 +759,7 @@ k : nat
 =========================
   (k < 0) = (k.+1 == 0)
 \end{coqout}
+\index[ssr]{\C{=> [$\mid$m]}}
 The second and now only remaining goal corresponds to the case when
 \C{n} is the successor \C{k.+1} of a recursively constructed term
 \C{k : nat}.
@@ -784,6 +790,7 @@ if one of the numbers is zero:
 \begin{coq}{def=almostMulnEq0}{title=A double case analysis}
 Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
 \end{coq}
+\index{coq}{muln\_eq0}
 
 \marginnote{Can we count on the fact that the first chapter has
   shown all the necessary definitions on nats, like all the arithmetic
@@ -794,6 +801,7 @@ Let us look back at the code defining multiplication:
 Fixpoint |*muln*| (m n : nat) : nat :=
   if m is p.+1 then n + muln p n else 0.
 \end{coq}
+\index[coq]{\C{muln}}
 In the case when \C{m} is zero, and whatever value \C{n} takes, both
 hand sides of the equality evaluate to \C{true}: the left hand side is
 equal modulo computation to \C{(0 == 0)}, which itself computes to
@@ -1009,6 +1017,7 @@ m : nat
 (0 == 0) =
 (m.+1 == 0) || (0 == 0)
 \end{coqout}
+\index[ssr]{\C{rewrite}}
 
 In this case, we have provided the \C{rewrite} tactic with the name
 \C{muln0} of a lemma stating a parametric identity: the tactic has
@@ -1104,6 +1113,7 @@ m, n1, n2 : nat
 (m * n1 - m * n2 == 0) =
 (m == 0) || (n1 - n2 == 0)
 \end{coqout}
+\index[ssr]{\C{rewrite}! "! (iteration)}
 
 Now the definition of \C{<=} has been exposed
 \emph{everywhere} in the goal, i.e. at both its occurrences in this
@@ -1138,6 +1148,7 @@ m, n1, n2 : nat
 (m * (n1 - n2) == 0) =
 (m == 0) || (n1 - n2 == 0)
 \end{coqout}
+\index[ssr]{\C{rewrite}! \C{-} (right-to-left)}
 
 The last step of the proof uses lemma \C{muln_eq0} to align the left
 and the right hand sides of the identity.
@@ -1260,6 +1271,7 @@ of prenex quantification we would rather write:
 Lemma |*size_map*| (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
  size (map f s) = size s.
 \end{coq}
+\index[coq]{\C{size_map}}
 as all quantifiers are in prenex positions.
 
 We can also use quantifiers in the body of definitions, which is
@@ -1271,6 +1283,7 @@ is defined as:
 Definition |*commutative*| (T : Type) (op : T -> T -> T) :=
   forall x y, op x y = op y x.
 \end{coq}
+\index[coq]{\C{commutative}}
 and the lemma stating the commutativity of the \C{addn} operation is
 in fact:
 
@@ -1305,9 +1318,15 @@ Definition |*pcancel*| f g := forall x, g (f x) = Some x.
 
 End StandardPredicates.
 \end{coq}
+\index[coq]{\C{associative}}
+\index[coq]{\C{transitive}}
+\index[coq]{\C{left_distributive}}
+\index[coq]{\C{injective}}
+\index[coq]{\C{cancel}}
+\index[coq]{\C{pcancel}}
 
 Note that beside the standardization of the statements through these
-predicates, the MC library uses a systematic naming policy for the lemmas
+predicates, the \mcbMC{} library uses a systematic naming policy for the lemmas
 that are instances of these predicates. For instance a common suffix \C{C}
 is used for commutativity properties like \C{addnC} or \C{mulnC}.
 \marginnote{To be expanded elsewhere?}
@@ -1345,25 +1364,26 @@ tactic, which finds the appropriate instance (as the \C{rewrite}
 tactic does):
 
 \begin{coq}{}{}
-Lemma foo a b : a + b <= a + b.
+Lemma example a b : a + b <= a + b.
 Proof. apply: leqnn. Qed.
 \end{coq}
+\index[ssr]{\C{apply:}}
 Find the appropriate instance works up to computation:
 
 \begin{coq}{}{}
-Lemma foo a b : a.+1 + b <= (a + b).+1.
+Lemma example a b : a.+1 + b <= (a + b).+1.
 Proof. apply: leqnn. Qed.
 \end{coq}
-By the way, in order to save the effort of mentionning too trivial
+By the way, in order to save the effort of mentioning too trivial
 steps in the proof script, we can extend the power of the \C{by}
 terminator to make it aware of some (concluding) lemmas available in
 the library. The \C{Hint Resolve} command is used to tag these lemmas,
-as in:
+as in:\index[vernac]{\C{Hint Resolve}}
 
 \begin{coq}{}{}
 (* This line belongs to the file where the lemma is stated and proved.*)
 Hint Resolve leqnn.
-Lemma foo a b : a + b <= a + b.
+Lemma example a b : a + b <= a + b.
 Proof.  by [].  Qed.
 \end{coq}
 Observe that the goal is now closed without a mention of \C{leqnn}.
@@ -1375,6 +1395,7 @@ proof by contraposition:
 \begin{coq}{}{}
 Lemma |*contraL*| (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
 \end{coq}
+\index[coq]{\C{contraL}}
 
 We see this how this lemmas is used in an excerpt of the proof
 that there are infinitely many primes (the full proof will be
@@ -1625,7 +1646,7 @@ At the light of that, reasoning by induction on a term \C{t} means
 finding the induction lemma associated to the type of \C{t} and synthesizing
 the right predicate \C{P}.  The \C{elim:} tactic provides such
 functionalities, while \C{apply:} does not.  Hence \C{elim:}
-has to be used when reasoning by induction.
+has to be used when reasoning by induction.\index[ssr]{\C{elim}}
 
 The first service provided by \C{elim:} is to let one \emph{generalize}
 the goal.  It is typically needed when the goal mention a recursive function
@@ -1792,20 +1813,22 @@ rewrite dvdn_addr ?dvdn_fact ?prime_gt0 //.
 by rewrite gtnNdvd // prime_gt1.
 Qed.
 \end{coq}
+\index[ssr]{\C{rewrite}! \C{?} (optional iteration)}
 
 Another functionality offered by \C{rewrite} is the possibility
 to focus the search for the term to be replaced by providing a
-context.  For example the most frequent context is \C{RHS} (for right
-hand side) and is used to force rewrite to operate only on the right
+context.  For example the most frequent context is \C{RHS} (for Right
+Hand Side) and is used to force rewrite to operate only on the right
 hand side of an equational goal.
 
 \begin{coq}{}{}
-Lemma silly_example m : n + 0 = (n + 0) + 0.
+Lemma silly_example n : n + 0 = (n + 0) + 0.
 Proof. by rewrite [in RHS]addn0. Qed.
 \end{coq}
+\index[ssr]{\C{rewrite}! \C{[in RHS]} (focusing)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{3}
+\mcbLEVEL{2}
 \mcbsubsection{Rewrite contextual patterns}\label{sec:rewrite2}
 
 This example illustrates how the \C{rewrite} tactic, provided a
@@ -1955,6 +1978,7 @@ m, n1, n2 : nat
 (m * n1 - m * n2 == 0) =
 (m == 0) || (n1 - n2 ==0)
 \end{coqout}
+\index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
 where the command \C{rewrite /leq} has exposed the definition of
 \C{leq} at all its occurrence in the goal. An unfolding step can be
@@ -1984,7 +2008,7 @@ Lemma |*leq_mul2l*| m n1 n2 :
 Proof.
 rewrite -[n1]/(0 + n1).
 \end{coq}
-\begin{coqout}{def=Unfold}{title=Proof status,width=5cm}
+\begin{coqout}{def=Change}{title=Proof status,width=5cm}
 1 subgoal
 
 m, n1, n2 : nat
@@ -1992,6 +2016,7 @@ m, n1, n2 : nat
 (m * (0 + n1) <= m * n2) =
 (m == 0) || (0 + n1 <= n2)
 \end{coqout}
+\index[ssr]{\C{rewrite}! \C{-[$\ldots$]/($\ldots$)} (changing)}
 
 
 
@@ -2198,7 +2223,7 @@ m, n1, n2 : nat
 % % \subsection{old}
 % %
 % % \begin{itemize}
-% % \item Coq comes with an equality prexdicate, that we see as axiomatic for the
+% % \item \Coq{} comes with an equality prexdicate, that we see as axiomatic for the
 % % moment (in this section). It is called \C{eq} and has an infix
 % % notation \C{=}. Example: \C{Check 3 = 3}, \C{Check 3 = 4}.
 % % \item Observe that, \C{Check} just checks the well-formedness of the
