@@ -1,4 +1,4 @@
-% Some Coq snippets to be used later on
+% Some \Coq{} snippets to be used later on
 \begin{coqdef}{name=ssr}
 Require Import Ssreflect.ssreflect.
 From Ssreflect Require Import ssrfun ssrbool ssrnat eqtype seq.
@@ -55,7 +55,8 @@ definitions and equational reasoning whenever possible.
 \mcbPROVIDE{\C{Lemma},\C{Admitted}, eq, is-true, Lemma, \C{Prop}, \C{->}}
 \mcbLEVEL{1}
 
-\mcbsection{First formal statements}
+%\mcbsection{First formal statements}
+\mcbsection{Formal statements}
 
 
 In this section, we illustrate how to state rather simple (tentative)
@@ -1187,7 +1188,10 @@ details on the matching algorithm and on the flags supported by
 \C{rewrite}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{More complex statements and proofs}
+
+%\section{More complex statements and proofs}
+\mcbLEVEL{1}
+\mcbsection{Quantifiers}
 
 \subsection{Universal quantification, first examples}
 \marginnote{LR: boolean predicate, not yet defined: we have just seen \C{eq} as a predicate in Prop}
@@ -1721,23 +1725,62 @@ i.e. the value of the accumulator to \C{fold} for a list
 which last element is \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Searching the library}
- The name \C{my_first_lemma} we chose in
-section~\ref{ssec:groundeq} is actually very badly chosen since it is
+\mcbLEVEL{1}
+\mcbsection{Searching the library}
+
+Finding the ``right'' lemma in a library that contains thousands of them may be
+quite a challenge.  Even more since the state of the art of search tools for
+formal libraries is not as advanced as the one for, say, the world wide web.
+
+The Ssreflect proof language provides the \C{Search} command to
+filter the set of available lemmas providing patterns, like \C{(_ * _ + )}
+or \C{(addn _ _)}, and partial names, like \C{"rev" "cons"}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsection{Search by pattern}
+
+The \C{Search} command takes a list of filters and prints the lemmas
+that do match all the criteria.
+
+The \emph{first} pattern provided is special, since it is required to match
+the conclusion of a lemma, while all other patterns can match anywhere.
+
+For example \C{Search (odd _)} only prints one lemma:
+
+\begin{coq}{}{}
+dvdn_odd  forall m n : nat, m %| n -> odd n -> odd m
+\end{coq}
+Indeed the conclusion matches the pattern.  Note that one is not forced to
+use wild cards, \C{odd} alone is a perfectly valid pattern.  Many more
+lemmas are found by leaving the conclusion unspecified as in \C{Search _ odd}.
+
+If we require the lemma to be an equation, as in \c{Search eq odd} we find,
+among many other things, the following two lemmas:
+
+\begin{coqout}{}{}
+dvdn2  forall n : nat, (2 %| n) = ~~ odd n
+coprime2n  forall n : nat, coprime 2 n = odd n
+\end{coqout}
+If we want to rule out all lemmas about coprimality we can refine the
+search by writing \C{Search eq odd -coprime}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsection{Search by name}
+
+Searching by name is the more effective way to find things in the
+\mcbMC{} library.  However one needs to be acquainted to the naming schema
+consistently used to name lemmas.  Indeed the name \C{my_first_lemma} we
+chose in section~\ref{ssec:groundeq} is actually a very bad name:
 hard to guess what the lemma is about by just reading its name.
-This is problematic because we will soon see how the name of a lemma
-is used whenever a proof appeals to such result,
-similar to what a standard mathematical text would do by a reference or
-a citation like ``this holds by lemma (7.3.4)''.  Lemmas are given a name,
-and not just a number, because names are easier to remember and are more
-stable (i.e. do not depend on the section where the corresponding lemma
-is proved and don't require a renaming if a lemma is inserted before them).
 The name can, and should, convey as much information as possible while
-striving to stay short and handy. The
-names used in the next examples are much more meaningful and actually
-follow a systematic design pattern and more generally, the \mcbMC{}
-library follows a naming convention that is documented in the
-reference manual~\cite{ssrman}. Let's get a flavour of it by examples:
+striving to stay short and handy.  We hence refrain from naming lemmas with
+numbers, as is typically done in standard mathematical texts.
+
+The naming convention is documented in the reference
+manual~\cite[Section 11]{ssrman}.
+Let's get a flavour of it by examples:
 
 \begin{itemize}
 \item the name of the lemma begins with the name of the main operation
@@ -1747,31 +1790,43 @@ reference manual~\cite{ssrman}. Let's get a flavour of it by examples:
 that indeed plays an important role in the lemma.  The relative position
 of ``0'' and ``n'' is chosen to recall to the user if the neutral element
  the left or the right argument of the binary operation \C{leq}.
-\item The capital letter suffix ``A'' stands for associativity.
+\item The capital letter suffix ``A'' in \C{addnA} stands for associativity.
 \end{itemize}
 
 Capital letters in the suffix denote standard properties.
-In particular ``A'' stands for associativity.  Standard properties are
-always stated with predicates to impose
-consistency in their stating.  Indeed the real statement of
-\C{addnC} is \C{(commutative addn)}, where \C{addn} is the
-name of the addition operation and \C{commutative} is the
-following predicate.
+In particular ``A'' stands for associativity and
+``C'' for commutativity.
 
-\begin{coq}{name=macro}{title=Predicate for stating commutativity (suffix ``C'')}
-Definition commutative op := forall x y, op x y = op y x.
-\end{coq}
+The \C{Search} command accepts as filters partial names.  For example
+\C{Search "C"} prints, among other things, \C{addnC} and \C{mulnC},
+the commutativity properties of addition and multiplication.  Multiple
+strings can be specified, for example \C{Search "1" "muln"}.  This time
+we find \C{muln1} but also \C{muln_eq1}, the equation saying that
+the product of two natural numbers is 1 if and only if they are both 1.
 
-Predicates, being standard definitions, are completely transparent for the
-system.\footnote{not yet for \C{Search}, but here I'm describing an ideal
-situation}  Consistency is not only aesthetically, but ease the use of
-lemmas: as we will see later, the order of the quantification may make
-a lemma easier to use under certain circumstances.
 
-The last general remark about naming convention worth making so early is that
-uninteresting and recurrent lemmas must have a short names easy to identify and
-disregard when reading a proof and at the same time easy to remember and short
-to type when writing a proof.\marginnote{this is a mantra somewhat}
+% Standard properties are
+% always stated with predicates to impose
+% consistency in their statements.  Indeed the real statement of
+% \C{addnC} is \C{(commutative addn)}, where \C{addn} is the
+% name of the addition operation and \C{commutative} is the
+% following predicate.
+% 
+% \begin{coq}{name=macro}{title=Predicate for stating commutativity (suffix ``C'')}
+% Definition commutative op := forall x y, op x y = op y x.
+% \end{coq}
+% 
+% Predicates, being standard definitions, are completely transparent for the
+% system.\footnote{not yet for \C{Search}, but here I'm describing an ideal
+% situation}  Consistency is not only aesthetically, but ease the use of
+% lemmas: as we will see later, the order of the quantification may make
+% a lemma easier to use under certain circumstances.
+
+A last remark about naming convention worth making here
+is that uninteresting and frequently used lemmas must have a
+short names, so that they can be easily type in and at the same
+time quickly identified and disregarded when reading a proof.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsection{Rewrite, a swiss army knife}

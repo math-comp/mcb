@@ -1306,7 +1306,8 @@ Qed.
 \end{coq}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
 can be appended to each tactic in order to push on the stack the specified
-hypotheses before running the tactic and pushing them back afterwards (see~\cite[Section 6.5]{ssrman}).
+hypotheses before running the tactic and pulling 
+them back afterwards (see~\cite[Section 6.5]{ssrman}).
 The \C{*} means that the goal is also affected by the tactic, and not just
 the hypotheses explicitly selected.
 
@@ -1331,7 +1332,7 @@ let ed := edivn_rec d m.+1 q in
   (ed.2 < d.+1) && (q * d.+1 + m.+1 == ed.1 * d.+1 + ed.2)
 \end{coqout}
 Note that the induction touches variables used in \C{ed} that
-is hence pushed on the goal stack.  The \C{@} modifies tells Ssreflect
+is hence pushed on the goal stack.  The \C{@} modifier tells Ssreflect
 to keep the body of the let-in.
 
 Line 5 unfolds the recursive function and uses the following lemma to push the

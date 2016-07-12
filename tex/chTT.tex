@@ -520,6 +520,12 @@ sacrifices readability in favour of compactness: what would you learn by
 reading a trivial proof?  Of course,
 finding the right balance only comes with experience.
 
+\gotcha{The case intro pattern \C{[]} obeys an exception: whe it is the first
+item of an intro pattern, it does not perform a case analysis, but only branch
+on the subgoals.\footnote{not the status quo, but I prefer this exception to the
+current one} Indeed in \C{case: n => [|m]} only one case analysis is performed}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsubsection{Working on the stack}
@@ -594,7 +600,8 @@ as in the \C{rewrite} tactic, with the top assumption.
 \mcbsubsubsection{Pushing to the stack}
 
 We have seen how to pull items from the stack to the context.  Now let's see
-how to perform the converse via the \C{:} operator.  Such operator decorates
+how to perform the converse via the \C{:} operator, also called
+\emph{discharging} operator.  Such operator decorates
 proof commands with actions to be performed before the command is actually run.
 Imagine we want to perform case analysis on \C{y} at this stage
 
@@ -692,10 +699,10 @@ the two sub goals:
  odd y'.+1 -> 2 < y'.+1 + x
 \end{coqout}
 
-\gotcha{: after apply is not the same, it is just to distinguish the apply of Coq from the one of ssr that fills in the blanks}
-
-\gotcha{[] as the first item of \C{=>} never does case, only the branching (not the status quo, but I prefer this exception to the current one)}
-
+\gotcha{The colon symbol in \C{apply:} is not the dischargin operator.
+It is just a marker to distinguish the \C{apply:} tactic of
+Ssreflect from the \C{apply} tactic of \Coq{}.  Indeed the two tactics, while
+playing similar roles, behave very diferently.}
 
 \section{Inductive reasoning}
 
@@ -811,7 +818,10 @@ of \C{(m-4 < n)}, finally a proof that \C{(11 < m-4)}.  The introduction
 pattern in line 10 names \C{s4} and \C{s5} the quantities of
 4-cents and 5-cents stamps needed to cover the amount of postage \C{(m-4)}.
 
-\section{Axioms of the logic we work with}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsection{The status of Axioms}
 
 Not all valid reasoning principles can be expressed as programs.
 For example excluded middle can be proved by a program only when
@@ -819,6 +829,30 @@ the predicate is decidable, i.e. when we can write in Coq a program
 to \C{bool} that decides it.
 Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
 
-In \mcbMC{} we stay axiom free.  This makes the library compatible with as many
-extra axioms as possible (i.e. not all combinations of axioms are consistent,
-hence picking one may rule out others).  Sometimes this is done by Goedel monad,i.e. confining the use of excluded middle inside a box one can open only to prove decidable statements..., sometimes by reworking the math in a weaker setting like Real Closed Fields (weaker than reals, but sufficient for most algebra).
+The \mcbMC{} library is axiom free.  This makes the library compatible
+with as many axioms as possible.  Indeed not all combinations of well
+known, consistent, axioms are consistent, so if a library picks
+one it rules out another one.
+
+Sometimes ``axioms'' can be confined into ``boxes'' one can open
+only in contexts where they can be actually proved.  For example:
+
+\begin{coq}{}{}
+Definition classically P : Prop := forall b : bool, (P -> b) -> b.
+Lemma classic_EM P : classically (decidable P).
+Lemma classic_bind P Q :
+  (P -> classically Q) -> classically P -> classically Q.
+\end{coq}
+\index[coq]{\C{classically}}
+\index[coq]{\C{classically_EM}}
+\index[coq]{\C{classically_bind}}
+Here classically plays the role of a box, typically called \emph{monad}
+in computer science, that one can only open when the goal is a boolean,
+hence decidable, predicate.  Inside such box the excluded middle is
+made available by combining \C{classic_EM} and \C{classic_bind}.
+Nevertheless, when proving a statement that is not a boolean, like
+\C{exists n, ...}, one cannot access assumptions in the \C{classically} box.
+
+In other cases axioms can be avoided by rephrasing the mathematics
+in a weaker setting.  A notable example in the \mcbMC{} library
+is the construction of the real closure of an Archimedian field~\cite{cyril}.\marginnote{TODO Cyril: say more about RCF}
