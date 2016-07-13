@@ -1,5 +1,5 @@
 quick:
-	pdflatex main
+	pdflatex main && cp main.pdf book.pdf
 all:
 	pdflatex main
 	bibtex main
