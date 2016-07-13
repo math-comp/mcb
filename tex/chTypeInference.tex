@@ -1137,7 +1137,7 @@ language.
 \mcbsection{The generic theory of ``big'' operators}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The objective of the \C{bigop} library is to provide compact notations 
+The objective of the \emph{bigop} library is to provide compact notations 
 for definite iterated operations and a library of general results about them.
 
 Lets take two examples of iterated operations:
@@ -1400,7 +1400,7 @@ it works uniformly on any iterated operator, and provided the operator
 has certain properties it give uniform access to a palette of lemmas.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Expressing the requirement of a bigop lemma}\label{sec:bigoplemmas}
+\subsection{Assumptions of a bigop lemma}\label{sec:bigoplemmas}
 
 As we anticipated, canonical structures can be indexed not only on
 types, but on any term.  In particular we can index them on function
@@ -1512,29 +1512,43 @@ by hand.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Searching the bigop library}
+\mcbLEVEL{1}
+\mcbsubsection{Searching the bigop library}
 
-One cannot search with \C{\\sum}, since all lemmas are about
-monoidal operation, and not addn.
+Searching the bigop library for a lemm is slightly harder than
+searching the other libraries as explained in~\ref{sec:search}.
+In particular one can hardly search with patterns.  For example
+the following searches returns no results:
 
-Tricks of the trade are:
-\begin{itemize}
-\item lemma names contain ``big''
-\item ...
-\end{itemize}
+\begin{coq}{}{}
+Search _ (\sum_(0 <= i < 0) _).
+\end{coq}
+A lemma stating that an empty sum is zero is not part of the library.
+What is part of the library is a lemma that says that if the list
+begin folded is \C{nil} then the result is the initial value.  Such
+lemma, called \C{big_nil}, indeed mentions only \C{[::]} in its
+statement, and not the (logically) equivalent \C{(index_iota 0 0)}.
+Still the goal \C{(\\sum_(0 <= i < 0) i = 0)} can be solved by
+\C{big_nil}.  Of course the following search finds it, but it is very
+verbose and hence inconvenient.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exercises}
-
-\begin{coq}{name=bigop222}{}
-Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
-Proof.
-elim: n => [|n IHn]; first by rewrite unlock.
-rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond /=.
-by rewrite {}IHn odd_double /= addn0 -addnn -!mulnn; ring.
-Qed.
+\begin{coq}{}{}
+Search _ (\big[_/_]_(i <- [::] | _) _).
 \end{coq}
 
+The recommended way is to search the library by name, using the word
+``big''.  For example to find all lemmas allowing one to prove the
+equality of two iterated operators one can \C{(Search "eq" "big")}.
+Similarly, induction lemmas can be found with \C{(Search "ind"
+"big")};  index exchange lemmas with \C{(Search "exchange" "big")};
+lemmas pulling out elements from the iteration with
+\C{(Search "rec" "big")}; lemmas  working on the filter condition
+with \C{(Search "cond" "big")}, etc\ldots
+
+
+Finally the \mcbMC{} user is advised to read the contents of the
+\C{bigop.v} file in order get acquainted with the nameing policy used
+in that library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{Real bigop notation}
@@ -1650,7 +1664,8 @@ does reduce to \C{false} the test \C{(true == false)} in order to
 simplify the \C{||} connective.
 
 The converse technological issue may arise when canonical structure
-inference ``promotes'' ....
+inference ``promotes'' the operator name to a projection of the
+corresponding canonical monoid structure.
 
 \begin{coq}{name=infix,print}{width=5.3cm}
 Implicit Type l : seq nat.
@@ -1685,7 +1700,7 @@ of the current conjecture.
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{Phantom}
 \mcbLEVEL{3}
-\mcbsection{Querying canonical structures}\label{sec:phantom}
+\mcbsection{Querying the canonical structures data base}\label{sec:phantom}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 It is possible to  ask Coq if a certain term does validate an
@@ -1695,13 +1710,13 @@ interface, for example \C{[eqType of nat]} is another valid query to
 check if \C{nat} is equipped with a canonical comparison function.
 
 This mechanism can also be used to craft notations that assert
-if one of their argumets validates an interface.  For example
+if one of their arguments validates an interface.  For example
 imagine one wants to define the concept of finite set as an
 alias of \C{seq T} but such that only values for \C{T} being
 \C{eqType}s are accepted.
 
 This rest of this section introduces the general mechanism of phantom
-types used to trigger canonical strcuture resolution.
+types used to trigger canonical structure resolution.
 
 First of all, canonical structure resolution kicks in during
 unification that in turn is used to compare types.  Types are
@@ -1711,7 +1726,7 @@ argument are unified.  What we need to craft is is a mechanism that
 takes any input term (proper terms like \C{addn} but also types as \C{nat})
 an puts it into a type.  We will then wire things up so that such
 type is unified with another one containing the application of 
-a projection to an unknow canonical structure instance.
+a projection to an unknown canonical structure instance.
 
 \begin{coq}{name=phantom}{}
 Inductive phantom (T : Type) (p : Type) := Phantom.
@@ -1740,6 +1755,31 @@ The unification problem arising for the last argument of \C{set\_of}
 is \C{(phantom Type (Equality.sort ?T))} versus 
 \C{(phantom Type nat)}, that in turn contains the sub problem
 we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Exercises}
+
+%%%%%%%%%%
+\begin{Exercise}{label=ex:sumoddsquare,difficulty=0,title={Sum of $2n$ odd numbers}}
+Show the following lemma using the theory of big operators
+\begin{coq}{name=bigop222}{}
+Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
+\end{coq}
+\end{Exercise}
+
+\subsection{Solutions}
+
+%%%%%%%%%
+\begin{Answer}[ref=ex:leq]
+\begin{coq}{name=bigop222}{}
+Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
+Proof.
+elim: n => [|n IHn]; first by rewrite unlock.
+rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond /=.
+by rewrite {}IHn odd_double /= addn0 -addnn -!mulnn; ring.
+Qed.
+\end{coq}
+\end{Answer}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEARN{difference with type classes, limitations}
