@@ -42,8 +42,10 @@ also provide a linguistic construct to ask the reader to track an
 easy invariant and relieving the proof text from boring details.
 
 The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
-i.e. records.  One can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
-\leq 7.$  Indeed proofs are terms, so one can 
+that we have already seen in the previous chapter in their general
+form of records.
+For example, one can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
+\leq 7$.  Since proofs are terms one can 
 pack together objects and proofs of some properties to
 represent the objects that have those properties.  For example $3$
 when seen as an inhabitant of \C{'I_7} is represented by a dependent
@@ -105,8 +107,7 @@ The key property of this type is that it tells us the length of its
 elements when seen as sequences:
 
 \begin{coq}{name=sizetup}{}
-Coercion tval : tuple_of >-> seq.
-Lemma size_tuple {T n} (t : n.-tuple T) : size t = n.
+Lemma size_tuple T n (t : n.-tuple T) : size t = n.
 Proof. by case: t => s /eqP. Qed.
 \end{coq}
 \coqrun{name=r2}{ssr,tup,sizetup}
@@ -237,22 +238,25 @@ We can thus use \C{Canonical} declarations to teach Coq
 the effect of list operations on the length of their input.
 
 \begin{coq}{name=t1}{width=13cm}
-Lemma rev_tupleP n A (t : n.-tuple A) : size (rev t) == n.
-Proof. by rewrite size_rev size_tuple. Qed.
-Canonical rev_tuple n A (t : n.-tuple A) := Tuple (rev_tupleP t).
+Section CanonicalTuples.
+Variables (n : nat) (A B : Type).
 
-Lemma map_tupleP n A B (f: A -> B) (t: n.-tuple A) : size (map f t) == n.
+Lemma rev_tupleP (t : n.-tuple A) : size (rev t) == n.
+Proof. by rewrite size_rev size_tuple. Qed.
+Canonical rev_tuple (t : n.-tuple A) := Tuple (rev_tupleP t).
+
+Lemma map_tupleP (f: A -> B) (t: n.-tuple A) : size (map f t) == n.
 Proof. by rewrite size_map size_tuple. Qed.
-Canonical map_tuple n A B (f: A -> B) (t: n.-tuple A) := Tuple (map_tupleP f t).
+Canonical map_tuple (f: A -> B) (t: n.-tuple A) := Tuple (map_tupleP f t).
 \end{coq}
 
 Even if it is not needed for the lemma we took as our test bench,
 we add another example where the length is not preserved.
 
 \begin{coq}{name=t2}{}
-Lemma cons_tupleP n A (t : n.-tuple A) x : size (x :: t) == n.+1.
+Lemma cons_tupleP (t : n.-tuple A) x : size (x :: t) == n.+1.
 Proof. by rewrite /= size_tuple. Qed.
-Canonical cons_tuple n A x (t : n.-tuple A) : n.+1 .-tuple A :=
+Canonical cons_tuple x (t : n.-tuple A) : n.+1 .-tuple A :=
   Tuple (cons_tupleP t x).
 \end{coq}
 
@@ -288,8 +292,8 @@ What depends on the size of the formula is the number of canonical
 structure resolution steps type inference performs.  Another advantage
 of this last approach is that, unlike in the first, one
 is not required to know the names of the lemmas:
-it the new concept of tuple that takes care of the size related
-reasoning.
+it is the new concept of tuple that takes care of the size related
+reasoning steps.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -300,8 +304,8 @@ reasoning.
 \label{sec:subtypekit}
 
 We have seen that \lstinline/(seq T)/ is an \lstinline/eqType/
-whenever \C{T} is and we want to transport the \C{eqType} structure
-on tuples.  We first do it manually.  Then we provide a toolkit
+whenever \C{T} is.  We now want to transport such \C{eqType} structure
+on tuples.  We first do it manually, then we provide a toolkit
 to ease the declaration of sub-types.
 
 The first step is to define a comparison function for tuples.
@@ -320,7 +324,7 @@ Lemma eqtupleP n (T : eqType) : Equality.axiom (@tcmp n T).
 Proof.
 move=> x y; apply: (iffP eqP); last first.
 Redirect "g1" Show.
-  by move->.
+  by move=> ->.
 case: x; case: y => s1 p1 s2 p2 /= E. Redirect "g2" Show.
 rewrite E in p2 *.
 by rewrite (eq_irrelevance p1 p2).
@@ -330,7 +334,7 @@ Qed.
 Lemma eqtupleP n (T : eqType) : Equality.axiom (@tcmp n T).
 Proof.
 move=> x y; apply: (iffP eqP); last first.
-  by move->.
+  by move=> ->.
 case: x; case: y => s1 p1 s2 p2 /= E.
 rewrite E in p2 *.
 by rewrite (eq_irrelevance p1 p2).
@@ -343,7 +347,7 @@ The converse direction makes an essential use of
 the \lstinline/eq_irrelevance/ lemma, that is briefly discussed
 in~\ref{hedberg}.
 
-\begin{coqout}{run=tupcmpP;out=g1}{title=Response line 4,width=6cm}
+\begin{coqout}{run=tupcmpP;out=g1}{title=Response after line 3,width=6cm}
 2 subgoals
 
 n : nat
@@ -356,7 +360,7 @@ subgoal 2 is:
   tval x = tval y -> x = y
 $~$  
 \end{coqout}
-\begin{coqout}{run=tupcmpP;out=g2}{title=Response line 6,width=6cm}
+\begin{coqout}{run=tupcmpP;out=g2}{title=Response after line 5,width=6cm}
 1 subgoal
 
 n : nat
@@ -381,9 +385,9 @@ As a simple test we check that the notations and the theory
 that equips \C{eqType} is available on tuples.
 
 \begin{coq}{name=testtup}{}
-Check forall (t : 3.-tuple nat), [:: t] == [::].
-Check fun t : 3.-tuple nat => uniq [:: t; t].
-Check fun t : 3.-tuple nat => undup_uniq [:: t; t].
+Check forall t : 3.-tuple nat, [:: t] == [::].
+Check forall t : 3.-tuple bool, uniq [:: t; t].
+Check forall t : 3.-tuple (7.-tuple nat), undup_uniq [:: t; t].
 \end{coq}
 \coqrun{name=tupc}{ssr,require-tuple,testtup}
 
@@ -402,8 +406,8 @@ Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
 Line 1 registers \C{tval} as a canonical projection to obtain a known
 type out of the newly defined type of tuple.  Once the projection
 is registered the equality axiom can be proved automatically by
-\C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is reminiscent of
-sub-typing in functional languages like OCaml.
+\C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is just a symbol
+that is reminiscent of sub-typing in functional languages like OCaml.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
@@ -417,8 +421,8 @@ sigma type, the \mcbMC{} library provides facilities to
 build all the applicable canonical instances from just
 the name of the projection going from ST to T.
 
-For example, for \C{tuple} and \C{tval}, we can replace all the end of the
-previous section with
+To register \C{tval} as the projection from tuples to sequences one
+writes:
 
 \begin{coq}{name=subt}{}
 Canonical tuple_subType := Eval hnf in [subType for tval].
@@ -437,7 +441,7 @@ More interestingly the sub-type kit provides the dynamic constructors
 \C{insub} and \C{insubd} that do not need a proof as they dynamically
 test the property, and offer 
 an attractive encapsulation of the difficult \emph{convoy
-pattern}~\cite{AdamCPDT}.
+pattern}~\cite[Section 8.4]{CPDT}.
 The \C{insubd} constructor takes a default
 sub-type value which it returns if the tests fails, while \C{insub}
 takes only a base type value and returns an \C{option}; both are
@@ -455,7 +459,7 @@ Let s2 := if insub s is Some t then val (t : 3.-tuple nat) else nil.
 Let t3 := insubd t s. (* : 3.-tuple nat *)
 \end{coq}
 
-We put \C{insub} to good use in Section~\ref{ordfintype} when
+We put \C{insub} to good use in Section~\ref{sec:ordfintype} when
 an enumeration for sub-types is to be defined.
 
 The \C{subType} structure describes a Boolean sigma-type in terms of
@@ -616,7 +620,7 @@ Apart from the aforementioned theory, finite types can serve as a
 powerful notational device for ranges.  For example one may want
 to state that a matrix of size $m \times n$ is only accessed inside
 its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
-be formulated in the \mcbMC{} library is by saying that that its row
+be formulated in the \mcbMC{} library is by saying that its row
 accessors accepts only inhabitants of a finite type of size $m$.
 Accessing a matrix out of its bounds becomes a type error.
 Of course one wants to access a matrix using integer coordinates, but
@@ -784,7 +788,7 @@ Canonical finfun_eqType :=
 
 When the codomain is finite, the type of finite functions is itself
 finite.  This property is again inherited from tuples.  Recall
-the \C{all\_words} function in exercise \ref{ex:allwords}
+the \C{all\_words} function, solution of Exercise~\ref{ex:allwords}.
 
 \begin{coq}{}{}
 Definition tuple_enum (T : finType) n : seq (n.-tuple T) :=
@@ -1045,8 +1049,8 @@ Definition mulmx m n p (A : 'M_(m, n)) (B : 'M_(n, p)) : 'M[R]_(m, p) :=
 Notation "A *m B" := (mulmx A B) : ring_scope.
 \end{coq}
 
-First, the type of the operation makes such operation total, i.e. it
-statically detects multiplication of matrices which sizes don't match.
+First, the type of the inputs makes such operation total, i.e. \Coq{}
+statically rejects multiplication of matrices which sizes don't match.
 
 This has to be compared with what was done for integer division, that
 was made total by returning a default value, namely \C{0}, outside
@@ -1054,16 +1058,17 @@ its domain.  In the case of matrix a size annotation is enough to make
 the operation total, while for division a prof would be necessary.
 Working with rich types is not always easy, for example the type
 checker will not understand automatically that a square matrix of
-size \C{(m + n)} can be multiplied with a matrix of size \C{(m + n)}.
+size \C{(m + n)} can be multiplied with a matrix of size \C{(n + m)}.
 In such case the user has to introduce explicit size casts,
 see~\ref{sec:castmx}.  At the same time type inference lets one omit
 size information most of the times, playing once again the role of a
 trained reader.
 
-I should conclude this reasoning by giving a rule of thumb I guess.
+\marginnote{I should conclude this reasoning by giving a rule of thumb
+I guess.}
 
 \mcbLEVEL{1}
-\mcbsubsection{A proof on matrices}
+\mcbsubsection{Example: matrix product commutes under trace}
 
 As an example let's take a simple property of the trace.
 Note that we can omit the dimensions of \C{B} since it
@@ -1106,10 +1111,11 @@ n A B}.
 Lemma mxtrace_mulC m n (A : 'M[R]_(m, n)) B :
    \tr (A *m B) = \tr (B *m A).
 Proof.
-gen have trE, trAB : m n A B / \tr (A *m B) = \sum_i \sum_j A i j * B j i.
+gen have trE, trAB: m n A B / \tr (A *m B) = \sum_i \sum_j A i j * B j i.
   by apply: eq_bigr => i _; rewrite mxE.
 rewrite trAB trE.
 \end{coq}
+\index[ssr]{\C{gen have}}
 
 The \C{gen have} step now generates two equations, a general one
 called \C{trE}, and its instance to \C{A} and \C{B} called \C{trAB}.

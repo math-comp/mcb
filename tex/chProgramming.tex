@@ -1332,10 +1332,13 @@ Definition leq m n := m - n == 0.
 
 \begin{coq}{}{}
 Inductive prod (A B : Type) := pair (a : A) (b : B).
+Notation "A * B" := (prod A B) : type_scope.
 Notation "( A , B )" := (pair A B).
-Definition fst A B (p : prod A B) :=
+Definition fst A B (p : A * B) :=
   match p with (a, _) => a end.
 \end{coq}
+\index[coq]{\C{(_ * _)} (type scope)}
+\index[coq]{\C{(_ , _)} (pairs)}
 
 \end{Answer}
 

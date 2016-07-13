@@ -163,6 +163,7 @@ Inductive |*reflect*| (P : Prop) (b : bool) : Prop :=
 |ReflectT (p : P)    (e : b = true)
 |ReflectF (np : ~ P) (e : b = false)
 \end{coq}
+\index[coq]{\C{reflect}}
 
 We can prove that the statement \C{reflect P b} is actually equivalent
 to the double implication, see Exercise~\ref{ex:iffp}.
@@ -750,6 +751,7 @@ Inductive |*reflect*| (P : Prop) : bool -> Prop :=
 | ReflectT (p : P)    : reflect P true
 | ReflectF (np : ~ P) : reflect P false
 \end{coq}
+\index[coq]{\C{reflect}}
 
 Here the second argument of \C{reflect} is said to be an \emph{index}
 and it is allowed to vary depending on the constructor: \C{ReflecT} always

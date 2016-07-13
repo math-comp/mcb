@@ -396,7 +396,7 @@ We relate the following comparison function with the \lstinline/nat/
 data type: \marginnote{Maybe this function has been shown already}
 
 \begin{coq}{name=eqn}{}
- Fixpoint eqn m n {struct m} :=
+Fixpoint eqn m n {struct m} :=
   match m, n with
   | 0, 0 => true
   | m'.+1, n'.+1 => eqn m' n'
@@ -897,6 +897,7 @@ instance of the interface, exactly as the \C{==} notation.
 The simplest lemma part of the theory of \C{eqType} is the
 \lstinline/eqP/ generic lemma that can be used in conjunction with
 any occurrence of the \lstinline/==/ notation.
+\index[coq]{\C{eqP}}
 
 \begin{coq}{name=eqP}{title=The eqP lemma}
 Lemma eqP (T : eqType) : Equality.axiom (@Equality.op T).
