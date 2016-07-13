@@ -1264,3 +1264,24 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
     conform_mx B (castmx e_mn A) = conform_mx B A.
 \end{coq}
 \index[coq]{\C{conform_mx}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{3}
+\mcbsubsubsection{Sorts and \C{reflect}}
+The curious reader may have spotted that the declaration of the
+\C{reflect} inductive predicate of Section~\ref{ssec:specs} differs
+from the one part of the \mcbMC{} library in a tiny detail.
+Indeed the real declaration puts reflect in \C{Type} and not in
+\C{Prop}.
+
+Recall that \C{reflect} is typically used to state properties about
+decidable predicates. It is quite frequent to reason on such
+class of predicates by excluded middle in \emph{both} proof and programs.
+As soon as one needs proofs to cast terms, the proof evidence carried by
+the reflection lemma becomes doubly useful.  Placing the declaration of 
+\C{reflect} in \C{Type} is enough to make such proof 
+accessible within programs.
+
+However the precise difference between \C{Prop} and \C{Type} in the
+\mcbCIC{} is off topic for this text, so we will not detail further.
+
