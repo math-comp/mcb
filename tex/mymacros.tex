@@ -97,6 +97,15 @@
 \otherwise Please use \textbackslash mcbLEVEL
 \endswitch
 }
+\newcommand{\mcbpptxtlevel}[1]{
+\switch[#1=]
+\case{1}
+\case{2} $(\star)$
+\case{3} $(\star\star)$
+\otherwise Please use \textbackslash mcbLEVEL
+\endswitch
+}
+
 
 \newcommand{\mcbvarreset}{
 \mcbLEARN{Please use \textbackslash mcbLEARN}
@@ -116,7 +125,7 @@
 \newcommand{\mcbsection}[1]{
 \setcounter{mcbvarTMP}{1}
 \ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
-\section{#1}
+\section[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1}
 \smash{\raisebox{0.7cm}{\hspace{0.85\textwidth}\mcbpplevel{\value{mcbvarLEVEL}}}}
 \marginnote{\small\begin{tabular}{p{3.8cm}}\hline
 \textbf{Learns} \mcbvarLEARN \\
@@ -135,7 +144,7 @@
 \newcommand{\mcbsubsection}[1]{
 \setcounter{mcbvarTMP}{1}
 \ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
-\subsection{#1}
+\subsection[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1}
 \smash{\raisebox{0.7cm}{\hspace{0.85\textwidth}\mcbpplevel{\value{mcbvarLEVEL}}}}
 \marginnote{\small\begin{tabular}{p{3.8cm}}\hline
 \textbf{Learns} \mcbvarLEARN \\
@@ -155,7 +164,7 @@
 \newcommand{\mcbsubsubsection}[1]{
 \setcounter{mcbvarTMP}{1}
 \ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
-\subsubsection{#1}
+\subsubsection[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1}
 \smash{\raisebox{0.7cm}{\hspace{0.85\textwidth}\mcbpplevel{\value{mcbvarLEVEL}}}}
 \marginnote{\small\begin{tabular}{p{3.8cm}}\hline
 \textbf{Learns} \mcbvarLEARN \\

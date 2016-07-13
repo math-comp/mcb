@@ -12,43 +12,15 @@
 
 \begin{document}
 \maketitle
-\tableofcontents{}
 
 % \input{chConventions.tex}
 
 \input{ch0.tex}
 
+\tableofcontents{}
+
 \part{Definitions and proofs}
 
-This part introduces two languages and a formalization approach.
-
-The first language is \emph{Gallina}, the mathematical foundation of the Coq
-system.  For the expert reader: the type theory called \mcbCIC{}.  Such
-language is both a programming and a specification language: it is used to
-declare data, define programs, specify their behavior and represent their
-correctness proofs.  Its most intriguing features are two: a rich system of
-types, that can depend on other types or even values, and the notion of
-computation, that is considered a first class citizen, i.e. a true form of
-proof.
-
-The second language, \mcbSSR{} (\emph{Ssreflect} for short), is used to write
-proofs.  Its most characterizing features are two: it lets one write
-concise and stable proof scripts enabling the development of large
-libraries over a long time frame, and provides good support for the
-formalization approach the \mcbMC{} library is based on, from which
-its name is also taken.
-
-The \emph{\mcbSSR{}} approach was initially conceived for the formal proof
-of the Four Colors Theorem, and it later served as the pillar for
-the \mcbMC{} library and the formal proof of the Odd Order Theorem.
-Such approach takes major advantage from the symbolic computation
-capabilities provided by Gallina.
-
-The \Coq{} system provides a rich platform in which all this is
-put together.  \Coq{} implements the Gallina language, and a checker for it.
-It also provides a platform for the Ssreflect proof language and
-many other facilities that are crucial for the \mcbMC{} library like
-type inference.
 
 \input{chProgramming}
 \input{chProofs}
@@ -57,71 +29,39 @@ type inference.
 
 \part{Formalization techniques}
 
-This part provides the tools to build a large library of formalized
-mathematics.  In particular it presents a powerful form of automation
-and a formalization technique that makes it possible to organize
-concepts in a rational way and easily define new ones by linking them
-to the already existing ones.
-
-Automation is provided by \emph{programming type inference}.
-The \Coq{} system provides a user-extensible type inference
-algorithm.  It can be extended with declarative programs,
-giving canonical solutions to otherwise unsolvable problems.
-Such solutions typically involve notions and theorems that
-are part of the \mcbMC{} library.  By programming type inference
-one can hence teach \Coq{} the contents of the library.  The system
-is then able to reconstruct non-trivial missing piece of information,
-as an informed reader typically does when reading a mathematical text.
-
-Formalized knowledge is organized by means of interfaces (in the spirit of
-algebraic structures) and relations between them.  Type inference is programmed
-to play the role of an librarian and recognize when an abstract theory has the
-right to apply to a specific example.
-
-Finally the rich language of \Coq{} lets one define new concepts
-by refining existing ones, typically by gluing an object with
-a proof of some extra property.  Type inference is programmed
-to transport all the theory available on
-the original concept to the derived one.
-
 \input{chTypeInference}
 \input{chSigmaBool}
 \input{chHierarchy}
 
 \part{Mathematics in Mathematical Components}
 
-This part provides a, unfinished by design, panoramic view of the
-\mcbMC{} library.  It interleaves a catalog of formalized theories with
-formalization choices that play a crucial role in the
-definition of the formal object.
-
-OLD STUFF:
-
-\mantra{
-	if you have a proof in mind, don't let the system drive you
-        to another, less clean and abstract, proof.
-}
-
-\section*{STYLE of these chapters}
-These chapters hopefully in the following style:
-\begin{itemize}
-\item first math mode to review the (not so standard) definitions and
-\item then touch some real proof script to show why/how the definition
-  make it possible to model the proofs (as they are in math)
-\item use the (few) examples to illustrate a cool proof strategy if
-  any (not necessarily typical of the math subject, but that happens to
-  be there, like in OOTHM paper: circular leq, symmetries, ad hoc
-  decision procedure, ...)
-\item try hard to show how CIC helps (which feature: HO, computation, dependent
-	types \ldots), so that at the end we can sum up and make a synthesis of
-	all that.
-\end{itemize}
-
-Maybe it is simpler to do it in 2 steps:
-1) in this second part one identifies where CIC or the SSR style plays a
-   crucial role
-2) then we advertise these use cases in the first part to motivate
-   the techniques, the complexity of the logic...
+% OLD STUFF:
+% 
+% \mantra{
+% 	if you have a proof in mind, don't let the system drive you
+%         to another, less clean and abstract, proof.
+% }
+% 
+% \section*{STYLE of these chapters}
+% These chapters hopefully in the following style:
+% \begin{itemize}
+% \item first math mode to review the (not so standard) definitions and
+% \item then touch some real proof script to show why/how the definition
+%   make it possible to model the proofs (as they are in math)
+% \item use the (few) examples to illustrate a cool proof strategy if
+%   any (not necessarily typical of the math subject, but that happens to
+%   be there, like in OOTHM paper: circular leq, symmetries, ad hoc
+%   decision procedure, ...)
+% \item try hard to show how CIC helps (which feature: HO, computation, dependent
+% 	types \ldots), so that at the end we can sum up and make a synthesis of
+% 	all that.
+% \end{itemize}
+% 
+% Maybe it is simpler to do it in 2 steps:
+% 1) in this second part one identifies where CIC or the SSR style plays a
+%    crucial role
+% 2) then we advertise these use cases in the first part to motivate
+%    the techniques, the complexity of the logic...
 
 \input{chNumbers}
 
@@ -149,38 +89,36 @@ theory.
 
 % \chapter{Algebraic closure}
 
-\part{Conclusion and perspectives}
+% \part{Conclusion and perspectives}
+% 
+% Let's be brave:
+% This part looks back to the techniques, methodologies and achieved
+% formalized libraries described in the book and summarizes the role
+% played by each on them, in the spirit of the introduction to the ssr manual.
+% May be also discusses the possible extensions
+% (like CoqEAL) or adaptation to the future evolutions of the system and
+% formalism (Cubical Coq, HITs...).
 
-Let's be brave:
-This part looks back to the techniques, methodologies and achieved
-formalized libraries described in the book and summarizes the role
-played by each on them, in the spirit of the introduction to the ssr manual.
-May be also discusses the possible extensions
-(like CoqEAL) or adaptation to the future evolutions of the system and
-formalism (Cubical Coq, HITs...).
-
-\part{Annexes}
+\part{Indexes}
 
 % \chapter{Foundations}
 
-\chapter{What is done where?}
-
-\chapter{How tos}
-suggestions:
-\begin{itemize}
-\item Get more information when you do not understand the error
-  message
-\item Search in the library
-\item Canonical structures: define a new instance
-\item Canonical structures: add a new structure
-\item Give a relevant name to the lemma I just stated
-\item Forbid unwanted expansions
-\item Choose a notation (what not to do...)
-\item Compute ``for real'' (Natbin, Coqeal)
-\item MathComp script style
-\end{itemize}
-
-\chapter{Naming conventions}
+% \chapter{What is done where?}
+% 
+% \chapter{How tos}
+% suggestions:
+% \begin{itemize}
+% \item Get more information when you do not understand the error
+%   message
+% \item Search in the library
+% \item Canonical structures: define a new instance
+% \item Canonical structures: add a new structure
+% \item Give a relevant name to the lemma I just stated
+% \item Forbid unwanted expansions
+% \item Choose a notation (what not to do...)
+% \item Compute ``for real'' (Natbin, Coqeal)
+% \item MathComp script style
+% \end{itemize}
 
 %\clearpage
 %\addcontentsline{toc}{chapter}{Index}
