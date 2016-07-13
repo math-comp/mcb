@@ -45,7 +45,7 @@ What is not covered by the ssrnum library is specific operations.
 \label{sec:integers}
 
 On integers we provide a specific injection from natural numbers
-\C{\%:Z} 
+\C{\%:Z}
 
 \begin{coq}{name=about_Posz}{width=5cm,title=injection from $\mathbb{N}$
   to $\mathbb{Z}$}
@@ -54,7 +54,7 @@ About Posz.
 \end{coq}
 \coqrun{name=about_Posz_run}{about_Posz}
 \begin{coqout}{run=about_Posz_run}{title=Response,width=7cm}
-Notation            Scope     
+Notation            Scope
 "n %:Z" := Posz n    : int_scope ...
 intmul : forall R : zmodType, R -> int -> R
 Argument scope is [nat_scope] ...
@@ -135,7 +135,7 @@ unit ring (we need the existence of an inverse, even when it is not
 well defined). \C{ratr} is a morphism, as expected, when the target is a
 numeric field (which guarantees both that the characteristic is zero
 and the existence of inverse for non zero elements). Additionally, we
-provide that 
+provide that
 
 Rationals are defined like this:
 
@@ -185,8 +185,77 @@ between ordering and norm is \C{(0 <= x) = (`|x| == x)}.
 Remark that we provide a partial order on complex numbers in order to
 be able to compare complex numbers that happen to be real. In
 particular complex number comparable to zero (or to any integer) are
-real. Some non-real can also comparable, but we advise not to rely on
-this specificity which a convention
+real. Some non-real can also comparable, in particular thanks to the
+additivity of comparison: \C{0 <= x -> y <= x + y} even if~\C{y} is
+not real. Comparison of non-real values is necessary since the
+comparison function must be total (not total as in \emph{total order},
+since the order is partial on non-real values, but total as in
+\emph{total function}). As for division by $0$, the choice of a
+``default'' return value for comparison is guided by the stability of
+the order by arithmetic operations, in order to minimize the number of
+hypotheses required by the theory.
+
+We provide the subsemiring of non negative elements \C{nneg} and the
+subring (with division) of real elements \C{real} as predicates. These
+predicates have canonical structures drawn from the algebraic
+hierarchy. So one can use the generic theory of substructure
+predicates of the algebraic hierarchy on them. Additional positive
+elements \C{pos} are declared stable by multiplication and division.
+
+The library provide seven interfaces : \C{numDomainType},
+\C{numFieldType}, \C{numClosedFieldType}, \C{realDomainType},
+\C{realFieldType}, \C{archiFieldType} and \C{rcfType}.
+
+A \C{numDomainType} is an integral domain (\C{idomainType}), with an
+order and a norm compatible with \C{+} an \C{*}. \textit{Ie}
+satisfying the axioms:
+
+\begin{coq}{name=ndtaxioms}{width=12cm, title=Axioms of numeric domains}
+Lemma normr0_eq0    x   : `|x| = 0 -> x = 0.
+Lemma ler_norm_add  x y : `|x + y| <= `|x| + `|y|.
+Lemma addr_gt0      x y : 0 < x -> 0 < y -> 0 < x + y.
+Lemma ger_leVge     x y : 0 <= x -> 0 <= y -> (x <= y) || (y <= x).
+Lemma ler_def       x y : (x <= y) = (`|y - x| == y - x).
+Lemma ltr_def       x y : (x < y) = (y != x) && (x <= y).
+Lemma normrM            : {morph norm : x y / x * y : R}.
+
+\end{coq}
+
+The two other ``numeric'' structures \C{numFieldType},
+C{numClosedFieldType} are simply \emph{joins} cf~\ref{str:itf} of the
+\C{numDomainType} with the \C{fieldType} and \C{closedFieldType} from
+the algebraic hierarchy.
+
+The \C{realDomainType}, \C{realFieldType}, are joins of the previous
+structures \C{numDomainType} and \C{numFieldType} with an additional
+axiom which states that every number is real :
+
+\begin{coq}{name=rdtaxioms}{width=12cm, title=Axiom of real domains}
+Lemma num_real x : x \is real.
+\end{coq}
+
+The structure \C{archiFieldType} is a real field together with
+Archimedes axiom
+\begin{coq}{name=archiaxioms}{width=12cm, title=Archimedes axiom}
+Definition archimedean_axiom : Prop := forall x : R, exists ub, `|x| < ub%:R.
+\end{coq}
+
+Finally, \C{rcfType} is the type of real closed fields, which is a
+real field together with the intermediate value property for
+polynomials.
+\begin{coq}{name=ivtaxioms}{width=12cm, title=Intermediate value
+    property for polynomials}
+Definition real_closed_axiom : Prop :=
+  forall (p : {poly R}) (a b : R),
+    a <= b -> p.[a] <= 0 <= p.[b] -> exists2 x, a <= x <= b & root p x.
+\end{coq}
+This is one of the multiple possible characterization of real closed
+fields. The other possible characterizations, and their equivalence
+(whether classical or constructive), have not yet been formalized, and
+is thus out of the scope of this book.  We prove that the extension of
+a real closed field with the pure imaginary number $i$ is in fact a
+numeric closed field.
+
 
 NOT TRUE YET: Additionnally, we provide an interface to use classical real and
 complex number
@@ -194,4 +263,3 @@ complex number
 % Local Variables:
 % ispell-dictionary: english
 % End:
-
