@@ -1137,10 +1137,124 @@ by do 2!apply: eq_bigr => ? _; apply: mulrC.
 Qed.
 \end{coq}
 
+Note that the final identity is true only if the multiplication
+of the matrix coefficients is commutative.  Here \C{R}
+was assumed to be a \C{comRingType}, the structure of commutative
+rings and \C{mulrC} is the name of the commutative property (\C{C}) of
+ring (\C{r}) multiplication (\C{mul}).
+A more detailed description of the hierarchy of structures is the
+subject of the next chapter.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsubsection{Block operations}
+
+The size information stocked in the type of a matrix is
+also used to drive the decomposition of a matrix into sub-matrices,
+called blocks.  For example when the size expression of a square
+matrix is like \C{(n1 + n2)}, then the upper left block
+is a square matrix of size \C{n1}.
+
+\begin{coq}{}{title=Block destructors}
+Definition lsubmx (A : 'M_(m, n1 + n2)) : 'M_(m, n1)
+Definition usubmx (A : 'M_(m1 + m2, n)) : 'M_(m1, n)
+Definition ulsubmx (A : 'M_(m1 + m2, n1 + n2)) : 'M_(m1, n1)
+\end{coq}
+Conversely blocs can be glued together.  This time it is the
+size of the resulting matrix that shows a trace of the way
+it was built.
+\index[coq]{\C{lsubmx}}
+\index[coq]{\C{usubmx}}
+\index[coq]{\C{ulsubmx}}
+
+\begin{coq}{}{title=Block constructors}
+Definition row_mx (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) : 'M_(m, n1 + n2)
+Definition col_mx (A1 : 'M_(m1, n)) (A2 : 'M_(m2, n)) : 'M_(m1 + m2, n)
+Definition block_mx Aul Aur Adl Adr : 'M_(m1 + m2, n1 + n2)
+\end{coq}
+\index[coq]{\C{block_mx}}
+\index[coq]{\C{row_mx}}
+\index[coq]{\C{col_mx}}
+
+The interested reader can find in~\cite{packedclasses}
+a description of Cormen's LUP decomposition, an algorithm
+making use of these constructions.  In particular, recursion
+on the size of a square matrix of size $n$ naturally identifies
+an upper left square block of size 1, a row and a column of length $n-1$,
+and a square block of size $n-1$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
-\mcbsubsection{blocks and casts}\label{sec:castmx}
+\mcbsubsection{Size casts}\label{sec:castmx}
 
-I think it is good to mention here the problem and the remedy, but I
-don't find a decent example (for cast).
+Types containing values are a doubly sharp weapon.  While we have seen that
+they make the writing of matrix expressions extremely succint, in some case
+they need extra care.  In particular the equality predicate accepts
+arguments of the very same type.  Hence a statement like this one
+requires a size cast:
 
+\begin{coq}{}{}
+Section SizeCast.
+Variables (n n1 n2 n3 m m1 m2 m3 : nat).
 
+Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
+  row_mx A1 (row_mx A2 A3) = row_mx (row_mx A1 A2) A3.
+\end{coq}
+
+Indeed the left hand size has type \C{'M_(m, n1 + (n2 + n3))} while
+the right hand size has type \C{'M_(m, (n1 + n2) + n3)}.  The
+\C{castmx} operator, and all its companion lemmas, lets one deal with
+this inconcevience.
+
+\begin{coq}{}{}
+Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
+  let cast := (erefl m, esym (addnA n1 n2 n3)) in
+  row_mx A1 (row_mx A2 A3) = castmx cast (row_mx (row_mx A1 A2) A3).
+\end{coq}
+\index[coq]{\C{castmx}}
+The \C{cast} object provides the proof evidence that \C{(m = m)}, not
+strictly needed, and that \C{(n1 + (n2 + n3) = (n1 + n2) + n3)}.
+
+Lemmas like the following two lets one insert or remove additional
+casts.
+
+\begin{coq}{}{}
+Lemma castmxKV (eq_m : m1 = m2) (eq_n : n1 = n2) :
+  cancel (castmx (esym eq_m, esym eq_n)) (castmx (eq_m, eq_n)).
+Lemma castmx_id m n erefl_mn (A : 'M_(m, n)) : castmx erefl_mn A = A.
+\end{coq}
+\index[coq]{\C{castmx_id}}
+\index[coq]{\C{castmxKV}}
+Remark that \C{erefl_mn} must have type \C{((m = m) * (n = n))}, i.e.
+it is a useless cast.
+
+Another useful tool is \C{conform_mx} that takes a default matrix of
+the right dimension and second one that is returned only if its
+dimentions match.
+
+\begin{coq}{}{}
+Definition conform_mx (B : 'M_(m1, n1) (A : 'M_(m, n) :=
+  match m =P m1, n =P n1 with
+  | ReflectT eq_m, ReflectT eq_n => castmx (eq_m, eq_n) A
+  | _, _ => B
+  end.
+\end{coq}
+\index[coq]{\C{(_ =P _)}}
+\index[coq]{\C{(_ =P _)}|seealso {\C{eqP}}}
+The \C{(m =P m1)} notation simply hides \C{(@eqP nat_eqType m m1)},
+a proof of the \C{reflect} inductive spec.  Recall that the
+\C{ReflectT} constructor carries a proof of the equality.
+
+The following helper lemmas describe the behavior of \C{conform_mx}
+and how it interacts with casts.
+
+\begin{coq}{}{}
+Lemma conform_mx_id (B A : 'M_(m, n)) : conform_mx B A = A.
+Lemma nonconform_mx (B : 'M_(m1, n1)) (A : 'M_(m, n)) :
+  (m != m1) || (n != n1) -> conform_mx B A = B.
+
+Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3)) 
+  (B : 'M_(m1, n1)) (A : 'M_(m2, n2)) :
+    conform_mx B (castmx e_mn A) = conform_mx B A.
+\end{coq}
+\index[coq]{\C{conform_mx}}
