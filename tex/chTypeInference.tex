@@ -1529,21 +1529,23 @@ begin folded is \C{nil} then the result is the initial value.  Such
 lemma, called \C{big_nil}, indeed mentions only \C{[::]} in its
 statement, and not the (logically) equivalent \C{(index_iota 0 0)}.
 Still the goal \C{(\\sum_(0 <= i < 0) i = 0)} can be solved by
-\C{big_nil}.  Of course the following search finds it, but it is very
+\C{big_nil}.  Finally, the pattern we provide specifies a trivial
+filter, while the lemma is true for any filtering predicate.
+Of course one can craft a pattern that finds such lemma, but it is very
 verbose and hence inconvenient.
 
 \begin{coq}{}{}
 Search _ (\big[_/_]_(i <- [::] | _) _).
 \end{coq}
 
-The recommended way is to search the library by name, using the word
+The recommended way to search the library is by name, using the word
 ``big''.  For example to find all lemmas allowing one to prove the
-equality of two iterated operators one can \C{(Search "eq" "big")}.
-Similarly, induction lemmas can be found with \C{(Search "ind"
-"big")};  index exchange lemmas with \C{(Search "exchange" "big")};
-lemmas pulling out elements from the iteration with
-\C{(Search "rec" "big")}; lemmas  working on the filter condition
-with \C{(Search "cond" "big")}, etc\ldots
+equality of two iterated operators one can\C{ Search "eq" "big"}.
+Similarly, induction lemmas can be found with\C{ Search "ind"
+"big"};  index exchange lemmas with\C{ Search "exchange" "big"};
+lemmas pulling out elements from the iteration
+with\C{ Search "rec" "big"}; lemmas  working on the filter condition
+with\C{ Search "cond" "big"}, etc\ldots
 
 
 Finally the \mcbMC{} user is advised to read the contents of the
