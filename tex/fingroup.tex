@@ -35,7 +35,7 @@ Definition normaliser A := [set x | A :^ x \subset A].
 Notation "''N' ( A )" := (normaliser A) : group_scope.
 Lemma normP x A : reflect (A :^ x = A) (x \in 'N(A)).
 \end{coq}
-Here \C{:^} is the notation for conjugating a set by en point:
+Here \C{:^} is the notation for conjugating a set by a point:
 $\{x^{-1}*a*x | a\in A\}$.
 
 \paragraph{Formalization trick: totality of operations} In standard math one
