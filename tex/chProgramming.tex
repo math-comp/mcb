@@ -718,7 +718,7 @@ might want to compute the sequence of all predecessors or all divisors
 of a number.  We could define such datatype as follows.
 
 \begin{coq}{name=list_def}{}
-Inductive listn := niln | consn (hd : nat) (tl : listb).
+Inductive listn := niln | consn (hd : nat) (tl : listn).
 \end{coq}
 
 Such data type can hold zero or more natural numbers, for example
