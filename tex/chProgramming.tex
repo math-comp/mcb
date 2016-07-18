@@ -8,6 +8,8 @@ TODO: add typing error and non-well-founded recursion error.
 
 TODO: implicit arguments, mention curly braces
 
+TODO: let-in and let:
+
 %\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
 We will take the point of view that mathematics can be understood as
@@ -768,30 +770,31 @@ Coq's language is powerful enough to fully characterize the generic
 list datatype without appealing to the intuitive, but external, notion of
 schema.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The (polymorphic) sequence datatype}
 
 The \mcbMC{} library provides a generic datatype to hold
 several objects of any type under the name \C{seq}.
 
 \begin{coq}{name=list_def}{}
-Inductive seq (A : Type) := nil | cons (hd : A) (tl : list A).
+Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
 \end{coq}
 This definition actually describes the type of lists as a {\em
   polymorphic type}.  This means that there is a different type
-\C{(list A)} for each possible choice of a type \C{A}.  For example
-\C{(list nat)} is the type of sequences of natural numbers, while
-\C{(list bool)} is the type of sequences of booleans.
+\C{(seq A)} for each possible choice of a type \C{A}.  For example
+\C{(seq nat)} is the type of sequences of natural numbers, while
+\C{(seq bool)} is the type of sequences of booleans.
 The type of the
 function \C{cons} is devised specifically to describe how to produce a
-new list of type \C{list A} by combining an element of \C{A} and an
-existing list of type \C{list A}.  This also means that this data-type
+new list of type \C{seq A} by combining an element of \C{A} and an
+existing list of type \C{seq A}.  This also means that this data-type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
 
 In principle, all objects of the datatype definition have a type
-argument.  Thus, \C{list} is a function of type \C{Type -> Type} and
+argument.  Thus, \C{seq} is a function of type \C{Type -> Type} and
 \C{nil} is a function that takes a type \C{A} as argument and returns
-an empty list of type \C{(list A)}.  The notation ``\C{.. -> ..}'' is not
+an empty list of type \C{(seq A)}.  The notation ``\C{.. -> ..}'' is not
 well suited for this kind of situation and the type of \C{nil} is
 rather written as follows:
 
@@ -800,7 +803,7 @@ rather written as follows:
 \end{coq}
 The same goes for the other constructor of list, named \C{cons}.  This
 function actually takes three arguments: a type \C{A}, a value in this
-type, and a value in the type \C{list A}.  The type of \C{cons} is
+type, and a value in the type \C{seq A}.  The type of \C{cons} is
 thus written as follows:
 
 \begin{coq}{name=type_of_cons}{}
@@ -815,13 +818,14 @@ $~$
 $~$
 $~$
 \end{coq}
-\coqrun{name=about_cons_run}{about_cons}
 \begin{coqout}{about_cons_run}{width=9cm,title=Response}
 cons : forall A: Type, A -> seq A -> seq A
 
 Argument A is implicit and maximally inserted
 Argument scopes are [type_scope _ seq_scope]
 \end{coqout}
+\coqrun{name=about_cons_run}{about_cons}
+
 In practice, the \Coq{} system implements a mechanism to avoid that
 people need to give the type argument to the \C{cons} function.  This is
 the information meant by the message ``\C{Argument A is implicit and
@@ -846,7 +850,7 @@ for \C{cons} in the inductive type declaration).
 The first argument, which is implicit,
 has been guessed so that it matches the actually type of \C{2}.  For 
 \C{nil} also, the argument has been guessed to match the constraints
-that it is used in a place where a list of type \C{(list
+that it is used in a place where a list of type \C{(seq
 nat)} is expected.  
 
 This example, and the following ones, also show
