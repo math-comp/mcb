@@ -706,8 +706,17 @@ multiplication
 equality comparison (\C{eqn}, \C{==}), order
 comparison (\C{leq}, \C{<=}) on natural numbers.  The trailing \C{n} in
 the names is indeed to signal that these operations are on the \C{nat} data
-type.\marginnote{Why not leqn?  Georges?}
-The notation \C{n < m} is also provided to mean exactly \C{n.+1 <= m}.
+type.
+
+It is worth detailing the definition of \C{leq}. 
+
+\begin{coq}{}{}
+Definition leq m n := m - n == 0.
+Notation "m < n"  := (m.+1 <= n).
+\end{coq}
+Given that subtraction computes to \C{0} whenever \C{m} is less or equal
+that \C{n}, such definition is correct.  Finally note that the strict order
+relation is just a notation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: generic containers}
@@ -723,13 +732,13 @@ Inductive listn := niln | consn (hd : nat) (tl : listn).
 
 Such data type can hold zero or more natural numbers, for example
 
-\begin{coq}{}{}
+\begin{coq}{}{width=6.5cm}
 Check consn 1 (consn 2 niln).
 Check consn true (consn false niln).
 \end{coq}{}{}
-\begin{coqout}{}{}
- consn 1 (consn 2 niln) : listn
- Error ...
+\begin{coqout}{}{width=5.7cm}
+consn 1 (consn 2 niln) : listn
+Error ...
 \end{coqout}{}{}
 
 As expected, it can't hold boolean values.  So if we need to
