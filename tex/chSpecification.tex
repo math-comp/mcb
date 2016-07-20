@@ -878,7 +878,7 @@ definition/predicate under study but by the view/spec used to reason about it}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Real proofs, finally!}\label{sec:realproofs}
 
-So far we've only tackled simple proofs, most of them did admit a one line
+So far we've only tackled simple lemmas, most of them did admit a one line
 proof.  When proofs get longer \emph{structure} is the best alley in making
 them readable and maintainable.  Structuring proofs mans identifying
 intermediate results, factor similar lines of reasoning (e.g. symmetries),
@@ -895,6 +895,7 @@ euclidean division algorithm.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsection{Primes, a never ending story}\label{sec:infprimes}
+\index[concept]{forward reasoning}
 
 Saying that primes are infinite can be phrased as: for any natural number
 $m$, there exists a prime greater than $m$.  The proof of this claim goes like
@@ -1009,6 +1010,8 @@ that a full line should represent a meaningful reasoning step
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
 \mcbsubsection{Order and max, a matter of symmetry}\label{sec:leqmax}
+\index[concept]{forward reasoning}
+\index[concept]{symmetric argument}
 
 It is quite widespread in paper proofs to appeal to the reader's intelligence
 pointing out that a missing part of the proof can be obtained by symmetry.
@@ -1252,6 +1255,7 @@ This very compact idiom \C{/leq_trans->} is quite frequent in the
 %%%%%%%%%%%%%%%5
 \mcbLEVEL{3}
 \mcbsubsection{Euclidean division, simple and correct}
+\index[concept]{simplifying equation}
 
 Euclidean division is defined as one expects: iterating subtraction.
 

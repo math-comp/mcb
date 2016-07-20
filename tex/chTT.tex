@@ -213,7 +213,7 @@ the \C{conj} constructor
 About conj. 
 \end{coq}
 \begin{coqout}{}{width=8cm}
-aonj: forall A B : Prop, A -> B -> A /\ B
+conj: forall A B : Prop, A -> B -> A /\ B
 \end{coqout}
 we may wonder what happens if the type of the second argument (i.e. \C{B}) is
 made dependent on the value of the first argument (of type \C{A}).
@@ -302,6 +302,7 @@ on which an inductive family may vary.
 Inductive eq (A:Type) (x:A) : A -> Prop := erefl : x = x
 where "x = y" := (@eq _ x y) : type_scope.
 \end{coq}
+\index[concept]{equality}
 
 This is the first time we see a function type after the \C{:} symbol, line 1.
 The \C{eq} type constructor takes three arguments: a type \C{A} and
@@ -329,6 +330,7 @@ while the type of \C{px} is \C{(P x)} it is accepted as an
 inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
 is automatically replaced by \C{x}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof commands}
 
 Since proofs are just terms, one can hardly use the term language to
@@ -717,10 +719,10 @@ proofs and produce in output other proofs.  Let's look at the
 induction principle for natural numbers trough the looking glasses of the
 Curry-Howard isomorphism.
 
-\begin{coq}{}{title=Query,width=3.5cm}
+\begin{coq}{}{width=3.5cm}
 About nat_ind.
 \end{coq}
-\begin{coqout}{}{title=Response,width=9cm}
+\begin{coqout}{}{width=9cm}
 nat_ind : forall P : nat -> Prop,
   P 0 -> (forall n : nat, P n -> P n.+1) -> forall n : nat, P n
 \end{coqout}
@@ -743,6 +745,33 @@ is defined.  Recall that recursive functions are checked for termination:
 trough the lenses of the proofs as programs correspondence this means
 that the induction principle just coded is sound, i.e. based on a well
 founded order relation.
+\index[concept]{termination}
+\index[concept]{consistency}
+
+If non-terminating functions are not ruled out, it easy to inhabit
+the \C{False} type, even if it lacks a proper constructor.
+
+\begin{coq}{}{}
+Fixpoint oops (n : nat) : False := oops n.
+Check oops 3.  (* : False *)
+\end{coq}
+Of course \Coq{} rejects the definition of \C{oops}.  To avoid
+loosing consistency, \Coq{} also enforces some restrictions on
+inductive data types.  For example the declaration of \C{hidden}
+is rejected.
+
+\begin{coq}{}{}
+Inductive hidden := Hide (f : hidden -> False).
+Definition oops (hf : hidden) : False := let: Hide f := hf in f hf.
+Check oops (Hide oops).  (* : False *)
+\end{coq}
+Note how \C{oops} calls itself, as in the previous example,
+even if it is not a recursive function.
+Such restriction, called
+\emph{positivity condition}, is out of scope for this book.  
+The interested reader shall
+refer to~\cite{Coq:manual}.
+\index[concept]{positivity}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -858,4 +887,5 @@ Nevertheless, when proving a statement that is not a boolean, like
 
 In other cases axioms can be avoided by rephrasing the mathematics
 in a weaker setting.  A notable example in the \mcbMC{} library
-is the construction of the real closure of an Archimedian field~\cite{cyril}.\marginnote{TODO Cyril: say more about RCF}
+is the construction of the real closure of an Archimedian
+field~\cite{DBLP:conf/itp/Cohen12}.\marginnote{TODO Cyril: say more about RCF}
