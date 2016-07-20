@@ -1036,6 +1036,43 @@ the values selected by the boolean test \C{p}.
 Another useful function for sequences is \C{cat} (with infix notation \C{++})
 that is used to catenate two sequences together.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Other containers}\label{sec:othercontainers}
+The simplest polymorphic data type is the option type
+
+\begin{coq}{}{}
+Inductive option A := None | Some (a : A).
+\end{coq}
+It represents a box that can be either empty or contain a value.
+It is sometimes used to represent a partial function, or a filter.
+
+\begin{coq}{}{}
+Definition only_odd n : option n := if odd n then Some n else None.
+\end{coq}
+For example the sub-type kit presented in Chapter~\ref{ch:sigmabool} makes use
+of the option type to describe a partial injection.
+
+Another widespread polymorphic data type is the one of pairs, that
+lets one put together any two values.  While we leave its definition
+as an exercise (see~\ref{ex:pair}) we briefly discuss the associated
+notations: \C{(a,b)} builds the pair of \C{a} and \C{b} while \C{c.1}
+projects the first component of the pair \C{c}.  The type of pairs is
+denoted by an infix \C{*} symbol: \C{(nat * bool)} is the type of
+pairs that have a natural number as the first component and a boolean
+value as the second one.
+
+\begin{coq}{}{width=6cm}
+Check (3, false)
+Eval compute in (true, false).1
+\end{coq}
+\begin{coqout}{}{width=6cm}
+(3, false) : nat * bool
+true : bool
+\end{coqout}
+As one expects pairs can be nested, as in \C{(3,true,4)}, that is sugar
+for \C{((3,true),4)}.  In such situation the value \C{true} can be
+accessed by writing \C{(3,true,4).1.2}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Section mechanism}
 \index[concept]{section}
