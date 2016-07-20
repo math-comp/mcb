@@ -64,6 +64,9 @@ theorems, starting with the simplest, and most pervasive, kind of
 mathematical sentences: identities.
 
 \subsection{Ground equalities}\label{ssec:groundeq}
+\index[concept]{proposition}
+\index[concept]{equality}
+\index[concept]{ground equality}
 
 \Coq{} provides a binary predicate named \C{eq} and equipped with the
 infix notation \C{=}. This predicate is used to write sentences
@@ -75,10 +78,10 @@ parameter variables\footnote{For instance $2 + 2 = 4$ is a ground
 
 In Chapter~\ref{ch:prog}, we have used the \C{Check}
 vernacular command to query the type of a defined object: we can use
-the same very same command to \emph{check} whether a formal statement
+the very same command to \emph{check} whether a formal statement
 is well formed:
 
-\begin{coq}{name=check-eq}{width=6cm,title=Equality predicate}
+\begin{coq}{name=check-eq}{width=6cm,title=Equalities have a type}
 Check 3 = 3.
 Check false || true = true.
 \end{coq}
@@ -92,7 +95,7 @@ Let's anatomize the two above examples. Indeed, just like \Coq{}'s
 type system prevents us from applying functions to
 arguments of a wrong nature, it also enforces a certain nature of
 well-formedness at the time we enunciate sentences that are candidate
-theorems. On first important thing to
+theorems. One first important thing to
 keep in mind is that, in \Coq{}, formal statements are themselves
 \marginnote{Where do we define what are terms and what are types...}
 \emph{terms}. And therefore, statements also have a \emph{type}. An
@@ -127,13 +130,15 @@ constant in both our examples, once for equating two terms of type
 
 \marginnote{Did we say earlier that implicit arguments should not be
   provided? LR:yes}
-Its first argument being implicit, it value is not provided by the
-user\footnote{The system even raises an error if it is provided.} but
-guessed from the type of the hand-sides of the equality we state: \C{(3
-= 3)} unfolds to \C{(eq _ 3 3)} and the missing value is set at
+Since its first argument is implicit, its value is not provided by the
+user%\footnote{The system even raises an error if it is provided.} 
+:make
+but
+rather guessed from the type of the hand-sides of the equality we state: \C{(3
+= 3)} unfolds to \C{(eq _ 3 3)} and the missing value is set to
 \C{nat}, the type of \C{3}. Similarly, \C{(true = false || true)}
-unfolds to \C{(eq _ true (false || true))} and the missing value is set
-at \C{bool}, the common type of \C{true} and \C{(false || true)}.
+unfolds to \C{(eq _ true (false || true))} and the missing value is found
+to be \C{bool}, the common type of \C{true} and \C{(false || true)}.
 
 As the \Coq{} system checks the well -typedness of statements,
 the two hand sides of a well-formed equality should have the same
@@ -151,11 +156,11 @@ Error: The term "[:: 3]" has type "seq nat"
 
 Yet it does not check the provability of the statement!
 
-\begin{coq}{name=false-statement}{width=4cm,title=Equality predicate}
+\begin{coq}{name=false-statement}{width=6cm,title=False equality}
 Check 3 = 4.
 \end{coq}
 \coqrun{name=check34}{false-statement}
-\begin{coqout}{run=check34}{title=Response,width=8cm}
+\begin{coqout}{run=check34}{title=Response,width=6cm}
 3 = 4 : Prop
 \end{coqout}
 
@@ -198,7 +203,7 @@ a tour of slightly more complex formal statements.
 For now, let us then just admit this result, using the \C{Admitted}
 command:
 
-\begin{coq}{name=first-lemma-admitted}{width=6cm,title=Aborting a proof}
+\begin{coq}{name=first-lemma-admitted}{title=Admitting a proof}
 Lemma my_first_lemma : 3 = 3.
 Admitted.
 \end{coq}
@@ -206,19 +211,19 @@ Admitted.
 Although we have not (yet) provided a proof for this lemma, a new
 definition has been added to our environment:
 
-\begin{coq}{name=about-first-lemma}{width=6cm,title= My first lemma}
+\begin{coq}{name=about-first-lemma}{width=6cm}
 About my_first_lemma.
 \end{coq}
 \coqrun{name=about}{ssr,first-lemma-admitted,about-first-lemma}
-\begin{coqout}{run=about}{title=Response,width=6cm}
+\begin{coqout}{run=about}{width=6cm}
 my_first_lemma : 3 = 3
-...
 \end{coqout}
 
-\marginnote{I guess it is too early to say that this is a
-  type... Shall we mention Print Assumptions here?}
+From now on we will omit the \C{Admitted} proof terminator, and
+simply list the statement of the theorem.
 
 \subsection{Identities}\label{ssec:id}
+\index[concept]{identity}
 
 
 Ground equalities are just a very special case of mathematical
@@ -229,17 +234,17 @@ Let us state for instance the identity expressing the associativity of
 the addition operation \C{addn} on natural numbers:
 
 \begin{coq}{name=addnA}{width=6cm,title=Stating quantified lemmas}
-Lemma addnA (n m k : nat) :
-  n + (m + k) = m + n + k.
+Lemma addnA (m n k : nat) :
+  m + (n + k) = m + n + k.
 Proof.
 \end{coq}
 \coqrun{name=addnA}{ssr,addnA,show1,abort}
 \begin{coqout}{run=addnA;out=g1}{title=Response,width=6cm}
 1 subgoal
 
- n, m, k : nat
+ m, n, k : nat
  ============================
-  n + (m + k) = m + n + k
+  m + (n + k) = m + n + k
 \end{coqout}
 
 Note that in the statement of \C{addnA}, the right hand side does not
@@ -251,8 +256,7 @@ dropping type annotations if these types can be inferred from the
 statement itself:
 
 \begin{coq}{name=addnA2}{title=Stating quantified lemmas}
-Lemma addnA n m k : n + (m + k) = m + n + k.
-Admitted.
+Lemma addnA n m k : m + (n + k) = m + n + k.
 \end{coq}
 
 \marginnote{ I am cheating here and I do not use the associative
@@ -267,7 +271,6 @@ neutral for the boolean disjunction operation \C{orb}. Recall that
 
 \begin{coq}{name=orbT}{title=A boolean identity}
 Lemma orbT b : b || true = true.
-Admitted.
 \end{coq}
 
 
@@ -279,17 +282,10 @@ propositional tautology. We provide below some other examples of such
 propositional equivalences stated as boolean identities.
 \marginnote{LR: is it clear that $\top$ is true?}
 
-\begin{coq}{name=orbA}{title=Boolean conjunction is associative}
-Lemma orbA b1 b2 b4 :
-  b1 || (b2 || b3) = b1 || b2 || b3.
-\end{coq}
-
-\begin{coq}{name=implybE}{title=Examples of boolean identities}
+\begin{coq}{name=orbA}{}
+Lemma orbA b1 b2 b4 : b1 || (b2 || b3) = b1 || b2 || b3.
 Lemma implybE a b : (a ==> b) = ~~ a || b.
-Admitted.
-
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
-Admitted.
 \end{coq}
 
 \marginnote{I put examples of classical identity on purpose. What
@@ -341,21 +337,12 @@ We omit the type of the parameters, for the sake of
 conciseness.\marginnote{At some point, explain the naming conventions
   on bound variables and the use of Implicit Types.}
 
-\begin{coq}{name=equivalences}{title=Examples of equivalences}
+\begin{coq}{name=equivalences}{}
 Lemma eqn_leq m n : (m == n) = (m <= n) && (n <= m).
-Admitted.
-
 Lemma neq_ltn m n : (m != n) = (m < n) || (n < m).
-Admitted.
-
 Lemma leqn0 n : (n <= 0) = (n == 0).
-Admitted.
-
 Lemma dvdn1 d : (d %| 1) = (d == 1)
-Admitted.
-
 Lemma odd_mul m n : odd (m * n) = odd m && odd n.
-Admitted.
 \end{coq}
 \marginnote{Also, at this stage, we have two ways of stating
   equalities between say two natural numbers. It is probably too early
@@ -375,12 +362,9 @@ only when some condition is verified by its parameters is stated using an
   is ``\C{->}''.  For instance:
  % \marginnote{Shall we also introduce here the other idioms like \L+\{in _, _\}+? Or in the next chapter?} 
 
-\begin{coq}{name=implication}{title=Implication sentences}
+\begin{coq}{name=implication}{title=Implication}
 Lemma leq_pmull m n : n > 0 -> m <= n * m.
-Admitted.
-
 Lemma odd_gt0 n : odd n -> n > 0.
-Admitted.
 \end{coq}
 
 The attentive reader might have noticed that this arrow \C{->} is the
@@ -391,9 +375,7 @@ that \C{->} associates on the right: therefore a succession of arrows
 expressed a conjunction of hypotheses:
 
 \begin{coq}{name=dvdn-mul}{title=A (multi)conditional statement}
-Lemma dvdn_mul d1 d2 m1 m2 :
-  d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
-Admitted.
+Lemma dvdn_mul d1 d2 m1 m2 : d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
 \end{coq}
 
 \marginnote{Currification deserves more comments but it is probably too
@@ -583,7 +565,7 @@ Proof.
 case: b.
 \end{coqdef}
 \coqrun{name=negbkt2}{ssr,negbkt2,show1,done,show2,verbose,done,qed}
-\begin{coq}{def=negbkt2}{width=6cm,title=Double negation elimination}
+\begin{coq}{def=negbkt2}{width=6cm,title=Reasoning by cases}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
@@ -621,7 +603,7 @@ observe that after this case analysis, each proof amounts to a
 reflexivity argument, in the spirit of what we did in
 section~\ref{ssec:proofcomp}. We first close the first branch:
 
-\begin{coq}{def=negbkt2,done}{width=6cm,title=Double negation elimination}
+\begin{coq}{def=negbkt2,done}{width=6cm,title=First trivial case}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
@@ -642,7 +624,7 @@ that apply to each case. See Section~\ref{sec:goodprac} for more about good
 practices.
 
 
-\begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Double negation elimination}
+\begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Second trivial case}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
@@ -805,25 +787,22 @@ In order to let us treat first the successor case,
 despite it corresponds by default to the second subgoal, we are going
 to use the \C{last first} tactic:
 
-\begin{coq}{def=almostMulnEq2}{title=Second case analysis,width=7cm}
-Lemma muln_eq0 m n :
-  (m * n == 0) = (m == 0) || (n == 0).
+\begin{coq}{def=almostMulnEq2}{title=Second case analysis}
+Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
   by [].
 case: n => [|k]; last first.
 \end{coq}
-\begin{coqout}{def=almostMulnEq2}{title=Proof status,width=6cm}
+\begin{coqout}{def=almostMulnEq2}{}
 2 subgoals, subgoal 1
 
 m, n : nat
 ============================
-(m.+1 * n.+1 == 0) =
-  (m.+1 == 0) || (n.+1 == 0)
+(m.+1 * n.+1 == 0) = (m.+1 == 0) || (n.+1 == 0)
 
 subgoal 2 is:
- (m.+1 * 0 == 0) =
-   (m.+1 == 0) || (0 == 0)
+ (m.+1 * 0 == 0) = (m.+1 == 0) || (0 == 0)
 \end{coqout}
 Indeed when \C{n} is of the form \C{k.+1}, it is easy to see that the
 right hand side of the equality evaluates to \C{false}, as both
@@ -845,7 +824,7 @@ case: m => [|m].
 case: n => [|k]; last first.
   by [].
 \end{coq}
-\begin{coqout}{def=almostMulnEq3}{title=Proof status,width=6cm}
+\begin{coqout}{def=almostMulnEq3}{title=Proof status,width=5.5cm}
 1 subgoal
 
 m : nat
@@ -1020,7 +999,7 @@ logical equivalence that can in turn be used in proofs via the
 \C{leq_mul2l}, which provides a necessary and sufficient condition
 for the comparison \C{(m * n1 <= m * n2)} to hold:
 
-\begin{coq}{def=LeqMul2l}{title=Ordered products}
+\begin{coq}{def=LeqMul2l}{title=Another example: ordered products}
 Lemma leq_mul2l m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 \end{coq}
 
@@ -1043,33 +1022,33 @@ For this purpose, we use the rewrite tactic. However, the command
 \C{rewrite leq_def} only affects the first occurrence of \C{<=} and we
 would like to treat both.
 
-\begin{coq}{def=LeqMul2lproof1}{title=Unfolding leq,width=7.7cm}
+\begin{coq}{def=LeqMul2lproof1}{title=Unfolding leq,width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
-(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+ (m * n1 <= m * n2) = (m == 0) || ...
 Proof.
 rewrite leq_def.
 \end{coq}
-\begin{coqout}{def=LeqMul2lproof1}{title=Proof status,width=5cm}
+\begin{coqout}{def=LeqMul2lproof1}{title=Proof status,width=5.5cm}
 m, n1, n2 : nat
 ==========================
 (m * n1 - m * n2 == 0) =
-(m == 0) || (n1 <= n2)
+  (m == 0) || (n1 <= n2)
 \end{coqout}
 
 In order to rewrite \emph{all} the possible instances, we use a
 repetition flag:
 
-\begin{coq}{def=LeqMul2lproof1}{title=Unfolding leq repeatedly,width=7.7cm}
+\begin{coq}{def=LeqMul2lproof1}{width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
-(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+ (m * n1 <= m * n2) = (m == 0) || ...
 Proof.
 rewrite !leq_def.
 \end{coq}
-\begin{coqout}{def=LeqMul2lproof1}{title=Proof status,width=5cm}
+\begin{coqout}{def=LeqMul2lproof1}{width=5.5cm}
 m, n1, n2 : nat
 ==========================
 (m * n1 - m * n2 == 0) =
-(m == 0) || (n1 - n2 == 0)
+  (m == 0) || (n1 - n2 == 0)
 \end{coqout}
 \index[ssr]{\C{rewrite}! "! (iteration)}
 
@@ -1091,49 +1070,53 @@ right-to-left rewriting consists in adding a minus \C{-} to the name
 of the rewrite rule:
 
 
-\begin{coq}{def=LeqMul2lproof2}{title=Rewrite right-to-left,width=7.7cm}
+\begin{coq}{def=LeqMul2lproof2}{title=Rewrite right-to-left,width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
-(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+ (m * n1 <= m * n2) = (m == 0) || ...
 Proof.
-rewrite !leq_def.
-rewrite -mulnBr.
+rewrite !leq_def. rewrite -mulnBr.
 \end{coq}
-\begin{coqout}{def=LeqMul2lproof2}{title=Proof status,width=5cm}
+\begin{coqout}{def=LeqMul2lproof2}{title=Proof status,width=5.5cm}
 m, n1, n2 : nat
 ==========================
 (m * (n1 - n2) == 0) =
-(m == 0) || (n1 - n2 == 0)
+  (m == 0) || (n1 - n2 == 0)
 \end{coqout}
 \index[ssr]{\C{rewrite}! \C{-} (right-to-left)}
+\index[concept]{rewrite!multiple rules}
+Consecutive rewrite steps can be collapsed as follows:
 
+\begin{coq}{def=LeqMul2lproof2}{width=6.7cm}
+Lemma leq_mul2l m n1 n2 :
+ (m * n1 <= m * n2) = (m == 0) || ...
+Proof.
+rewrite !leq_def -mulnBr.
+\end{coq}
+\begin{coqout}{def=LeqMul2lproof2}{width=5.5cm}
+m, n1, n2 : nat
+==========================
+(m * (n1 - n2) == 0) =
+  (m == 0) || (n1 - n2 == 0)
+\end{coqout}
+\index[ssr]{\C{rewrite}! \C{-} (right-to-left)}
 The last step of the proof uses lemma \C{muln_eq0} to align the left
 and the right hand sides of the identity.
 
-\begin{coq}{def=LeqMul2lproof3}{title=Closing up, width=7.7cm}
+\begin{coq}{def=LeqMul2lproof3}{width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
-(m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+ (m * n1 <= m * n2) = (m == 0) || ...
 Proof.
-rewrite !leq_def.
-rewrite -mulnBr.
-rewrite muln_eq0.
+rewrite !leq_def -mulnBr muln_eq0.
 \end{coq}
-\begin{coqout}{def=LeqMul2lproof3}{title=Proof status,width=5.5cm}
+\begin{coqout}{def=LeqMul2lproof3}{width=5.5cm}
 m, n1, n2 : nat
 ==========================
 (m == 0) || (n1 - n2 == 0) =
-(m == 0) || (n1 - n2 == 0)
+  (m == 0) || (n1 - n2 == 0)
 \end{coqout}
 
 The proof could now be completed by prefixing the last tactic with the
-\C{by} command, which concludes the proof by reflexively. However we
-can obtain a much more compact proof script by chaining the three
-tactics into a single one: several consecutive rewriting steps can
-indeed be performed by a single invocation of the \C{rewrite} tactic.
-
-\begin{coq}{def=LeqMul2lproof}{title=Multiple rewrite rules}
-Lemma leq_mul2l m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
-Proof. by rewrite !leq_def -mulnBr muln_eq0. Qed.
-\end{coq}
+\C{by} command, which concludes the proof by reflexively.
 
 So far we have learnt the basic use of the \C{rewrite} tactic.
 The interested reader can find in Section~\ref{sec:rewrite2} more
@@ -1254,41 +1237,40 @@ and compact way standard properties.  Here we recall only few of them.
 Section StandardPredicates.
 Variable T : Type.
 Implicit Types (op add : T -> T -> T) (R : rel T).
-
-Definition associative op :=
-  forall x y z, op x (op y z) = op (op x y) z.
-
+Definition associative op := forall x y z, op x (op y z) = op (op x y) z.
 Definition left_distributive op add :=
   forall x y z, op (add x y) z = add (op x z) (op y z).
-
-Definition transitive R :=
-  forall y x z, R x y -> R y z -> R x z.
-
-
-Variables rT aT : Type.
-Implicit Types (f : aT -> rT).
-
-Definition injective f :=
-  forall x1 x2, f x1 = f x2 -> x1 = x2.
-Definition cancel f g := forall x, g (f x) = x.
-Definition pcancel f g := forall x, g (f x) = Some x.
-
+Definition transitive R := forall y x z, R x y -> R y z -> R x z.
 End StandardPredicates.
 \end{coq}
 \index[coq]{\C{associative}}
 \index[coq]{\C{transitive}}
 \index[coq]{\C{left_distributive}}
+
+Note that beside the standardization of the statements through these
+predicates, the \mcbMC{} library uses a systematic naming policy for the lemmas
+that are instances of these predicates. For instance a common suffix \C{C} is
+used for commutativity properties like \C{addnC} or \C{mulnC}.
+Such naming convention is also useful to search the library, as detailed
+in Section~\ref{sec:search}.
+
+Other relevant predicates worth mentioning are the one describing standard
+function properties:
+
+\begin{coq}{}{}
+Section MoreStandardPredicates.
+Variables rT aT : Type.
+Implicit Types (f : aT -> rT).
+Definition injective f := forall x1 x2, f x1 = f x2 -> x1 = x2.
+Definition cancel f g := forall x, g (f x) = x.
+Definition pcancel f g := forall x, g (f x) = Some x.
+End MoreStandardPredicates.
+\end{coq}
 \index[coq]{\C{injective}}
 \index[coq]{\C{cancel}}
 \index[coq]{\C{pcancel}}
 
-Note that beside the standardization of the statements through these
-predicates, the \mcbMC{} library uses a systematic naming policy for the lemmas
-that are instances of these predicates. For instance a common suffix \C{C}
-is used for commutativity properties like \C{addnC} or \C{mulnC}.
-\marginnote{To be expanded elsewhere?}
-
-Now it is worth discussing the type of these predicates.
+It is now time to discuss the type of these predicates.
 
 \begin{coq}{}{width=3.8cm}
 About commutative.
@@ -1296,9 +1278,9 @@ About commutative.
 \begin{coqout}{}{width=8.2cm}
 commutative : forall T : Type, (T -> T -> T) -> Prop.
 \end{coqout}
-It is a polymorphic function taking a binary operation and
+\C{commutative} is a polymorphic function taking a binary operation and
 building a \emph{proposition}, i.e. it has the same status as the
-identity statements that we have seen so far in this chapter:
+identity statements that we have seen previously in this chapter:
 
 \begin{coq}{}{width=6cm}
 Check 3 = 3.
@@ -1503,6 +1485,8 @@ for an equation to be conditional, hence for\C{rewrite} to generate side
 conditions.  It is good practice to solve such side conditions
 as soon as possible.  The first two side conditions are indeed
 trivial, and, as we did for \C{case}, can be solved by \C{//}.
+We also combine on the same line the first three step, using
+the semicolon.
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
@@ -1522,8 +1506,7 @@ and the side condition \C{(prime p)}.  Both are trivial, hence
 solved prefixing the line with \C{by}.
 
 \begin{coq}{}{}
-Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr.
@@ -1544,7 +1527,10 @@ Qed.
 To sum up, both \C{apply:} and \C{rewrite} are able to find the right
 instance of a quantified lemma and to generate sub goals
 for its eventual premises.  Hypotheses can be named using \C{move=>}.
+The proof script can be further reduced in size, as we describe in
+Section~\ref{sec:rewriet2}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Proofs by induction}\label{ssec:ind}
 \index[concept]{induction}
 \index[concept]{general term}
@@ -1676,7 +1662,7 @@ foldl f z (rev (s ++ [:: x])) =
 
 The instance of the induction hypothesis that we need is
 one where \C{z} takes \C{(foldr (fun y w => f w y) z [:: x])},
-i.e. the value of the accumulator to \C{fold} for a list
+i.e. the value of the accumulator to \C{foldr} for a list
 which last element is \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1785,7 +1771,7 @@ time quickly identified and disregarded when reading a proof.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
-\mcbsection{Rewrite, a swiss army knife}
+\mcbsection{Rewrite, a swiss army knife}\label{sec:rewrite2}
 
 Approximatively one third of the proof script in the \mcbMC{} library are
 invocations of the \C{rewrite} tactic.  Such proof command provides many
@@ -1842,7 +1828,7 @@ Proof. by rewrite [in RHS]addn0. Qed.
 \mcbLEVEL{2}
 \mcbsubsection{Rewrite contextual patterns}\label{sec:rewrite2}
 
-This example illustrates how the \C{rewrite} tactic, provided a
+The example \C{leq_mul2l} illustrates how the \C{rewrite} tactic, provided a
 rewrite rule like \C{leq_def}, \C{mulnBr} or \C{muln_eq0}, is able
 to identify a
 subterm in the goal to be substituted. The usability of the
