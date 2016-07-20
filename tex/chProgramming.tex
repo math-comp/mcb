@@ -4,12 +4,6 @@ TODO: uniform terminology (a function returns,produces, computes... patter match
 
 TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
 
-TODO: add typing error and non-well-founded recursion error.
-
-TODO: implicit arguments, mention curly braces
-
-TODO: let-in and let:
-
 %\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
 We will take the point of view that mathematics can be understood as
@@ -116,16 +110,15 @@ $~$
 \coqrun{name=about_f_run}{about_f}
 \begin{coqout}{run=about_f_run}{title=Response,width=6.5cm}
 f : nat -> nat
-Argument scope is [nat_scope] ...
 \end{coqout}
 \index[vernac]{\C{About}}
 This response confirms that \C{f} is a function from
 \({\mathbb{N}}\) to \({\mathbb{N}}\).
-We also learn that the \Coq{} system will pay attention to
-arguments of \C{f} in such a way that overloaded notations
-will be interpreted as notation for natural numbers.
-\marginnote{maybe place a footnote here to point to another paragraph
-about overloaded notations.  To  be discussed.}
+% We also learn that the \Coq{} system will pay attention to
+% arguments of \C{f} in such a way that overloaded notations
+% will be interpreted as notation for natural numbers.
+% \marginnote{maybe place a footnote here to point to another paragraph
+% about overloaded notations.  To  be discussed.}
 
 We can be more inquisitive in our requests for information about
 \C{f}, we can also require to know what is the value.  This is done in
@@ -152,6 +145,24 @@ type of \C{f} itself is the function type \C{nat -> nat}.  In fact,
 the colon character (when surrounded by spaces) will always be used to
 give type information.  Remark the similarity between the output of \C{Print}
 and the mathematical notation in \eqref{equation:f}.
+
+As we detail in Section~\ref{sec:ttch} types play an important role in \Coq{}.
+In particular they are used to avoid confusion.  For example
+the function \C{f} we just defined can be applied to a natural number,
+i.e. a term of type \C{nat}, but not to, say, a function.
+
+\begin{coq}{name=print_f}{width=5.3cm,title=Type error}
+Check f 3.
+Check f (fun x : nat => x).
+$~$
+$~$
+\end{coq}
+\begin{coqout}{run=print_f_run}{title=Response,width=7cm}
+f 3 : nat
+Error: The term "(fun x : nat => x)"
+has type "nat -> nat" while it is
+expected to have type "nat".
+\end{coqout}
 
 The function \C{f} operates on natural numbers, of type \C{nat}, but
 we can also define functions that operate on functions.  For instance,
@@ -223,7 +234,7 @@ the type, methods to build elements of this type, and methods to
 use elements of the type while computing.  This approach is used
 systematically in \Coq{} to define a variety of basic datatypes, among
 which boolean values, natural numbers, pairs and sequences of values
-are the most prominents examples.  We will study these examples in
+are the most prominent examples.  We will study these examples in
 turn.
 \subsection{Boolean values}
 The type \C{bool} of boolean values contains two values that can be
@@ -237,8 +248,8 @@ Inductive bool := true | false
 \end{coq}
 \index[vernac]{\C{Inductive} (data type)}
 \marginnote{I guess we should use Type, also for bool, and not even mention Set}
-This declaration states explicitely that there are only two cases for
-elements of type \C{bool}.  the first case is given by the constant
+This declaration states explicitly that there are only two cases for
+elements of type \C{bool}.  The first case is given by the constant
 \C{true}, the second case by the constant \C{false}.  Thus, the
 declaration of the type gives in an obvious manner the type, \C{bool},
 and ways to build all its elements, \C{true}, and \C{false}.  All definitions
@@ -314,7 +325,7 @@ Definition andb b1 b2 := if b1 then b2 else false
 
 % \subsubsection{TODO : A note on associativity for notations}
 
-\subsection{natural numbers}
+\subsection{Natural numbers}
 The description of natural numbers in the \Coq{} system is inspired from
 the work of Peano at the beginning of the twentieth century.  The
 basic idea is that any natural number is either 0 or the successor of
@@ -592,8 +603,10 @@ expressions, but these equalities are always used from left to right during
 computations.
 
 When writing recursive functions, the \Coq{} systems imposes the
-constraint that the described computation must be guaranteed to
-terminate.  This guarantee relies on an analysis of the function's
+constraint that the described computation must be \emph{guaranteed to
+terminate}.  The reason for this requirement is sketched in
+Section~\ref{sec:indreason}.
+This guarantee relies on an analysis of the function's
 description, to make sure that recursive calls always happen with a
 given argument that decreases.  The most frequent technique to
 establish this guarantee is that recursive calls happen on a variable
@@ -606,7 +619,19 @@ For instance, in the case of \C{addn}, the recursive call happens
 with \C{p} as the first argument, \C{p} was introduced by the pattern \C{p.+1}
 in the corresponding pattern-matching rule, the pattern-matching
 construct was observing \C{n}, and \C{n} is the first argument of the
-function \C{addn}.
+function \C{addn}.  An erroneous, in the sense of non terminating,
+definition is rejected by \Coq{}.
+
+\begin{coq}{name=loop}{width=6cm,title=Non-terminating program}
+Fixpoint loop n :=
+ if n is 0 then loop n else 0.
+$~$
+\end{coq}
+\begin{coqout}{}{title=Response,width=6cm}
+Error: recursive call to loop has
+principal argument equal to  "n"
+instead of a subterm of "n".
+\end{coqout}
 
 % In function \C{add}, the first argument \C{n} is only used to
 % repeat \C{n} times the operation of adding a \C{.+1} on the second
@@ -629,7 +654,7 @@ subtraction is already defined in the libraries, but we can play the game
 of re-defining our own version.
 
 \begin{coq}{name=sub}{}
-Fixpoint subn m n :=
+Fixpoint subn m n : nat :=
   match m, n with
   | p.+1, q.+1 => subn p q
   | _ , _ => m
@@ -670,7 +695,7 @@ notation.  For instance we can attach a notation to \C{eqn} in
 the following manner:
 
 \begin{coq}{name=notation_my_eq}{}
-Notation "x == y" := (eqn x y) (at level 70, no associativity).
+Notation "x == y" := (eqn x y).
 \end{coq}
 This equality test function can then be used in other algorithms.  Now
 that we have programmed this equality test function, we can verify
@@ -678,10 +703,10 @@ that the \Coq{} system really identifies various ways to write the same
 natural number.
 
 \begin{coq}{name=equalities}{width=6cm}
-Eval compute in 0 == O.
-Eval compute in 1 == S O.
+Eval compute in 0 == 0.
+Eval compute in 1 == S 0.
 Eval compute in 1 == 0.+1.
-Eval compute in 2 == S O.
+Eval compute in 2 == S 0.
 Eval compute in 2 == 1.+1.
 Eval compute in 2 == add 1 0.+1
 \end{coq}
@@ -694,7 +719,6 @@ Eval compute in 2 == add 1 0.+1
 = true : bool
 = true : bool
 \end{coqout}
-\marginnote{Is the use of O intended (instead of 0)?  To me this is not adding much to the picture.  Actually in an ideal system I'd like to write \C{Ind.. nat := 0 | (n:nat).+1}; The fact that we need an ``ident'' name for each constructor is incidental.  Given the influence of Coq Art on Coq, we may say that explicitly ;-)}
 
 In this section, we introduced a variety of functions and notations
 for operations on natural numbers.  In practice, these functions and
@@ -719,7 +743,7 @@ that \C{n}, such definition is correct.  Finally note that the strict order
 relation is just a notation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data: generic containers}
+\section{Data: generic containers}\label{sec:poly}
 
 It is often the case that we wish to group several objects in a
 sequence that can be manipulated as a single object.  For instance, we
@@ -735,10 +759,14 @@ Such data type can hold zero or more natural numbers, for example
 \begin{coq}{}{width=6.5cm}
 Check consn 1 (consn 2 niln).
 Check consn true (consn false niln).
+$~$
+$~$
 \end{coq}{}{}
 \begin{coqout}{}{width=5.7cm}
 consn 1 (consn 2 niln) : listn
-Error ...
+Error: the term "true" has
+type "bool" while it is
+expected to have type "nat".
 \end{coqout}{}{}
 
 As expected, it can't hold boolean values.  So if we need to
@@ -831,7 +859,6 @@ $~$
 cons : forall A: Type, A -> seq A -> seq A
 
 Argument A is implicit and maximally inserted
-Argument scopes are [type_scope _ seq_scope]
 \end{coqout}
 \coqrun{name=about_cons_run}{about_cons}
 
@@ -1160,7 +1187,7 @@ argument, hence \C{pred} is stuck.  Is some sense \C{addn} is more
 explicit about its result, and this helps, for example, to show that
 \C{(addn n.+1 7)} is different from 0. As we have seen \Coq{} computes
 automatically and in this case computation would expose a \C{S} symbol
-and no natural number of the form \C{(S $~something$)} can be equal to 0.
+and no natural number of the form \C{(S  ..)} can be equal to 0.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Iterators in mathematics}
@@ -1191,7 +1218,7 @@ of the iteration.
 \begin{coq}{}{width=8.5cm,title=Query}
 Eval compute in \sum_( 1 <= i < 5 ) (i * 2 - 1).
 Eval compute in \sum_( 1 <= i < 5 ) i.
-\end{coq}{}{}
+\end{coq}
 \begin{coqout}{}{width=3.5cm,title=Response}
 = 16 : nat
 = 10 : nat
@@ -1202,18 +1229,149 @@ It is important that the iteration happens following the order of the list.
 In this case the operation, addition, is commutative, so it does not really
 matter, but it may not be the case for example if the iterated operation
 is group multiplication.  What is even more crucial is that
-the function argument passed to \C{foldr} is able to represent
-faithfully the general term that make iterated operations so
-flexible and widely used in mathematics.
+\C{foldr} takes in input a \emph{functional argument that
+is able to represent faithfully any general term}.
 
 The ability to write programs that manipulate functions, like \C{foldr}, is
 crucial not only to provide convenient notations.  As we sketched in the
 previous section we will be able to prove properties about \C{foldr} without
 knowing the iterated function.  By assuming properties linking the iterated
-operation to the initial value, like forming a monoid, we will be able to
+operation to the initial value, like forming a Monoid, we will be able to
 provide a generic theory of iterated operations.  Such theory becomes richer
 when the operation is also commutative, and even richer when we combine two
 operations that distribute.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Notations and abbreviations}
+
+We mentioned many times already the \C{Notation} command only appealing to the
+reader's intuition: a notation relates some symbols with a term.  The actual
+syntax is more complex, letting one specify associativity and precedence to the
+parsing engine, as well as the group (called scope) to which the notation
+belongs and some hint for printing, like good line breaking points.
+
+\begin{coq}{}{}
+Notation "m + n" := (addn m n) (at level 50, left associativity). 
+Notation "n .+1" := (succn n) (at level 2, left associativity,
+  format "n .+1") : nat_scope.
+\end{coq}
+A comprehensive description of such command goes behind
+the scope of this book, the interested reader shall refer to~\cite{Coq:refman}.
+
+What is worth mentioning here is some conventions either imposed by \Coq{}
+or adopted in the \mcbMC{} library.
+
+\begin{itemize}
+\item A symbol starts with a non alpha-numerical character followed by
+	any character.  For example \C{.+1} is a single symbol, as
+	\C{.+4} and \C{\%/} and \C{<=} and \C{[::}.  Only existing
+	symbols are taken into account: \C{3.+1.+1} is parsed as a number
+	forllowed by two occurrences of the \C{.+1} symbol; \C{.+1.+1} could
+	be a symbol, in principle, but no notation declares it.
+			\marginnote{I know it is not correct, but no user would prefer the correct explanation}
+\item Notations that are typically denoted with a letter, like $N(G)$ for the
+	normalizer of the group $G$ are represented with symbols begining
+	with \c{'} as in \C{'N(G)}, where \C{'N} is a symbol.
+\item At the time of writing, notations for numerical constants are specially
+	handled by the system.  The algebraic part of the library overrides
+	specific cases, like binding \C{1} and \C{0} to ring elements.
+\item n-ary notations begin with \C{[} followed by the symbol of the
+	operation being repeated, as in \C{[&& true, false & false]}.
+\item postfix notataions begin with \C{.}, as in \C{.+1} and \C{.-group}
+	to let one write \C{(p.-group G)}.
+\end{itemize}
+
+Another frequently used form of notation is called syntactic abbreviation.
+It simply lets one specify a shorter name.  For example the \C{S} constructor
+of natural numbers (placed in \C{Datatype} name space) can also be accessed
+by writing \C{succn}.  This is useful if \C{S} is used in the current context
+to, say, denote a ring.
+
+\begin{coq}{}{}
+Notation succn := Datatypes.S.
+\end{coq}
+
+Abbreviations can also be local to a term, to avoid repetitions.
+
+\begin{coq}{}{}
+let p := n.-1 in
+  if n is m.+1 then p == m else p == 0
+\end{coq}
+\index[coq]{\C{let-in}}
+Here \C{p} is a name given to the expression \C{n.-1} and
+used twice the following expression.  Let-in abbreviations are
+fully transparent, exactly as notations.  There is no semantic
+difference between the previous expression and the following one.
+\begin{coq}{}{}
+  if n is m.+1 then n.-1 == m else n.-1 == 0
+\end{coq}
+Still the computation engine of \Coq{} uses to let-in as hints
+to compute the named expression only once, so the execution time
+of the two expressions above may vary.
+
+Last, we recall the notion of implicit argument sketched in
+Section~\ref{sec:poly}.  Once implicit arguments are active for
+the \C{cons} and \C{nil} constructors the writing \C{(cons 3 nil)} 
+shorthand for \C{(cons _ 3 (nil _))}.  The \C{_} denotes a term,
+here a type, to be inferrer by \Coq{}.  In this case the typing constraints
+of impose both \C{_} to be \C{nat}.  To locally disable the
+status of implicit arguments one can prefix the name of a
+constant with \C{@} and pass all arguments explicitly as in
+\C{(@cons nat 3 nil)}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Aggregated data: records}
+
+Sometime one wants to aggregate already available data into a single object.
+For example a point in the 3-dimensional space could be represented with
+three natural numbers.
+
+Such need is so frequent that \Coq{} provides a specialized command
+to declare such class of datatype.
+
+\begin{coq}{}{}
+Record point := Point { x : nat; y : nat; z : nat }.
+\end{coq}
+Such writing is mostly equivalent to the following one
+
+\begin{coq}{}{}
+Inductive point := Point (x : nat) (y : nat) (z : nat).
+\end{coq}
+
+The main advantage of using \C{Record} is that \Coq{} uses the names of the
+constructor fields to generate functions to access the field's contents.  We
+call these programs \emph{projections}.  I.e. after the \C{Record} declaration
+one can write:
+
+\begin{coq}{}{width=8.5cm,title=Query}
+Eval compute in x (Point 3 0 2)
+Eval compute in y (Point 3 0 2)
+\end{coq}{}{}
+\begin{coqout}{}{width=3.5cm,title=Response}
+= 3 : nat
+= 0 : nat
+\end{coqout}{}{}
+Where the code for the \C{x} projection is, as expected:
+
+\begin{coq}{}{}
+Definition x (p : point) := match p with Point a _ _ => a end.
+\end{coq}
+Inductive data with a single constructor, as records, comes
+equipped with a specific notation for single-branch pattern
+matching:
+
+\begin{coq}{}{}
+Definition x (p : point) := let: Point a _ _ := p in a.
+\end{coq}
+
+Records can as well be polymorphic, for example the pair data type of
+Exercise~\ref{ex:pair} can carry two values of any type.
+
+Records play a major role in the \mcbMC{} library, in particular
+in the modelling of algebraic structures.   As we see in later chapters
+records lets one pack together types, operations on these types and
+finally the properties of these operations.  For example a record
+can model the signature of a Ring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Exercises}
@@ -1229,12 +1387,14 @@ or equal than another one.
 %%%%%%%%
 \begin{Exercise}[label=ex:pair,difficulty=0,title={The pair datatype}]
 Define the pair datatype such that the following notation
-applies.  Also define the first projection.
+applies.  Also define the projections.
 
 \begin{coq}{}{width=7cm}
 Notation "( A , B )" := (pair A B).
-Eval compute in fst (4, 5).
-Eval compute in fst (true, false).
+Notation "p .1" := (fst p).
+Notation "p .2" := (snd p).
+Eval compute in (4, 5).1.
+Eval compute in (true, false).2.
 \end{coq}
 \begin{coqout}{}{width=5cm}
 $~$
@@ -1347,8 +1507,8 @@ Definition leq m n := m - n == 0.
 Inductive prod (A B : Type) := pair (a : A) (b : B).
 Notation "A * B" := (prod A B) : type_scope.
 Notation "( A , B )" := (pair A B).
-Definition fst A B (p : A * B) :=
-  match p with (a, _) => a end.
+Definition fst A B (p : A * B) := let: (a, _) := p in a.
+Definition snd A B (p : A * B) := let: (_, b) := p in b.
 \end{coq}
 \index[coq]{\C{(_ * _)} (type scope)}
 \index[coq]{\C{(_ , _)} (pairs)}

@@ -704,7 +704,7 @@ It is just a marker to distinguish the \C{apply:} tactic of
 Ssreflect from the \C{apply} tactic of \Coq{}.  Indeed the two tactics, while
 playing similar roles, behave very diferently.}
 
-\section{Inductive reasoning}
+\section{Inductive reasoning}\label{sec:indreason}
 
 In chapter 1 we have seen the \C{fun} construction of functions and inductive
 data types like \C{nat} as well as the pattern matching.  All these
@@ -741,7 +741,8 @@ Fixpoint nat_ind (P : nat -> Prop)
 The \Coq{} system generates such program when the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
 trough the lenses of the proofs as programs correspondence this means
-that the induction principle just coded is sound.
+that the induction principle just coded is sound, i.e. based on a well
+founded order relation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
