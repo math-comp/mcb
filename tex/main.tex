@@ -3,6 +3,7 @@
 \input{mymacros.tex}
 \input{myacronyms.tex}
 
+\makeindex[name=concept,title=Index: Concepts,intoc]
 \makeindex[name=ssr,title=Index: Ssreflect tactics,intoc]
 \makeindex[name=coq,title=Index: Coq terms,intoc]
 \makeindex[name=vernac,title=Index: Coq commands,intoc]
@@ -114,6 +115,7 @@ operator (complement a base).
 
 %\clearpage
 %\addcontentsline{toc}{chapter}{Index}
+\printindex[concept]
 \printindex[ssr]
 \printindex[coq]
 \printindex[vernac]

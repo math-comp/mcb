@@ -36,6 +36,7 @@ a natural number}.  This operation is written in the following manner.
 \begin{coq}{name=exfun}{}
   fun n => n + 1
 \end{coq}
+\index[coq]{\C{fun-=>-}}
 To write such an operation, we can start from the expression \C{(2 + 1)}
 and isolate the object in this expression that is considered a
 variable component for the operation, here \C{2}, we then replace
@@ -44,6 +45,7 @@ the expression \C{(n + 2)} with the prefix ``\C{fun n =>}'' to relate
 the result produced by the operation to the input \C{n}.  We commonly
 say that ``\C{fun n =>}'' \emph{binds} the variable \C{n} in the expression
 \C{n + 2}.
+\index[concept]{binder}
 
 So we have an expression which represents the operation of adding 1.
 Applying this operation to the object \C{2} will be written this
@@ -52,6 +54,7 @@ way:
 \begin{coq}{name=exapp}{}
   (fun n => n + 1) 2
 \end{coq}
+\index[concept]{function application}
 From the point of view of mathematical syntax, there are two unusual 
 things in this line.  First, applying a function to an argument is simply
 by writing the function on left of the argument, {\em not necessarily
@@ -99,6 +102,7 @@ Definition f (x : nat) : nat := x + 1.
 \end{coq}
 In this description, \C{nat} is called a {\em type}.  Types describe
 collections of objects that can be treated in a uniform way.
+\index[concept]{type}
 
 Once a definition was made, the \Coq{} system provides a command to
 describe the relevant information about the constant that is defined:
@@ -163,9 +167,11 @@ Error: The term "(fun x : nat => x)"
 has type "nat -> nat" while it is
 expected to have type "nat".
 \end{coqout}
+\index[concept]{type error}
 
 The function \C{f} operates on natural numbers, of type \C{nat}, but
-we can also define functions that operate on functions.  For instance,
+we can also define functions that operate on functions, called
+\emph{higher order functions}.\index[concept]{higher order}  For instance,
 the following definition introduces a function that takes a function
 from \C{nat} to \C{nat} and produces a new function from \C{nat} to
 \C{nat}.
@@ -224,6 +230,7 @@ intermediate function is \C{(fun x => f (f x))}, so the result
 expression is \C{(f (f 2))}.
 Remembering the definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
+\index[concept]{computation}
 
 \marginnote{it would be nice to have one more example here, or exercises.
 To be discussed.}
@@ -257,6 +264,8 @@ in Coq, like this one, which define a type by providing at the same time a type
 name and the only ways to build elements of the type are called {\em inductive}
 definitions.  The two objects \C{true} and \C{false} are called
 \emph{constructors}.
+\index[concept]{inductive type}
+\index[concept]{inductive type!constructor}
 
 In practice, this means that we can build a well-formed expression of
 type \C{bool} by using either \C{true} or \C{false}.  \Coq{} provides a
@@ -275,7 +284,7 @@ true : bool
 To use boolean values in computations, we need a construct that makes
 it possible to build different values depending on whether some
 boolean input is \C{true} or \C{false}.  This construct is written
-``\C{if .. then .. else}''.  An example follows:
+``\C{if .. then .. else ..}''.  An example follows:
 
 \begin{coq}{name=if_example}{}
 if true then 3 else 2
@@ -325,7 +334,7 @@ Definition andb b1 b2 := if b1 then b2 else false
 
 % \subsubsection{TODO : A note on associativity for notations}
 
-\subsection{Natural numbers}
+\subsection{Natural numbers}\index[concept]{natural number}
 The description of natural numbers in the \Coq{} system is inspired from
 the work of Peano at the beginning of the twentieth century.  The
 basic idea is that any natural number is either 0 or the successor of
@@ -394,6 +403,7 @@ computation.  Here is an example:
 \begin{coq}{name=pattern_on_nat}{}
 match n with 0 => true | p.+1 => false end
 \end{coq}
+\index[concept]{inductive type!destructor}
 \index[coq]{\C{match-with-end}}
 In this expression we describe a computation where some decision is
 taken depending on the value of the number \C{n}.  The fragment 
@@ -481,7 +491,7 @@ arbitrary large number of {\em pattern matching rules} of the form
 ``\emph{pattern}\C{ =>$~$}\emph{result}'' 
 separated by the \C{|} symbol.  Optionally on can
 prefix the fist pattern matching rule with \C{|}, in order to make each line
-begin with \C{|}.
+begin with \C{|}.\index[concept]{pattern matching}
 
 For the symbols that are allowed
 in the pattern, they are essentially restricted to \C{O}, \C{S} and
@@ -515,6 +525,7 @@ Error: Non exhaustive pattern
 matching: no clause found for
 pattern S _
 \end{coqout}
+\index[concept]{pattern matching!exhaustiveness}
 
 We conclude the section by showing a syntactic facility to scrutinized
 multiple values at the same time.
@@ -538,7 +549,7 @@ Definition same_bool b1 b2 :=
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data: recursion}
+\section{Data: recursion}\index[concept]{recursion}
 
 With only pattern-matching, we do not cope well with the fact that the
 type \C{nat} of natural numbers actually contains an infinity of
@@ -560,6 +571,7 @@ Fixpoint addn n m :=
   if n is p.+1 then (addn p m).+1 else m
 \end{coq}
 \index[vernac]{\C{Fixpoint}}
+\index[coq]{\C{addn}}
 In this line, we learn that the keyword for defining a recursive
 function is \C{Fixpoint}.  We see also that the function being
 defined, here called \C{addn}, is used in the definition of the
@@ -580,6 +592,7 @@ computation:
 \C{(addn 0 3).+1.+1} \> use the ``else'' branch\\
 \C{3.+1.+1}\> remember that \C{5 = 3.+1.+1}
 \end{tabbing}
+\index[concept]{computation}
 When the computation finishes, the symbol \C{addn} disappears.  In
 this sense, the recursive definition is really a definition.  Remark that
 what the \C{(addn n m)} program does is simply to count \C{n} times the
@@ -614,6 +627,7 @@ and this variable was introduced by a pattern in a pattern-matching
 construct or in an ``\C{if .. is ..}'' statement, with the additional
 constraint that the pattern-matching construct observes a variable
 that was one of the function's inputs.
+\index[concept]{recursion!termination}
 
 For instance, in the case of \C{addn}, the recursive call happens
 with \C{p} as the first argument, \C{p} was introduced by the pattern \C{p.+1}
@@ -738,6 +752,7 @@ It is worth detailing the definition of \C{leq}.
 Definition leq m n := m - n == 0.
 Notation "m < n"  := (m.+1 <= n).
 \end{coq}
+\index[coq]{\C{leq}}
 Given that subtraction computes to \C{0} whenever \C{m} is less or equal
 that \C{n}, such definition is correct.  Finally note that the strict order
 relation is just a notation.
@@ -798,9 +813,11 @@ Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 \noindent Even if this may look familiar jargon to some reader, we really want
 this $\alpha$ to be a first class citizen, as well the type of lists carrying
 any type of values and not appeal to some notion of schema that is intuitively
-added on top of the \Coq{} language.  The reason being that we want to reason and
+added on top of the \Coq{} language.  The reason being that we want to 
+reason and
 prove theorems about such data type and related programs inside the formal
-language \Coq{} provides, and that we want the proofs of such theorems to be first
+language \Coq{} provides, and that we want the proofs of such 
+theorems to be first
 class citizen too (see for example Chapter~\ref{ch:sigmabool}).
 
 Coq's language is powerful enough to fully characterize the generic 
@@ -809,6 +826,7 @@ schema.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The (polymorphic) sequence datatype}
+\index[concept]{polymorphism}
 
 The \mcbMC{} library provides a generic datatype to hold
 several objects of any type under the name \C{seq}.
@@ -838,6 +856,7 @@ rather written as follows:
 \begin{coq}{name=type_of_nil}{}
   forall A : Type, seq A
 \end{coq}
+\index[coq]{\C{forall}}
 The same goes for the other constructor of list, named \C{cons}.  This
 function actually takes three arguments: a type \C{A}, a value in this
 type, and a value in the type \C{seq A}.  The type of \C{cons} is
@@ -872,6 +891,7 @@ job of the \Coq{} system to guess what this argument is when looking at
 the first explicit argument given to the function.  The same happens
 to the type argument of \C{nil}.  In the end, this makes that user can
 write the following expression.
+\index[concept]{implicit argument}
 
 \begin{coq}{name=check_list_2}{width=6cm,title=Query}
 Check cons 2 nil.
@@ -880,6 +900,7 @@ Check cons 2 nil.
 [:: 2] : seq nat
 \end{coqout}
 \coqrun{name=check_list_2_run}{check_list_2}
+\index[coq]{\C{(_ :: _)}}
 This example shows that the function \C{cons} is only applied
 explicitly to two arguments (the two arguments effectively declared
 for \C{cons} in the inductive type declaration).
@@ -904,6 +925,7 @@ fun l => [:: 1, 2, 3 & l]
   : seq nat -> seq nat
 \end{coqout}
 \coqrun{name=check_list_2_run}{check_list_2}
+\index[coq]{\C{[:: .., .., .. & ..]}}
 
 In particular \Coq{} provides the infix notation \C{::} for
 \C{cons}.  The \mcbMC{} library follows a general pattern for
@@ -1003,6 +1025,8 @@ Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 = [:: 3; 4] : seq nat
 \end{coqout}
 \coqrun{name=try_map_notation_run}{try_map_notation}
+\index[concept]{list comprehension}
+\index[coq]{\C{[seq .. | x <- ..]}}
 In addition to the function \C{map} and the associated notation
 we studied here, the \mcbMC{} library
 provides a large collection of useful functions and notations to work on
@@ -1014,6 +1038,7 @@ that is used to catenate two sequences together.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Section mechanism}
+\index[concept]{section}
 When several functions are designed to work on similar data, it is
 useful to set a working environment where the common data is declared
 only once.  Such a working environment is called a \C{Section}, and
@@ -1039,6 +1064,8 @@ Fixpoint foldr a s :=
 End iterators.
 \end{coq}
 \index[vernac]{\C{Section}}
+\index[vernac]{\C{Variable}}
+\index[vernac]{\C{Implicit Type}}
 \index[coq]{\C{foldr}}\index[coq]{\C{iter}}
 The \C{Section} and \C{End} keyword delimit a scope in which
 the variables \C{T}, \C{A} and \C{f} are available.  Such variables
@@ -1092,6 +1119,7 @@ experiment with the crucial notion of symbolic computation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Symbolic computations under a context}
+\index[concept]{computation!symbolic}
 
 Which is the status of the \C{foldr} program \emph{before} the
 \C{Section} is closed?  What are \C{T} and \C{A} and \C{f}?
@@ -1191,6 +1219,7 @@ and no natural number of the form \C{(S  ..)} can be equal to 0.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Iterators in mathematics}
+\index[concept]{general term|seealso {higher order}}
 
 Numbers and sequences of objects are common in mathematics, so we feel
 no need to justify our choice to present them in this chapter.
@@ -1243,6 +1272,8 @@ operations that distribute.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Notations and abbreviations}
+\index[concept]{notation}
+\index[concept]{abbreviation}
 
 We mentioned many times already the \C{Notation} command only appealing to the
 reader's intuition: a notation relates some symbols with a term.  The actual
@@ -1255,6 +1286,7 @@ Notation "m + n" := (addn m n) (at level 50, left associativity).
 Notation "n .+1" := (succn n) (at level 2, left associativity,
   format "n .+1") : nat_scope.
 \end{coq}
+\index[vernac]{\C{Notation}}
 A comprehensive description of such command goes behind
 the scope of this book, the interested reader shall refer to~\cite{Coq:refman}.
 
@@ -1321,6 +1353,7 @@ constant with \C{@} and pass all arguments explicitly as in
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Aggregated data: records}
+\index[concept]{record}
 
 Sometime one wants to aggregate already available data into a single object.
 For example a point in the 3-dimensional space could be represented with
@@ -1332,6 +1365,7 @@ to declare such class of datatype.
 \begin{coq}{}{}
 Record point := Point { x : nat; y : nat; z : nat }.
 \end{coq}
+\index[vernac]{\C{Record}}
 Such writing is mostly equivalent to the following one
 
 \begin{coq}{}{}
@@ -1363,6 +1397,8 @@ matching:
 \begin{coq}{}{}
 Definition x (p : point) := let: Point a _ _ := p in a.
 \end{coq}
+\index[coq]{\C{let:-in} (destructor)}
+\index[concept]{pattern matching!irrefutable}
 
 Records can as well be polymorphic, for example the pair data type of
 Exercise~\ref{ex:pair} can carry two values of any type.
@@ -1374,6 +1410,7 @@ finally the properties of these operations.  For example a record
 can model the signature of a Ring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Exercises}
 
 %%%%%%%%
