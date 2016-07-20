@@ -176,7 +176,7 @@ Lemma my_first_lemma : 3 = 3.
 Proof. Redirect "goal" Show.
 \end{coqdef}
 \begin{coq}{def=first-lemma}{width=6cm,title=Starting a proof}
-Lemma |*my_first_lemma*| : 3 = 3.
+Lemma my_first_lemma : 3 = 3.
 Proof.
 \end{coq}
 \coqrun{name=r3}{ssr,first-lemma,abort}
@@ -321,7 +321,7 @@ piece of ``text'' automatically, whenever it fits.
 The \Coq{} mechanism for doing that is out of scope here, it 
 will be explained in Section~\ref{sec:coercions}.
 
-\begin{coq}{name=coercion}{title=Coercion}
+\begin{coq}{name=coercion}{}
 Lemma leq0n (n : nat) : 0 <= n.
 \end{coq}
 
@@ -429,11 +429,11 @@ mind. This list of instructions is called a \emph{proof script}, and
 the instructions it is made of are called proof commands, or more traditionally
 \emph{tactics}.\marginnote{I can't bare with it, I hate ``tactic''.}
 
-\begin{coq}{name=my-first-proof2}{title=Starting a proof}
+\begin{coq}{name=my-first-proof3}{title=Scheme of a complete proof}
 Lemma my_first_lemma : 3 = 3.
 Proof.
-(* <your proof script comes here> *)
-Admitted.
+(* <your finished proof script comes here> *)
+Qed.
 \end{coq}
 
 Once the proof is complete, we can replace the \C{Admitted} command by
@@ -441,13 +441,6 @@ the \C{Qed} one. This calls the proof checker part of  the \Coq{}
 system, which validates a posteriori that the formal proof that has
 been built so far is actually hole-free and a proof of the initial
 statement, here \C{3 = 3}.
-
-\begin{coq}{name=my-first-proof3}{title=Scheme of a complete proof}
-Lemma my_first_lemma : 3 = 3.
-Proof.
-(* <your finished proof script comes here> *)
-Qed.
-\end{coq}
 
 In this section, we will review different nature of proof steps and
 the corresponding tactics.
@@ -508,14 +501,11 @@ we loaded. For instance, let us prove that $2 + 1 = 3$:
 Lemma my_second_lemma : 2 + 1 = 3.
 Proof. by [].
 \end{coqdef}
-\begin{coq}{def=secondp,qed}{width=6.5cm,title=Reflexivity of equality}
+\begin{coq}{def=secondp,qed}{}
 Lemma my_second_lemma : 2 + 1 = 3.
 Proof. by []. Qed.
 \end{coq}
 \coqrun{name=secondp}{ssr,secondp,verbose,qed}
-\begin{coqout}{run=secondp}{title=Response,width=5.5cm}
-my_second_lemma is defined
-\end{coqout}
 
 
 Indeed, this statement holds because the two hand sides of the equality
@@ -530,11 +520,11 @@ proof script, because \C{(odd 5)} \emph{computes} to
 Note that we now have a new result at hand for our future proofs
 (although this one is not a very useful one...)
 
-\begin{coq}{name=check1}{width=6cm,title=Printing a lemma statement}
-Check my_first_lemma.
+\begin{coq}{name=check1}{width=6cm}
+About my_first_lemma.
 \end{coq}
 \coqrun{name=c1}{ssr,my-first-proof4,done,qed,check1}
-\begin{coqout}{run=c1}{title=Response,width=6cm}
+\begin{coqout}{run=c1}{width=6cm}
 my_first_lemma : 3 = 3
 \end{coqout}
 
@@ -577,7 +567,8 @@ Proof. by [].
 \end{coq}
 \coqrun{name=negbKerr;fail}{ssr,negbK,done}
 \begin{coqout}{run=negbKerr}{width=5cm, title=Failing proof script}
-Error: No applicable tactic.
+Error: No applicable
+tactic.
 \end{coqout}
 \index[coq]{\C{negbK}}
 
@@ -636,7 +627,7 @@ Proof.
 case: b.
   by [].
 \end{coq}
-\begin{coqout}{run=negbkt2;out=g2}{width=6cm, title=Case analysis}
+\begin{coqout}{run=negbkt2;out=g2}{width=6cm, title=Second goal}
 1 subgoal
 
  ============================
@@ -659,7 +650,7 @@ case: b.
 by [].
 Qed.
 \end{coq}
-\begin{coqout}{run=negbkt2}{width=6cm, title=Case analysis}
+\begin{coqout}{run=negbkt2}{width=6cm, title=Finished proof}
 No more subgoals.
 negbK is defined
 $~$
@@ -673,25 +664,19 @@ system check that after the \C{case} tactic, the proof becomes
 trivial, in both branches of the case analysis. The proof script is
 then a one-liner:
 
-\begin{coq}{def=negbkt3,done,done,qed}{width=6cm,title=Double negation elimination}
+\begin{coq}{def=negbkt3,done,done,qed}{title=Double negation elimination: final script}
 Lemma negbK b : ~~ (~~ b) = b.
 Proof. by case: b. Qed.
 \end{coq}
-\begin{coqout}{run=negbkt3}{width=6cm, title=Case analysis}
-No more subgoals.
-negbK is defined
-\end{coqout}
 
 The boolean equivalence \C{leqn0} is also an example of statement that
 cannot be proved by computation only:
 
 \begin{coq}{def=leqn0,done}{width=7cm,title=No negative natural number}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 \end{coq}
 \begin{coqout}{def=leqn0,done}{width=5cm,title=Proof status}
-1 subgoal
-
 n : nat
 =====================
   (n <= 0) = (n == 0)
@@ -708,7 +693,7 @@ tactic, in order to \emph{name} the parameter \C{k} which pops up in
 the second branch:
 
 \begin{coq}{def=leqn01,done}{width=7cm,title=No negative natural numbers}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 case: n => [| k].
 \end{coq}
@@ -730,7 +715,7 @@ name the parameters to be introduced in each subgoal created by the
 case analysis, in order. Remember that the inductive type \C{nat} is
 defined as:
 
-\begin{coq}{def=natdef}{title=A two constructor inductive type}
+\begin{coq}{def=natdef}{}
 Inductive nat := O | S (n : nat)
 \end{coq}
 with two constructors, \C{O} which has no argument and \C{S} which has
@@ -748,14 +733,12 @@ can be easily solved by computation, as both hand sides of the equality
 evaluates to \C{true}.
 
 \begin{coq}{def=leqn02,done}{width=7cm,title=No negative natural numbers}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 case: n => [| k].
   by [].
 \end{coq}
 \begin{coqout}{run=leqn02}{width=5cm, title=Proof status}
-1 subgoal
-
 k : nat
 =========================
   (k < 0) = (k.+1 == 0)
@@ -767,20 +750,18 @@ The second and now only remaining goal corresponds to the case when
 It can also be  solved by computation, as both hand sides
 of the equality evaluates to \C{false}.
 
-\begin{coq}{def=leqn03,done}{width=7cm,title=No negative natural numbers}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+\begin{coq}{def=leqn03,done}{title=No negative natural numbers: finished proof}
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 case: n => [| k].
   by [].
 by [].
+Qed.
 \end{coq}
-\begin{coqout}{run=leqn03}{width=5cm, title=Proof status}
-  No more subgoals.
-\end{coqout}
 As in the previous example, we can make the proof script even shorter:
 
-\begin{coq}{def=leqn04,done}{title=No negative natural numbers}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+\begin{coq}{def=leqn04,done}{title=No negative natural numbers: final script}
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.  by case: n => [| k].  Qed.
 \end{coq}
 
@@ -788,20 +769,13 @@ Here is a similar example, again of a boolean equivalence: the lemma
 stating that the product of two (natural) numbers is zero if and only
 if one of the numbers is zero:
 
-\begin{coq}{def=almostMulnEq0}{title=A double case analysis}
-Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
-\end{coq}
-\index{coq}{muln\_eq0}
-
-\marginnote{Can we count on the fact that the first chapter has
-  shown all the necessary definitions on nats, like all the arithmetic
-  operations? LR: \{struct n\} not yet explained}
-Let us look back at the code defining multiplication:
-
-\begin{coq}{def=muldef}{title=Multiplication}
-Fixpoint |*muln*| (m n : nat) : nat :=
+\begin{coq}{def=almostMulnEq0}{title=Specifying muln: a double case analysis attempt}
+Fixpoint muln (m n : nat) : nat :=
   if m is p.+1 then n + muln p n else 0.
+
+Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
 \end{coq}
+\index[coq]{\C{muln_eq0}}
 \index[coq]{\C{muln}}
 In the case when \C{m} is zero, and whatever value \C{n} takes, both
 hand sides of the equality evaluate to \C{true}: the left hand side is
@@ -812,20 +786,17 @@ equal modulo computation to \C{(0 == 0)}, which itself computes to
 case analysis on its first argument.
 
 \begin{coq}{def=almostMulnEq1}{title=First case analysis,width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
   by [].
 \end{coq}
 \begin{coqout}{def=almostMulnEq1}{title=Proof status,width=6cm}
-1 subgoal
-
-n : nat
-m : nat
+m, n : nat
 ============================
 (m.+1 * n == 0) =
-(m.+1 == 0) || (n == 0)
+  (m.+1 == 0) || (n == 0)
 \end{coqout}
 Note that we can use the name \C{m} in our case analysis without
 ambiguity. The next step in the proof is a case analysis on the number
@@ -835,7 +806,7 @@ despite it corresponds by default to the second subgoal, we are going
 to use the \C{last first} tactic:
 
 \begin{coq}{def=almostMulnEq2}{title=Second case analysis,width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
@@ -843,10 +814,9 @@ case: m => [|m].
 case: n => [|k]; last first.
 \end{coq}
 \begin{coqout}{def=almostMulnEq2}{title=Proof status,width=6cm}
-2 subgoals, subgoal 1 (ID 72)
+2 subgoals, subgoal 1
 
-m : nat
-n : nat
+m, n : nat
 ============================
 (m.+1 * n.+1 == 0) =
   (m.+1 == 0) || (n.+1 == 0)
@@ -867,7 +837,7 @@ reduces to false. To conclude, this branch of the case analysis is
 also solved by computation.
 
 \begin{coq}{def=almostMulnEq3}{title=Second case analysis,width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
@@ -881,7 +851,7 @@ case: n => [|k]; last first.
 m : nat
 ============================
 (m.+1 * 0 == 0) =
-(m.+1 == 0) || (0 == 0)
+  (m.+1 == 0) || (0 == 0)
 \end{coqout}
 \marginnote{We should make the remark somewhere explicitly that
   reflexivity for 0
@@ -896,19 +866,16 @@ let us add the optional \C{//} \emph{simplifying} switch to the
 introduction pattern of the first case analysis:
 
 \begin{coq}{def=almostMulnEq3}{title=A simplify intro pattern,width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
 \end{coq}
 \begin{coqout}{def=almostMulnEq11}{title=Proof status,width=6cm}
-1 subgoal
-
-n : nat
-m : nat
+m, n : nat
 ============================
 (m.+1 * n == 0) =
-(m.+1 == 0) || (n == 0)
+  (m.+1 == 0) || (n == 0)
 \end{coqout}
 
 Only the first generated subgoal is trivial, and has been closed, so
@@ -916,15 +883,13 @@ we are left with the second one. Similarly, we can get rid of the
 second goal produced by the case analysis on \C{n}:
 
 \begin{coq}{def=almostMulnEq31}{title=A simplify intro pattern,width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
 case: n => [|k] //.
 \end{coq}
 \begin{coqout}{def=almostMulnEq3}{title=Proof status,width=6cm}
-1 subgoal
-
 m : nat
 ============================
 (m.+1 * 0 == 0) =
@@ -968,16 +933,14 @@ an accurate specification of the operation to be performed.
 Let us start with a simple example and come back to the proof that we
 left unfinished at the end of the previous section:
 
-\begin{coq}{def=almostMulnEq3}{title=First case analysis,width=7cm}
-Lemma |*muln_eq0*| m n :
+\begin{coq}{def=almostMulnEq3}{title=First case analysis: continued...,width=7cm}
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
 case: n => [|k] //.
 \end{coq}
 \begin{coqout}{def=almostMulnEq3}{title=Proof status,width=5cm}
-1 subgoal
-
 m : nat
 =======================
 (m.+1 * 0 == 0) =
@@ -987,23 +950,23 @@ At this stage, if we replace subterm \C{m.+1 * 0} by \C{0}, the
 subgoal becomes:
 
 \begin{coqout}{}{}
-(0 == 0) = (m.+1 == 0) || (0 == 0)}
+(0 == 0) = (m.+1 == 0) || (0 == 0)
 \end{coqout}
 which is equal modulo computation to \C{(true = true)}. But because of
-the definition of \C{muln} by case analysis on its \emph{first}
+the definition of \C{muln} by pattern matching on its \emph{first}
 argument, \C{m.+1 * 0} does not evaluate symbolically to \C{0}: this
 equality holds but requires a proof by induction, as explained in
 Section~\ref{ssec:ind}.
 Anyway, a lemma proving what we need is already available in the library:
 
-\begin{coq}{def=muln0}{title=Multiplying by zero on the left}
-Lemma |*muln0*| n : n * 0 = 0.
+\begin{coq}{def=muln0}{}
+Lemma muln0 n : n * 0 = 0.
 \end{coq}
 \marginnote{But this is not the way lemma \C{muln0} is stated in the library...}
 and we call the \C{rewrite} tactic which performs the desired replacement:
 
-\begin{coq}{def=almostMulnEq4}{title=First case analysis,width=7cm}
-Lemma |*muln_eq0*| m n :
+\begin{coq}{def=almostMulnEq4}{title=First rewrite,width=7cm}
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
@@ -1011,8 +974,6 @@ case: n => [|k] //.
 rewrite muln0.
 \end{coq}
 \begin{coqout}{def=almostMulnEq4}{title=Proof status,width=5cm}
-1 subgoal
-
 m : nat
 =======================
 (0 == 0) =
@@ -1036,8 +997,8 @@ hand side of \C{muln0}, which does not depend on the value of the
 pattern. We can now conclude the proof script, using the
 prenex \C{by} tactical:
 
-\begin{coq}{def=almostMulnEq5}{title=First case analysis}
-Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
+\begin{coq}{def=almostMulnEq5}{title=Complete proof script}
+Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
 case: n => [|k] //.
@@ -1056,11 +1017,11 @@ pervasive concept. But have not yet provided the syntax.}
 The boolean identity \C{muln_eq0} that we just established expresses a
 logical equivalence that can in turn be used in proofs via the
 \C{rewrite} tactic. For instance, let us consider the case of lemma
-\C{|*leq_mul2l*|}, which provides a necessary and sufficient condition
+\C{leq_mul2l}, which provides a necessary and sufficient condition
 for the comparison \C{(m * n1 <= m * n2)} to hold:
 
 \begin{coq}{def=LeqMul2l}{title=Ordered products}
-Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Lemma leq_mul2l m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 \end{coq}
 
 The proof goes as follows: by definition of the order \C{<=}, see exercise
@@ -1075,22 +1036,20 @@ The first step hence consists in using the definition of the
 right hand side by a subtraction. This can be performed using the
 following equation:
 
-\begin{coq}{def=LeqDef}{title=Definition of Order}
-Lemma |*leq_def*| m n : (m <= n) = (m - n == 0).
+\begin{coq}{def=LeqDef}{}
+Lemma leq_def m n : (m <= n) = (m - n == 0).
 \end{coq}
 For this purpose, we use the rewrite tactic. However, the command
 \C{rewrite leq_def} only affects the first occurrence of \C{<=} and we
 would like to treat both.
 
-\begin{coq}{def=LeqMul2lproof1}{title=Simple rewrite,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+\begin{coq}{def=LeqMul2lproof1}{title=Unfolding leq,width=7.7cm}
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite leq_def.
 \end{coq}
 \begin{coqout}{def=LeqMul2lproof1}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * n1 - m * n2 == 0) =
@@ -1100,15 +1059,13 @@ m, n1, n2 : nat
 In order to rewrite \emph{all} the possible instances, we use a
 repetition flag:
 
-\begin{coq}{def=LeqMul2lproof1}{title=Ordered products,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+\begin{coq}{def=LeqMul2lproof1}{title=Unfolding leq repeatedly,width=7.7cm}
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite !leq_def.
 \end{coq}
 \begin{coqout}{def=LeqMul2lproof1}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * n1 - m * n2 == 0) =
@@ -1122,8 +1079,8 @@ initial goal. We can now factor \C{m} on the left, using the appropriate
 distributivity property:
 \marginnote{Here again we cheat and do not use predicators}
 
-\begin{coq}{def=mulnBr}{title=Distributivity of multiplication over subtraction}
-Lemma |*mulnBr*| n m p : n * (m - p) = n * m - n * p.
+\begin{coq}{def=mulnBr}{}
+Lemma mulnBr n m p : n * (m - p) = n * m - n * p.
 \end{coq}
 This time we need to perform a right-to-left rewriting of the
 \C{mulnBr} lemma (instead of the
@@ -1134,16 +1091,14 @@ right-to-left rewriting consists in adding a minus \C{-} to the name
 of the rewrite rule:
 
 
-\begin{coq}{def=LeqMul2lproof2}{title=Ordered products,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+\begin{coq}{def=LeqMul2lproof2}{title=Rewrite right-to-left,width=7.7cm}
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite !leq_def.
 rewrite -mulnBr.
 \end{coq}
 \begin{coqout}{def=LeqMul2lproof2}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * (n1 - n2) == 0) =
@@ -1154,8 +1109,8 @@ m, n1, n2 : nat
 The last step of the proof uses lemma \C{muln_eq0} to align the left
 and the right hand sides of the identity.
 
-\begin{coq}{def=LeqMul2lproof3}{title=Ordered products, width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+\begin{coq}{def=LeqMul2lproof3}{title=Closing up, width=7.7cm}
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite !leq_def.
@@ -1163,8 +1118,6 @@ rewrite -mulnBr.
 rewrite muln_eq0.
 \end{coq}
 \begin{coqout}{def=LeqMul2lproof3}{title=Proof status,width=5.5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m == 0) || (n1 - n2 == 0) =
@@ -1177,8 +1130,8 @@ can obtain a much more compact proof script by chaining the three
 tactics into a single one: several consecutive rewriting steps can
 indeed be performed by a single invocation of the \C{rewrite} tactic.
 
-\begin{coq}{def=LeqMul2lproof}{title=Ordered products}
-Lemma |*leq_mul2l*| m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+\begin{coq}{def=LeqMul2lproof}{title=Multiple rewrite rules}
+Lemma leq_mul2l m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof. by rewrite !leq_def -mulnBr muln_eq0. Qed.
 \end{coq}
 
@@ -1198,32 +1151,31 @@ details on the matching algorithm and on the flags supported by
 In Chapter~\ref{ch:prog}, we have defined \emph{predicates}, as functions
 with boolean values. For instance, the \C{leq} predicate is defined as
 a predicate on natural numbers, as:
-\begin{coq}{def=LeqDef}{title=Comparison Boolean Predicate}
-Definition |*leq*| n m := m - n == 0.
+\begin{coq}{def=LeqDef}{}
+Definition leq n m := m - n == 0.
 \end{coq}
 
 We recall, as seen in Chapter~\ref{ch:prog}, that this concise syntax stands
 for:
 
-\begin{coq}{def=LeqDefFun}{title=Comparison Boolean Predicate}
-Definition |*leq*| := fun n m => m - n == 0.
+\begin{coq}{def=LeqDefFun}{}
+Definition leq := fun n m => m - n == 0.
 \end{coq}
-and the type of the constant \C{|*leq*|} is:
+and the type of the constant \C{leq} is:
 
-\begin{coq}{name=about-leq}{width=6cm,title= Type of leq}
+\begin{coq}{name=about-leq}{width=6cm}
 About leq.
 \end{coq}
 \coqrun{name=about}{ssr,about-leq,about-leq}
-\begin{coqout}{run=about}{title=Response,width=6cm}
+\begin{coqout}{run=about}{width=6cm}
 leq : nat -> nat -> bool
-...
 \end{coqout}
 
 In the present Chapter, we have used a similar syntax when stating
 parametric statements, like:
 
-\begin{coq}{def=leqn0}{title=A parametric identity}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+\begin{coq}{def=leqn0}{}
+Lemma leqn0 n : (n <= 0) = (n == 0).
 \end{coq}
 
 The curious reader might already have tested the answer of the
@@ -1243,10 +1195,11 @@ expresses --as expected-- that the equation holds for any
 natural number. The type of the lemmas and theorems with parameters all feature
 prenex universal quantifiers:
 
-\begin{coq}{}{title=Query,width=4cm}
+\begin{coq}{}{width=4cm}
 About muln_eq0.
+$~$
 \end{coq}
-\begin{coqout}{}{title=Response,width=8cm}
+\begin{coqout}{}{width=8cm}
 muln_eq0 : forall m n : nat,
   (m * n == 0) = (m == 0) || (n == 0)
 \end{coqout}
@@ -1254,7 +1207,7 @@ Quantifiers do not need to be in prenex position.  In the following
 example the second hypothesis is itself a quantified formula.
 
 \begin{coq}{}{}
-Lemma |*seq_eq_ext*| (s1 s2 : seq nat) :
+Lemma seq_eq_ext (s1 s2 : seq nat) :
   size s1 = size s2 ->
   (forall i : nat, nth 0 s1 i = nth 0 s2 i) ->
   s1 = s2.
@@ -1262,7 +1215,7 @@ Lemma |*seq_eq_ext*| (s1 s2 : seq nat) :
 Quantifiers are also allowed to range over functions:
 
 \begin{coq}{}{}
-Lemma |*size_map*| (T1 T2 : Type) :
+Lemma size_map (T1 T2 : Type) :
 forall (f : T1 -> T2) (s : seq T1), size (map f s) = size s.
 \end{coq}
 Observe that in the above statement of \C{size_map}, we have used a
@@ -1272,7 +1225,7 @@ compact notation for successive universal quantifications:
 of prenex quantification we would rather write:
 
 \begin{coq}{}{}
-Lemma |*size_map*| (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
+Lemma size_map (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
  size (map f s) = size s.
 \end{coq}
 \index[coq]{\C{size_map}}
@@ -1284,7 +1237,7 @@ objects. For instance the commutativity property of a binary operator
 is defined as:
 
 \begin{coq}{}{}
-Definition |*commutative*| (T : Type) (op : T -> T -> T) :=
+Definition commutative (T : Type) (op : T -> T -> T) :=
   forall x y, op x y = op y x.
 \end{coq}
 \index[coq]{\C{commutative}}
@@ -1292,7 +1245,7 @@ and the lemma stating the commutativity of the \C{addn} operation is
 in fact:
 
 \begin{coq}{}{}
-Lemma |*addnC*| : commutative addn.
+Lemma addnC : commutative addn.
 \end{coq}
 The \mcbMC{} library provides many predicates to state in a consistent
 and compact way standard properties.  Here we recall only few of them.
@@ -1302,23 +1255,23 @@ Section StandardPredicates.
 Variable T : Type.
 Implicit Types (op add : T -> T -> T) (R : rel T).
 
-Definition |*associative*| op :=
+Definition associative op :=
   forall x y z, op x (op y z) = op (op x y) z.
 
-Definition |*left_distributive*| op add :=
+Definition left_distributive op add :=
   forall x y z, op (add x y) z = add (op x z) (op y z).
 
-Definition |*transitive*| R :=
+Definition transitive R :=
   forall y x z, R x y -> R y z -> R x z.
 
 
 Variables rT aT : Type.
 Implicit Types (f : aT -> rT).
 
-Definition |*injective*| f :=
+Definition injective f :=
   forall x1 x2, f x1 = f x2 -> x1 = x2.
-Definition |*cancel*| f g := forall x, g (f x) = x.
-Definition |*pcancel*| f g := forall x, g (f x) = Some x.
+Definition cancel f g := forall x, g (f x) = x.
+Definition pcancel f g := forall x, g (f x) = Some x.
 
 End StandardPredicates.
 \end{coq}
@@ -1337,21 +1290,21 @@ is used for commutativity properties like \C{addnC} or \C{mulnC}.
 
 Now it is worth discussing the type of these predicates.
 
-\begin{coq}{}{}
+\begin{coq}{}{width=3.8cm}
 About commutative.
 \end{coq}
-\begin{coqout}{}{}
+\begin{coqout}{}{width=8.2cm}
 commutative : forall T : Type, (T -> T -> T) -> Prop.
 \end{coqout}
 It is a polymorphic function taking a binary operation and
 building a \emph{proposition}, i.e. it has the same status as the
 identity statements that we have seen so far in this chapter:
 
-\begin{coq}{}{title=Query,width=6cm}
+\begin{coq}{}{width=6cm}
 Check 3 = 3.
 Check (commutative addn).
 \end{coq}
-\begin{coqout}{}{title=Response,width=6cm}
+\begin{coqout}{}{width=6cm}
 3 = 3 : Prop
 commutative addn : Prop
 \end{coqout}
@@ -1397,7 +1350,7 @@ instance, the following lemma can be used to perform a flavour of
 proof by contraposition:
 
 \begin{coq}{}{}
-Lemma |*contraL*| (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
+Lemma contraL (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
 \end{coq}
 \index[coq]{\C{contraL}}
 
@@ -1477,7 +1430,7 @@ leq_p_m :  p <= m
 The next step is to use the following lemma:
 
 \begin{coq}{}{}
-Lemma |*dvdn_addr*| m d n : d %| m -> (d %| m + n) = (d %| n).
+Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 \end{coq}
 It states a conditional equivalence, expressed as a conditional identity.
 We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting (the
@@ -1593,7 +1546,8 @@ instance of a quantified lemma and to generate sub goals
 for its eventual premises.  Hypotheses can be named using \C{move=>}.
 
 \subsection{Proofs by induction}\label{ssec:ind}
-
+\index[concept]{induction}
+\index[concept]{general term}
 Lets take the well known induction principle for Peano's natural numbers
 and lets formalize it in the language of \Coq{}.  It reads:
 let $\mathcal{P}$ be a property of natural numbers, if
@@ -1697,6 +1651,7 @@ elim/last_ind: s z => [|s x IHs] z //.
 by rewrite -cats1 foldr_cat -IHs cats1 rev_rcons.
 Qed.
 \end{coq}
+\index[concept]{induction!generalizing}
 
 Here ``\C{elim/last_ind: s z}'' performs the induction using the
 \C{last_ind} lemma on \C{s} after having generalized the initial value of
@@ -1727,6 +1682,7 @@ which last element is \C{x}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsection{Searching the library}\label{sec:search}
+\index[concept]{search}
 
 Finding the ``right'' lemma in a library that contains thousands of them may be
 quite a challenge.  Even more since the state of the art of search tools for
@@ -1917,14 +1873,12 @@ required in the user-given pattern. Therefore, \C{rewrite} picks term
 \C{(n1 <= n2)}, in the right hand-side.
 
 \begin{coq}{def=UserRwPat}{title=User rewrite pattern,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite [n1 <= _]leq_def.
 \end{coq}
 \begin{coqout}{def=UserRwPat}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * n1 <= m * n2) =
@@ -1938,14 +1892,12 @@ the right hand side of the identity to be proved. We can implement
 this specification using the pattern \C{[in RHS]}:
 
 \begin{coq}{def=UserRHSPat}{title=RHS pattern,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite [in RHS]leq_def.
 \end{coq}
 \begin{coqout}{def=UserRHSPat}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * n1 <= m * n2) =
@@ -1967,7 +1919,7 @@ try to omit the first \C{rewrite !leq_def} command, then the next one,
 namely \C{rewrite -mulnBr} fails:
 
 \begin{coq}{def=LeqMul2lproof2}{title=Failing rewrite,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite -mulnBr.
@@ -1991,14 +1943,12 @@ rewrite right to left with \C{mulnBr}. However we can make this
 rewrite step succeed using a user-provided pattern:
 
 \begin{coq}{def=PatForConv}{title=Using a Pattern,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite -[_ <= _]mulnBr.
 \end{coq}
 \begin{coqout}{def=PatForConv}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * (n1 - n2) == 0) =
@@ -2020,14 +1970,12 @@ the definition of the \C{leq} constant. The \C{rewrite} tactic can
 perform this nature of step, as in the script:
 
 \begin{coq}{def=Unfold}{title=Unfold,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite /leq.
 \end{coq}
 \begin{coqout}{def=Unfold}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * n1 - m * n2 == 0) =
@@ -2040,14 +1988,12 @@ where the command \C{rewrite /leq} has exposed the definition of
 driven by patterns as well, as in:
 
 \begin{coq}{def=Unfold}{title=Focused unfold,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite [in LHS]/leq
 \end{coq}
 \begin{coqout}{def=Unfold}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * n1 - m * n2 == 0) =
@@ -2058,14 +2004,12 @@ More generally, the \C{rewrite} tactic can be used to replace a
 certain subterm of the goal by a convertible one:
 
 \begin{coq}{def=Unfold}{title=Change,width=7.7cm}
-Lemma |*leq_mul2l*| m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 rewrite -[n1]/(0 + n1).
 \end{coq}
 \begin{coqout}{def=Change}{title=Proof status,width=5cm}
-1 subgoal
-
 m, n1, n2 : nat
 ==========================
 (m * (0 + n1) <= m * n2) =
@@ -2521,12 +2465,12 @@ m, n1, n2 : nat
 % arrows that are common to this chapter and the preceeding.
 %
 % \begin{coq}{}
-% Inductive |*list*| (A : Type) : Type :=
+% Inductive list (A : Type) : Type :=
 %     nil : list A | cons : A -> list A -> list A
 %
 % list: Type -> Type
 %
-% Definition |*is_equal_to_2*| (x : nat) : x = 2.
+% Definition is_equal_to_2 (x : nat) : x = 2.
 %
 % is_equal_to_2 : nat -> Prop
 % \end{coq}
