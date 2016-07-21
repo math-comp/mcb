@@ -1977,8 +1977,7 @@ m, n1, n2 : nat
 (m * n1 <= m * n2) =
   (m == 0) || (n1 <= n2)
 \end{coqout}
-
-
+\index[ssr]{\C{rewrite}! \C{-/} (refold)}
 
 More generally, the \C{rewrite} tactic can be used to replace a
 certain subterm of the goal by an equal by computation one:
@@ -1997,6 +1996,12 @@ m, n1, n2 : nat
 \end{coqout}
 \index[ssr]{\C{rewrite}! \C{-[$\ldots$]/($\ldots$)} (changing)}
 
+Last, an equation local to the proof context, like an
+induction hypothesis, can be disposed after using it by
+prefixing is name with \C{\{\}}.  For example
+``\C{rewrite -\{\}IHn}'' rewrites with \C{IHn} right to
+left and drops such context item.
+\index[ssr]{\C{rewrite}! \C{\{\}} (clear)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
