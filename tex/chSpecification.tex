@@ -453,9 +453,7 @@ Proof.
 move=> lekn /andP [/eqnP lenm lemk].
 \end{coq}
 \begin{coqout}{}{width=5.1cm}
-n : nat
-m : bool
-k : nat
+n, m, k : nat
 lekn : k <= n
 lenm : n - m = 0
 lemk : m <= k
@@ -936,8 +934,8 @@ i.e. \C{(n.+1 * n`!)}.  The former amounts to show that
 \C{(n.+1 \%| n.+1 * n`!)}, while the latter to show that \C{(m.+1 \%| n.+1 *
 n`!)} under the (inductive) hypothesis that \C{(m.+1 \%| n`!)}.
 
-What is paradigmatic in this little proof is the use of the goal stack
-as a work space.  In other words the proof script would be much more involved
+What is paradigmatic in this little proof is the use of the \emph{goal stack
+as a work space}.  In other words the proof script would be much more involved
 if we started by introducing in the proof context all assumptions.
 \\
 
