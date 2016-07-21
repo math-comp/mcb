@@ -1254,7 +1254,7 @@ This very compact idiom \C{/leq_trans->} is quite frequent in the
 
 %%%%%%%%%%%%%%%5
 \mcbLEVEL{3}
-\mcbsubsection{Euclidean division, simple and correct}
+\mcbsubsection{Euclidean division, simple and correct}\label{sec:edivn}
 \index[concept]{simplifying equation}
 
 Euclidean division is defined as one expects: iterating subtraction.
@@ -1481,14 +1481,13 @@ Set Printing Coercions. Redirect "g1" Show.
 by [].
 Qed.
 \end{coqdef}
-\begin{coq}{def=istrue}{title=Coercion \lstinline/is_true/,width=6cm}
+\begin{coq}{def=istrue}{width=6cm}
 Lemma example : prime 17.
-Proof.  by [].  Qed.
+$~$
+$~$
 \end{coq}
 \coqrun{name=r3}{ssr,istrue}
-\begin{coqout}{run=r3;out=g1}{title=Goal after line 3,width=6cm}
-1 subgoal
-
+\begin{coqout}{run=r3;out=g1}{title=Goal fully printed,width=6cm}
 ========================
 is_true (prime 17)
 \end{coqout}

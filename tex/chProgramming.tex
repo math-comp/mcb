@@ -4,6 +4,8 @@ TODO: uniform terminology (a function returns,produces, computes... patter match
 
 TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
 
+TODO: curryfication.
+
 %\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
 We will take the point of view that mathematics can be understood as
@@ -751,11 +753,13 @@ It is worth detailing the definition of \C{leq}.
 \begin{coq}{}{}
 Definition leq m n := m - n == 0.
 Notation "m < n"  := (m.+1 <= n).
+Notation "n > m"  := (m.+1 <= n) (parsing only).
 \end{coq}
 \index[coq]{\C{leq}}
 Given that subtraction computes to \C{0} whenever \C{m} is less or equal
 that \C{n}, such definition is correct.  Finally note that the strict order
-relation is just a notation.
+relation is just a notation, and that \C{(m > n)} is only accepted in input
+and is alsways printed as  \C{(n < m)}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: generic containers}\label{sec:poly}
