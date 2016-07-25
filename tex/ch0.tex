@@ -1,7 +1,37 @@
 \setcounter{chapter}{-1}
 \chapter{Introduction}
 
-\emph{Brainstorming notes (commented out); to be fleshed out after technical content is fixed.}
+\emph{Mathematical Components}
+is the name of a \Coq{} library covering a variety of
+topics, from the theory of basic data structures (e.g., numbers, lists, finite
+sets) to advanced results in various flavors of algebra. This library
+constitutes the infrastructure for the formal proofs of the Four Color Theorem
+and of the Odd Order Theorem.
+
+The reason of existence of this book is to break down the barriers to entry.
+While there are several books around covering the usage of the 
+\Coq{}~\cite{BC04,SF,CPDT}
+system and the theory it is based on~\cite[Chapter 4]{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook}, 
+the \mcbMC{} library is built
+in an unconventional way.  As a consequence this book provides a non
+standard presentation of \Coq{}, putting upfront the formalization choices
+and the proof style that are the pillars of the library.
+
+This books targets two classes of public.  On one hand newcomers, even the 
+more mathematical inclined ones, find a soft introduction to the programming
+language of \Coq{}, Gallina, and the Ssreflect proof language.
+On the other hand accustomed Coq users find a substantial description
+of the formalization style that made the \mcbMC{} library possible.
+
+By no means this book pretends to be a complete description of \Coq{} or
+Ssreflect: both tools already come with a comprehensive user 
+manual~\cite{Coq:manual,ssrman}.
+However, the reader is quickly put in the middle of a large library
+of formalized concepts and given sufficient tools to prove non-trivial
+mathematical results by reusing parts of the library.  
+For example around page one-hundred the reader learns
+how to show, formally, the infinitude of prime numbers, or the correctness of
+the Euclidean's division algorithm, in a fewn lines of proof text.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Structure of the book}
