@@ -1196,11 +1196,11 @@ Implicit Types (op add : T -> T -> T) (R : rel T).
 Definition associative op := forall x y z, op x (op y z) = op (op x y) z.
 Definition left_distributive op add :=
   forall x y z, op (add x y) z = add (op x z) (op y z).
-Definition transitive R := forall y x z, R x y -> R y z -> R x z.
+Definition left_id T e op := forall x, op e x = x.
 End StandardPredicates.
 \end{coq}
 \index[coq]{\C{associative}}
-\index[coq]{\C{transitive}}
+\index[coq]{\C{left_id}}
 \index[coq]{\C{left_distributive}}
 
 Note that beside the standardization of the statements through these

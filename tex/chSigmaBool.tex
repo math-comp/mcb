@@ -632,7 +632,7 @@ of bounded integers.
 Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
 Notation "''I_' n" := (ordinal n)
 
-Coercion nat_of_ord i := let: Ordinal m _ := i in m.
+Coercion nat_of_ord i := let: @Ordinal m _ := i in m.
 
 Canonical ordinal_subType := [subType for nat_of_ord].
 Definition ordinal_eqMixin := Eval hnf in [eqMixin of ordinal by <:].
@@ -654,7 +654,7 @@ where \C{x} is an ordinal, else \C{None}.  \C{pmap} drops all \C{None}
 items, and removes the \C{Some} constructor from the others.
 
 What \C{ord\_enum} produces is hence a sequence of ordinals, i.e.
-a sequence of terms like \C{(Ordinal m p)} where \C{m} is a natural
+a sequence of terms like \C{(@Ordinal m p)} where \C{m} is a natural
 number (as produces by \C{iota}) and \C{p} is a proof that \C{(m <=
 n)}.  What we are left to show is that such enumeration is complete
 and non redundant.

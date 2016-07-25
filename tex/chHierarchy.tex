@@ -114,6 +114,16 @@ Variable p' : nat.
 Local Notation p := p'.+1.
 Implicit Types x y : 'I_p.
 Definition inZp i := Ordinal (ltn_pmod i (ltn0Sn p')).
+\end{coq}
+The \C{inZp} construction injects any natural number \C{i}
+into \C{'I_p} by applying the modolus.  Indeed the
+type of \C{ltn_pmod} is \C{(forall m d : nat,0 < d -> m \%\% d < d)},
+and \C{(ltn0Sn p')} is a proof that \C{(0 < p)}.
+
+We can now build the $\mathbb{Z}$-module operations and
+properties:
+
+\begin{coq}{}{}
 Definition Zp0 : 'I_p := ord0.
 Definition Zp1 := inZp 1.
 Definition Zp_opp x := inZp (p - x).
@@ -248,7 +258,7 @@ Canonical Zp_finRingType := [finRingType of 'I_p].
 \mcbsection{Telescopes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-While using amd populating a structure hierarchy is fairly
+While using and populating a structure hierarchy is fairly
 straightforward, creating a robust and efficient hierarchy can be more
 difficult. In this section we explain \emph{telescopes}, one of the
 simpler ways of implementing a structure hierarchy.  Telescopes
@@ -306,8 +316,8 @@ to just \C{true},\footnote{There is no spurrious
   \lstinline/add_monoid/ because the identity element is a manifest
   field stored in the structure type.}
 as it informs type inference how to solve the unification problem
-\lstinline/(operator $\mcbimplm{L}$)$\simeq$andb/, by setting
-\lstinline/$\mcbimplm{L}\equiv$andb_monoid/.
+\lstinline/(operator $\mcbimplm{L}$)/ versus \C{andb}, by setting
+\lstinline/$\mcbimplm{L}$/ to \C{andb_monoid}.
 
 Now many of the more interesting \C{bigop} properties permute the
 operands of the iterated operator; for example
@@ -482,16 +492,16 @@ Record class_of T :=
 Structure type := Pack {sort; _ : class_of sort}.
 \end{coq}
 
-The class component of \C{type} is anonymous as this avoids
-spurrious ``Projection value'' warnings; this is also done in the actual
-\mcbMC{} \C{Equality} module.\footnote{The code here and in
-  section~\ref{rec:itf} are slight simplifications of the real \mcbMC{} code.
-  We've also removed patches addressing historical inefficiencies on
-  the \Coq{} kernel heuristics, in particular a redundant copy of the
-  \C{sort} field appended to the \C{type} structure.}
+% The class component of \C{type} is anonymous as this avoids
+% spurious ``Projection value'' warnings; this is also done in the actual
+% \mcbMC{} \C{Equality} module.\footnote{The code here and in
+%   section~\ref{rec:itf} are slight simplifications of the real \mcbMC{} code.
+%   We've also removed patches addressing historical inefficiencies on
+%   the \Coq{} kernel heuristics, in particular a redundant copy of the
+%   \C{sort} field appended to the \C{type} structure.}
 
 The main operation provided by the \C{choiceType} structure \C{T} is a
-choice function for decidable predicates \C{choose : pred T -> T} satisfying:
+choice function for decidable predicates \C{(choose : pred T -> T)} satisfying:
 
 \begin{coq}{name=packed21}{}
 Lemma chooseP P x0 : P x0 -> P (choose P x0).
@@ -503,7 +513,8 @@ The mixin actually specifies a specific search depth based choice
 strategy: \C{choose} can be defined using \C{find} and countable
 choice, which is derivable in \mcbCIC{}. The stronger requirement
 makes it possible to compose \C{choiceType}s, so that pairs or
-sequences of \C{choiceType}s are also \C{choiceType}s.
+sequences of \C{choiceType}s are also \C{choiceType}s.  This subtlety
+is detailed in the comments of \C{choice.v}.
 
 An important difference to telescopes is that the definition of
 \C{Choice.type} does not link it directly to \C{eqType}: a
@@ -538,7 +549,7 @@ Line 1 merely lets us explicitly use a \C{choiceType} where an
 \C{eqType} is expected, which is rare as structures are almost alway
 implicit and inferred.  It is line 2 that really lets \C{choiceType}
 extend \C{eqType}, because it makes it possible to use any
-\emph{element} of a \C{T : choiceType} as an element of an \C{eqType},
+\emph{element} \C{(T : choiceType)} as an element of an \C{eqType},
 namely \C{Choice.eqType T}: it tells type inference that \C{Choice.sort T}
 can be unified with \lstinline/Equality.sort $\mcbimplm{E}$/ by taking
 \lstinline/$\mcbimplm{E}={}$Choice.eqType T/.
@@ -592,7 +603,7 @@ scope. Only the notations are
 exported from \C{GRing}, as these definitions are intended to remain
 private.
 
-\gotcha{If you see an undocumented \lstinline/GRing.toto/,
+\gotcha{If you see an undocumented \lstinline/GRing.something/,
   then you have broken an abstraction barrier}
 
 The next structure in the hierarchy encapsulates nontrivial rings.
@@ -890,6 +901,81 @@ Definition pack T b0 mul0 (axT : @axiom R (@Lmodule.Pack R _ T b0 T) mul0) :=
 ...
 Notation LalgType R T a := (@pack _ (Phant R) T _ _ a _ _ id _ _ id _ id).
 \end{coq}
+The interested reader can also refer to~\cite[Section 7]{mahboubi:hal-00816703}
+for a description of this tenchique.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Linking a custom datatype to the library}
+
+The SubType kit of Chapter~\ref{ch:sigmabool} is not the only
+way to easily add instances to the library.  For example
+imagine we are interested to define a wind rose and attach
+to it the theory of finite types.
+
+\begin{coq}{}{}
+Inductive windrose := N | S | E | W.
+\end{coq}
+The most naive way to show that \C{windrose} is a \C{finType} is
+to provide a comparison function, then a choice function, \ldots
+finally an enumeration.  Instead, it is much simpler to show one
+can punt \C{windrose} in bijection with a pre-existing finite type,
+like \C{'I_4}.  Lets start by defining the obvious injections.
+
+\begin{coq}{}{}
+Definition w2o (w : windrose) : 'I_4 :=
+  match w with
+  | N => inord 0
+  | S => inord 1
+  | E => inord 2
+  | W => inord 3
+  end.
+
+Definition o2w (o : 'I_4) : option windrose :=
+  match val o with
+  | 0 => Some N
+  | 1 => Some S
+  | 2 => Some E
+  | 3 => Some W
+  | _ => None
+  end.	
+\end{coq}
+Then one can show that they cancel out.
+
+\begin{coq}{}{}
+Lemma w_is_ord4 : pcancel w2o o2w.
+Proof. by case; rewrite /o2w /= inordK. Qed.
+\end{coq}
+Now, thanks to the \C{PcanXXXMixin} family of lemmas, one
+can inherit on \C{windrose} the structures of ordinals.
+
+\begin{coq}{}{}
+Definition windrose_eqMixin := PcanEqMixin w_is_ord4.
+Canonical windrose_eqType := EqType windrose windrose_eqMixin.
+Definition windrose_choiceMixin := PcanChoiceMixin w_is_ord4.
+Canonical windrose_choiceType := ChoiceType windrose windrose_choiceMixin.
+Definition windrose_countMixin := PcanCountMixin w_is_ord4.
+Canonical windrose_countType := CountType windrose windrose_countMixin.
+Definition windrose_finMixin := PcanFinMixin w_is_ord4.
+Canonical windrose_finType := FinType windrose windrose_finMixin.	
+\end{coq}
+Only one tiny details is left on the side.  To use \C{windrose}
+in conjunction with \C{\\in} and \C{#|...|}, the type declaration has
+to be tagged as a \C{predArgType} as follows.
+
+\begin{coq}{}{}
+Inductive windrose : predArgType := N | S | E | W.
+\end{coq}
+After that, our new data type can be used exactly as the ordinal one
+can.
+
+\begin{coq}{}{}
+Check (N != S) && (N \in windrose) && (#| windrose | == 4).
+\end{coq}
+
+More in general a datatype \C{T} can be equipped with a
+eqType, choiceType, and countType structure by
+providing a correspondence with the generic tree datatype
+\C{(GenTree.tree T)}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\mcbLEVEL{2}
