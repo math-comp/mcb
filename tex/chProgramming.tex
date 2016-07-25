@@ -4,8 +4,6 @@ TODO: uniform terminology (a function returns,produces, computes... patter match
 
 TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
 
-TODO: curryfication.
-
 %\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
 We will take the point of view that mathematics can be understood as
@@ -216,26 +214,58 @@ written as follows:
     an expression}
 Eval compute in (repeat_twice f 2).
 \end{coq}
-\coqrun{name=eval_run}{eval_repeat_twice_f_two}
 \begin{coqout}{run=eval_f_run}{title=Response,width=5cm}
-  = 4 : nat
+= 4 : nat
 \end{coqout}
+\coqrun{name=eval_run}{eval_repeat_twice_f_two}
 \index[vernac]{\C{Eval compute}}
 From the syntax point of view, we wrote three subexpressions only
 separated by space.  By default, the parser understands this as
 \C{((repeat_twice f) 2)}, so we actually have a first subexpression
 which is \C{repeat_twice} applied to \C{f}.  According to the
-definition of the first function, the value is an intermediate
-function from \C{nat}
-to \C{nat}, which is then applied to \C{2}.  The value of the
-intermediate function is \C{(fun x => f (f x))}, so the result
-expression is \C{(f (f 2))}.
-Remembering the definition of \C{f}, this expression can also
+definition of the first function, the value is 
+%an intermediate
+a function 
+% from \C{nat} to \C{nat}, 
+which is then applied to \C{2}. 
+% The value of the
+%intermediate function is \C{(fun x => f (f x))}, so 
+The resulting expression is \C{(f (f 2))}, and given the
+%Remembering the 
+definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
 \index[concept]{computation}
 
-\marginnote{it would be nice to have one more example here, or exercises.
-To be discussed.}
+It is worth spending a few more words on the \C{(repeat_twice f)} subexpression.
+The \C{repeat_twice} program takes two arguments in input. However one
+can pass to it only the former one and obtain a perfectly valid term.
+
+\begin{coq}{name=eval_repeat_twice_f_two}{width=6cm,title=Partial application}
+Check (repeat_twice f).
+Eval compute in (repeat_twice f).
+\end{coq}
+\begin{coqout}{run=eval_f_run}{title=Response,width=6cm}
+repeat_twice f : nat -> nat
+= fun x => f (f x) : nat -> nat
+\end{coqout}
+\index[concept]{partial application}
+\index[concept]{Currying of functions}
+\index[concept]{Typing an application}
+If we look at the type of \C{repeat_twice} and add redundant parentheses
+we obtain \C{(|==(nat -> nat)==| -> (|--nat--| -> nat))}:
+once the first argument
+is passed, \C{(f : |==nat -> nat==|)}, we obtain a term which type is
+the right hand side of the main arrow, that is \C{(|--nat--| -> nat)}.
+By passing another argument, like \C{(2 : |--nat--|)}, we obtain an expression
+which type is, again, the right hand side of the main arrow, here \C{nat}.
+Remark that the type of each argument matches the left hand side of
+the arrow (as depicted with different underline styles).
+When this is not the case \Coq{} issues a type error.
+
+In \Coq{} functions with multiple inputs are just functions producing
+functions.  As a consequence it is legit to apply them partially
+and the \C{->} sign associates to the right.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: construction and destruction}
 It is possible to define a datatype by giving in one declaration

@@ -21,6 +21,7 @@
     citecolor=blue,
     urlcolor=blue
 }
+\usepackage[normalem]{ulem}
 \renewcommand{\ExerciseHeader}{\medskip\noindent\textbf{\ExerciseName~\ExerciseHeaderNB.~\ExerciseHeaderDifficulty}\emph{\ExerciseHeaderTitle}\\~\\}
 \renewcommand{\AnswerHeader}{\medskip\noindent{\textbf{Answer of \ExerciseName~\ExerciseHeaderNB}\\}}
 
@@ -44,6 +45,8 @@
 
 % Highlights identifiers, |* id *| in underlined red, can we do better?
 \lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
+\lstset{moredelim=[is][\ttfamily\uwave]{|==}{==|}}
+\lstset{moredelim=[is][\ttfamily\underbar]{|--}{--|}}
 
 \newcommand\Chapter[2]{\chapter
   [#1\hfil\hbox{}\protect\linebreak{\itshape#2}]
