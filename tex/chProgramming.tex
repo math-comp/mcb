@@ -249,8 +249,8 @@ repeat_twice f : nat -> nat
 = fun x => f (f x) : nat -> nat
 \end{coqout}
 \index[concept]{partial application}
-\index[concept]{Currying of functions}
-\index[concept]{Typing an application}
+\index[concept]{currying of functions}
+\index[concept]{typing an application}
 If we look at the type of \C{repeat_twice} and add redundant parentheses
 we obtain \C{(|==(nat -> nat)==| -> (|--nat--| -> nat))}:
 once the first argument
@@ -285,7 +285,7 @@ notion defined as follows.
 \begin{coq}{name=print_bool}{title=Declaration of bool}
 Inductive bool := true | false
 \end{coq}
-\index[vernac]{\C{Inductive} (data type)}
+\index[vernac]{\C{Inductive}}
 \marginnote{I guess we should use Type, also for bool, and not even mention Set}
 This declaration states explicitly that there are only two cases for
 elements of type \C{bool}.  The first case is given by the constant

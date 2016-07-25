@@ -44,6 +44,18 @@ Proof. by case: a; case: b. Qed.
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 Proof. by case: a; case: b. Qed.
 
+
+Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
+Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
+
+
+Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
+Proof. 
+elim: n => // n IHn.
+rewrite expnS odd_mul {}IHn orbC.
+by case: odd.
+Qed.
+
 Definition all_words n T (alphabet : seq T) :=
   let prepend x wl := [seq x :: w | w <- wl] in
   let extend wl := flatten [seq prepend x wl | x <- alphabet] in

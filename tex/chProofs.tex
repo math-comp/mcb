@@ -1452,6 +1452,7 @@ rewrite dvdn_addr.
   rewrite gtnNdvd //.
   by apply: prime_gt1.  (* 1 < p *)
 \end{coq}
+\index[ssr]{\C{rewrite}!\C{//} (close trivial goals)}
 If one carefully compares the conclusion of \C{gtnNdvd} and
 \C{prime_gt1} he can spot they are both rewriting rules.  While
 the former features an explicit ``\C{.. = false}'', in the
@@ -1780,7 +1781,7 @@ Proof. by rewrite [in RHS]addn0. Qed.
 
 The last rewrite flag worth mentioning is the \C{/=} simplification
 flag.  It performs computations in the goal to obtain a ``simpler'' form.
-\index[ssr]{\C{rewrite}!\C{/=}}
+\index[ssr]{\C{rewrite}!\C{/=} (simplification)}
 
 \begin{coq}{def=UserRwPat}{width=7cm}
 Lemma simplify_me : size [::] = 0.
@@ -1796,8 +1797,8 @@ tactic.  Whilst being handy, \C{simpl} tends to oversimplify
 expressions, hence we advice using it with care.
 In Section~\ref{sec:edivn} we propose a less risky alternative.
 
-The sequence \C{// /=} can be collapsed into \C{//=}.
-\index[ssr]{\C{rewrite}!\C{//=}}
+The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
+\index[ssr]{\C{rewrite}!\C{//=} (simplify and close trivial goals)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
@@ -2023,22 +2024,25 @@ Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercise}[label=ex:rewrite,difficulty=0,title={Rewriting}]
 
-Prove the following lemmas by rewriting:
+Prove the following lemma by rewriting:
 
 \begin{coq}{}{}
-....
+Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
 \end{coq}
+The \C{(_ ^ _)} notation is attached to the \C{expn} function.
 
 \end{Exercise}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercise}[label=ex:induction,difficulty=0,title={Induction}]
+\begin{Exercise}[label=ex:induction,difficulty=1,title={Induction}]
 
-Prove the following lemmas by induction:
+Prove the following lemma by induction:
 
 \begin{coq}{}{}
-....
+Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 \end{coq}
+Recall that a local equation can be disposed (after use)
+by prefixing its name with \C{\{\}}.
 
 \end{Exercise}
 
@@ -2046,12 +2050,11 @@ Prove the following lemmas by induction:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{Exercise}[label=ex:induction2,difficulty=2,title={Multiple induction}]
 
-Prove the following lemmas by induction.
+Prove the following lemma by induction.
 
 \begin{coq}{}{}
 Lemma size_all_words n T (alphabet : seq T) :
   size (all_words n alphabet) = size alphabet ^ n.
-Proof.
 \end{coq}
 
 It requires two inductions: first on the length of words,
@@ -2060,7 +2063,6 @@ sub expression has to be generalized just before starting
 the induction.
 
 \end{Exercise}
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Solutions}
@@ -2082,7 +2084,8 @@ Proof. by case: a; case: b. Qed.
 \begin{Answer}[ref=ex:rewrite]
 
 \begin{coq}{}{}
-....
+Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
+Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
 \end{coq}
 \end{Answer}
 
@@ -2090,7 +2093,12 @@ Proof. by case: a; case: b. Qed.
 \begin{Answer}[ref=ex:induction]
 
 \begin{coq}{}{}
-....
+Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
+Proof.
+elim: n => // n IHn.
+rewrite expnS odd_mul {}IHn orbC.
+by case: odd.
+Qed.
 \end{coq}
 \end{Answer}
 

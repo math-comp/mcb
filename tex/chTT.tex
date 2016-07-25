@@ -178,7 +178,7 @@ inductive definition.
 Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B).
 Notation "A /\ B" := (and A B).
 \end{coq}
-\index[vernac]{\C{Inductive} (predicate)}
+\index[vernac]{\C{Inductive}}
 
 Remark that the ``data'' type \C{And} is tagged as \C{Prop}, i.e.  we declare
 the intention to use it as a logical connective rather than a data type.  The
@@ -204,6 +204,7 @@ conjunction.  In particular the elimination rule is just a projection.
 Definition proj1 A B (p : A /\ B) : A :=
   match p with conj a _ => a end.
 \end{coq}
+\index[coq]{\C{conj}}
 
 Now recall the similarity between $\to$ and $\forall$, where the former is the
 simple, non dependent, case of the latter.  If we check the type of
@@ -225,6 +226,7 @@ Inductive ex (A : Type) (P : A -> Prop) : Prop :=
   ex_intro (x : A) (p : P x).
 Notation "'exists' x : A , p" := (ex A (fun x : A => p)).
 \end{coq}
+\index[coq]{\C{ex_intro}}
 
 The \C{ex\_intro} constructor is the only mean to prove a statement like
 \C{(exists n, prime n)}.  In such case the first argument would be a number
@@ -258,6 +260,8 @@ Definition or_ind (A B P : Prop)
   | or_intror b => pb b
   end.
 \end{coq}
+\index[coq]{\C{or_introl}}
+\index[coq]{\C{or_intror}}
 
 The detail worth noting here is that the pattern match construct has two
 branches in this case.  Each branch represents a distinct sub proof.  In this
@@ -273,6 +277,10 @@ Inductive True : Prop := I.
 Inductive False : Prop := .
 Definition not (A : Prop) := A -> False.
 \end{coq}
+\index[coq]{\C{True}}
+\index[coq]{\C{False}}
+\index[coq]{\C{I}}
+\index[coq]{\C{not}}
 
 Remark that to prove \C{True} one has simply to provide \C{I} that has no
 argument.  So proving \C{True} is trivial, and as a consequence eliminating it
@@ -303,6 +311,7 @@ Inductive eq (A:Type) (x:A) : A -> Prop := erefl : x = x
 where "x = y" := (@eq _ x y) : type_scope.
 \end{coq}
 \index[concept]{equality}
+\index[coq]{\C{erefl}}
 
 This is the first time we see a function type after the \C{:} symbol, line 1.
 The \C{eq} type constructor takes three arguments: a type \C{A} and
@@ -345,7 +354,7 @@ The \C{case:} tactic is general enough to work with any inductive data type
 and inductive predicate.
 
 The \C{apply:} tactic generates an application.  For example \C{apply: addnC}
-generates the term \C{addnC t1 t2} by figuring out the correct values of
+generates the term \C{(addnC t1 t2)} by figuring out the correct values of
 \C{t1} and \C{t2}, or opening new goals when this cannot be done, i.e.
 if the lemma takes in input proofs, like \C{contraL}.
 
@@ -365,7 +374,9 @@ by putting such names just after the name of the lemma being prover, or
 just after a \C{case:} or \C{elim:} proof command.  Next section
 expands this subject covering the full management of the proof context.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Bookkeeping and the stack model}
+\index[concept]{goal stack model}
 
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
 is oversimplified.  While \C{case} is indeed the proof command in
@@ -388,6 +399,7 @@ corresponding to the same \C{case} functionality.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsubsection{Pulling from the stack}
+\index[ssr]{\C{=>}}
 
 Lets start with the post processing phase, called \emph{introduction pattern}.
 The postfix ``\C{=> ...}'' syntax can be used in conjunction with any proof
@@ -433,6 +445,7 @@ move=> [x y] pr_x odd_y
 ========================
  2 < (x,y).2 + (x,y).1
 \end{coqout}
+\index[ssr]{\C{=>}!\C{[ ... $\mid$ ... ]} (case)}
 
 One can place the \C{/=} switch to force the system to reduce the formulas on
 the stack, before introducing them in the context, and obtain:
@@ -463,6 +476,7 @@ move=> [x y] /= /prime_gt1-x_gt1 odd_y
 ========================
  2 < y + x
 \end{coqout}
+\index[ssr]{\C{=>}!\C{/=} (simplification)}
 
 The leading \C{/} makes \C{prime\_gt1} do as a function instead of
 as a name to be assigned to the top of the stack.  The \C{-} has no effect but
@@ -480,6 +494,8 @@ move=> [x [//|y]] /= /prime_gt1-x_gt1.
  ========================
  ~~ odd y -> 2 < y.+1 + x
 \end{coqout}
+\index[ssr]{\C{=>}!\C{/view} (view application)}
+\index[ssr]{\C{=>}!\C{//} (close trivial goals)}
 
 This time the destruction of \C{y} generates to cases, hence the \C{[ .. | .. ]}
 syntax mentioning the two branches.  In the first one, when \C{y} is \C{0},
@@ -560,6 +576,7 @@ move=> [x y] /= /prime_gt1/ltnW.
  ========================
  0 < x -> odd y -> 2 < y + x
 \end{coqout}
+\index[ssr]{\C{=>}!\C{/view/view} (multiple views)}
 
 Two other operations are available on the top stack item: specialization
 and substitution.  Let's take the following conjecture.
@@ -579,6 +596,7 @@ move=> /(_ 3).
 ========================
 3 * 2 = 3 + 3 -> 6 = 3 + 3
 \end{coqout}
+\index[ssr]{\C{=>}!\C{/(_ arg)} (specialization)}
 The idea behind the notation is that when applies a view to the top
 stack item, as in \C{/v}, he is forming the term \C{(v top)}, while
 when oen specializes the top assumption as in \C{/(_ x)} he is forming the
@@ -594,12 +612,15 @@ move=> /(_ 3) <-.
 ========================
 6 = 3 * 2
 \end{coqout}
+\index[ssr]{\C{=>}!\C{->} (rewriting L2R)}
+\index[ssr]{\C{=>}!\C{<-} (rewriting R2L)}
 In other words, the arrows are just a compact syntax for rewriting,
 as in the \C{rewrite} tactic, with the top assumption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsubsection{Pushing to the stack}
+\index[ssr]{\C{:}}
 
 We have seen how to pull items from the stack to the context.  Now let's see
 how to perform the converse via the \C{:} operator, also called
@@ -642,6 +663,7 @@ first, then \C{y}, leading to
  ========================
  forall y, odd y -> 2 < y + x
 \end{coqout}
+\index[ssr]{\C{:}!\C{term} (generalization)}
 
 Via the execution of \C{case} one obtains:
 
@@ -660,6 +682,7 @@ subgoal 2 is:
 An alternative to discharging \C{odd\_y} would be to clear it, i.e. purge it
 from the context.  Listing context entry names inside curly braces has this
 effect.  For example \C{case: y \{odd\_y\}}.
+\index[ssr]{\C{:}!\C{\{name\}} (disposal)}
 
 One can combine \C{:} and \C{=>} around a proof command, to first prepare the
 goal for its execution and finally apply the necessary bookkeeping to the
@@ -700,12 +723,14 @@ the two sub goals:
 ========================
  odd y'.+1 -> 2 < y'.+1 + x
 \end{coqout}
+\index[ssr]{\C{:}!\C{E: term} (equation generation)}
 
-\gotcha{The colon symbol in \C{apply:} is not the dischargin operator.
+\gotcha{The colon symbol in \C{apply:} is not the discharging operator.
 It is just a marker to distinguish the \C{apply:} tactic of
 Ssreflect from the \C{apply} tactic of \Coq{}.  Indeed the two tactics, while
-playing similar roles, behave very diferently.}
+playing similar roles, behave very differently.}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Inductive reasoning}\label{sec:indreason}
 
 In chapter 1 we have seen the \C{fun} construction of functions and inductive
@@ -739,6 +764,7 @@ Fixpoint nat_ind (P : nat -> Prop)
     pS m pm (* : P m.+1 *)
   else p0.
 \end{coq}
+\index[coq]{\C{nat\_ind}}
 
 The \Coq{} system generates such program when the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
