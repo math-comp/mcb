@@ -906,6 +906,9 @@ for a description of this tenchique.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Linking a custom datatype to the library}
+\index[concept]{provide eqType structure}
+\index[concept]{provide choiceType structure}
+\index[concept]{provide finType structure}
 
 The SubType kit of Chapter~\ref{ch:sigmabool} is not the only
 way to easily add instances to the library.  For example
@@ -972,10 +975,10 @@ can.
 Check (N != S) && (N \in windrose) && (#| windrose | == 4).
 \end{coq}
 
-More in general a datatype \C{T} can be equipped with a
+More in general a datatype can be equipped with a
 eqType, choiceType, and countType structure by
 providing a correspondence with the generic tree datatype
-\C{(GenTree.tree T)}.
+\C{GenTree.tree}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\mcbLEVEL{2}
