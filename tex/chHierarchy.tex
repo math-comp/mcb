@@ -892,12 +892,12 @@ Finally, the instance constructor for the left algebra structure
 \C{ringType} parameter, uses all the patterns discussed in this section,
 using a \C{phant} and three \lstinline/phant_id/ arguments.
 
-\begin{coq}{name=phant26}{}
-Definition pack T b0 mul0 (axT : @axiom R (@Lmodule.Pack R _ T b0 T) mul0) :=
-  fun bT b & phant_id (Ring.class bT) (b : Ring.class_of T) =>
-  fun mT m & phant_id (@Lmodule.class R phR mT) (@Lmodule.Class R T b m) =>
-  fun ax & phant_id axT ax =>
-  Pack (Phant R) (@Class T b m ax) T.
+\begin{coq}{name=phant26}{width=12.5cm}
+Definition pack T b0 mul0 (axT: @axiom R (@Lmodule.Pack R _ T b0 T) mul0):=
+ fun bT b & phant_id (Ring.class bT) (b : Ring.class_of T) =>
+ fun mT m & phant_id (@Lmodule.class R phR mT) (@Lmodule.Class R T b m) =>
+ fun ax & phant_id axT ax =>
+ Pack (Phant R) (@Class T b m ax) T.
 ...
 Notation LalgType R T a := (@pack _ (Phant R) T _ _ a _ _ id _ _ id _ id).
 \end{coq}
@@ -927,22 +927,24 @@ like \C{'I_4}.  Lets start by defining the obvious injections.
 \begin{coq}{}{}
 Definition w2o (w : windrose) : 'I_4 :=
   match w with
-  | N => inord 0
-  | S => inord 1
-  | E => inord 2
-  | W => inord 3
+  | N => inord 0 | S => inord 1 | E => inord 2 | W => inord 3
   end.
+\end{coq}
+Remark how the \C{inord} constructor lets us omit
+the (trivial by computation) proofs that 0, 1, 2, 3
+are smaller than 4.
 
+The type of ordinals is larger, hence we provide only a partial
+function.
+
+\begin{coq}{}{}
 Definition o2w (o : 'I_4) : option windrose :=
   match val o with
-  | 0 => Some N
-  | 1 => Some S
-  | 2 => Some E
-  | 3 => Some W
+  | 0 => Some N | 1 => Some S | 2 => Some E | 3 => Some W
   | _ => None
   end.	
 \end{coq}
-Then one can show that they cancel out.
+Then we can show that these two functions cancel out.
 
 \begin{coq}{}{}
 Lemma pcan_wo4 : pcancel w2o o2w.
@@ -964,6 +966,7 @@ Canonical windrose_finType := FinType windrose windrose_finMixin.
 Only one tiny details is left on the side.  To use \C{windrose}
 in conjunction with \C{\\in} and \C{#|...|}, the type declaration has
 to be tagged as a \C{predArgType} as follows.
+\index[coq]{\C{preArgType}}
 
 \begin{coq}{}{}
 Inductive windrose : predArgType := N | S | E | W.
