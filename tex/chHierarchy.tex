@@ -945,20 +945,20 @@ Definition o2w (o : 'I_4) : option windrose :=
 Then one can show that they cancel out.
 
 \begin{coq}{}{}
-Lemma w_is_ord4 : pcancel w2o o2w.
+Lemma pcan_wo4 : pcancel w2o o2w.
 Proof. by case; rewrite /o2w /= inordK. Qed.
 \end{coq}
 Now, thanks to the \C{PcanXXXMixin} family of lemmas, one
 can inherit on \C{windrose} the structures of ordinals.
 
 \begin{coq}{}{}
-Definition windrose_eqMixin := PcanEqMixin w_is_ord4.
+Definition windrose_eqMixin := PcanEqMixin pcan_wo4.
 Canonical windrose_eqType := EqType windrose windrose_eqMixin.
-Definition windrose_choiceMixin := PcanChoiceMixin w_is_ord4.
+Definition windrose_choiceMixin := PcanChoiceMixin pcan_wo4.
 Canonical windrose_choiceType := ChoiceType windrose windrose_choiceMixin.
-Definition windrose_countMixin := PcanCountMixin w_is_ord4.
+Definition windrose_countMixin := PcanCountMixin pcan_wo4.
 Canonical windrose_countType := CountType windrose windrose_countMixin.
-Definition windrose_finMixin := PcanFinMixin w_is_ord4.
+Definition windrose_finMixin := PcanFinMixin pcan_wo4.
 Canonical windrose_finType := FinType windrose windrose_finMixin.	
 \end{coq}
 Only one tiny details is left on the side.  To use \C{windrose}

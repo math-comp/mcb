@@ -19,16 +19,16 @@ Definition o2w (o : 'I_4) :=
   | _ => N
   end.
 
-Lemma w_is_ord4 : cancel w2o o2w.
+Lemma pcan_wo4 : cancel w2o o2w.
 Proof. by case; rewrite /o2w /= inordK. Qed.
 
-Definition windrose_eqMixin := CanEqMixin w_is_ord4.
+Definition windrose_eqMixin := CanEqMixin pcan_wo4.
 Canonical windrose_eqType := EqType windrose windrose_eqMixin.
-Definition windrose_choiceMixin := CanChoiceMixin w_is_ord4.
+Definition windrose_choiceMixin := CanChoiceMixin pcan_wo4.
 Canonical windrose_choiceType := ChoiceType windrose windrose_choiceMixin.
-Definition windrose_countMixin := CanCountMixin w_is_ord4.
+Definition windrose_countMixin := CanCountMixin pcan_wo4.
 Canonical windrose_countType := CountType windrose windrose_countMixin.
-Definition windrose_finMixin := CanFinMixin w_is_ord4.
+Definition windrose_finMixin := CanFinMixin pcan_wo4.
 Canonical windrose_finType := FinType windrose windrose_finMixin.
 
 Check [finType of windrose].
@@ -42,7 +42,7 @@ Qed.
 Lemma test : (N != S) && (N \in windrose) && (#| windrose | == 4).
 Proof.
 case: eqP => //= _; rewrite -[4]card_ord.
-rewrite -(card_image (can_inj w_is_ord4)).
+rewrite -(card_image (can_inj pcan_wo4)).
 apply/eqP; apply: eq_card=> o; rewrite inE.
 by apply/imageP; exists (o2w o) => //=; rewrite ord4_is_w.
 Qed.
