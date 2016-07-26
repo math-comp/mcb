@@ -1,0 +1,53 @@
+\chapter{Polynomials, Linear algebra}
+
+2-stage presentation: interface plus explicit. Expansion of
+Georges'ITP paper. Here is one of the main application of the choice
+operator (complement a base).
+
+
+\section{TODO: Plynomials}
+\C{poly} and \C{polydiv}
+
+\section{TODO: Linear algebra}
+\C{mxalgebra}
+
+\begin{coq}{}{}
+Fixpoint Gaussian_elimination {m n} : 'M_(m, n) -> 'M_m * 'M_n * nat :=
+  match m, n with
+  | _.+1, _.+1 => fun A : 'M_(1 + _, 1 + _) =>
+    if [pick ij | A ij.1 ij.2 != 0] is Some (i, j) then
+      let a := A i j in let A1 := xrow i 0 (xcol j 0 A) in
+      let u := ursubmx A1 in let v := a^-1 *: dlsubmx A1 in
+      let: (L, U, r) := Gaussian_elimination (drsubmx A1 - v *m u) in
+      (xrow i 0 (block_mx 1 0 v L), xcol j 0 (block_mx a%:M u 0 U), r.+1)
+    else (1%:M, 1%:M, 0%N)
+  | _, _ => fun _ => (1%:M, 1%:M, 0%N)
+  end.
+\end{coq}
+
+Gaussian elimination of a matrix
+\C{A} is a triple \C{(L, U, r)} with \C{L} a column permutation of a
+lower triangular invertible matrix, \C{U} a row permutation of an upper
+triangular invertible matrix, and \C{r} the rank of \C{A}, all
+satisfying the identity \C{(L *m pid_mx r *m U = A)}.
+\C{(pid_mx r)} is a non necessarily square matrix that has \C{1} in \C{r}
+first coefficients on the diagonal and \C{0} elsewhere.
+
+Its main difference with respect to the standard algorithm
+is the \emph{double} pivoting \C{[pick ij | A ij.1 ij.2 != 0]}, that
+looks for a non-null coefficient in the entire matrix.  By bringing
+this element in the top-left cornet iteratively one also computes the rank
+of the matrix.
+
+rank theory, incomplete basis thm
+
+subspace equality and choice type
+
+direct sum
+
+\cite{gonthier:hal-00805966}
+
+\section{TODO: Matrices and polynomials}
+\C{mxpoly}
+
+Cayley Hamilton, Sylvester matrix, characteristic polynomial
