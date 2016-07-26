@@ -109,8 +109,8 @@ gives the same result in \C{int} instead of \C{R}. \C{Num.sg} and
 \C{(sgz x)\%:~R} are not convertible, however they are provably equal
 through the lemma~\C{sgrEz}.
 
-We provide the absolute value function \C{absz} denoted with \C{`|n|}
-which takes an integer to a natural number. Additionally \C{`|m - n|}
+We provide the absolute value function \C{absz} denoted with \D{`|n|}
+which takes an integer to a natural number. Additionally \D{`|m - n|}
 has a special treatment in order for it to be used without the integer
 library. This means that one can just import the module \C{IntDist} and
 take advantage of distance between natural numbers without any
@@ -173,14 +173,14 @@ The numeric hierarchy was specifically designed to cover the following
 instances: $\mathbb{Z}$, $\mathbb{Q}$, real algebaric numbers and
 complex numbers. Hence, we did not provide a general theory of ordered
 structure, but only of structures with a (potentially partial) order
-(\C{_ <= _} or \C{_ < _}) that is tied to a norm operation (\C{`|_|}
+(\C{_ <= _} or \C{_ < _}) that is tied to a norm operation (\D{`|_|}
 that encompass both absolute value and complex modulus). This is why
 the axiomatic of these numbers can be instantiated though any of the
 following operations and their axiomatic: large ordering, strict
 ordering and norm.
 
 The link between large and strict ordering is obvious and the link
-between ordering and norm is \C{(0 <= x) = (`|x| == x)}.
+between ordering and norm is \D{(0 <= x) = (`|x| == x)}.
 
 Remark that we provide a partial order on complex numbers in order to
 be able to compare complex numbers that happen to be real. In

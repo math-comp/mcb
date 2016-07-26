@@ -14,6 +14,8 @@
 \usepackage{bussproofs}
 \usepackage{exercise}
 \usepackage{imakeidx}
+\usepackage[normalem]{ulem}
+%\usepackage{fontspec} % xelatex only
 \usepackage{hyperref} % must be the last one
 \hypersetup{
     colorlinks=true,
@@ -21,7 +23,6 @@
     citecolor=blue,
     urlcolor=blue
 }
-\usepackage[normalem]{ulem}
 \renewcommand{\ExerciseHeader}{\medskip\noindent\textbf{\ExerciseName~\ExerciseHeaderNB.~\ExerciseHeaderDifficulty}\emph{\ExerciseHeaderTitle}\\~\\}
 \renewcommand{\AnswerHeader}{\medskip\noindent{\textbf{Answer of \ExerciseName~\ExerciseHeaderNB}\\}}
 
@@ -42,7 +43,8 @@
 
 \newcommand{\lib}[1]{\textsf{#1}}
 
-\newcommand{\C}[1]{\mbox{\lstinlineþ#1þ}}
+\newcommand{\C}[1]{\mbox{\lstinline`#1`}}
+\newcommand{\D}[1]{\mbox{\lstinline'#1'}}
 \let\L=\lstinline
 
 % Highlights identifiers, |* id *| in underlined red, can we do better?
