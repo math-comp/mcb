@@ -54,14 +54,14 @@ or create new hierarchies need to read on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbLEARN{Using a structure}
-\mcbPROVIDE{\C{fintype}, \C{GRing}, \C{zmodp}}
+\mcbPROVIDE{\lib{fintype}, \C{GRing}, \lib{zmodp}}
 \mcbREQUIRE{\C{eqType}}
 \mcbsection{Structure interface}\label{str:itf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Most of the documented interface to a structure concerns the operations and
 properties it provides. This will be obvious from the embedded
-documentation of the \C{ssralg} library, which provides structures for
+documentation of the \lib{ssralg} library, which provides structures for
 most of basic algebra (including rings, modules, fields). While these
 are of course important, they pertain to elements of the structure
 rather than the structure itself, and indeed are usually defined
@@ -75,7 +75,7 @@ For \C{eqType} the interface comprises:
 \begin{itemize}
 \item \C{eqType}: a short name for the structure type (here,
   \C{Equality.type})
-\item \C{EqMixin}, \C{PcanEqMixin} \lstinline/[eqMixin of T by <:]/:
+\item \C{EqMixin}, \C{PcanEqMixin}, \lstinline/[eqMixin of T by <:]/:
   mixin constructors that bundle the \emph{new} operations and
   properties the structure provides.
 \item \C{EqType}: an instance construtor that creates an instance of
@@ -92,9 +92,9 @@ inference; a casual user of a structure only needs to be aware of which other
 structure it extends, in the hierarchy.
 
 Let us see how the creation operations are used in practice, drawing
-examples from the \C{zmodp} library that puts a ``mod $p$'' algebraic
+examples from the \lib{zmodp} library that puts a ``mod $p$'' algebraic
 structure on the type \C{ordinal p} of integers less than $p$.
-The \C{ordinal} type is defined in library \C{fintype} as follows:
+The \C{ordinal} type is defined in library \lib{fintype} as follows:
 
 \begin{coq}{name=zp0}{}
 Inductive ordinal n := Ordinal m of m < n.
@@ -102,7 +102,7 @@ Notation "'I_ n'" := (Ordinal n).
 Coercion nat_of_ord n (i : 'I_n) := let: @Ordinal _ m _ := i in m.
 \end{coq}
 
-Algebra only makes sense on non-empty types, so \C{zmodp} only defines
+Algebra only makes sense on non-empty types, so \lib{zmodp} only defines
 arithmetic on \lstinline/'I_p/ when \C{p} is an explicit successor.
 This makes it easy to define \C{inZp}, a ``mod $p$'' right inverse to
 the \lstinline/ordinal >-> nat/ coercion, and a 0 value. With these
@@ -135,7 +135,7 @@ Lemma Zp_mulC : commutative Zp_mul.
 ...
 \end{coq}
 
-Creating an instance of the lowest \C{ssralg} structure, the
+Creating an instance of the lowest \lib{ssralg} structure, the
 $\mathbb{Z}$-module (i.e., additive group), requires two lines:
 
 \begin{coq}{name=zp4}{}
@@ -146,7 +146,7 @@ Canonical Zp_zmodType := ZmodType 'I_p Zp_zmodMixin.
 Line 1 bundles the additive operations (0, $+$, $-$) and their
 properties in a \emph{mixin}, which is then used in line 2 to create a
 canonical instance. After line 2 all the additive algebra provided in
-\C{ssralg} becoms applicable to \lstinline/'I_p/; for example \C{0}
+\lib{ssralg} becoms applicable to \lstinline/'I_p/; for example \C{0}
 denotes the zero element, and \C{i + 1} denotes the successor of \C{i} mod $p$.
 
 The \C{ZmodMixin} constructor infers the operations \C{Zp_add}, ...,
@@ -156,20 +156,26 @@ speeds up type checking, which never need to open the mixin bundle.
 
 The first argument to the instance constructor \C{ZmodType} is
 somewhat redundant, but documents precisely the type for which this
-instance will be used. This can be important (though not in this case)
-as unfolding definitions can affect canonical structure inference.
-
-Line 2 does however perform some nontrivial inference, because
-although \C{zmodType} is the first \C{ssralg} structure, it is not at
+instance will be used. 
+This can be important as the value
+inferred by \Coq{} could be ``different''.
+Indeed line 2 does perform some nontrivial inference, because
+although \C{zmodType} is the first \lib{ssralg} structure, it is not at
 the bottom of the hierarchy: in particular \C{zmodType} derives from
 \C{eqType}, so the \C{==} test can be used on all \C{zmodType}
 elements.  The \C{ZmodType} constructor infers a parent structure
 instance from its first argument, then combines it with the mixin to
-create a full \C{zmodType} instance --- section \ref{sec:phant} gives
-the technical details.
+create a full \C{zmodType} instance.  This inference can have
+the side effect of unfolding constants occurring in the description of the type
+(though not in this case), that is the value on which the canonical solution is
+indexed.  For this reason the type description, \C{'I_p} here, has to be
+provided explicitly.
+Section \ref{sec:phant} gives the technical details of instance
+constructors.
 
 Rings are the next step in the algebraic hierarchy. In order to
-simplify the theory of polynomials \C{ssralg} only provides structures
+simplify the theory of polynomials, see~\ref{ch:PolyLinalg},
+\lib{ssralg} only provides structures
 for nontrivial rings, so we now need to restrict to \C{p} of the form
 \lstinline/p'.+2/:
 
@@ -197,7 +203,7 @@ avoid the unpleaseantness of multiple interpretations of \C{0}
 stemming from different proofs of $p>0$ --- the latter tends to happen
 with ad hoc inference of such proofs using canonical structures or
 tactics. The shape constraint can however be inconvenient when the
-modulus is an abstract constant (say, \lstinline/Variable p/), and \C{zmodp}
+modulus is an abstract constant (say, \lstinline/Variable p/), and \lib{zmodp}
 provides some syntax to handle that case:
 
 \begin{coq}{name=zp4}{}
@@ -217,7 +223,7 @@ defined types, such as
 Definition Zmn := ('Z_m * 'Z_m)%type.
 \end{coq}
 
-While \C{ssralg} and \C{zmodp} provide the instances type inference
+While \lib{ssralg} and \lib{zmodp} provide the instances type inference
 needs to synthesize a ring structure for \C{Zmn}, \Coq{} has to expand the
 definition of \C{Zmn} to do so. Declaring \C{Zmn}-specific instances
 will avoid such spurrious expansions, and is easy thanks to cloning
@@ -239,11 +245,11 @@ have Zp_mulrAC := @mulrAC [ringType of 'Z_p].
 Finally, instances of \emph{join} structures that are just the union
 of two smaller ones are always created with cloning constructors.  For
 example, \lstinline/'I_p/ is also a finite (explicitly enumerable)
-type, and the \C{fintype} library declares a corresponding \C{finType}
+type, and the \lib{fintype} library declares a corresponding \C{finType}
 structure instance. This means that \lstinline/'I_p/ should also have
 an instance of the \C{finRingType} join structure (for \C{p} of the
 right shape). This is not automatic, but thanks to the cloning
-constructor requires only one line in \C{zmodp}.
+constructor requires only one line in \lib{zmodp}.
 
 \begin{coq}{name=zp8}{}
 Canonical Zp_finRingType := [finRingType of 'I_p].
@@ -268,9 +274,9 @@ sophisticated \emph{packed class} organisation covered in the next
 section.
 
 Because of their limitations (covered at the end of this section),
-telescopes were not suitable for the main \C{Type} structure hierarchy
-of the \mcbMC{} library, including \C{eqtype}, \C{choice}, \C{fintype}
-and \C{ssralg}. However, as we have seen in
+telescopes were not suitable for the main type structure hierarchy
+of the \mcbMC{} library, including \lib{eqtype}, \lib{choice}, \lib{fintype}
+and \lib{ssralg}. However, as we have seen in
 section~\ref{sec:bigoplemmas}, structures can be used to associate
 properties to any logical object, not just types, and the
 \C{Monoid.law} structure introduced in~\ref{sec:bigoplemmas} is part
@@ -288,6 +294,7 @@ Structure law := Law {
 }.
 Coercion operator : law >-> Funclass.
 \end{coq}
+\index[coq]{\C{Law}}
 
 The \C{Coercion} declaration facilitates writing generic \C{bigop}
 simplification rules such as
@@ -340,13 +347,12 @@ Structure com_law := ComLaw {
 }.
 Coercion com_operator : com_law >-> law.
 \end{coq}
-
+\index[coq]{\C{ComLaw}}
 one can state \lstinline/big_pairA/, declare
 
 \begin{coq}{name=telescope21}{}
 Canonical andb_comoid := ComLaw andbC.
 \end{coq}
-
 and then use \lstinline/big_pairA/ to factor nested ``big
 ands'' such as
 
@@ -359,12 +365,12 @@ idiom only works because of the invisible coercions inserted during
 type inference.
 
 The definition of \lstinline/andb_comoid/ infers the implicit
-\lstinline/com_operator/ argument $\mcbimplm{L}$ of \C{ComLaw} by
+\lstinline/com_operator/ argument \C{$\mcbimplm{L}$} of \C{ComLaw} by
 unifying the expected statement
 \lstinline/commutative (operator $\mcbimplm{L}$)/
 of the commutativity property, with the actual
 statement of \lstinline/andbC : commutative andb/. This finds
-\lstinline/$\mcbimplm{L}=$andb_monoid/ as above.
+\lstinline/$\mcbimplm{L}$/ to be \lstinline/andb_monoid/ as above.
 
 More importantly, the \C{op} in the statement of \lstinline/big_pairA/
 really stands for \lstinline/operator (com_operator op)/. Thus
@@ -390,13 +396,13 @@ Structure add_law (mul : T -> T -> T) := AddLaw {
 }.
 Coercion add_operator : add_law >-> com_law.
 \end{coq}
+\index[coq]{\C{AddLaw}}
 
 The instance declaration
 
 \begin{coq}{name=telescope31}{}
 Canonical andb_addoid := AddLaw orb_andl orb_andr.
 \end{coq}
-
 then associates distributivity to the \lstinline/andb_comoid/
 structure which is inferred by the two-stage resolution process above,
 and applying the iterated distributivity
@@ -406,7 +412,6 @@ bigA_distr_bigA :
   \big[times/one]_(i : I) \big[plus/zero]_(j : J) F i j
     = \big[plus/zero]_(f : {ffun I -> J}) \big[times/one]_i F i (f i).
 \end{coq}
-
 to \lstinline!\big[andb/true]_i /big[orb/false]_j M i j! involves
 three-stage resolution.
 
@@ -465,6 +470,7 @@ Notation eqType := type.
 End Equality.
 Export Equality.Exports.
 \end{coq}
+\index[coq]{\C{eqType}}
 
 The \C{Exports} submodule, which we had omitted in section~\ref{rec:itf},
 regroups all the declarations in \C{Equality} that should have global scope,
@@ -491,6 +497,7 @@ Record class_of T :=
 
 Structure type := Pack {sort; _ : class_of sort}.
 \end{coq}
+\index[coq]{\C{choiceType}}
 
 % The class component of \C{type} is anonymous as this avoids
 % spurious ``Projection value'' warnings; this is also done in the actual
@@ -511,10 +518,16 @@ Lemma eq_choose P Q : P =1 Q -> choose P =1 choose Q.
 
 The mixin actually specifies a specific search depth based choice
 strategy: \C{choose} can be defined using \C{find} and countable
-choice, which is derivable in \mcbCIC{}. The stronger requirement
+choice, which is derivable in \mcbCIC{}. 
+
+\begin{coq}{}{}
+Lemma find_ex_minn (P : pred nat)  :
+  (exists n, P n) -> {m | P m & forall n, P n -> n >= m}.
+\end{coq}
+The stronger requirement
 makes it possible to compose \C{choiceType}s, so that pairs or
 sequences of \C{choiceType}s are also \C{choiceType}s.  This subtlety
-is detailed in the comments of \C{choice.v}.
+is detailed in the comments of the \lib{choice} file.
 
 An important difference to telescopes is that the definition of
 \C{Choice.type} does not link it directly to \C{eqType}: a
@@ -555,7 +568,7 @@ can be unified with \lstinline/Equality.sort $\mcbimplm{E}$/ by taking
 \lstinline/$\mcbimplm{E}={}$Choice.eqType T/.
 
 The bottom structure in the \mcbMC{} algebraic hierarchy introduced by
-the \C{ssralg} library is \C{zmodType}$=$\C{GRing.Zmodule.type}; it
+the \lib{ssralg} library is \C{zmodType} (\C{GRing.Zmodule.type}); it
 encapsulates additive groups, and directly extends the \C{choiceType}
 structure.
 
@@ -569,9 +582,10 @@ Record mixin_of (V : Type) : Type := Mixin {
   _ : associative add;
   ...}.
 
-Record class_of T := Class { base : Choice.class_of T; mixin : mixin_of T }.
+Record class_of T := Class { base: Choice.class_of T; mixin: mixin_of T }.
 Structure type := Pack {sort; _ : class_of sort}.
 \end{coq}
+\index[coq]{\C{zmodType}}
 
 Strictly speaking, the \mcbMC{} algebraic structures don't really
 \emph{have} to extend \C{choiceType}, but it is very convenient that
@@ -585,7 +599,7 @@ which are both discrete and countable, hence are \C{choiceType}s.  On
 the other hand, the ``classical \mcbCIC{}'' axioms needed to construct,
 e.g., real numbers, imply that all types are \C{choiceType}s.
 
-Similarly to the definition of \lstinline/eq_op/ in \C{eqtype}, the
+Similarly to the definition of \lstinline/eq_op/ in \lib{eqtype}, the
 operations afforded by \C{zmodType} are defined just after the
 \C{Zmodule} module.
 
@@ -597,7 +611,7 @@ Notation "+%R" := (@add V).
 \end{coq}
 
 These are defined inside the \C{GRing} module that encloses most of
-\C{ssralg}, and also given the usual arithmetic syntax (\C{0},
+\lib{ssralg}, and also given the usual arithmetic syntax (\C{0},
 \C{- x}, \C{x + y}) in the \lstinline/%R/
 scope. Only the notations are
 exported from \C{GRing}, as these definitions are intended to remain
@@ -632,6 +646,7 @@ Record class_of (R : Type) : Type := Class {
 
 Structure type := Pack {sort; _ : class_of sort}.
 \end{coq}
+\index[coq]{\C{ringType}}
 
 Unlike \C{choiceType} and \C{zmodType}, the definition of the
 \C{ringType} mixin depends on the \C{zmodType} structure it extends.
@@ -664,7 +679,7 @@ except there is no need for a \C{ComRing.mixin_of} record.
 
 Since there are also rings such as $\mathbb{Z}_p$ that commute
 \emph{and} have computable inverses, and properties such as $(x/y)^n =
-x ^n / y^n$ that hold only for such rings, \C{ssralg} provides a
+x ^n / y^n$ that hold only for such rings, \lib{ssralg} provides a
 \C{comUnitRingType} structure for them. Although this structure
 simultaneously extends two unrelated structures, it is easy to define
 using the packed class pattern: we just reuse the \C{UnitRing}
@@ -680,6 +695,7 @@ Record class_of (R : Type) : Type := Class {
 
 Structure type := Pack {sort; _ : class_of sort}.
 \end{coq}
+\index[coq]{\C{comRingType}}
 
 Since we construct explicitly the links between structures with the
 packed class pattern, the fact that the hierarchy is no longer a tree
@@ -694,6 +710,8 @@ Definition comRingType := ComRing.Pack class.
 Definition unitRingType := UnitRing.Pack class.
 Definition com_unitRingType := @UnitRing.Pack comRingType class.
 \end{coq}
+\index[coq]{\C{unitRingType}}
+\index[coq]{\C{com_unitRingType}}
 
 Lines 1--6 below \C{comUnitRingType} to each of the 6 structures it
 extends, just as before. Line 7 is needed because \C{comUnitRingType}
@@ -709,7 +727,8 @@ where \lstinline/$\mcbimplm{R}$ : comUnitRingType/
 is a fresh unification variable.
 In other words, the \lstinline/ComUnitRing.com_unitRingType/ instance
 says that \C{comUnitRingType} is the join of
-\C{comRingType} and \C{unitRingType} in the structure hierarchy.
+\C{comRingType} and \C{unitRingType} in the structure hierarchy (see
+also~\cite[Section 5]{mahboubi:hal-00816703}).
 
 If a new structure $S$ extends structures that are further apart in
 the hierarchy more than one such additional link may be needed:
@@ -722,7 +741,7 @@ multiple structures.
 Finally, the telescope and packed class design patterns are not
 at all incompatible: it is possible to extend a packed class
 hierarchy with telescopes (library \C{fingroup} does this), or to add
-explicit ``join'' links to a telescope hierarchy (\C{ssralg} does this
+explicit ``join'' links to a telescope hierarchy (\lib{ssralg} does this
 for its algebraic predicate hierarchy).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -751,7 +770,7 @@ required and no element is at hand:
 \item in a type parameter
 \item when constructing an instance explicitly.
 \end{itemize}
-The first case occurs in \C{ssralg} for structure types for modules
+The first case occurs in \lib{ssralg} for structure types for modules
 and algebras, which depend on a ring of scalars: we would like to
 specify the type of scalars, and infer its \C{ringType}.  We've see in
 section~\ref{sec:phantom} how to do this, using the \C{phantom} type
@@ -910,7 +929,7 @@ for a description of this tenchique.
 \index[concept]{provide choiceType structure}
 \index[concept]{provide finType structure}
 
-The SubType kit of Chapter~\ref{ch:sigmabool} is not the only
+The sub-type kit of Chapter~\ref{ch:sigmabool} is not the only
 way to easily add instances to the library.  For example
 imagine we are interested to define a wind rose and attach
 to it the theory of finite types.
@@ -930,7 +949,7 @@ Definition w2o (w : windrose) : 'I_4 :=
   | N => inord 0 | S => inord 1 | E => inord 2 | W => inord 3
   end.
 \end{coq}
-Remark how the \C{inord} constructor lets us omit
+Remark how the \C{inord} constructor lets us postpone
 the (trivial by computation) proofs that 0, 1, 2, 3
 are smaller than 4.
 
@@ -979,9 +998,11 @@ Check (N != S) && (N \in windrose) && (#| windrose | == 4).
 \end{coq}
 
 More in general a datatype can be equipped with a
-eqType, choiceType, and countType structure by
+\C{eqType}, \C{choiceType}, and \C{countType} structure by
 providing a correspondence with the generic tree datatype
-\C{GenTree.tree}.
+\C{(GenTree.tree T)}: an n-ary tree with nodes labelled with
+natural numbers and leafs carrying a value in \C{T}.
+\index[coq]{GenTree.tree}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\mcbLEVEL{2}
