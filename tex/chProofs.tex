@@ -251,8 +251,8 @@ Lemma addnA n m k : m + (n + k) = m + n + k.
 \end{coq}
 
 Boolean identities are an important special class of identities. For
-instance, the~\C{orbT} statement expresses that \C{true} is a left
-neutral for the boolean disjunction operation \C{orb}. Recall that
+instance, the~\C{orbT} statement expresses that \C{true} is  right absorbing 
+for the boolean disjunction operation \C{orb}. Recall that
 \C{orb} is equipped with the \C{||} infix notation:
 
 \begin{coq}{name=orbT}{}
@@ -1086,13 +1086,14 @@ details on the matching algorithm and on the flags supported by
 \mcbsection{Quantifiers}
 
 \subsection{Universal quantification, first examples}
-In Chapter~\ref{ch:prog}, we have defined \emph{predicates}, as functions
-with boolean values. For instance, the \C{leq} predicate is defined as
-a predicate on natural numbers, as:
+In Chapter~\ref{ch:prog}, we have defined functions
+with boolean values; they are named 
+\emph{boolean predicates}.
+ For instance, the \C{leq} predicate is defined as
+a boolean predicate on natural numbers, as:
 \begin{coq}{def=LeqDef}{}
 Definition leq n m := m - n == 0.
 \end{coq}
-\marginnote{LR: boolean predicate, not yet defined: we have just seen \C{eq} as a predicate in Prop}
 
 We recall, as seen in Chapter~\ref{ch:prog}, that this concise syntax stands
 for:
@@ -1437,7 +1438,7 @@ For brevity we report in comments the goals solved by tactics.
 
 We improve such script in two steps.  First, we take advantage of
 \C{rewrite} simplification flags.  It is quite common
-for an equation to be conditional, hence for\C{rewrite} to generate side
+for an equation to be conditional, hence for \C{rewrite} to generate side
 conditions.  It is good practice to solve such side conditions
 as soon as possible.  The first two side conditions are indeed
 trivial, and, as we did for \C{case}, can be solved by \C{//}.
@@ -1567,7 +1568,7 @@ Lemma last_ind A (P : list A -> Prop) :
 where \C{rcons} is a name for the operation of concatenating
 a sequence with an element, as in \C{(s ++ [::x])}.
 
-For example \C{las_ind} can be used to relate the
+For example \C{last_ind} can be used to relate the
 \C{foldr} and \C{foldl} iterators as follows:
 
 \begin{coq}{}{}
@@ -1683,7 +1684,7 @@ Let's get a flavour of it by examples:
 \item the name of the lemma begins with the name of the main operation
   involved in the statement: \C{addn} for \C{addnA}, \C{odd} for
   \C{odd_mul}, \C{leq} in \C{leq0n}.
-\item In \C{leq0n}, he other symbol involved in the name is ``0'',
+\item In \C{leq0n}, the other symbol involved in the name is ``0'',
 that indeed plays an important role in the lemma.  The relative position
 of ``0'' and ``n'' is chosen to recall to the user if the neutral element
  the left or the right argument of the binary operation \C{leq}.
