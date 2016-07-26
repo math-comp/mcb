@@ -773,7 +773,7 @@ a term of type \C{(reflect P false)}.  When one reasons
 by cases on a term of type \C{(reflect P b)} he obtains two proof
 branches, in the first one \C{b} is replaces by \C{true}, since it
 corresponds to the \C{ReflectT} constructor.  Conversely,
-\C{b} is replaced by\C{false} in the second branch.
+\C{b} is replaced by \C{false} in the second branch.
 
 Let's take an example where we reason by cases on the \C{andP} lemma,
 that states \C{forall a b, (reflect (a /\\ b) (a && b))}.
@@ -1222,7 +1222,7 @@ subgoal 2 is:
 To keep the script similar to the previous one, we named explicitly
 \C{th_sym}, to better link the final script to the previous attempts.
 This is rarely the case in proof scripts of the library, since one typically
-uses the \C{/(_ ...)} intro patter to specialize the top of the stack.
+uses the \C{/(_ ...)} intro pattern to specialize the top of the stack.
 
 Shrinking proof scripts is a never ending game.  The avid reader can
 see how intro patterns let one squeeze the last two lines into a single
@@ -1238,7 +1238,7 @@ when \C{max} is computed away thanks to the extra \C{(n2 <= n1)} assumption.
 
 A less important, but very widespread feature, of the Ssreflect
 proof language can be used to shrink even further the proof.
-Ineed we name the fact \C{le_mn2} just to apply transitivity to it.
+Indeed we name the fact \C{le_mn2} just to apply transitivity to it.
 
 \begin{coq}{}{}
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
