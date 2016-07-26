@@ -2,10 +2,10 @@
 \label{sec:ttch}
 
 By now, the informed reader is likely to wonder when the authors of the book
-will eventually mention the mathematical foundation of Coq, a variant of
+will eventually mention the mathematical foundation of \Coq{}, a variant of
 type theory called \mcbCIC{}, and
 in particular explain the Curry-Howard isomorphism.  Indeed this text departs
-from the standard presentation of Coq, that typically starts by
+from the standard presentation of \Coq{}, that typically starts by
 presenting the logic and showing how standard connectives like
 conjunction or disjunction are defined in term of inductive types.
 
@@ -171,7 +171,7 @@ The first rule reads: to prove $A \wedge B$ one needs to prove both
 $A$ and $B$.  The latter lets one prove $A$ whenever one can prove
 the stronger $A \wedge B$ statement.
 
-In Coq such connective can be characterized by the following
+In \Coq{} such connective can be characterized by the following
 inductive definition.
 
 \begin{coq}{name=And}{}
@@ -883,7 +883,7 @@ pattern in line 10 names \C{s4} and \C{s5} the quantities of
 
 Not all valid reasoning principles can be expressed as programs.
 For example excluded middle can be proved by a program only when
-the predicate is decidable, i.e. when we can write in Coq a program
+the predicate is decidable, i.e. when we can write in \Coq{} a program
 to \C{bool} that decides it.
 Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
 

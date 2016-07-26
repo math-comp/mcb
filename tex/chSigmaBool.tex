@@ -235,7 +235,7 @@ proof that such sequence has length \lstinline/?$_n$/).
 
 We have seen in the previous chapter that this is exactly the class of
 problems that is addressed by canonical structure instances.
-We can thus use \C{Canonical} declarations to teach Coq
+We can thus use \C{Canonical} declarations to teach \Coq{}
 the effect of list operations on the length of their input.
 
 \begin{coq}{name=t1}{width=13cm}
@@ -707,7 +707,7 @@ Canonical ordinal_finType n :=
 An example of ordinals at work is the \C{tnth} function.
 It extracts the $n$-th element of a tuple exactly as
 \C{nth} for a sequence without requiring a default element.
-Indeed one can use ordinals to type the index making Coq statically
+Indeed one can use ordinals to type the index making \Coq{} statically
 check that the index is smaller than the size of the tuple.
 
 \begin{coq}{name=subtdecl}{}
@@ -739,7 +739,7 @@ Indeed, at the time of writing, only very recent variations of CIC,
 as Cubical Type Theory, include such principle.
 
 Still there is a class of functions for which such principle is
-provable in Coq.  These are the functions with a finite domain:
+provable in \Coq{}.  These are the functions with a finite domain:
 given their graph is a finite set of points we can represent them
 as regular lists, and lists with the same values are indeed equal.
 
@@ -757,7 +757,7 @@ Notation "{ 'ffun' fT }" := (finfun fT).
 
 The actual definition in the \mcbMC{} library is slightly more complex
 to statically check that the domain is finite using the tricks
-explained in~\ref{sec:phantom}.  I.e. Coq rejects \C{\{ffun nat -> nat\}}
+explained in~\ref{sec:phantom}.  I.e. \Coq{} rejects \C{\{ffun nat -> nat\}}
 but accepts \C{\{ffun 'I_7 -> nat\}}.
 
 Other utilities let one apply a finite function as a regular function
@@ -1003,7 +1003,7 @@ as \C{==} is an overloaded \C{eqType} operation.
 
 Via the sub-type kit we can transport \C{eqType} and \C{finType}
 from \C{\{ffun 'I_m * 'I_n -> R\}} to \C{'M[R]_(m,n)}.  We omit
-the Coq code for brevity.
+the \Coq{} code for brevity.
 
 A useful accessory is the notation to define matrices in
 their extension.  We provide a variant in which the matrix size

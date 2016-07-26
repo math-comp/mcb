@@ -76,7 +76,7 @@ n &\mapsto& n + 1
 The main difference is that the usual mathematical practice includes
 the step of giving a name, here \(f\) to the operation.
 
-When using Coq, the step of giving a name can also be
+When using \Coq{}, the step of giving a name can also be
 performed, in the following manner:
 
 \begin{coq}{name=exdef}{}
@@ -292,7 +292,7 @@ elements of type \C{bool}.  The first case is given by the constant
 \C{true}, the second case by the constant \C{false}.  Thus, the
 declaration of the type gives in an obvious manner the type, \C{bool},
 and ways to build all its elements, \C{true}, and \C{false}.  All definitions
-in Coq, like this one, which define a type by providing at the same time a type
+in \Coq{}, like this one, which define a type by providing at the same time a type
 name and the only ways to build elements of the type are called {\em inductive}
 definitions.  The two objects \C{true} and \C{false} are called
 \emph{constructors}.
@@ -391,7 +391,7 @@ are by using the constant \C{O}, or by applying the function \C{S} to
 an already existing natural number.  So \C{O} is a natural number,
 \C{(S O)} is a
 natural number, \C{(S (S O))}, and so on, and these are the only natural
-numbers.  When interacting with Coq, we will often see decimal
+numbers.  When interacting with \Coq{}, we will often see decimal
 notations, but these are only a parsing and display
 facility provided to the user for readability.  So \C{O} is displayed
 $0$, \C{(S O)} is displayed $1$, etc.  Users can also type decimal
@@ -544,7 +544,7 @@ in the pattern.
 A fundamental principle is enforced by \Coq{} on case analysis:
 \emph{exhaustiveness}.  The patterns must cover all constructors of
 the inductive type.  For example, the following definition is
-rejected by Coq.
+rejected by \Coq{}.
 
 \begin{coq}{name=f_plus_one}{width=6cm,title=Non exhaustive case analysis}
 Definition wrong (n : nat) :=
@@ -854,7 +854,7 @@ language \Coq{} provides, and that we want the proofs of such
 theorems to be first
 class citizen too (see for example Chapter~\ref{ch:sigmabool}).
 
-Coq's language is powerful enough to fully characterize the generic 
+\Coq{}'s language is powerful enough to fully characterize the generic 
 list datatype without appealing to the intuitive, but external, notion of
 schema.
 
@@ -1756,7 +1756,7 @@ Definition all_words n T (alphabet : seq T) :=
 % programs (non proofs here).
 % 
 % The current contents are organized like the tutorial at ITP15 I gave (Enrico).
-% It was on standard Coq and was intended not to be difficult class ;-)
+% It was on standard \Coq{} and was intended not to be difficult class ;-)
 % It is a possible plan, no strong opinions.
 % 
 % \section*{Things needed by chapter 2}
@@ -1846,7 +1846,7 @@ Definition all_words n T (alphabet : seq T) :=
 % Eval compute in negb false.
 % \end{coq}
 % We see the function type (arrow) and how typing works in this simple case.
-% Also that functions compute in Coq.
+% Also that functions compute in \Coq{}.
 % Sugar:
 % 
 % \begin{coq}{name=negb}{}
@@ -2191,7 +2191,7 @@ Definition all_words n T (alphabet : seq T) :=
 % may be also examples of polymorphisms that can be defined in pure
 % $\lambda$-calculus (identity, argument swaping).
 % 
-% \section{programming in Coq}
+% \section{programming in \Coq{}}
 % this contains real programs, and is the excuse to talk about:
 % 
 % \subsection{Sections}

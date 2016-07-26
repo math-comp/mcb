@@ -91,7 +91,7 @@ how to synthesize an instance of \C{eqType} for a type like
 
 The concepts of interface and example are recurrent in
 both computer science and modern mathematics, but are not a primitive
-notion in Coq.  Despite that, they can be encoded quite naturally,
+notion in \Coq{}.  Despite that, they can be encoded quite naturally,
 although not trivially, using inductive types and the dependent function
 space.   This encoding is not completely orthogonal to the
 actual technology (the type inference and its extension mechanism).
@@ -159,7 +159,7 @@ overloading}.
 
 The concrete syntax for implicit arguments, an underscore character,
 does not let one name the missing piece of information.\footnote{This
-may change in Coq 8.5}  If an expression contains multiple occurrence
+may change in \Coq{} 8.5}  If an expression contains multiple occurrence
 of the placeholder ``\lstinline/_/'' they are all considered as
 potentially different by the system, and hence hold (internally)
 unique names.  For the sake of clarity we take the freedom to
@@ -730,7 +730,7 @@ Check (3, true) == (4, false).
 (3, true) == (4, false) : bool
 \end{coqout}
 
-The term synthesized by Coq is the folowing one:
+The term synthesized by \Coq{} is the folowing one:
 
 \begin{coq}{name=parsecs3}{}
    @eq_op (prod_eqType nat_eqType bool_eqType) (3, true) (4, false).
@@ -841,12 +841,12 @@ Said that, nothing really changes: the \C{eqType} structure
 relates a type with a signature.
 
 Remark the use of \C{:>} instead of \C{:} to type the
-field called \C{sort}.  This tells Coq to declare the
+field called \C{sort}.  This tells \Coq{} to declare the
 \C{Equality.sort} projection
 as a coercion, enabling one to write \C{(forall T : eqType, forall x y
 : T, P)}.  Ineed \C{T} is not a type, only its \C{sort} projection is.
 \gotcha{being \C{Equality.sort} a coercion, it is not displayed by
-Coq, hence error messages about a missing canonical structure
+\Coq{}, hence error messages about a missing canonical structure
 declaration typically look very confusing: has type nat but should
 have type ?e}
 
@@ -1159,7 +1159,7 @@ items being combined by the iterated operation.
 
 As already mentioned in Chapter 1, %~\ref{sec:bigopnat}, 
 the functional programming language
-provided by Coq can express in a very natural way iterations over
+provided by \Coq{} can express in a very natural way iterations over
 a finite domain.  In particular such finite domain can be represented
 as a list; the general term $f(i)$ by a function \C{(fun i =>
 ...)}; the operation of evaluating a function on all the
@@ -1380,7 +1380,7 @@ In other words the lemmas we used require the operation \C{*\%M} to form
 a monoid together with the unit \C{1}.
 
 We detail how this requirement is stated, and automatically satisfied by
-Coq in the case of \C{addn}, in the next Section.  We conclude this
+\Coq{} in the case of \C{addn}, in the next Section.  We conclude this
 Section by showing that the same lemmas also apply to an iterated
 product.
 
@@ -1650,7 +1650,7 @@ can be simplifies (reduced) to the following one
 While the two terms are logically equivalent (i.e. the logic cannot
 distinguish them) the pretty printer can.  Indeed the overloaded
 \C{==} notation is attached to the \C{eq\_op} constant, and if such
-constant fades away the notation follows it.  Coq lets one declare
+constant fades away the notation follows it.  \Coq{} lets one declare
 constants that should not be automatically simplifies away, unless the
 occur in a context that demands it.
 
@@ -1705,7 +1705,7 @@ of the current conjecture.
 \mcbsection{Querying the canonical structures data base}\label{sec:phantom}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-It is possible to  ask Coq if a certain term does validate an
+It is possible to  ask \Coq{} if a certain term does validate an
 interface.  For example, to check if \C{addn} forms a monoid one can
 \C{Check [law of addn]}.  A notation of this kind exists for any
 interface, for example \C{[eqType of nat]} is another valid query to

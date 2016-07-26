@@ -20,7 +20,7 @@ and the proof style that are the pillars of the library.
 This books targets two classes of public.  On one hand newcomers, even the 
 more mathematical inclined ones, find a soft introduction to the programming
 language of \Coq{}, Gallina, and the Ssreflect proof language.
-On the other hand accustomed Coq users find a substantial description
+On the other hand accustomed \Coq{} users find a substantial description
 of the formalization style that made the \mcbMC{} library possible.
 
 By no means this book pretends to be a complete description of \Coq{} or
@@ -44,7 +44,7 @@ while the third one can be read in any order.
 
 This part introduces two languages and a formalization approach.
 
-The first language is \emph{Gallina}, the mathematical foundation of the Coq
+The first language is \emph{Gallina}, the mathematical foundation of the \Coq{}
 system.  For the expert reader: the type theory called \mcbCIC{}.  Such
 language is both a programming and a specification language: it is used to
 declare data, define programs, specify their behavior and represent their
@@ -140,7 +140,7 @@ Qed.
 Code snippets are often accompanied by the goal status
 printed by \Coq{}.
 
-\begin{coqout}{}{title=Output from Coq after line 3}
+\begin{coqout}{}{title=Output from \Coq{} after line 3}
 n : nat
 IHn : \sum_(0 <= i < n.+1) i = (n * n.+1) %/ 2
 ============================
@@ -250,12 +250,12 @@ like \lib{ssreflect} or \lib{fintype}.
 % 	section computational thinking).
 % \end{itemize}
 % 
-% We build on Coq and an extension.  The main tools follow (in random order):
+% We build on \Coq{} and an extension.  The main tools follow (in random order):
 % 
 % \section{Computational Thinking}\label{ch:compthink}
 % 
 % This section should motivate the activity of formalizing mathematics
-% with the {\bf Coq} proof assistant, emphasizing its computing skills,
+% with the {\bf \Coq{}} proof assistant, emphasizing its computing skills,
 % and as opposed to other foundations like HOL. However the challenge is
 % to keep mathematicians as the privileged target, while motivating the
 % ssr approach to a CS oriented reader.
@@ -265,7 +265,7 @@ like \lib{ssreflect} or \lib{fintype}.
 % Aim of the chapter:
 % \begin{itemize}
 % \item should sound natural and easy to a CS person (but with the ssr twist)
-% \item should sound different but well motivated to a Coq user (do show, maybe in
+% \item should sound different but well motivated to a \Coq{} user (do show, maybe in
 %   the exercises, that leqn is 100 times better than "Inductive le").  Try to
 %   reproduce the shock we had the first time we used Boolean predicates.  It may
 %   help to compare, in the *advanced* section, the approach with the standard
@@ -325,7 +325,7 @@ like \lib{ssreflect} or \lib{fintype}.
 % 	expects to be proved by //). 
 % \item (level advanced) when you do new stuff, you must decide what is
 % 	trivial/implicitly proved.
-% \item (hard) which technique to make Coq prove it automatically (hint resolve,
+% \item (hard) which technique to make \Coq{} prove it automatically (hint resolve,
 % 	canon, comput... in the type)
 % \end{itemize}
 % 
