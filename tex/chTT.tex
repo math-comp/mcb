@@ -180,7 +180,7 @@ Notation "A /\ B" := (and A B).
 \end{coq}
 \index[vernac]{\C{Inductive}}
 
-Remark that the ``data'' type \C{And} is tagged as \C{Prop}, i.e.  we declare
+Remark that the ``data'' type \C{and} is tagged as \C{Prop}, i.e.  we declare
 the intention to use it as a logical connective rather than a data type.  The
 only constructor \C{conj} that can be used to inhabit \C{and} takes two
 arguments, a proof of \C{A} and a proof of \C{B}, faithfully modelling the
@@ -599,8 +599,8 @@ move=> /(_ 3).
 \index[ssr]{\C{=>}!\C{/(_ arg)} (specialization)}
 The idea behind the notation is that when applies a view to the top
 stack item, as in \C{/v}, he is forming the term \C{(v top)}, while
-when oen specializes the top assumption as in \C{/(_ x)} he is forming the
-term \C{(top x)}.  The \C{_} is a plce holder for the top item.
+when one specializes the top assumption as in \C{/(_ x)} he is forming the
+term \C{(top x)}.  The \C{_} is a place holder for the top item.
 
 When the top stack item is an equation one can substitute it using \C{<-}
 and \C{->} for right-2-left and left-2-right respectively.
