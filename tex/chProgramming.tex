@@ -1287,7 +1287,7 @@ Fixpoint foldr a s :=
 \end{coq}
 
 The variables \C{T}, \C{A} and \C{f} form the so called
-\emph{local context} under which all operation take place.
+\emph{local context} under which all operations take place.
 For example, computing the type of \C{foldr} gives the following:
 
 \begin{coq}{}{width=3.5cm,title=Query}
@@ -1304,7 +1304,7 @@ a list of \C{T}.
 If the operation we intend to perform is computation, then
 \C{T}, \C{A} and, most importantly, \C{f} are symbols.
  \C{f} in particular represents an unknown function.
-Computing involving \C{f} become hence symbolic:
+Computation involving \C{f} become hence symbolic:
 
 \begin{coq}{}{width=7cm}
 Variable init : A.
@@ -1321,7 +1321,7 @@ Eval compute in
 in such expression the values we passed earlier we obtain
 
 \begin{coq}{}{}
-add 1 (add 2 (add 3 0))
+addn 1 (addn 2 (addn 3 0))
 \end{coq}
 that indeed is an expression that computes to 6.
 
@@ -1393,7 +1393,7 @@ Notation "\sum_ ( m <= i < n ) F" :=
 
 The \C{iota} function generates the list of natural numbers
 corresponding to the range of the summation.  We also provide
-to \C{foldr} the neutral element for addition as the initial value
+to \C{foldr} the neutral element for the addition as the initial value
 of the iteration.
 
 \begin{coq}{}{width=8.5cm,title=Query}
@@ -1418,7 +1418,7 @@ crucial not only to provide convenient notations.  As we sketched in the
 previous section we will be able to prove properties about \C{foldr} without
 knowing the iterated function.  By assuming properties linking the iterated
 operation to the initial value, like forming a Monoid, we will be able to
-provide a generic theory of iterated operations.  Such theory becomes richer
+provide a generic theory of iterated operations~\ref{sec:bigop}.  Such theory becomes richer
 when the operation is also commutative, and even richer when we combine two
 operations that distribute.
 
@@ -1467,7 +1467,7 @@ or adopted in the \mcbMC{} library.
 
 Another frequently used form of notation is called syntactic abbreviation.
 It simply lets one specify a shorter name.  For example the \C{S} constructor
-of natural numbers (placed in \C{Datatype} name space) can also be accessed
+of natural numbers (placed in \C{Datatype} Module) can also be accessed
 by writing \C{succn}.  This is useful if \C{S} is used in the current context
 to, say, denote a ring.
 
@@ -1523,6 +1523,7 @@ Such writing is mostly equivalent to the following one
 \begin{coq}{}{}
 Inductive point := Point (x : nat) (y : nat) (z : nat).
 \end{coq}
+\index[concept]{record}
 
 The main advantage of using \C{Record} is that \Coq{} uses the names of the
 constructor fields to generate functions to access the field's contents.  We
@@ -1553,25 +1554,17 @@ Definition x (p : point) := let: Point a _ _ := p in a.
 \index[concept]{pattern matching!irrefutable}
 
 Records can as well be polymorphic, for example the pair data type of
-Exercise~\ref{ex:pair} can carry two values of any type.
+Exercise~\ref{ex:pair} can carries two values of any type.
 
 Records play a major role in the \mcbMC{} library, in particular
 in the modelling of algebraic structures.   As we see in later chapters
 records lets one pack together types, operations on these types and
 finally the properties of these operations.  For example a record
-can model the signature of a Ring.
+will model the signature of a Ring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Exercises}
-
-%%%%%%%%
-\begin{Exercise}[label=ex:leq,difficulty=0,title={Order with subtraction}]
-Define a program \C{leq} that uses \C{subn} and \C{eqn}, but no
-explicit pattern matching, to test if a natural number is smaller
-or equal than another one.
-\end{Exercise}
-
 
 %%%%%%%%
 \begin{Exercise}[label=ex:pair,difficulty=0,title={The pair datatype}]
@@ -1608,20 +1601,20 @@ using \C{iter}.
 
 %%%%%%%%
 \begin{Exercise}[label=ex:nth,difficulty=0,title={Find the n-th element}]
-Define a program taking a list, a natural number and a default value.  Such
+Define a program taking a default valaue, a list and  a natural number.  Such
 program returns the n-th element of the list if n is smaller than the size of
 the list.  It returns the default value otherwise.
 
 \begin{coq}{}{width=7cm}
 Eval compute in
-  nth 0 [:: 3; 7; 11; 22] 2.
+  nth 99 [:: 3; 7; 11; 22] 2.
 Eval compute in
-  nth 0 [:: 3; 7; 11; 22] 7.
+  nth 99 [:: 3; 7; 11; 22] 7.
 \end{coq}
 \begin{coqout}{}{width=5cm}
      = 11
      : nat
-     = 0
+     = 99
      : nat
 \end{coqout}
 \end{Exercise}
@@ -1680,14 +1673,6 @@ Eval compute in
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Solutions}
-
-\begin{Answer}[ref=ex:leq]
-
-\begin{coq}{}{}
-Definition leq m n := m - n == 0.
-\end{coq}
-
-\end{Answer}
 
 %%%%%%%%%%
 \begin{Answer}[ref=ex:pair]
