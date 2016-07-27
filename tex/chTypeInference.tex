@@ -216,7 +216,7 @@ function to a term we can omit to specify its first argument,
 since \Coq{} is able to infer it and complete the input term for us.
 This phenomenon is so frequent that one can ask the system to insert
 the right number of \lstinline/_/ for him.  For more details
-% see Section~\ref{sec:declaringimpl} or
+% see section~\ref{sec:declaringimpl} or
 refer to the user manual.  Here
 we only provide a simple example.
 
@@ -319,7 +319,7 @@ argument of \lstinline/prime_gt1/ as implicit.  \marginnote{maybe also
 tell why one does not need two underscores in the last line}
 Choosing a good  declaration of implicit arguments for lemmas is
 tricky and requires one to think ahead how the lemma is used.
-% Section~\ref{sec:declaringimpl} is dedicated to that.
+% section~\ref{sec:declaringimpl} is dedicated to that.
 
 So far type inference and in particular unification has been used in
 its simplest form, and indeed a first order unification algorithm
@@ -467,7 +467,7 @@ Actually the meaning of a symbol in math is even deeper: by writing $a
 we are talking about, recall its theory, and use this knowledge to
 eventually justify the steps that follow in a proof.  This very
 same approach let us also model this practice.  We will discuss
-it in Section~\ref{rec:itf}}
+it in section~\ref{rec:itf}}
 Using records lets us model these practices.
 Note that, thanks to its higher order nature, the term \lstinline/eq_op/
 can always be the head symbol denoting a comparison.  This makes
@@ -545,7 +545,7 @@ step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
 \lstinline/(sort $\mcbimplm{e}$)/ versus \lstinline/nat/.
 This problem falls in one of the problematic classes we presented in
-Section~\ref{sec:hounif}: the system has to synthesize a comparison
+section~\ref{sec:hounif}: the system has to synthesize a comparison
 function (or better a record instance containing a comparison
 function).
 
@@ -750,7 +750,7 @@ of types.  The \mcbCIC{} allows arbitrary terms to occur inside
 types.  As a consequence the language of canonical structures can
 express also structurally recursive programs on the syntax
 of terms.  This capability is used, for example, in
-Section~\ref{sec:bigoplemmas} to related Monoid laws to function
+section~\ref{sec:bigoplemmas} to related Monoid laws to function
 symbols to model the syntax and theory of iterated, ``big'', operators.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -805,7 +805,7 @@ The \C{Equality} module enclosing the record acts a name space:
 made local to the \C{Equality} name space becoming, respectively,
 \C{Equality.type}, \C{Equality.sort}, \C{Equality.op} and \C{Equality.axiom}.
 
-As in Section~\ref{sec:eqtype}, the record plays the role of
+As in section~\ref{sec:eqtype}, the record plays the role of
 a relation and its \C{sort} component is again the only field
 that drives canonical structure inference. Following
 a terminology typical of object oriented programming languages,
@@ -1217,7 +1217,7 @@ Lemma sum_odd n :
 
 The following Section details how the generic notation for
 iterated operation is built and specialized to frequent operations
-like $\Sigma$.  Section~\ref{sec:bigoplemmas} focuses on
+like $\Sigma$.  section~\ref{sec:bigoplemmas} focuses on
 the generic theory for iterated operations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1408,7 +1408,7 @@ symbols to relate, for example, \C{addn} and its monoid structure.
 
 Here we only present the \C{Monoid} interface an operation has to
 satisfy in order access a class of generic lemmas.
-Chapter~\ref{ch:hierarchy} adds other interfaces to the picture and organizes
+chapter~\ref{ch:hierarchy} adds other interfaces to the picture and organizes
 the bigop library around them.
 
 \begin{coq}{name=bigop}{}

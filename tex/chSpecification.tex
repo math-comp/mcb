@@ -71,7 +71,7 @@ automation by computation\footnote{They moreover allow for
   proof-irrelevant specifications. This feature is largely used
   throughout the Mathematical Components library but beyond the scope
   of the present chapter: it will be the topic of
-  Chapter~\ref{ch:sigmabool}.}. Specifications in the \C{Prop} sort
+  chapter~\ref{ch:sigmabool}.}. Specifications in the \C{Prop} sort
 are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
 statements), subformulae (of conjunctions),... They are proved by
@@ -93,7 +93,7 @@ The boolean reflection methodology proposes to avoid
 committing to one or the other of these options, providing enough
 infrastructure to ease the bureaucracy of navigating between the two.
 The \C{is_true} coercion, which we have been using since the early
-pages of Chapter~\ref{ch:proofs}, is in fact one ingredient of this
+pages of chapter~\ref{ch:proofs}, is in fact one ingredient of this
 infrastructure.
 
 \begin{coq}{}{title=The is\_true coercion}
@@ -103,7 +103,7 @@ Coercion is_true : bool >-> Sortclass.
 The \C{is_true} function is automatically inserted by \Coq{} to
 turn a boolean value into a \C{Prop}, i.e. into a regular statement
 of a theorem.
-More on this mechamism will be told in Section~\ref{sec:coercions}.
+More on this mechamism will be told in section~\ref{sec:coercions}.
 
 % It is worth recalli body of the \C{is_true} function is just an equality, and hence
 % can be used to replace the boolean expression by its truth value with the
@@ -149,7 +149,7 @@ P \/ ~ P
 \end{coqout}
 We could try
 alternate formulations based on the connectives seen in
-Section~\ref{sec:ttch}, like for instance
+section~\ref{sec:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
 would be non negligible.
 
@@ -199,11 +199,11 @@ slightly different from the one we give here:
 this version misses an ultimate refinement
 %\footnote{Moreover the \C{reflect}
 %predicate is in fact in sort \C{Type}, which will hopefully make sense
-%when reading Chapter~\ref{ch:sigmabool}}, 
+%when reading chapter~\ref{ch:sigmabool}}, 
 that will be presented in
-Section~\ref{ssec:specs}. 
+section~\ref{ssec:specs}. 
 %Until then, we 
-%we reach Section~\ref{ssec:specs}, we
+%we reach section~\ref{ssec:specs}, we
 %act as if Listing~\ref{lst:reflect1} is the official definition
 %of \C{reflect}.
 
@@ -239,10 +239,10 @@ section is devoted to the proof and usage of more involved views.
 
 Views are also used to specify types equipped with a
 \emph{decidable equality}, by showing that the equality predicate
-\C{eq} (seen in Section~\ref{ssec:indtypes}) is implemented by a
+\C{eq} (seen in section~\ref{ssec:indtypes}) is implemented by a
 certain boolean equality test. For instance, we can specify the
 boolean equality test on type \C{nat} implemented in
-Chapter~\ref{ch:prog} as:
+chapter~\ref{ch:prog} as:
 
 \begin{coq}{}{}
 Lemma eqnP (n m : nat) : reflect (n = m) (eqn n m).
@@ -282,7 +282,7 @@ bridge between the \C{reflect} predicate and a double implication.
 The \C{ssrbool} library provides a general version of
 this bridge:
 % than the one we proved in Exercise~\ref{}
-% Section~\ref{ssec:boolProp}:
+% section~\ref{ssec:boolProp}:
 
 \begin{coq}{}{width=3cm}
 About iffP.
@@ -595,7 +595,7 @@ subgoal 2 is:
 \end{coqout}
 
 The full proof of \C{leq_max} is quite interesting and will be fully
-detailed in Section~\ref{sec:leqmax}
+detailed in section~\ref{sec:leqmax}
 
 % \marginnote{We could propose another exercise in next section in order
 % to factor this proof with a \C{wlog}.}
@@ -742,7 +742,7 @@ a recurrent pattern in the \mcbMC{} library.  Such class of inductive
 predicates is called ``spec'', for \emph{specification}.
 
 Spec predicates are inductive families with indexes, exactly
-as the \C{eq} predicate seen in Section~\ref{ssec:indtypes}.
+as the \C{eq} predicate seen in section~\ref{ssec:indtypes}.
 In particular their elimination rule encapsulate the notion
 of substitution, and that operation is performed automatically by
 the logic.
@@ -1018,7 +1018,7 @@ Qed.
 
 Here the first line obtains a prime \C{p} as desired, the second
 one begins to shows it fits by contrapositive reasoning, and the
-third one, already commented in Section~\ref{sec:quantifiedst}, concludes.  
+third one, already commented in section~\ref{sec:quantifiedst}, concludes.  
 
 A motto accompanying the proof script style we propose that is
 that a full line should represent a meaningful reasoning step
@@ -1098,7 +1098,7 @@ subgoal 2 is:
 \end{coqout}
 
 The first goal is simplified by
-rewriting with \C{maxn_idPl} (as we did in Section~\ref{sec:viewtac}).
+rewriting with \C{maxn_idPl} (as we did in section~\ref{sec:viewtac}).
 Then \C{orb_idr} trivializes the main goal and generates a side condition with
 an extra hypothesis we name \C{le_mn2}.
 
@@ -1607,7 +1607,7 @@ The reader already familiar with the concept of coercion
 may find the presentation of this chapter nonstandard.
 Indeed coercions are usually presented as a device to model
 subtyping in a theory that, like \mcbCIC{}, does not
-feature subtyping.  As we will see in Chapter~\ref{ch:hierarchy}
+feature subtyping.  As we will see in chapter~\ref{ch:hierarchy}
 the role played by coercions is in the modelling of the hierarchy
 of algrabraic structure is minor.  Indeed what is hard is not to
 forget some fields of a structure to obtain a simpler one.  What

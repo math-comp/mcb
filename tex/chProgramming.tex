@@ -157,7 +157,7 @@ the colon character (when surrounded by spaces) will always be used to
 give type information.  Remark the similarity between the output of \C{Print}
 and the mathematical notation in \eqref{equation:f}.
 
-As we detail in Chapter~\ref{sec:ttch} types play an important role in \Coq{}.
+As we detail in chapter~\ref{sec:ttch} types play an important role in \Coq{}.
 In particular they are used to avoid confusion.  For example
 the function \C{f} we just defined can \emph{only
 be applied to a natural number}, i.e. a term of type \C{nat}.
@@ -692,7 +692,7 @@ computations.
 When writing recursive functions, the \Coq{} systems imposes the
 constraint that the described computation must be \emph{guaranteed to
 terminate}.  The reason for this requirement is sketched in
-Section~\ref{sec:indreason}.
+section~\ref{sec:indreason}.
 This guarantee relies on an analysis of the function's
 description, to make sure that recursive calls always happen with a
 given argument that decreases.  The most frequent technique to
@@ -826,9 +826,9 @@ that we will use many times in this book.  In particular the
 test identifying \C{prime} and \C{odd} numbers.
 
 We advise the reader not to ``explore'' the library from \Coq{}, but
-rather to browse the source files.\footnote{Online documentation: \url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}.
+rather to browse the source files.\footnote{\url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}
 While the \C{Print}
-command can be quite useful in some situation, there is so much more
+command can be quite useful in some circumstances, there is so much more
 information in the source files.  
 The relevant files for this chapters are \lib{ssrbool}, \lib{ssrnat}
 and, later, \lib{seq}.
@@ -903,7 +903,7 @@ properties twice.
 
 However it is clear that the two datatypes we just defined follow
 a schema, as well as the two functions computing the length and the
-theorems we may prove about them.  In other words one could write something
+theorems we may prove about them.  In other words one would write something
 like the following, where $\alpha$ is a schematic variable.
 
 \begin{coq}{name=list_def}{}
@@ -911,14 +911,14 @@ Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 \end{coq}
 
 \noindent Even if this may look familiar jargon to some reader, we really want
-this $\alpha$ to be a first class citizen, as well the type of lists carrying
+this $\alpha$ to be a first class citizen, as well as the type of lists carrying
 any type of values and not appeal to some notion of schema that is intuitively
 added on top of the \Coq{} language.  The reason being that we want to 
 reason and
 prove theorems about such data type and related programs inside the formal
 language \Coq{} provides, and that we want the proofs of such 
 theorems to be first
-class citizen too (see for example Chapter~\ref{ch:sigmabool}).
+class citizen too (see for example chapter~\ref{ch:sigmabool}).
 
 \Coq{}'s language is powerful enough to fully characterize the generic 
 list datatype without appealing to the intuitive, but external, notion of
@@ -941,13 +941,19 @@ This definition actually describes the type of lists as a {\em
 \C{(seq bool)} is the type of sequences of booleans.
 The type of the
 function \C{cons} is devised specifically to describe how to produce a
-new list of type \C{seq A} by combining an element of \C{A} and an
-existing list of type \C{seq A}.  This also means that this data-type
+new list of type \C{(seq A)} by combining an element of \C{A} and an
+existing list of type \C{(seq A)}.  This also means that this data-type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
+Here \C{Type} is a keyword that denotes the type of all datatypes.
+For example \C{nat} and \C{bool} are of type \C{Type}.
 
+Thus, \C{seq} is a function of type \C{(Type -> Type)}.
+Types again avoid confusion: it is licit to form the type
+\C{(seq nat)} but not \C{(seq 3)}, since \C{3} is not a datatype given
+its type is not \C{Type}.
 In principle, all objects of the datatype definition have a type
-argument.  Thus, \C{seq} is a function of type \C{Type -> Type} and
+argument:  
 \C{nil} is a function that takes a type \C{A} as argument and returns
 an empty list of type \C{(seq A)}.  The notation ``\C{.. -> ..}'' is not
 well suited for this kind of situation and the type of \C{nil} is
@@ -972,7 +978,6 @@ command \C{About}.
 About cons.
 $~$
 $~$
-$~$
 \end{coq}
 \begin{coqout}{about_cons_run}{width=9cm,title=Response}
 cons : forall A: Type, A -> seq A -> seq A
@@ -980,6 +985,7 @@ cons : forall A: Type, A -> seq A -> seq A
 Argument A is implicit and maximally inserted
 \end{coqout}
 \coqrun{name=about_cons_run}{about_cons}
+\index[concept]{implicit argument}
 
 In practice, the \Coq{} system implements a mechanism to avoid that
 people need to give the type argument to the \C{cons} function.  This is
@@ -991,7 +997,6 @@ job of the \Coq{} system to guess what this argument is when looking at
 the first explicit argument given to the function.  The same happens
 to the type argument of \C{nil}.  In the end, this makes that user can
 write the following expression.
-\index[concept]{implicit argument}
 
 \begin{coq}{name=check_list_2}{width=6cm,title=Query}
 Check cons 2 nil.
@@ -1090,9 +1095,11 @@ the whole list, adding 1 to the result for ever
 \C{cons} pattern that is encountered.  It should be noted that in this
 definition, the function \C{size} is described as a two argument
 function, but the recursive call \C{(size s')} is done by providing
-explicitly only one argument, \C{s'}.  This is because we started the
-\Coq{} session with, among other commands, the command ``\C{Set Implicit
-  Arguments}''.  According to this directive, the \Coq{} system makes
+explicitly only one argument, \C{s'}.  This is because
+%we started the
+%\Coq{} session with, among other commands, the command ``\C{Set Implicit
+%  Arguments}''.  According to this directive, 
+the \Coq{} system makes
 arguments of functions that can be guessed from the type of following
 arguments automatically implicit.  This feature is effective directly
 at definition time.
@@ -1130,7 +1137,7 @@ Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 In addition to the function \C{map} and the associated notation
 we studied here, the \mcbMC{} library
 provides a large collection of useful functions and notations to work on
-sequences, as described in the header of the file \C{seq.v}.  For
+sequences, as described in the header of the file \lib{seq}.  For
 instance \C{[seq i <- s | p]} filters the sequence \C{s} keeping only
 the values selected by the boolean test \C{p}.
 Another useful function for sequences is \C{cat} (with infix notation \C{++})
@@ -1138,18 +1145,19 @@ that is used to catenate two sequences together.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Other containers}\label{sec:othercontainers}
-The simplest polymorphic data type is the option type
+The simplest polymorphic data type one can think about is the option type
 
 \begin{coq}{}{}
 Inductive option A := None | Some (a : A).
 \end{coq}
+\index[coq]{option}
 It represents a box that can be either empty or contain a value.
 It is sometimes used to represent a partial function, or a filter.
 
 \begin{coq}{}{}
 Definition only_odd n : option n := if odd n then Some n else None.
 \end{coq}
-For example the sub-type kit presented in Chapter~\ref{ch:sigmabool} makes use
+For example the sub-type kit presented in chapter~\ref{ch:sigmabool} makes use
 of the option type to describe a partial injection.
 
 Another widespread polymorphic data type is the one of pairs, that
@@ -1172,6 +1180,13 @@ true : bool
 As one expects pairs can be nested, as in \C{(3,true,4)}, that is sugar
 for \C{((3,true),4)}.  In such situation the value \C{true} can be
 accessed by writing \C{(3,true,4).1.2}.
+
+Note that the ambiguity between \C{(1 * 2)} and \C{(nat * bool)} can be
+resolved by annotating the expression with the interpretation scope
+desired: \C{(a * b)\%N} interprets the infix \C{*} as multiplication,
+while \C{(a * b)\%type} would interpret \C{*} as the pair datatype
+constructor.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Section mechanism}
@@ -1250,7 +1265,7 @@ Eval compute in foldr add 0 [:: 1; 2; 3].
  = 6 : nat
 \end{coqout}
 
-The section mechanism lets one factor variable declaration and type
+The \C{Section} mechanism lets one factor variable declaration and type
 annotations among multiple definitions.  Incidentally it also let us
 experiment with the crucial notion of symbolic computation.
 
@@ -1479,7 +1494,7 @@ to compute the named expression only once, so the execution time
 of the two expressions above may vary.
 
 Last, we recall the notion of implicit argument sketched in
-Section~\ref{sec:poly}.  Once implicit arguments are active for
+section~\ref{sec:poly}.  Once implicit arguments are active for
 the \C{cons} and \C{nil} constructors the writing \C{(cons 3 nil)} 
 shorthand for \C{(cons _ 3 (nil _))}.  The \C{_} denotes a term,
 here a type, to be inferrer by \Coq{}.  In this case the typing constraints

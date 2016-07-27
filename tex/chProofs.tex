@@ -43,7 +43,7 @@ basic proof commands.
 Stating a lemma is a very delicate matter.  Even if two formulations for the
 same statements are logically equivalent, one can be much simpler to prove or
 invoke in the proof of another theorem.  The approach we follow in the current
-chapter and that we fully develop in Chapter~\ref{ch:boolrefl} is paradigmatic
+chapter and that we fully develop in chapter~\ref{ch:boolrefl} is paradigmatic
 in the \mcbMC{} library and roughly consist in favouring the use of computable
 definitions and equational reasoning whenever possible.
 
@@ -77,7 +77,7 @@ statements: \emph{ground} means that these statements do not feature
 parameter variables. For instance $2 + 2 = 4$ is a ground
   statement, but $(a + b)^2 = a^2 + 2ab + b^2$ is not.
 
-In Chapter~\ref{ch:prog}, we have used the \C{Check}
+In chapter~\ref{ch:prog}, we have used the \C{Check}
 vernacular command to query the type of a defined object.  We can use
 the very same command to \emph{check} whether a formal statement
 is well formed:
@@ -170,7 +170,7 @@ command like \C{Lemma} (or \C{Theorem}, \C{Remark},
 The \C{Lemma} keyword is followed by the name chosen for the lemma and
 then by the statement itself. \C{Lemma} (and its siblings) is in fact
 a variant of the \C{Definition} syntax we used in
-Chapter~\ref{ch:prog}: everything we mentioned about it also applies
+chapter~\ref{ch:prog}: everything we mentioned about it also applies
 here. The \C{Proof} keywords marks the beginning of the proof and
 after it is executed, the system displays the current state of the
 formal proof in a separated windows.
@@ -297,7 +297,7 @@ equal to true, we are going to omit the ``\C{.. = true}''
 part of the statements.  Indeed \Coq{} is able to insert such
 piece of ``text'' automatically, whenever it fits.
 The \Coq{} mechanism for doing that is out of scope here, it 
-will be explained in Section~\ref{sec:coercions}.
+will be explained in section~\ref{sec:coercions}.
 
 \begin{coq}{name=coercion}{}
 Lemma leq0n (n : nat) : 0 <= n.
@@ -312,7 +312,7 @@ We can express that more boolean statements are equivalent using
 identities, generalizing the examples of propositional tautologies we
 gave in section~\ref{ssec:id}. Here is a few examples, built with the
 boolean predicate on natural numbers that we crafted in
-Chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
+chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
 divisibility predicate \L+%|+.
 We can omit the type of the parameters: they are all of type \C{nat}.
@@ -344,9 +344,9 @@ Lemma odd_gt0 n : odd n -> n > 0.
 \end{coq}
 
 The attentive reader might have noticed that this arrow \C{->} is the
-same as the one we have used in Chapter~\ref{ch:prog} in order to
+same as the one we have used in chapter~\ref{ch:prog} in order to
 represent function types. This is no accident, but we will explain
-this phenomenon later in Section~\ref{sec:chi}. For now let us remark
+this phenomenon later in section~\ref{sec:chi}. For now let us remark
 that \C{->} associates on the right: therefore a succession of arrows
 expresses a conjunction of hypotheses:
 
@@ -354,7 +354,7 @@ expresses a conjunction of hypotheses:
 Lemma dvdn_mul d1 d2 m1 m2 : d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
 \end{coq}
 
-The \C{Section} mechanism we saw in Chapter~\ref{ch:prog} is also
+The \C{Section} mechanism we saw in chapter~\ref{ch:prog} is also
 convenient in order to factor the parameters and the hypotheses shared
 by a handful of lemmas. 
 % Yet beware, all the parameters are then fixed
@@ -567,7 +567,7 @@ We start with the branch associated with the \C{true} value, and
 to signal it is a sub proof we indent the corresponding script.
 Now that \C{b} is a concrete value each proof amounts to a
 reflexivity argument, in the spirit of what we did in
-Section~\ref{ssec:proofcomp}.
+section~\ref{ssec:proofcomp}.
 
 \begin{coq}{def=negbkt2,done}{width=6cm,title=First trivial case}
 Lemma negbK b : ~~ (~~ b) = b.
@@ -832,7 +832,7 @@ m : nat
   (m.+1 == 0) || (0 == 0)
 \end{coqout}
 
-% We will see in Section~\ref{} that
+% We will see in section~\ref{} that
 This \C{//} switch can be used in
 more general contexts than just this special case of introduction patterns:
 it can actually punctuate more complex combinations of tactics,
@@ -850,7 +850,7 @@ multiplication.
 To conclude the proof we introduce one more proof command,
 \C{rewrite}, that lets us appeal to an already existing lemma.
 This is the subject of the next section.
-% Section~\ref{ssec:rw} explains how to complete this proof.
+% section~\ref{ssec:rw} explains how to complete this proof.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Rewriting}\label{ssec:rw}
@@ -890,7 +890,7 @@ which is equal modulo computation to \C{(true = true)}. But because of
 the definition of \C{muln} by pattern matching on its \emph{first}
 argument, \C{m.+1 * 0} does not evaluate symbolically to \C{0}: this
 equality holds but requires a proof by induction, as explained in
-Section~\ref{ssec:ind}.
+section~\ref{ssec:ind}.
 Anyway, a lemma proving what we need is already available in the library:
 
 \begin{coq}{def=muln0}{}
@@ -1075,7 +1075,7 @@ The proof could now be completed by prefixing the last tactic with the
 \C{by} command, which concludes the proof by reflexively.
 
 So far we have learnt the basic use of the \C{rewrite} tactic.
-The interested reader can find in Section~\ref{sec:rewrite2} more
+The interested reader can find in section~\ref{sec:rewrite2} more
 details on the matching algorithm and on the flags supported by
 \C{rewrite}.
 
@@ -1086,7 +1086,7 @@ details on the matching algorithm and on the flags supported by
 \mcbsection{Quantifiers}
 
 \subsection{Universal quantification, first examples}
-In Chapter~\ref{ch:prog}, we have defined functions
+In chapter~\ref{ch:prog}, we have defined functions
 with boolean values; they are named 
 \emph{boolean predicates}.
  For instance, the \C{leq} predicate is defined as
@@ -1095,7 +1095,7 @@ a boolean predicate on natural numbers, as:
 Definition leq n m := m - n == 0.
 \end{coq}
 
-We recall, as seen in Chapter~\ref{ch:prog}, that this concise syntax stands
+We recall, as seen in chapter~\ref{ch:prog}, that this concise syntax stands
 for:
 
 \begin{coq}{def=LeqDefFun}{}
@@ -1209,7 +1209,7 @@ predicates, the \mcbMC{} library uses a systematic naming policy for the lemmas
 that are instances of these predicates. For instance a common suffix \C{C} is
 used for commutativity properties like \C{addnC} or \C{mulnC}.
 Such naming convention is also useful to search the library, as detailed
-in Section~\ref{sec:search}.
+in section~\ref{sec:search}.
 
 Other relevant predicates worth mentioning are the one describing standard
 function properties:
@@ -1248,7 +1248,7 @@ Check (commutative addn).
 commutative addn : Prop
 \end{coqout}
 Indeed, the class of propositions is closed under universal quantification
-\C{forall} (and also under implication \C{->}). Chapter~\ref{sec:ttch} will
+\C{forall} (and also under implication \C{->}). chapter~\ref{sec:ttch} will
 provide a more in-depth study of these propositions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1295,7 +1295,7 @@ Lemma contraL (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
 
 We see this how this lemmas is used in an excerpt of the proof
 that there are infinitely many primes (the full proof will be
-object of study in Section~\ref{sec:infprimes}).  Given a number \C{m}
+object of study in section~\ref{sec:infprimes}).  Given a number \C{m}
 we show that any prime divisor \C{p} of \C{(m `! + 1}) is greater than \C{m},
 or better that it is not the case \C{m} is bigger.
 
@@ -1486,7 +1486,7 @@ To sum up, both \C{apply:} and \C{rewrite} are able to find the right
 instance of a quantified lemma and to generate sub goals
 for its eventual premises.  Hypotheses can be named using \C{move=>}.
 The proof script can be further reduced in size, as we describe in
-Section~\ref{sec:rewriet2}.
+section~\ref{sec:rewriet2}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Proofs by induction}\label{ssec:ind}
@@ -1734,7 +1734,7 @@ invocations of the \C{rewrite} tactic.  Such proof command provides many
 features we cannot extensively cover here.  We just sketch a very common idiom
 involving conditional rewrite rules and the mention the \C{RHS} pattern for
 the casual reader.  The interested reader can find more about the pattern
-language in Section~\ref{sec:rewrite2} or in the user manual of the
+language in section~\ref{sec:rewrite2} or in the user manual of the
 Ssreflect language~\cite{ssrman}.
 
 So far we have solved side conditions using the simplification item \C{//}.
@@ -1796,7 +1796,7 @@ rewrite /=.
 The \C{/=} flag simply invokes the \Coq{} standard \C{simpl}
 tactic.  Whilst being handy, \C{simpl} tends to oversimplify
 expressions, hence we advice using it with care.
-In Section~\ref{sec:edivn} we propose a less risky alternative.
+In section~\ref{sec:edivn} we propose a less risky alternative.
 
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 \index[ssr]{\C{rewrite}!\C{//=} (simplify and close trivial goals)}
@@ -1877,7 +1877,7 @@ algorithm used by this tactic.
 
 Lemma \C{leq_def} in fact does not exist in the library. Indeed the
 identity it states holds by symbolic computation, and we have seen in
-Section~\ref{ssec:proofcomp} that such a proof step can be omitted. However if we
+section~\ref{ssec:proofcomp} that such a proof step can be omitted. However if we
 try to omit the first \C{rewrite !leq_def} command, then the next one,
 namely \C{rewrite -mulnBr} fails:
 
