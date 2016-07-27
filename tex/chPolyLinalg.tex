@@ -5,8 +5,71 @@ Georges'ITP paper. Here is one of the main application of the choice
 operator (complement a base).
 
 
-\section{TODO: Plynomials}
-\C{poly} and \C{polydiv}
+\section{Polynomials}
+
+The part of the library covering univariate is composed of two main files
+\C{poly} and \C{polydiv}. It contains the basic operations to manipulate
+polynomials: usual ring operations, horner evaluation, composition, derative, division, remainder, gcd.
+
+\paragraph{Basic formalization choices} 
+The type of polynomials is \C{\{poly R\}}. It is parametrized over a type \C{R}
+that is equipped with a ring type structure.
+A polynomial is represented by a sequence of coefficients whose last element is non-zero.
+This is why there is an automatic coercion from a polynomial to its associated sequence.
+Note that there is no explicit definition of the degree of a polynomial in the library, 
+the size of  its sequence is used instead. This discrepancy with usual mathematical practice can
+be seen in theorems like the one on the degree of the product of two 
+polynomials 
+
+\begin{coq}{}{}
+Lemma size_mul_leq p q : size (p * q) <= (size p + size q).-1.
+\end{coq}
+\paragraph{Formalization trick: nested polynomial}
+One of the  main result that is derived in the file \C{poly} is that polynomials
+form a ring. This means, in particular, that one can create polynomials 
+whose coefficient are polynomials \C{\{poly \{poly R\}\}}. This gives a direct way to 
+represent bi-variate polynomials. One could go a step further and performs this application
+recursively.
+This way of getting multivariate polynomials may be interesting for some applications
+but is not supported by the library.
+
+\paragraph{Formalization trick: division and pseudo-division}
+Division comes in two flavors in the library. A first definition \C{rdivp} applies on an arbitrary ring. 
+It consists on performing a pseudo-divisor where the dividend can be multiplied by a scaling factor.
+A second one \C{divp} on which is attached the notation \C{p \%/ q} requires a stronger assumption: the domain on which polynomials are built must be
+an integral domain type. In this last version, the division tests if the leading coefficient of the divisor
+is a unit. If it is the case it performs the expected inversion. This second division when applied on a field gives
+the usual equality.
+
+\begin{coq}{}{}
+Lemma divp_eq p q : p = (p %/ q) * q + (p %% q).
+\end{coq}
+
+\noindent
+The library is organized in such a way to provide appropriate theorems for the different domains on top of which
+polynomials can be built. Modules are used to regroup
+these theorems . For example, here are the various  versions of \C{div_eq}.
+
+\begin{coq}{}{}
+Check Pdiv.Field.divp_eq.
+     : forall (F : fieldType) (p q : {poly F}), p = (p %/ q * q + p %% q)%R
+Check Pdiv.Idomain.divp_eq.
+   : forall (R : idomainType) (p q : {poly R}),
+       (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
+Check Pdiv.IdomainMonic.divp_eq.
+    : forall (R : idomainType) (q : {poly R}),
+       q \is monic -> forall p : {poly R}, p = (p %/ q * q + p %% q)%R
+Check Pdiv.IdomainUnit.divp_eq.
+      : forall (R : idomainType) (d : {poly R}),
+       lead_coef d \is a GRing.unit ->
+       forall p : {poly R}, p = (p %/ d * d + p %% d)%R *)
+Check Pdiv.WeakIdomain.divp_eq.
+     : forall (R : idomainType) (p q : {poly R}),
+       (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
+\end{coq}
+
+\noindent
+When loading the  \C{polydiv} file, it is the \C{Pdiv.Field} module that is opened by default.
 
 \section{TODO: Linear algebra}
 \C{mxalgebra}
