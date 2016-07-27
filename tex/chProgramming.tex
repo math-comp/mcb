@@ -42,7 +42,7 @@ and isolate the object in this expression that is considered a
 variable component for the operation, here \C{2}, we then replace
 this object with a symbolic name, here {\tt n}.  We then encapsulate
 the expression \C{(n + 2)} with the prefix ``\C{fun n =>}'' to relate
-the result produced by the operation to the input \C{n}.  We commonly
+the result produced by the operation to the variable \C{n}.  We commonly
 say that ``\C{fun n =>}'' \emph{binds} the variable \C{n} in the expression
 \C{n + 2}.
 \index[concept]{binder}
@@ -248,7 +248,7 @@ When we want to apply the function \C{repeat_twice} to the function
 written as follows:
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=7cm}
-Eval compute in (repeat_twice f 2).
+Eval compute in repeat_twice f 2.
 \end{coq}
 \begin{coqout}{run=eval_f_run}{width=5cm}
 = 4 : nat
@@ -276,11 +276,9 @@ can pass to it only the former one and obtain a perfectly valid term.
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=6cm,title=Partial application}
 Check (repeat_twice f).
-Eval compute in (repeat_twice f).
 \end{coq}
 \begin{coqout}{run=eval_f_run}{title=Response,width=6cm}
 repeat_twice f : nat -> nat
-= fun x => f (f x) : nat -> nat
 \end{coqout}
 \index[concept]{partial application}
 \index[concept]{currying of functions}
@@ -318,7 +316,7 @@ turn.
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Boolean values}
-The type \C{bool} of boolean values contains two values that can be
+The type \C{bool} contains two values that can be
 distinguished in computations.  The declaration of this type happens
 in one of the first files to be automatically loaded when \Coq{} starts,
 so booleans look like a built-in notion.  On the contrary they are a
@@ -378,8 +376,8 @@ As one expects, when \C{b} is \C{true} the expression
 \C{(f23 b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise.
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating f23}
-Eval compute in (f23 true).
-Eval compute in (f23 false).
+Eval compute in f23 true.
+Eval compute in f23 false.
 \end{coq}
 \coqrun{name=eval_run}{eval_repeat_twice_f_two}
 \begin{coqout}{run=eval_f_run}{title=Response,width=5cm}
@@ -395,8 +393,9 @@ infix, they appear between the arguments as in \C{b1 && b2}).
   In
 particular, it should be
 noted that the symbol \C{\~\~} uses two characters \C{\~}, but it should
-not be confused with two iterations of the one-character symbol
-\C{\~}.  In practice, readers become quickly accustomed to the
+not be confused with two consecutive occurrences of the one-character symbol
+\C{\~} (that has a meaning in \Coq{}, but is almost never used
+in the \mcbMC{} library).  In practice, readers become quickly accustomed to the
 distinction between the two symbols.
 
 For instance, the function \C{andb} is defined as follows and
