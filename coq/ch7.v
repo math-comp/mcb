@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect perm fingroup.
 
 Inductive windrose : predArgType := N | S | E | W.
 

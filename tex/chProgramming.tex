@@ -1,9 +1,9 @@
 \Chapter{Computational definitions}{ Defining concepts by writing programs}\label{ch:prog}
 
-TODO: uniform terminology (a function returns,produces, computes... patter matching,case analysis...program, function, operation...computation, evaluation...data type, inductive type); I mean, we can say we use them interchangeably... but the quotienting must be explicit since the reader may not know it (eg some of it is historical, some justified by curry howard (fwd reference)).  Also "coq session" is something that I would remove.
-
-TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
-
+% TODO: uniform terminology (a function returns,produces, computes... patter matching,case analysis...program, function, operation...computation, evaluation...data type, inductive type); I mean, we can say we use them interchangeably... but the quotienting must be explicit since the reader may not know it (eg some of it is historical, some justified by curry howard (fwd reference)).  Also "coq session" is something that I would remove.
+% 
+% TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
+% 
 %\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
 We will take the point of view that mathematics can be understood as
@@ -47,6 +47,16 @@ say that ``\C{fun n =>}'' \emph{binds} the variable \C{n} in the expression
 \C{n + 2}.
 \index[concept]{binder}
 
+The ``\C{fun}'' construction stands for \emph{function}.  Functions are the
+main tool provided by \Coq{} to describe operations, so we will use the
+two terms interchangeably.  Sometimes we also call operations \emph{programs},
+since the functions we talk about are effective: i.e. described by a code
+a computer can execute.  As a consequence we borrow from computer science
+some jargon, like \emph{input} or \emph{return}. For example we say that
+an operation takes in input a number and returns its double to mean
+that the corresponding program computes the double of its input, or
+that the function maps a number to its double.
+
 So we have an expression which represents the operation of adding 1.
 Applying this operation to the object \C{2} will be written this
 way:
@@ -80,25 +90,23 @@ When using \Coq{}, the step of giving a name can also be
 performed, in the following manner:
 
 \begin{coq}{name=exdef}{}
-Definition f := fun x => x + 1.
+Definition f := fun n => n + 1.
 \end{coq}
 \index[vernac]{\C{Definition}}
 An alternative syntax for exactly the same definition is as follows,
 this alternative syntax is actually preferred.
 
 \begin{coq}{name=exdef-pref}{}
-Definition f x := x + 1.
+Definition f n := n + 1.
 \end{coq}
-As was obvious in the mathematical formulation, operations are mainly
-described by functions and mathematical practice is also to give
-information about the domain and the codomain of functions at
-definition time, as we did when writing
+The mathematical practice when defining a function is to give
+information about its domain and codomain, as we did when writing
 \({\mathbb{N}}\rightarrow{\mathbb{N}}\).  In \Coq{} syntax, we will write
 the same information as follows, because \C{nat} is the name used in
 \Coq{} to represent \(\mathbb{N}\):
 
 \begin{coq}{name=exdef-type}{}
-Definition f (x : nat) : nat := x + 1.
+Definition f (n : nat) : nat := n + 1.
 \end{coq}
 In this description, \C{nat} is called a {\em type}.  Types describe
 collections of objects that can be treated in a uniform way.
@@ -109,7 +117,6 @@ describe the relevant information about the constant that is defined:
 
 \begin{coq}{name=about_f}{width=5.5cm,title=Gathering information on f}
 About f.
-$~$
 \end{coq}
 \coqrun{name=about_f_run}{about_f}
 \begin{coqout}{run=about_f_run}{title=Response,width=6.5cm}
@@ -128,20 +135,20 @@ We can be more inquisitive in our requests for information about
 \C{f}, we can also require to know what is the value.  This is done in
 the following manner:
 
-\begin{coq}{name=print_f}{width=6cm,title=A function's value}
+\begin{coq}{name=print_f}{width=6cm}
 Print f.
 $~$
 \end{coq}
 \coqrun{name=print_f_run}{print_f}
-\begin{coqout}{run=print_f_run}{title=Response,width=6cm}
-f = fun x : nat => x + 1
+\begin{coqout}{run=print_f_run}{width=6cm}
+f = fun n : nat => n + 1
   : nat -> nat
 \end{coqout}
 \index[vernac]{\C{Print}}
 
 We see in this example that {\em type information} is an important
 feature of the language.  Type information is given twice in the
-result of the \C{Print} command, once in the fragment ``\C{fun x : nat
+result of the \C{Print} command, once in the fragment ``\C{fun n : nat
   =>}'' and once in the second line, behind the colon ``\C{:}''.  The first
 time, what we get is that the input of the function is expected to be
 a value of type \C{nat}.  The second time, what we get is that the
@@ -150,24 +157,54 @@ the colon character (when surrounded by spaces) will always be used to
 give type information.  Remark the similarity between the output of \C{Print}
 and the mathematical notation in \eqref{equation:f}.
 
-As we detail in Section~\ref{sec:ttch} types play an important role in \Coq{}.
+As we detail in Chapter~\ref{sec:ttch} types play an important role in \Coq{}.
 In particular they are used to avoid confusion.  For example
-the function \C{f} we just defined can be applied to a natural number,
-i.e. a term of type \C{nat}, but not to, say, a function.
+the function \C{f} we just defined can \emph{only
+be applied to a natural number}, i.e. a term of type \C{nat}.
+\Coq{} provides a command to check that an expression is \emph{well typed}.
+\index[concept]{well typed}
+
+\begin{coq}{name=print_f}{width=5.3cm,title=Check well-typedness}
+Check f 3.
+\end{coq}
+\begin{coqout}{run=print_f_run}{title=Response,width=7cm}
+ f 3 : nat
+\end{coqout}
+\index[vernac]{\C{Check}}
+On the contrary \C{f} cannot be applied to something that 
+is not a natural number, for example a function.
 
 \begin{coq}{name=print_f}{width=5.3cm,title=Type error}
-Check f 3.
 Check f (fun x : nat => x).
 $~$
 $~$
 \end{coq}
 \begin{coqout}{run=print_f_run}{title=Response,width=7cm}
-f 3 : nat
 Error: The term "(fun x : nat => x)"
 has type "nat -> nat" while it is
 expected to have type "nat".
 \end{coqout}
 \index[concept]{type error}
+Indeed it makes little sense to compute the addition between
+a function and 1.
+
+Expressions that are well typed can be \emph{computed} by \Coq{}.
+For example \C{(f 3)} returns \C{4}.
+
+\begin{coq}{name=print_f}{width=6cm,title=Evaluating a function}
+Eval compute in f 3
+\end{coq}
+\begin{coqout}{run=print_f_run}{title=Response,width=6cm}
+ = 4 : nat
+\end{coqout}
+\index[vernac]{\C{Eval compute}}
+This seemingly trivial capability of \Coq{} plays a crucial role
+in the \mcbMC{} library, as we will see in the next chapter when
+doing proofs.
+\index[concept]{computation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Higher order functions}
 
 The function \C{f} operates on natural numbers, of type \C{nat}, but
 we can also define functions that operate on functions, called
@@ -210,15 +247,13 @@ When we want to apply the function \C{repeat_twice} to the function
 \C{f} and the number \C{2} and perform the computation, this can be
 written as follows:
 
-\begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating
-    an expression}
+\begin{coq}{name=eval_repeat_twice_f_two}{width=7cm}
 Eval compute in (repeat_twice f 2).
 \end{coq}
-\begin{coqout}{run=eval_f_run}{title=Response,width=5cm}
+\begin{coqout}{run=eval_f_run}{width=5cm}
 = 4 : nat
 \end{coqout}
 \coqrun{name=eval_run}{eval_repeat_twice_f_two}
-\index[vernac]{\C{Eval compute}}
 From the syntax point of view, we wrote three subexpressions only
 separated by space.  By default, the parser understands this as
 \C{((repeat_twice f) 2)}, so we actually have a first subexpression
@@ -234,7 +269,6 @@ The resulting expression is \C{(f (f 2))}, and given the
 %Remembering the 
 definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
-\index[concept]{computation}
 
 It is worth spending a few more words on the \C{(repeat_twice f)} subexpression.
 The \C{repeat_twice} program takes two arguments in input. However one
@@ -263,18 +297,26 @@ the arrow (as depicted with different underline styles).
 When this is not the case \Coq{} issues a type error.
 
 In \Coq{} functions with multiple inputs are just functions producing
-functions.  As a consequence it is legit to apply them partially
+functions.  As a consequence \emph{it is legit to apply functions partially},
 and the \C{->} sign associates to the right.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: construction and destruction}
 It is possible to define a datatype by giving in one declaration
-the type, methods to build elements of this type, and methods to
-use elements of the type while computing.  This approach is used
+the type name and the methods to \emph{build} elements of this type.
+% and methods to
+% use elements of the type while computing.
+The dual method to use (i.e \emph{destruct})
+elements of a datatype is provided by
+\Coq{} in the form of pattern matching construct.
+
+This approach is used
 systematically in \Coq{} to define a variety of basic datatypes, among
 which boolean values, natural numbers, pairs and sequences of values
 are the most prominent examples.  We will study these examples in
 turn.
+
+%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Boolean values}
 The type \C{bool} of boolean values contains two values that can be
 distinguished in computations.  The declaration of this type happens
@@ -286,12 +328,16 @@ notion defined as follows.
 Inductive bool := true | false
 \end{coq}
 \index[vernac]{\C{Inductive}}
-\marginnote{I guess we should use Type, also for bool, and not even mention Set}
 This declaration states explicitly that there are only two cases for
 elements of type \C{bool}.  The first case is given by the constant
-\C{true}, the second case by the constant \C{false}.  Thus, the
-declaration of the type gives in an obvious manner the type, \C{bool},
-and ways to build all its elements, \C{true}, and \C{false}.  All definitions
+\C{true}, the second case by the constant \C{false}.  
+The constants \C{true} and \C{false} are provably distinct, and
+are the only way to construct a \C{bool}.
+
+% Thus, the
+%declaration of the type gives in an obvious manner the type, \C{bool},
+%and ways to build all its elements, \C{true}, and \C{false}.  
+All definitions
 in \Coq{}, like this one, which define a type by providing at the same time a type
 name and the only ways to build elements of the type are called {\em inductive}
 definitions.  The two objects \C{true} and \C{false} are called
@@ -300,9 +346,7 @@ definitions.  The two objects \C{true} and \C{false} are called
 \index[concept]{inductive type!constructor}
 
 In practice, this means that we can build a well-formed expression of
-type \C{bool} by using either \C{true} or \C{false}.  \Coq{} provides a
-command to check that an expression is well-formed.  We can use this
-command here to illustrate a use of the constructors.
+type \C{bool} by using either \C{true} or \C{false}. 
 
 \begin{coq}{name=check_true}{width=6cm,title=Queries}
 Check true.
@@ -311,7 +355,6 @@ Check true.
 \begin{coqout}{run=check_true_run}{width=6cm,title=Response}
 true : bool
 \end{coqout}
-\index[vernac]{\C{Check}}
 
 To use boolean values in computations, we need a construct that makes
 it possible to build different values depending on whether some
@@ -332,7 +375,7 @@ Definition f23 b := if b then 2 else 3.
 \coqrun{name=definef23_run}{definef23}
 
 As one expects, when \C{b} is \C{true} the expression
-\C{f b} evaluates to \C{2}, while it evaluates to \C{3} otherwise.
+\C{(f23 b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise.
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating f23}
 Eval compute in (f23 true).
@@ -356,8 +399,8 @@ not be confused with two iterations of the one-character symbol
 \C{\~}.  In practice, readers become quickly accustomed to the
 distinction between the two symbols.
 
-For instance, the function \C{andb} is defined as follows in one of
-the preamble files:
+For instance, the function \C{andb} is defined as follows and
+evaluates to \C{true} if and only if both inputs are \C{true}.
 
 \begin{coq}{name=define_andb}{}
 Definition andb b1 b2 := if b1 then b2 else false
@@ -445,11 +488,11 @@ checks whether \C{n} matches this pattern.  The fragment
 ``\C{p.+1 => false}''  expresses that when \C{n} is the successor of
 some number \C{p} the final value is \C{false}.  In other words, when
 \C{n} is the successor of somebody, then the returned value is
-\C{false}.  The value \C{p} mentioned in this pattern is not known in
-advance, it is actually computed at the moment the \C{n} is matched
-against the pattern.  For instance, if \C{n} is \C{5}, then the value
-computed for \C{p} is \C{4}.  In this particular instance, \C{p} is
-not used, so that we can also write as follows:
+\C{false}.  The value bound to the name \C{p} mentioned in this pattern is not
+known in advance, it is actually computed at the moment the \C{n} is matched
+against the pattern.  For instance, if \C{n} is \C{5}, then the value computed
+for \C{p} is \C{4}.  In this particular instance, \C{p} is not used, so that we
+can also write as follows:
 
 \begin{coq}{name=pattern_on_nat}{}
 match n with 0 => true | _.+1 => false end
@@ -457,7 +500,7 @@ match n with 0 => true | _.+1 => false end
 The symbol \C{_} is used to represent a pattern whose value will never be
 used.
 
-This pattern can also be written using an ``\C{if .. then .. else}'' like
+This pattern can also be written using an ``\C{if .. then .. else ..}'' like
 syntax:
 
 \begin{coq}{name=pattern_on_nat_0}{}
@@ -467,8 +510,7 @@ if n is 0 then true else false
 
 For an example where the pattern variable is actually used, we can
 observe the function that returns the predecessor of a natural number
-when it exists, or 0 otherwise.  This function already exists in the library,
-but we could redefine it as follows:
+when it exists, or 0 otherwise.
 
 \begin{coq}{name=pred}{}
 Definition pred n := if n is u.+1 then u else n.
@@ -489,8 +531,8 @@ the value of \C{u} is found to be \C{0.+1}, in other words \C{1}.
 
 Remark that we did omit the type of the input \C{n}.  Being \C{n} scrutinized
 as a natural number, i.e. matched against the \C{u.+1} pattern, \Coq{} fixes its
-type to \C{nat}.  Indeed the \C{S} constructor belongs exclusively to the
-\C{nat} inductive definition.
+type to \C{nat}.  Indeed the \C{S} constructor belongs \emph{exactly}
+to one inductive definition, the one of \C{nat}.
 
 The pattern used in the \C{if} statement can be composed of
 several nested levels of the \C{.+1} pattern.  For instance,
@@ -530,7 +572,7 @@ in the pattern, they are essentially restricted to \C{O}, \C{S} and
 variable names.  Thanks to notations, a pattern can also contains
 occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
-\C{S} and \C{O}.  When a variable name occur, this variable can be
+\C{S} and \C{O}.  When a variable name occurs, this variable can be
 re-used in the result part.  When computing with a natural number, all
 the pattern matching rules are tried successively against this number.
 For instance, if the input is \C{2}, in other words \C{0.+1.+1}, the first
@@ -570,7 +612,7 @@ Definition same_bool b1 b2 :=
   end.
 \end{coq}
 
-This is translated on the fly to
+This is parsed as follows
 
 \begin{coq}{name=awkward5}{}
 Definition same_bool b1 b2 :=
@@ -612,8 +654,8 @@ function \C{addn} itself.  This text expresses that the value of
 \C{(addn p m).+1} and that the value \C{(addn 0 m)} is \C{m}.
 This first equality may
 seem redundant, but there is progress when reading this equality from
-left to right: an addition with \C{p.+1} as the left-hand side argument
-is explained with the help of addition with \C{p} as the left-hand side
+left to right: an addition with \C{p.+1} as the first argument
+is explained with the help of addition with \C{p} as the first
 argument, and \C{p} is a smaller number than \C{p.+1}.  When considering the
 expression \C{(addn 2 3)}, we can know the value by performing the following
 computation:
@@ -660,6 +702,7 @@ construct or in an ``\C{if .. is ..}'' statement, with the additional
 constraint that the pattern-matching construct observes a variable
 that was one of the function's inputs.
 \index[concept]{recursion!termination}
+\index[concept]{termination}
 
 For instance, in the case of \C{addn}, the recursive call happens
 with \C{p} as the first argument, \C{p} was introduced by the pattern \C{p.+1}
@@ -743,7 +786,7 @@ the following manner:
 \begin{coq}{name=notation_my_eq}{}
 Notation "x == y" := (eqn x y).
 \end{coq}
-This equality test function can then be used in other algorithms.  Now
+Now
 that we have programmed this equality test function, we can verify
 that the \Coq{} system really identifies various ways to write the same
 natural number.
@@ -777,19 +820,42 @@ equality comparison (\C{eqn}, \C{==}), order
 comparison (\C{leq}, \C{<=}) on natural numbers.  The trailing \C{n} in
 the names is indeed to signal that these operations are on the \C{nat} data
 type.
+The \mcbMC{} library also provides concepts that makes sense only
+for the \C{nat} datatype (hence the trailing \C{n} is omitted) and
+that we will use many times in this book.  In particular the
+test identifying \C{prime} and \C{odd} numbers.
 
-It is worth detailing the definition of \C{leq}. 
+We advise the reader not to ``explore'' the library from \Coq{}, but
+rather to browse the source files.\footnote{Online documentation: \url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}.
+While the \C{Print}
+command can be quite useful in some situation, there is so much more
+information in the source files.  
+The relevant files for this chapters are \lib{ssrbool}, \lib{ssrnat}
+and, later, \lib{seq}.
+
+\mantra{Each file in the \mcbMC{} library
+starts with a banner describing all concepts and associated notations.
+There is not better way to browse the library than reading these banners.}
+
+Before moving on it is worth detailing the definition of \C{leq}
+and some associated notations.
 
 \begin{coq}{}{}
 Definition leq m n := m - n == 0.
 Notation "m < n"  := (m.+1 <= n).
 Notation "n > m"  := (m.+1 <= n) (parsing only).
+Notation "a <= b <= c" := ((a <= b) && (b <= c)).
 \end{coq}
 \index[coq]{\C{leq}}
 Given that subtraction computes to \C{0} whenever \C{m} is less or equal
 that \C{n}, such definition is correct.  Finally note that the strict order
 relation is just a notation, and that \C{(m > n)} is only accepted in input
-and is alsways printed as  \C{(n < m)}.
+and is always printed as  \C{(n < m)}.
+
+\gotcha{There is no function testing if a natural number is strictly
+smaller than another one.  \C{(a < b)} is just syntactic 
+sugar for \C{(a.+1 <= b)}}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: generic containers}\label{sec:poly}

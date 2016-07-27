@@ -2,16 +2,19 @@
 \chapter{Introduction}
 
 \emph{Mathematical Components}
-is the name of a \Coq{} library covering a variety of
+is the name of a library of formalized mathematics for the 
+\Coq{} system.  It covering a variety of
 topics, from the theory of basic data structures (e.g., numbers, lists, finite
 sets) to advanced results in various flavors of algebra. This library
-constitutes the infrastructure for the formal proofs of the Four Color Theorem
-and of the Odd Order Theorem.
+constitutes the infrastructure for the machine checked proofs of the
+Four Color Theorem~\cite{Gonthier08} and of the 
+Odd Order Theorem~\cite{gonthier:hal-00816699}.
 
 The reason of existence of this book is to break down the barriers to entry.
 While there are several books around covering the usage of the 
-\Coq{}~\cite{BC04,SF,CPDT}
-system and the theory it is based on~\cite[Chapter 4]{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook}, 
+\Coq{} system~\cite{BC04,SF,CPDT}
+and the theory it is based 
+on~\cite[Chapter 4]{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook}, 
 the \mcbMC{} library is built
 in an unconventional way.  As a consequence this book provides a non
 standard presentation of \Coq{}, putting upfront the formalization choices
@@ -20,7 +23,7 @@ and the proof style that are the pillars of the library.
 This books targets two classes of public.  On one hand newcomers, even the 
 more mathematical inclined ones, find a soft introduction to the programming
 language of \Coq{}, Gallina, and the Ssreflect proof language.
-On the other hand accustomed \Coq{} users find a substantial description
+On the other hand accustomed \Coq{} users find a substantial account
 of the formalization style that made the \mcbMC{} library possible.
 
 By no means this book pretends to be a complete description of \Coq{} or
@@ -82,7 +85,7 @@ to the already existing ones.
 
 Automation is provided by \emph{programming type inference}.
 The \Coq{} system provides a user-extensible type inference
-algorithm.  It can be extended with declarative programs,
+algorithm.  It can be extended with declarative programs
 giving canonical solutions to otherwise unsolvable problems.
 Such solutions typically involve notions and theorems that
 are part of the \mcbMC{} library.  By programming type inference
