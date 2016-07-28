@@ -939,18 +939,27 @@ This definition actually describes the type of lists as a {\em
 \C{(seq nat)} is the type of sequences of natural numbers, while
 \C{(seq bool)} is the type of sequences of booleans.
 The type of the
-function \C{cons} is devised specifically to describe how to produce a
+constructor \C{cons} is devised specifically to describe how to produce a
 new list of type \C{(seq A)} by combining an element of \C{A} and an
 existing list of type \C{(seq A)}.  This also means that this data-type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
-Here \C{Type} is a keyword that denotes the type of all datatypes.
-For example \C{nat} and \C{bool} are of type \C{Type}.
 
-Thus, \C{seq} is a function of type \C{(Type -> Type)}.
-Types again avoid confusion: it is licit to form the type
-\C{(seq nat)} but not \C{(seq 3)}, since \C{3} is not a datatype given
-its type is not \C{Type}.
+In the declaration of \C{seq}, \C{Type} is a keyword that denotes the
+\emph{type of all datatypes}.  For example \C{nat} and \C{bool} are of type
+\C{Type}, and can be used in place of \C{A}.
+In other words \C{seq} is a function of type \C{(Type -> Type)}, sometimes
+called \emph{type constructor}.  Indeed \C{seq} alone is not a datatype,
+but if one passes to it another datatype, then it builds one.  Remark
+that this also means that \C{(seq (seq nat))} is a valid datatype, and
+that the construction can be iterated.
+Types again avoid confusion: it is not licit to form the type \C{(seq 3)},
+since the argument \C{3} has type \C{nat}, while the function
+\C{seq} expects an argument of type \C{Type}.\footnote{For historical
+reasons \Coq{} may display the type of \C{nat} or \C{bool} as \C{Set}
+and not \C{Type}.  We beg the reader to ignore such detail, that indeed
+plays no role in the \mcbMC{} library.}
+
 In principle, all objects of the datatype definition have a type
 argument:  
 \C{nil} is a function that takes a type \C{A} as argument and returns
@@ -964,7 +973,7 @@ rather written as follows:
 \index[coq]{\C{forall}}
 The same goes for the other constructor of list, named \C{cons}.  This
 function actually takes three arguments: a type \C{A}, a value in this
-type, and a value in the type \C{seq A}.  The type of \C{cons} is
+type, and a value in the type \C{(seq A)}.  The type of \C{cons} is
 thus written as follows:
 
 \begin{coq}{name=type_of_cons}{}
@@ -1371,6 +1380,7 @@ and no natural number of the form \C{(S  ..)} can be equal to 0.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Iterators in mathematics}
 \index[concept]{general term|seealso {higher order}}
+\label{sec:bigopnat}
 
 Numbers and sequences of objects are common in mathematics, so we feel
 no need to justify our choice to present them in this chapter.
@@ -1417,7 +1427,8 @@ crucial not only to provide convenient notations.  As we sketched in the
 previous section we will be able to prove properties about \C{foldr} without
 knowing the iterated function.  By assuming properties linking the iterated
 operation to the initial value, like forming a Monoid, we will be able to
-provide a generic theory of iterated operations~\ref{sec:bigop}.  Such theory becomes richer
+provide a generic theory of iterated operations in section~\ref{sec:bigop}.  
+Such theory becomes richer
 when the operation is also commutative, and even richer when we combine two
 operations that distribute.
 
