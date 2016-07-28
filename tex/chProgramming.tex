@@ -1189,12 +1189,17 @@ As one expects pairs can be nested, as in \C{(3,true,4)}, that is sugar
 for \C{((3,true),4)}.  In such situation the value \C{true} can be
 accessed by writing \C{(3,true,4).1.2}.
 
-Note that the ambiguity between \C{(1 * 2)} and \C{(nat * bool)} can be
-resolved by annotating the expression with the interpretation scope
-desired: \C{(a * b)\%N} interprets the infix \C{*} as multiplication,
+Given the notation for pairs, the expression \C{(a * b)} is now ``ambiguous'',
+in the sense that the same infix \C{*} symbol can be used to multiply two
+natural numbers as in \C{(1 * 2)} but also to write the type of pairs \C{(nat *
+bool)}.  Such ambiguity is somewhat justified by the fact that the pair
+datatype can be seen as the (cartesian) product of the arguments.  Such
+ambiguity can be resolved by annotating the expression with a specific
+label: \C{(a * b)\%N} interprets the infix \C{*} as multiplication,
 while \C{(a * b)\%type} would interpret \C{*} as the pair datatype
-constructor.
-
+constructor. The \C{\%N} and \C{\%type} labels are said to be
+\emph{notation scope delimiters} (for more details see
+\cite[section 12.2]{Coq:manual}).\index[concept]{notation scope}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Section mechanism}
@@ -1440,8 +1445,9 @@ operations that distribute.
 We mentioned many times already the \C{Notation} command only appealing to the
 reader's intuition: a notation relates some symbols with a term.  The actual
 syntax is more complex, letting one specify associativity and precedence to the
-parsing engine, as well as the group (called scope) to which the notation
-belongs and some hint for printing, like good line breaking points.
+parsing engine, as well as the group (called scope and identified by a scope
+delimiter) to which the notation belongs and some hint for printing, like good
+line breaking points.
 
 \begin{coq}{}{}
 Notation "m + n" := (addn m n) (at level 50, left associativity). 
@@ -1450,7 +1456,7 @@ Notation "n .+1" := (succn n) (at level 2, left associativity,
 \end{coq}
 \index[vernac]{\C{Notation}}
 A comprehensive description of such command goes behind
-the scope of this book, the interested reader shall refer to~\cite{Coq:manual}.
+the scope of this book, the interested reader shall refer to~\cite[section 12]{Coq:manual}.
 
 What is worth mentioning here is some conventions either imposed by \Coq{}
 or adopted in the \mcbMC{} library.
