@@ -1378,7 +1378,9 @@ the \C{.+1} coming out of the sum.  On the contrary
 \C{add} does not expose a successor, instead it carries it on the second
 argument, hence \C{pred} is stuck.  Is some sense \C{addn} is more
 explicit about its result, and this helps, for example, to show that
-\C{(addn n.+1 7)} is different from 0. As we have seen \Coq{} computes
+\C{(addn n.+1 7)} is different from \C{0} (see for example
+the proof of \C{muln_eq0} in section~\ref{proof:mulneq0}).
+As we have seen \Coq{} computes
 automatically and in this case computation would expose a \C{S} symbol
 and no natural number of the form \C{(S  ..)} can be equal to 0.
 

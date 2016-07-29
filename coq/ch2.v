@@ -19,6 +19,8 @@ apply: dvdn_fact.
 by []. (* p <= m *)
 Qed.
 
+
+
 Lemma example1 m p : prime p ->
   p %| m `! + 1 -> ~~ (p <= m).
 Proof.
