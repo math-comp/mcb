@@ -50,22 +50,17 @@ The library is organized in such a way to provide appropriate theorems for the d
 polynomials can be built. Modules are used to regroup
 these theorems . For example, here are the various  versions of \C{div_eq}.
 
-\begin{coq}{}{}
-Check Pdiv.Field.divp_eq.
-     : forall (F : fieldType) (p q : {poly F}), p = (p %/ q * q + p %% q)%R
-Check Pdiv.Idomain.divp_eq.
-   : forall (R : idomainType) (p q : {poly R}),
-       (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
-Check Pdiv.IdomainMonic.divp_eq.
-    : forall (R : idomainType) (q : {poly R}),
-       q \is monic -> forall p : {poly R}, p = (p %/ q * q + p %% q)%R
-Check Pdiv.IdomainUnit.divp_eq.
-      : forall (R : idomainType) (d : {poly R}),
-       lead_coef d \is a GRing.unit ->
-       forall p : {poly R}, p = (p %/ d * d + p %% d)%R *)
-Check Pdiv.WeakIdomain.divp_eq.
-     : forall (R : idomainType) (p q : {poly R}),
-       (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
+\begin{coq}{}{width=12.5cm}
+Lemma Pdiv.Field.divp_eq (F : fieldType) (p q : {poly F}) :
+  p = (p %/ q * q + p %% q)%R
+Lemma Pdiv.Idomain.divp_eq (R : idomainType) (p q : {poly R}) :
+  (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
+Lemma Pdiv.IdomainMonic.divp_eq (R : idomainType) (q : {poly R}) :
+  q \is monic -> forall p : {poly R}, p = (p %/ q * q + p %% q)%R
+Lemma Pdiv.IdomainUnit.divp_eq (R : idomainType) (d : {poly R}) :
+  lead_coef d \is a GRing.unit -> forall p: {poly R}, p = (p %/ d * d + p %% d)%R
+Lemma Pdiv.WeakIdomain.divp_eq (R : idomainType) (p q : {poly R}) :
+  (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
 \end{coq}
 
 \noindent

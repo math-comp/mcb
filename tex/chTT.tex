@@ -1009,7 +1009,7 @@ quantification on the head elemt, while here \C{a} needs to occur in
 the type of the argument that follows it, since it must be a proof of
 \C{(P a)}.
 
-The \C{ forall} quantification is not only useful to form types that
+The \C{ forall } quantification is not only useful to form types that
 play the role of propositions.  It can come handy to form data types
 too.  In the second part of this book (section~\ref{sec:matrix})
 we see how the matrix data type
@@ -1022,12 +1022,12 @@ mulmx : forall R : Type, forall m n p : nat,
 \end{coq}
 
 This time the data type of matrices exposes the size, and matrix multiplication
-can be give a type that rules out incompatible matrices and also describes
-the dimention of the resulting matrix in term of size of the input
+can be given a type that rules out incompatible matrices and also describes
+the dimention of the resulting matrix in terms of the size of the input
 ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
 add and multiply elements of \C{R}.  Such detail plays no role in the current
 discussion.}
-This last use of of the \C{ forall} quantifier is a classic example
+This last use of of the \C{ forall } quantifier is a classic example
 of what is called a \emph{dependent type}: a data type depending on
 data, two natural numbers here.
 \index[concept]{dependent type}
@@ -1037,7 +1037,7 @@ so that one can talk about proofs.  Such capability finds a rare, but
 crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}.
 
 \begin{coq}{name=hedberg}{}
-Lemma bool_irrelevance (x y : bool) : forall e1 e2 : x = y, e1 = e2.
+Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
 \end{coq}
 
 %
