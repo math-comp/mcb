@@ -13,12 +13,13 @@ We made a deliberate choice to put forward the programming aspects of
 type theory and how programs can be used both to express computable functions
 and decidable predicates or boolean connectives.
 Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
-library.  The computational behavior of program is at the core of
-type theory, i.e. the fact that a function computes to a value requires no
-proof.  This fact provided a powerful form of automation, and as we will
+library.  The computational behavior of programs is at the core of
+type theory.  The fact that a function computes to a value requires no
+proof: 5 and 2+3 are indistinguishible from a logical standpont.
+This fact provided a powerful form of automation, and as we will
 see later will also ease the construction of ``sub sets''.
 
-Now we really need to provide a minimal presentation of the statements as types
+Now it is finally time to provide a minimal presentation of the statements as types
 correspondence.  The universe of boolean predicates is in \mcbMC{} limited: one
 cannot for example express a general $\exists$ quantification, and also the
 status of the $\forall$ quantification has been so far never really explained.
@@ -85,7 +86,7 @@ corresponding to these proof rules.
 \UnaryInfC{\C{(fun x : A => b) : }$~A \to B$}
 \DisplayProof
 \hspace{1cm}
-\AxiomC{\C{b : }$B$}
+\AxiomC{\C{b : }$~B$}
 \RightLabel{$\forall_I$}
 \UnaryInfC{\C{(fun x : A => b) : }$~\forall x, B$}
 \DisplayProof
@@ -95,8 +96,9 @@ The anonymous function constructor \C{(fun .. => ..)} serves as a proof
 for both rules: the term \C{b} is in both cases a proof of $B$.  The only
 difference is that $x$ is only allowed to occur in $B$ in the second rule.
 Said otherwise in type theory $\to$ is a special case of $\forall$ where
-the bound variable does not occur in the quantified formula.  In other
-words there is no semantic difference between \C{(nat -> bool)} and
+the bound variable does not occur in the quantified formula.  
+For example
+there is no semantic difference between \C{(nat -> bool)} and
 \C{(forall x : nat, bool)}.
 
 Logical connectives come with elimination rules, in particular
@@ -140,9 +142,36 @@ shows up in the type of the resulting term \C{(addnC 3)}:  the type of the
 \C{addnC} program depends on the value the program is applied to.  That is the
 difference between the \emph{dependent function space} ($\forall$)
 and the standard function space ($\to$).
+\index[concept]{dependent function space}
+
+\mantra{Lemma names can be used as functions and you can pass to them arguments.
+For example
+\C{(addnC 3)} is a proof that \C{(forall y, 3 + y = y + 3)} and
+\C{(prime_gt0 p_pr)} is a proof that \C{(0 < p)} whenever
+\C{(p_pr : prime p)}.}
 
 Finally note that the $\forall$ quantification specifies the type of the bound
-variable, and that the $\forall_E$ checks the term $t$ has the right type.
+variable, and that the $\forall_E$ checks the term $t$ has the ``right type'',
+otherwise we get a type error.  What is particularly relevant to the \mcbMC{}
+library is the notion of right type, or how types are compared.  Indeed
+the $\to_E$ rule (and also the $\forall_E$) should be written as follows.
+
+\begin{center}
+\AxiomC{\C{f : }$~A \to B$}
+\AxiomC{\C{a : }$~A'$}
+\AxiomC{$A \equiv A'$}
+\RightLabel{$\to_E$}
+\TrinaryInfC{\C{(f a) :}$~B$}
+\DisplayProof
+\end{center}
+
+We say that $A$ and $A'$ are checked for \emph{convertibility} ($\equiv$),
+i.e. if they are equal up to computation.  As a consequence
+the term \C{(isT : true)} is a perfectly valid proof of
+\C{(0 < n.+1)}, as well as \C{(odd 7)} or \C{(prime 27)}
+and can be passed to a lemma expecting any of these.
+\index[coq]{\C{isT}}
+\index[concept]{convertibility}
 
 \subsection{Inductive types}\label{ssec:indtypes}
 
@@ -237,16 +266,14 @@ the first one.  Last note the parameter \C{P} that is a function
 representing an arbitrary predicate over a term of
 type \C{A}.  Hence \C{(P a)} is the instance of the predicate to \C{a}.  E.g.
 the predicate of being an even prime number is expressed as
-\C{(fun x : nat => ~~ odd x && prime x)}, and the statement expressing the
+\C{(fun x : nat => ~~ (odd x) && prime x)}, and the statement expressing the
 existence of such number is
-\C{(ex nat (fun x : nat => ~~ odd x && prime x))}.
+\C{(ex nat (fun x : nat => ~~ (odd x) && prime x))}.
 
 We quickly see the inductive definition of the disjunction.
 
 \begin{coq}{name=Or}{}
-Inductive or (A B : Prop) : Prop :=
-  | or_introl (a : A)
-  | or_intror (b : B).
+Inductive or (A B : Prop) : Prop := or_introl (a : A) | or_intror (b : B).
 Notation "A \/ B" := (or A B).
 \end{coq}
 
@@ -255,10 +282,7 @@ The elimination rule can again be expressed by pattern matching:
 \begin{coq}{name=Or}{}
 Definition or_ind (A B P : Prop)
   (aob : A \/ B) (pa : A -> P) (pb : B -> P) : P :=
-  match aob with
-  | or_introl a => pa a
-  | or_intror b => pb b
-  end.
+  match aob with or_introl a => pa a | or_intror b => pb b end.
 \end{coq}
 \index[coq]{\C{or_introl}}
 \index[coq]{\C{or_intror}}
@@ -276,6 +300,7 @@ They can be defined as follows.
 Inductive True : Prop := I.
 Inductive False : Prop := .
 Definition not (A : Prop) := A -> False.
+Notation "~ A" := (not A).
 \end{coq}
 \index[coq]{\C{True}}
 \index[coq]{\C{False}}
@@ -295,7 +320,7 @@ Definition exfalso (P : Prop) (f : False) : P :=
 \end{coq}
 
 The only base predicate we are left to describe is equality.  The reason we
-left is as the last one is that it has a tricky nature.  In particular
+left it as the last one is that it has a tricky nature.  In particular
 equality, as we have seen in the previous chapters, is an open notion
 in the following sense.  Terms that compute to the same syntactic expression
 are considered as equal, and this is true for any program the user may write.
@@ -307,8 +332,8 @@ The way this internal notion is exposed is via the concept of index
 on which an inductive family may vary.
 
 \begin{coq}{name=Eq}{}
-Inductive eq (A:Type) (x:A) : A -> Prop := erefl : x = x
-where "x = y" := (@eq _ x y) : type_scope.
+Inductive eq (A:Type) (x:A) : A -> Prop := erefl : eq A x x.
+Notation "x = y" := (@eq _ x y).
 \end{coq}
 \index[concept]{equality}
 \index[coq]{\C{erefl}}
@@ -321,7 +346,8 @@ have the same type.
 The \C{erefl} constructor takes no arguments, as \C{I}, but its type
 annotation says it can be used to inhabit only the type \C{(x = x)}.
 Hence one is able to prove \C{(a = b)} it only when \C{a} and \C{b} are
-equal up to computation.  Conversely by eliminating a term
+equal up to computation (as in indistinguishable from a logical standpoint).
+Conversely by eliminating a term
 of type \C{(a = b)} one discovers that  \C{a} and \C{b} are
 equal and \C{b} can be freely replaced by \C{a}.
 
@@ -331,7 +357,7 @@ Definition eq_ind A (P : A -> Prop) x (px : P x) y (e : x = y) : P y :=
 \end{coq}
 
 The notion of equality is one of the most intricate aspects of type
-theory and out of the scope of this book.  The interested reader
+theory and an in depth study of it is out of the scope of this book.  The interested reader
 finds an extensive study of this subject in~\cite{hottbook}.  Later in this
 chapter we define and use other inductive families to take advantage
 of the ``automatic'' substitution of the implicit equations we see here:
@@ -340,13 +366,18 @@ inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
 is automatically replaced by \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Proof commands}
+\subsection{Proof commands}
 
-Since proofs are just terms, one can hardly use the term language to
-write long proofs.   The proof commands we have seen so far, like
-\C{case:} for example, provide a much more compact syntax for proofs and can be explained in terms of the proof terms they generate behind the scenes.
-
-For example \C{case: n} writes for you a \C{match} expression with the right
+Since proofs are just terms one could,
+in principle, use no proof language and input directly proof terms.
+Indeed this was the modus operandi in the pioneering work of
+De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
+Of course a dedicated proof language can relief the user from
+many tedious details.  The proof commands we have seen so far can all be
+explained in terms of the proof therms they produce behind the scenes.
+For example \C{case: n} provides a much more compact syntax
+for \C{(match .. with .. end)} and it produces a
+\C{match} expression with the right
 shape by looking at the type of \C{n}.  If \C{n} is a natural number then there
 are two branches, the one for the \C{S} constructor carries an argument of type
 \C{nat}, the other one is for \C{0} and binds no additional term.
@@ -363,19 +394,21 @@ and is only worth mentioning here briefly. \C{split} proves a conjunction
 by applying the \C{conj} constructor, \C{left} and \C{right} prove a
 disjunction by applying \C{or\_introl} and \C{or\_intror} respectively.
 \C{exist t} proves an existentially quantified formula by providing
-the witness \C{t} and, later, a proof that \C{t} validated the predicate.
+the witness \C{t} and, later, a proof that \C{t} validates the predicate.
 Finally \C{reflexivity} proves an equality by applying \C{erefl}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Managing the proof context}
 The only primitive constructor that remains without an associated proof command
 is \C{(fun .. => ..)}.  Operationally what the $\to_I$ and
 $\forall_I$ logical rule do is to introduce into the proof context a
 new entry.  So far we either expressed this step at the beginning of proofs
-by putting such names just after the name of the lemma being prover, or
-just after a \C{case:} or \C{elim:} proof command.  Next section
+by putting such items just after the name of the lemma being prover, or
+just after a \C{case:} or \C{elim:} proof command.  The current section
 expands this subject covering the full management of the proof context.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Bookkeeping and the stack model}
+\subsection{The stack model}
 \index[concept]{goal stack model}
 
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
@@ -385,7 +418,7 @@ parts are decorators to prepare the goal and post process the result of
 the proof command.  These decorators deal with what we typically call
 \emph{bookkeeping}: actions that are necessary in order to obtain readable and
 robust proof scripts but that are too frequent to benefit from a move verbose
-syntax.  Bookkeeping actions do convoy a lot of information, like where
+syntax.  Bookkeeping actions do convey a lot of information, like where
 names are given to assumptions, but also let one deal with annoying details
 using a compact, symbolic, language.  Note that all bookkeeping action
 correspond to regular, named, proof commands.  It is the use one makes of them
@@ -409,11 +442,11 @@ quantified variable.  With these looking glasses, the goal becomes a
 
 \begin{coqout}{name=Stack}{}
 ========================
-forall x, prime x.1 -> odd x.2 -> 2 < x.2 + x.1
+forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
 
-Before accessing the assumption \C{prime x} one has to name the
-bound variable \C{x}, exactly as one can only access a stack from its top.
+Before accessing the assumption \C{(prime xy.1)} one has to name the
+bound variable \C{xy}, exactly as one can only access a stack from its top.
 The execution of \C{=> xy pr\_x odd\_y} is just the composition of
 \C{=> xy} with \C{=> pr\_x} and finally \C{=> odd\_y}.  Each action
 pulls out of the stack an item and names it.  The \C{move} proof
@@ -461,7 +494,7 @@ move=> [x y] /= pr_x odd_y
  2 < y + x
 \end{coqout}
 
-One could also process an assumption trough a lemma.  For example
+One can also process an assumption trough a lemma.  For example
 \C{prime\_gt1} states \C{(prime p -> 1 < p)} for any \C{p}, and we can
 use it as a function to obtain a proof of \C{(1 < x)}  from a proof
 of \C{(prime x)}.
@@ -509,6 +542,10 @@ Now, the fact that \C{y} is even is not needed to conclude, so we can discard it
 by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 \end{coq}
 
+The way to dispose an already named assumption is to mention
+its name in curly braces, as \C{=> \{x_gt1\}}.
+\index[ssr]{\C{\{..\}} (clear)}
+
 We finally conclude with the \C{apply:} command that here we use
 with two arguments: a function and its last argument.
 
@@ -538,10 +575,10 @@ sacrifices readability in favour of compactness: what would you learn by
 reading a trivial proof?  Of course,
 finding the right balance only comes with experience.
 
-\gotcha{The case intro pattern \C{[]} obeys an exception: whe it is the first
+\gotcha{The case intro pattern \C{[..|..]} obeys an exception: whe it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
 on the subgoals.\footnote{not the status quo, but I prefer this exception to the
-current one} Indeed in \C{case: n => [|m]} only one case analysis is performed}
+current one} Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -553,7 +590,7 @@ no need to pull from the stack all items.  If we take the previous example
 
 \begin{coqout}{name=Stack}{}
 ========================
-forall x, prime x.1 -> odd x.2 -> 2 < x.2 + x.1
+forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
 and we stop just after applying the view, we end up is a valid situation.
 
@@ -600,10 +637,11 @@ move=> /(_ 3).
 The idea behind the notation is that when applies a view to the top
 stack item, as in \C{/v}, he is forming the term \C{(v top)}, while
 when one specializes the top assumption as in \C{/(_ x)} he is forming the
-term \C{(top x)}.  The \C{_} is a place holder for the top item.
+term \C{(top x)}.  The \C{_} is a place holder for the top item, and is
+omitted in \C{/(view _)}.
 
 When the top stack item is an equation one can substitute it using \C{<-}
-and \C{->} for right-2-left and left-2-right respectively.
+and \C{->} for right-to-left and left-to-right respectively.
 
 \begin{coq}{}{width=4cm}
 move=> /(_ 3) <-.
@@ -625,7 +663,15 @@ as in the \C{rewrite} tactic, with the top assumption.
 We have seen how to pull items from the stack to the context.  Now let's see
 how to perform the converse via the \C{:} operator, also called
 \emph{discharging} operator.  Such operator decorates
-proof commands with actions to be performed before the command is actually run.
+proof commands as \C{move}, \C{case} and \C{elim}
+ with actions to be performed before the command is actually run.
+
+\gotcha{The colon symbol in \C{apply:} is not the discharging operator.
+It is just a marker to distinguish the \C{apply:} tactic of
+Ssreflect from the \C{apply} tactic of \Coq{}.  
+Indeed the two tactics, while
+playing similar roles, behave very differently.}
+
 Imagine we want to perform case analysis on \C{y} at this stage
 
 \begin{coqout}{name=Stack2}{}
@@ -639,7 +685,7 @@ Imagine we want to perform case analysis on \C{y} at this stage
 Let's dissect the command \C{case: y}.  It is equivalent to
 \C{move: y; case.} where \C{move} once again is a place holder,
 \C{: y} pushes onto the stack the \C{y} variable and \C{case}
-operates on the top of the stack.
+operates on the top item of the stack.
 Pushing items on the stack is called \emph{discharging}.
 
 Just before running \C{case} the goal looks like this:
@@ -725,10 +771,11 @@ the two sub goals:
 \end{coqout}
 \index[ssr]{\C{:}!\C{E: term} (equation generation)}
 
-\gotcha{The colon symbol in \C{apply:} is not the discharging operator.
-It is just a marker to distinguish the \C{apply:} tactic of
-Ssreflect from the \C{apply} tactic of \Coq{}.  Indeed the two tactics, while
-playing similar roles, behave very differently.}
+Last, one can discharge the goal with any term, not
+just variables occurring in it.  For example
+``\C{move: (leqnn 7)}'' pushes on the stack
+the additional assumption \C{(7 <= 7)}.  This
+will come handy in section~\ref{sec:strongind}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Inductive reasoning}\label{sec:indreason}
@@ -804,6 +851,7 @@ refer to~\cite{Coq:manual}.
 \mcbsubsection{Strong induction}
 \index[concept]{induction!strong}
 \index[concept]{induction!curse of values}
+\label{sec:strongind}
 
 As an exercise we show how the \C{elim} tactic combined with the bookkeeping
 operator \C{:} lets one perform, on the fly, a stronger variant of
@@ -816,10 +864,11 @@ step goes as follows.  There are obvious solutions for a postage between
 the postage amount is at least 16, by using a 4-cents stamp we are back
 at a postage amount that, by induction, can be obtained as claimed.\hfill$\square$
 
-The trick is that we want to apply the induction hypothesis not
+The tricky step is that we want to apply the induction hypothesis not
 on $n-1$, as usual, but on $n-4$, since we know how to turn a
 solution for a stamping amount problem $n$ to one for a problem of
-size $n+4$.  The induction hypothesis provided by \C{nat_ind}
+size $n+4$ (by using a 4-cent stamp).  
+The induction hypothesis provided by \C{nat_ind}
 is not strong enough.  However we can use the \C{:} operator
 to load the goal before performing the induction.
 \index[ssr]{\C{set}}
@@ -857,14 +906,14 @@ Such hypothesis is accessible for each \C{m} that is at least \C{12}
 and smaller than \C{n}.
 
 Loading the goal works as follows: first \C{(leqnn n)} is pushed on
-the stack, then all occurrences of \C{n} but the second one are push
-on the stack obtaining
+the stack, then all occurrences of \C{n} but for the second one are
+discharged obtaining
 
 \begin{coq}{}{}
 forall m : nat,
   m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
 \end{coq}
-Finally \C{n} is pushed on the stack so that induction is performed
+Finally the last occurrence of \C{n} is discharged too so that induction is performed
 on such quantified variable.
 
 Lines 4, 9 and 10 deserve a few comments.  Line 4 repeats a tactic
@@ -875,25 +924,31 @@ hypothesis \C{(m-4)}, then a placeholder for a missing proof
 of \C{(m-4 < n)}, finally a proof that \C{(11 < m-4)}.  The introduction
 pattern in line 10 names \C{s4} and \C{s5} the quantities of
 4-cents and 5-cents stamps needed to cover the amount of postage \C{(m-4)}.
+\index[ssr]{\C{do n"!} (iteration)}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
-\mcbsection{The status of Axioms}
+\mcbsection{On the status of Axioms}
 
-Not all valid reasoning principles can be expressed as programs.
+Not all valid reasoning principles can be represented by programs.
 For example excluded middle can be proved by a program only when
-the predicate is decidable, i.e. when we can write in \Coq{} a program
-to \C{bool} that decides it.
-Full excluded middle can only be \emph{axiomatized}, i.e. assumed globally.
+the property is decidable, i.e. when we can write in \Coq{} a program
+to \C{bool} that tests if the property holds or not.
+Excluded middle, in its generality, can only be \emph{axiomatized},
+i.e. assumed globally.
 
 The \mcbMC{} library is axiom free.  This makes the library compatible
 with as many axioms as possible.  Indeed not all combinations of well
 known, consistent, axioms are consistent, so if a library picks
-one it rules out another one.
+one it rules out another one.  Moreover the formalization style
+we adopted systematically expresses all decidable properties
+as boolean tests, hence one rarely notices that excluded middle
+is ``missing''.
 
-Sometimes ``axioms'' can be confined into ``boxes'' one can open
-only in contexts where they can be actually proved.  For example:
+Sometimes axioms like excluded middle can be confined into ``boxes''
+one can open only in contexts where they can be actually proved.
+For example:
 
 \begin{coq}{}{}
 Definition classically P : Prop := forall b : bool, (P -> b) -> b.
@@ -914,4 +969,94 @@ Nevertheless, when proving a statement that is not a boolean, like
 In other cases axioms can be avoided by rephrasing the mathematics
 in a weaker setting.  A notable example in the \mcbMC{} library
 is the construction of the real closure of an Archimedian
-field~\cite{DBLP:conf/itp/Cohen12}.\marginnote{TODO Cyril: say more about RCF}
+field~\cite{DBLP:conf/itp/Cohen12}.
+%\marginnote{TODO Cyril: say more about RCF}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mcbLEVEL{1}
+\mcbsection{Terms, types, proofs: all in the same pot}
+
+For a newcomer, a quite confusing feature of \mcbCIC{} is that the same syntax
+is shared among term, proofs, statements and data types.  In other words terms
+can occur in types and types can occur in terms.  and And of course terms and
+types play the double role of proofs and statements respectively.
+This is strictly related to the range the quantifications are allowed on,
+and to the fact that they can be used to form types.
+We have seen quantification on terms, like ``\C{ forall n : nat}'' and on types
+like ``\C{ forall P : Prop}'' or ``\C{ forall T : Type}''.  The subtle difference
+between the label \C{Prop} for propositions and \C{Type} for data types
+is out of scope here, we consider them synonyms.
+
+An excellent example of these quantification is the indutive type
+modelling the existential quantification:
+
+\begin{coq}{}{}
+ex : forall A : Type, (A -> Prop) -> Prop.
+ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
+\end{coq}
+
+The \C{ex} type constructor is polymorphic in a type \C{A} and a predicate
+on \C{A}.  Remark that also \C{seq} is polimorphic, but only in one argument
+so the quantification can be non dependent: \C{(seq : Type -> Type)}.
+
+In the constructor \C{ex_intro} the quantification on \C{P} also needs to be
+dependent: first because it must build a term of type \C{(ex A P)} (that
+mentions \C{P}); second because the last argument needs to be of a proof of
+\C{P}, so its type must mention the predicate.  Again in the case of \C{seq}
+the constructor \C{(cons : forall A, A -> seq A -> seq A)} needs no dependent
+quantification on the head elemt, while here \C{a} needs to occur in
+the type of the argument that follows it, since it must be a proof of
+\C{(P a)}.
+
+The \C{ forall} quantification is not only useful to form types that
+play the role of propositions.  It can come handy to form data types
+too.  In the second part of this book (section~\ref{sec:matrix})
+we see how the matrix data type
+and the type of its multiplication function benefit from it.
+
+\begin{coq}{}{}
+matrix : Type -> nat -> nat -> Type.
+mulmx : forall R : Type, forall m n p : nat,
+  matrix R m n -> matrix R n p -> matrix R m p.
+\end{coq}
+
+This time the data type of matrices exposes the size, and matrix multiplication
+can be give a type that rules out incompatible matrices and also describes
+the dimention of the resulting matrix in term of size of the input
+ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
+add and multiply elements of \C{R}.  Such detail plays no role in the current
+discussion.}
+This last use of of the \C{ forall} quantifier is a classic example
+of what is called a \emph{dependent type}: a data type depending on
+data, two natural numbers here.
+\index[concept]{dependent type}
+
+Last, a quantification can also range on the proofs of a statement
+so that one can talk about proofs.  Such capability finds a rare, but
+crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}.
+
+\begin{coq}{name=hedberg}{}
+Lemma bool_irrelevance (x y : bool) : forall e1 e2 : x = y, e1 = e2.
+\end{coq}
+
+%
+%           nat -> nat a function, like pred
+%forall x : nat, p n   a statement, n = n
+%forall x : nat, T n   a rich data type constructor
+%           Type -> Type  a poly data type construtor
+%forall T : Type, F T     a polymorphic data type
+%(bla : Prop) -> 'I_m
+%
+%Something possible but never? used in mcbmc is
+%
+%forall p : (bla : Prop), T p
+%
+%one may find
+%
+%forall i : 'I_k, T i
+%
+%but recall the proof part in i is irrelevant.
+%
+%
+%

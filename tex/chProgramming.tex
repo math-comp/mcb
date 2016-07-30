@@ -188,7 +188,9 @@ expected to have type "nat".
 Indeed it makes little sense to compute the addition between
 a function and 1.
 
-Expressions that are well typed can be \emph{computed} by \Coq{}.
+Expressions that are well typed can be \emph{computed} by \Coq{},
+meaning that they are \emph{reduced} to a ``simpler'' form, also
+called \emph{normal}.
 For example \C{(f 3)} returns \C{4}.
 
 \begin{coq}{name=print_f}{width=6cm,title=Evaluating a function}
@@ -300,16 +302,16 @@ and the \C{->} sign associates to the right.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: construction and destruction}
-It is possible to define a datatype by giving in one declaration
+It is possible to define a data type by giving in one declaration
 the type name and the methods to \emph{build} elements of this type.
 % and methods to
 % use elements of the type while computing.
 The dual method to use (i.e \emph{destruct})
-elements of a datatype is provided by
+elements of a data type is provided by
 \Coq{} in the form of pattern matching construct.
 
 This approach is used
-systematically in \Coq{} to define a variety of basic datatypes, among
+systematically in \Coq{} to define a variety of basic data types, among
 which boolean values, natural numbers, pairs and sequences of values
 are the most prominent examples.  We will study these examples in
 turn.
@@ -820,7 +822,7 @@ comparison (\C{leq}, \C{<=}) on natural numbers.  The trailing \C{n} in
 the names is indeed to signal that these operations are on the \C{nat} data
 type.
 The \mcbMC{} library also provides concepts that makes sense only
-for the \C{nat} datatype (hence the trailing \C{n} is omitted) and
+for the \C{nat} data type (hence the trailing \C{n} is omitted) and
 that we will use many times in this book.  In particular the
 test identifying \C{prime} and \C{odd} numbers.
 
@@ -862,7 +864,7 @@ sugar for \C{(a.+1 <= b)}}
 It is often the case that we wish to group several objects in a
 sequence that can be manipulated as a single object.  For instance, we
 might want to compute the sequence of all predecessors or all divisors
-of a number.  We could define such datatype as follows.
+of a number.  We could define such data type as follows.
 
 \begin{coq}{name=list_def}{}
 Inductive listn := niln | consn (hd : nat) (tl : listn).
@@ -900,7 +902,7 @@ Worse, starting from the next chapter we will prove properties of programs,
 and given the two size functions are ``different'' we are going to prove such
 properties twice.
 
-However it is clear that the two datatypes we just defined follow
+However it is clear that the two data types we just defined follow
 a schema, as well as the two functions computing the length and the
 theorems we may prove about them.  In other words one would write something
 like the following, where $\alpha$ is a schematic variable.
@@ -920,14 +922,14 @@ theorems to be first
 class citizen too (see for example chapter~\ref{ch:sigmabool}).
 
 \Coq{}'s language is powerful enough to fully characterize the generic 
-list datatype without appealing to the intuitive, but external, notion of
+list data type without appealing to the intuitive, but external, notion of
 schema.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The (polymorphic) sequence datatype}
+\subsection{The (polymorphic) sequence data type}
 \index[concept]{polymorphism}
 
-The \mcbMC{} library provides a generic datatype to hold
+The \mcbMC{} library provides a generic data type to hold
 several objects of any type under the name \C{seq}.
 
 \begin{coq}{name=list_def}{}
@@ -946,12 +948,12 @@ does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
 
 In the declaration of \C{seq}, \C{Type} is a keyword that denotes the
-\emph{type of all datatypes}.  For example \C{nat} and \C{bool} are of type
+\emph{type of all data types}.  For example \C{nat} and \C{bool} are of type
 \C{Type}, and can be used in place of \C{A}.
 In other words \C{seq} is a function of type \C{(Type -> Type)}, sometimes
-called \emph{type constructor}.  Indeed \C{seq} alone is not a datatype,
-but if one passes to it another datatype, then it builds one.  Remark
-that this also means that \C{(seq (seq nat))} is a valid datatype, and
+called \emph{type constructor}.  Indeed \C{seq} alone is not a data type,
+but if one passes to it another data type, then it builds one.  Remark
+that this also means that \C{(seq (seq nat))} is a valid data type, and
 that the construction can be iterated.
 Types again avoid confusion: it is not licit to form the type \C{(seq 3)},
 since the argument \C{3} has type \C{nat}, while the function
@@ -960,7 +962,7 @@ reasons \Coq{} may display the type of \C{nat} or \C{bool} as \C{Set}
 and not \C{Type}.  We beg the reader to ignore such detail, that indeed
 plays no role in the \mcbMC{} library.}
 
-In principle, all objects of the datatype definition have a type
+In principle, all objects of the data type definition have a type
 argument:  
 \C{nil} is a function that takes a type \C{A} as argument and returns
 an empty list of type \C{(seq A)}.  The notation ``\C{.. -> ..}'' is not
@@ -1193,10 +1195,10 @@ Given the notation for pairs, the expression \C{(a * b)} is now ``ambiguous'',
 in the sense that the same infix \C{*} symbol can be used to multiply two
 natural numbers as in \C{(1 * 2)} but also to write the type of pairs \C{(nat *
 bool)}.  Such ambiguity is somewhat justified by the fact that the pair
-datatype can be seen as the (cartesian) product of the arguments.  Such
+data type can be seen as the (cartesian) product of the arguments.  Such
 ambiguity can be resolved by annotating the expression with a specific
 label: \C{(a * b)\%N} interprets the infix \C{*} as multiplication,
-while \C{(a * b)\%type} would interpret \C{*} as the pair datatype
+while \C{(a * b)\%type} would interpret \C{*} as the pair data type
 constructor. The \C{\%N} and \C{\%type} labels are said to be
 \emph{notation scope delimiters} (for more details see
 \cite[section 12.2]{Coq:manual}).\index[concept]{notation scope}
@@ -1530,7 +1532,7 @@ For example a point in the 3-dimensional space could be represented with
 three natural numbers.
 
 Such need is so frequent that \Coq{} provides a specialized command
-to declare such class of datatype.
+to declare such class of data type.
 
 \begin{coq}{}{}
 Record point := Point { x : nat; y : nat; z : nat }.
@@ -1585,8 +1587,8 @@ will model the signature of a Ring.
 \section{Exercises}
 
 %%%%%%%%
-\begin{Exercise}[label=ex:pair,difficulty=0,title={The pair datatype}]
-Define the pair datatype such that the following notation
+\begin{Exercise}[label=ex:pair,difficulty=0,title={The pair data type}]
+Define the pair data type such that the following notation
 applies.  Also define the projections.
 
 \begin{coq}{}{width=7cm}
@@ -1601,7 +1603,7 @@ $~$
      = 4 : nat
      = true : bool
 \end{coqout}
-Remark that the pair datatype has to be polymorphic in order to
+Remark that the pair data type has to be polymorphic in order to
 be applicable to both natural numbers and booleans.
 \end{Exercise}
 
@@ -1778,8 +1780,8 @@ Definition all_words n T (alphabet : seq T) :=
 % \item Inductive {\bf datas}
 % \item Programs by case analysis and recursion
 % \item Compute (beta, delta, iota) example of beta (that helps later on to explain a predicate for elim principles)
-% \item Polymorphic datatypes (introduce $\Pi$, and its \Coq{} notation
-%   \C{forall}, for quantification over datatypes only)
+% \item Polymorphic data types (introduce $\Pi$, and its \Coq{} notation
+%   \C{forall}, for quantification over data types only)
 % \item Everyone has a type : \C{0 : nat : Type : Type}, types avoid confusion
 % \end{itemize}
 % This is more or less a standard introduction to (a flavor of)
