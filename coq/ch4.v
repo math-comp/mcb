@@ -1,5 +1,29 @@
 Require Import all_ssreflect.
 
+Module reflect1.
+
+Inductive reflect (P : Prop) b :=
+ | RT (p : P) (e : b)
+ | RF (p : ~ P) (e : b = false).
+
+Lemma andP (b1 b2 : bool) : reflect (b1 /\ b2) (b1 && b2).
+Proof.
+by case: b1; case: b2; [ left | right => //= [[l r]] ..].
+Qed.
+
+Lemma orP (b1 b2 : bool) : reflect (b1 \/ b2) (b1 || b2).
+Proof.
+case: b1; case: b2; [ left; by [ move | left | right ] .. |].
+by right=> // [[l|r]].
+Qed.
+
+Lemma implyP (b1 b2 : bool) : reflect (b1 -> b2) (b1 ==> b2).
+Proof.
+by case: b1; case: b2; [ left | right | left ..] => //= /(_ isT).
+Qed.
+
+End reflect1.
+
 Definition bool_Prop_equiv (P : Prop) (b : bool) := b = true <-> P.
 
 Lemma test_bool_Prop_equiv b P : bool_Prop_equiv P b -> P \/ ~ P.

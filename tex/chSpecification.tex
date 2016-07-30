@@ -36,21 +36,24 @@ Definition has_prop  T (a : T -> bool) (x0 : T) (s : seq T) :=
    exists i, i < size s /\ a (nth x0 s i)
 \end{coq}
 
-Term \C{(has a s)} is a boolean value, hence a hypothesis
-\C{s_has_a : has a s} can easily be used in a proof to perform a case
+Term \C{(has a s)} is a boolean value.  It is hence
+easy to use it in a proof to perform a case
 analysis on the fact that sequence
 \C{s} has an element such that \C{a} holds, using the \C{case} tactic:
 
 \begin{coq}{}{}
-case: s_has_a.
+case: (has a s).
 \end{coq}
 As we already noted, computation provides some automation for free, as
 for instance in order to establish that \C{(has odd [:: 3; 2; 7]) =
   true}, we only need to observe that the left hand-side \emph{computes} to
 \C{true}.
 
-It is not as immediate to perform a similar case analysis in a proof
-using the alternate version \C{s_has_aP : has_prop a x0 s}. On the
+It is not possible to perform a similar case analysis in a proof
+using the alternative version \C{(s_has_aP : has_prop a x0 s)},
+since, as schetched in section~\ref{sec:EM}, excluded middle holds in
+\Coq{} only for boolean tests.
+On the
 other hand, this phrasing of the hypothesis easily gives access to the
 value of the index at which the witness is to be found:
 
@@ -117,17 +120,18 @@ More on this mechamism will be told in section~\ref{sec:coercions}.
 How to best formalize the equivalence between a boolean value \C{b}
 and a statement \C{P : Prop}? The most direct way would be to use the
 conjunction of the two converse applications:
-\marginnote{We should say earlier what the notation \C{<->} hides.}
 
 \begin{coq}{}{}
 Definition bool_Prop_equiv (P : Prop) (b : bool) := b = true <-> P.
 \end{coq}
-Yet as we shall see in this section, we can improve the phrasing of
+where \C{(A <-> B)} is defined as \C{((A -> B) /\\ (B -> A))}.
+
+Yet, as we shall see in this section, we can improve the phrasing of
 this logical sentence, in order to improve its usability. For
 instance, although \C{(bool_Prop_equiv P b)} implies that the excluded
 middle holds for \C{P}, it does not provide directly a convenient way
 to reason by case analysis on the fact that \C{P} holds or not, or to
-use its companion version \C{b = false <-> ~ P}. The following proof
+use its companion version \C{(b = false <-> ~ P)}. The following proof
 script illustrates the kind of undesirable bureaucracy entailed by
 this wording:
 
@@ -215,23 +219,39 @@ statements with the lemmas relating boolean connectives with their
 \C{Prop} version:
 
 \begin{coq}{}{}
-Lemma andP : reflect (b1 /\ b2) (b1 && b2).
-Proof. by case b1; case b2; constructor=> //; case. Qed.
+Lemma andP b1 b2 : reflect (b1 /\ b2) (b1 && b2).
+Proof.  by case: b1; case: b2; [ left | right => //= [[l r]] ..]. Qed.
 
-Lemma orP : reflect (b1 \/ b2) (b1 || b2).
-Proof. by case b1; case b2; constructor; auto; case. Qed.
+Lemma orP b1 b2 : reflect (b1 \/ b2) (b1 || b2).
+Proof.
+case: b1; case: b2; [ left; by [ move | left | right ] .. |].
+by right=> // [[l|r]].
+Qed.
 
-Lemma implyP : reflect (b1 -> b2) (b1 ==> b2).
-Proof. by case b1; case b2; constructor; auto. Qed.
+Lemma implyP b1 b2 : reflect (b1 -> b2) (b1 ==> b2).
+Proof.
+by case: b1; case: b2; [ left | right | left ..] => //= /(_ isT).
+Qed.
 \end{coq}
 \index[coq]{\C{andP}}
 \index[coq]{\C{orP}}
 \index[coq]{\C{implyP}}
 
 Observe that the proof of each of these lemmas is a simple inspection by
-case analysis of the truth table of the boolean formula. More
+case analysis of the truth table of the boolean formula.  The
+``\C{;[ t1 | t2 .. | tn ]}'' syntax lets one specify a different
+tactic for each subgoal (see~\cite[section 9.2]{Coq:manual}).
+\index[ssr]{\C{;[..|..]}}
+
+More
 generally, a theorem stating an equivalence between a boolean
-expression and a \C{Prop} statement is called a \emph{view}. Next
+expression and a \C{Prop} statement is called a \emph{view},
+since it is typically used to view an assumption from a different
+perspective. 
+
+\mantra{View names always end with a capital \C{P}.}
+
+Next
 section is devoted to the proof and usage of more involved views.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -255,8 +275,8 @@ natural numbers, but we still need to generate the two subgoals
 corresponding to these implications, as the \C{split} tactic is of no
 help here.
 
-\marginnote{Proving these implications would be a good exercise in the
-  previous chapter. Solution described below in (comments in) the sources.}
+%\marginnote{Proving these implications would be a good exercise in the
+%  previous chapter. Solution described below in (comments in) the sources.}
 
 % Indeed if \C{n = m} holds, then we can prove that
 % \C{eqn n m = true} by first substituting \C{m} by \C{n} and then
@@ -426,9 +446,9 @@ Lemma elimTF (P Q : Prop) (b c : bool) :
 Term \C{(elimTF andP top)} hence has type
 
 \begin{coq}{}{}
-if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\\ (m <= k))
+if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\ (m <= k))
 \end{coq}
-which reduces to \C{((n <= m) /\\ (m <= k))} since \C{c} is \C{true}
+which reduces to \C{((n <= m) /\\ (m <= k))} since \} is \C{true}
 (recall the hidden ``\C{.. = true}'' in the type of the top stack entry).  
 %\marginnote{Show other examples of inserted hint views? Like negation...}
 
@@ -452,7 +472,7 @@ n = k
 
 As \C{(n <= m)} is by definition \C{(n - m == 0)}, we can use the view
 \C{eqnP} in order to transform this hypothesis into a proper equation.
-Observe the new shape of the \C{leqnm} hypothesis:
+Observe the new shape of the \C{lenm} hypothesis:
 
 \begin{coq}{}{width=7cm}
 Lemma example n m k : k <= n ->
@@ -469,10 +489,9 @@ lemk : m <= k
 n = k
 \end{coqout}
 
-Combining wisely the facilities of \C{Prop} structural reasoning with
-the ease to reason by equivalence via rewriting of boolean identities
-leads to concise proofs and proof scripts and prevent from too low
-level proof steps. 
+Combining wisely the structured reasoning of inductive predicates
+in \C{Prop} with the ease to reason by equivalence via rewriting
+of boolean identities leads to concise proofs.
 
 Let us now move to a non artificial example to see how the Ssreflect
 tactic language supports the combination of views with the \C{apply},
@@ -540,7 +559,7 @@ Proof. by rewrite -implyNb -ltnNge; apply/implyP; apply: ltnW. Qed.
 \end{coq}
 \\
 
-The \C{case} tactic also combines well with the \C{view} mechanism, which
+The \C{case} tactic also combines well with the view mechanism, which
 eases reasoning by cases along a disjunction expressed with a boolean
 statement, like the just proved \C{leq_total}.  For example we
 may want to start the proof of the following lemma by distinguishing
@@ -550,20 +569,20 @@ two cases: \C{n1 <= n2} and \C{m2 <= n1}.
 Lemma leq_max m n1 n2 :
   (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
-case/orP: (leq_total n2 n1) => le_n12.
+case/orP: (leq_total n2 n1) => [le_n21 | le_n12].
 \end{coq}
 That results in:
 
 \begin{coqout}{}{}
 m, n1, n2 : nat
-le_n12 : n2 <= n1
+le_n21 : n2 <= n1
 ============================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 
 subgoal 2 is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
-Even if it is not displayed here, subgoal 2 has \C{n1 <= n2}
+Even if it is not displayed here, subgoal 2 has \C{(n1 <= n2)}
 in its context.
 
 Finally, the \C{rewrite} tactic also handles views that relate a 
@@ -571,14 +590,15 @@ equation in \C{Prop} with a boolean formula.
 
 \begin{coq}{}{}
 Lemma maxn_idPl {m n} : reflect (maxn m n = m) (m >= n).
+
 Lemma leq_max m n1 n2 :
   (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
-case/orP: (leq_total n2 n1) => le_n12.
-  rewrite (maxn_idPl le_n12).
+case/orP: (leq_total n2 n1) => [le_n21 | le_n12].
+  rewrite (maxn_idPl le_n21).
 \end{coq}
-The tactic sees \C{(maxn_idPl le_n12)} as the equation corresponding
-to the boolean formula \C{le_n12}, namely \C{(maxn n1 n2 = n1)},
+The tactic sees \C{(maxn_idPl le_n21)} as the equation corresponding
+to the boolean formula \C{le_n21}, namely \C{(maxn n1 n2 = n1)},
 and rewrites with it obtaining:
 
 \begin{coqout}{}{}
@@ -586,7 +606,7 @@ and rewrites with it obtaining:
   m : nat
   n1 : nat
   n2 : nat
-  le_n12 : n2 <= n1
+  le_n21 : n2 <= n1
   ============================
    (m <= n1) = (m <= n1) || (m <= n2)
 
@@ -594,7 +614,7 @@ subgoal 2 is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
 
-The full proof of \C{leq_max} is quite interesting and will be fully
+The full proof of \C{leq_max} is quite interesting and will be 
 detailed in section~\ref{sec:leqmax}
 
 % \marginnote{We could propose another exercise in next section in order
@@ -812,6 +832,7 @@ as follows:
 \begin{coq}{}{}
 Arguments andP {a b}.
 \end{coq}
+\index[vernac]{\C{Arguments}}
 We recall that this makes \C{a} and \C{b} implicit, hence
 writing \C{andP} is equivalent to \C{(@andP _ _)} whose type
 is \C{(reflect (_ /\\ _) (_ && _))}.  The value of the index of the
@@ -819,6 +840,9 @@ inductive family to be replaced by \C{true} or \C{false} is here
 a pattern \C{(_ && _)} and the goal is searched for an instance of
 such pattern by the same matching algorithm the \C{rewrite} tactic
 uses for rewrite rules.
+Tuning of implicit arguments is key to obtain easy to use
+lemmas.
+
 
 If one needs to override the pattern inferred for the index
 of \C{andP}, he can provide one by hand as follows:
@@ -830,7 +854,7 @@ Proof. by case: (a && _) / andP => [[-> ->] |] //; rewrite orbN. Qed.
 A more detailed explanation of this syntax can be found
 in~\cite[Section 5.6]{ssrman}.
 
-The \mcbMC{} library provides many views to be used this way.
+The \mcbMC{} library provides many spec lemmas to be used this way.
 A paradigmatic one is \C{ifP}.
 
 \begin{coq}{}{}
@@ -854,22 +878,22 @@ of the then branch, another one where  the condition is replaced by
 \C{false} and the if-then-else by the value of the else branch
 3) the first goal gets an extra assumption \C{(b = true)}, while
 the second goal gets \C{(b = false)}.
-Note that \C{case: ifP} is very compact, much shorter than any if-then-else
+Note that ``\C{case: ifP}'' is very compact, much shorter than any if-then-else
 expression.
 
-It is worth mentioning the convenience view \C{boolP} that takes a boolean
+It is worth mentioning the convenience lemma \C{boolP} that takes a boolean
 formula and reasons by excluded middle providing some extra comfort
 like an additional hypothesis in each sub goal.
 
 Another view worth mentioning is \C{leqP} that replaces, in one shot,
 both \C{(_ <= _)} and the converse \C{(_ < _)} by opposite truth values.
 Sometime a proof works best by splitting into three branches, i.e.
-separating the equality case. The \C{ltngtP} view is designed for that.
+separating the equality case. The \C{ltngtP} lemma is designed for that.
 \index[coq]{\C{leqP}}
 \index[coq]{\C{ltngtP}}
 
-In practice reasoning steps branching a proof can often be modelled by an
-appropriate view.
+In practice lines of reasoning consisting in a specific branching of
+a proof can often be modelled by an appropriate spec lemma.
 
 \mantra{The structure of the proof shall not be driven by the syntax of the
 definition/predicate under study but by the view/spec used to reason about it}
@@ -892,6 +916,7 @@ definition/predicate under study but by the view/spec used to reason about it}
 % \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
 \section{Real proofs, finally!}\label{sec:realproofs}
 
 So far we've only tackled simple lemmas, most of them did admit a one line
@@ -906,7 +931,7 @@ The first subsection introduces the \C{have} tactic, that is the key
 to structure proofs into intermediate steps.  The second subsection
 deals with the ``problem'' of symmetries.  The third ones uses most
 of the techniques and tactics seen so far to prove correct the
-euclidean division algorithm.  The three subsection contain
+euclidean division algorithm.  The three subsections contain
 material in increasing order of difficulty.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -917,7 +942,7 @@ material in increasing order of difficulty.
 Saying that primes are infinite can be phrased as: for any natural number
 $m$, there exists a prime greater than $m$.  The proof of this claim goes like
 that: every natural number greater than 1 has at least one prime divisor.  If
-we take $m! + 1$, then such divisor $p$ can be shown to be grater than $m$ as
+we take $m! + 1$, then such prime divisor $p$ can be shown to be grater than $m$ as
 follows.  By contra position we assume $p \leq m$ and we show $p \nmid m!+1$.
 Being smaller than $m$, $p | m!$, hence to divide $m!+1$, $p$ should divide
 $1$, that is not possible since $p$ is prime, hence greater than 1.
@@ -941,17 +966,18 @@ IHn : m < n -> m.+1 %| n`!
 ========================
 (m == n) || (m < n) -> m.+1 %| (n.+1)`!	
 \end{coqout}
-The case analysis rules out the case \C{m} zero, and simplifies the hypothesis
-to \C{(m <= n)}.  Note that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
+The case analysis rules out the case \C{(m = 0)}, and simplifies the hypothesis
+to \C{(m <= n)}.  Recall that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
 (y <= z))}, hence when the first inequality evaluates to true (e.g. when \C{x}
 is 0) the conjunction simplifies to the second conjunct.  The \C{leq_eqVlt}
 rewrite rule rephrases \C{<=} as a disjunction.
+The capital \C{V} letter in the lemma name signals a disjunction.
 
-When we reason by cases on the top assumption we face two goals, both
+When we reason by cases on the top assumption, line 4, we face two goals, both
 easy to solve if we look at the development of the factorial of \C{n.+1},
-i.e. \C{(n.+1 * n`!)}.  The former amounts to show that
-\C{(n.+1 \%| n.+1 * n`!)}, while the latter to show that \C{(m.+1 \%| n.+1 *
-n`!)} under the (inductive) hypothesis that \C{(m.+1 \%| n`!)}.
+i.e. \D{(n.+1 * n`!)}.  The former amounts to show that
+\D{(n.+1 \%| n.+1 * n`!)}, while the latter to show that \D{(m.+1 \%| n.+1 *
+n`!)} under the (inductive) hypothesis that \D{(m.+1 \%| n`!)}.
 
 What is paradigmatic in this little proof is the use of the \emph{goal stack
 as a work space}.  In other words the proof script would be much more involved
@@ -962,7 +988,7 @@ We can now move to the proof of the main result.  We state it using a
 ``synonym'' of the exists quantifier that is specialized to carry two
 properties.  This way the statement is simpler to destruct: with just one
 case analysis we obtain the witness and the two properties.
-We will also resort to the following lemmas.
+We also resort to the following lemmas.
 
 \begin{coq}{}{title=Tools}
 Lemma fact_gt0 n : 0 < n`!.
@@ -973,7 +999,7 @@ Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
 The first step is to prove that $m! + 1$ is greater than $1$, a triviality.
 Still it gives us the occasion to explain the \C{have} tactic, that let us
 augment the proof context with a new fact, typically an intermediate step of
-out proof.
+our proof.
 
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
@@ -987,7 +1013,7 @@ statement and starts a (sub) proof.  Since the proof is so short, we will
 put it on the same line, and remove the full stop.
 
 The next step is to use the \C{pdivP} lemma to gather a prime divisor of
-\C{m`!.+1}.  We end up with the following, rather unsatisfactory, script.
+\D{m`!.+1}.  We end up with the following, rather unsatisfactory, script.
 
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
@@ -1102,7 +1128,7 @@ rewriting with \C{maxn_idPl} (as we did in section~\ref{sec:viewtac}).
 Then \C{orb_idr} trivializes the main goal and generates a side condition with
 an extra hypothesis we name \C{le_mn2}.
 
-\begin{coqout}{}{title=Output line 3a,width=6.7cm}
+\begin{coqout}{}{title=Output before line 3,width=6.7cm}
 2 subgoals
 m, n1, n2 : nat
 le_n21 : n2 <= n1
@@ -1111,7 +1137,7 @@ le_n21 : n2 <= n1
 
 subgoal 2 is: ...
 \end{coqout}
-\begin{coqout}{}{title=Output line 3b,width=5.3cm}
+\begin{coqout}{}{title=Output after 3,width=5.3cm}
 2 subgoals
 m, n1, n2 : nat
 le_n21 : n2 <= n1
@@ -1122,7 +1148,7 @@ m <= n1
 subgoal 2 is: ...
 \end{coqout}
 
-Line 4 combines by transitivity the two hyps to conclude.  Since it closes the
+Line 4 combines by transitivity the two hypotheses to conclude.  Since it closes the
 proof branch we use the prefix \C{by} to asserts the goal is solved and
 visually signal the end of the paragraph.  Line 5 commutes \C{max} and \C{||}.
 We can then conclude by copy-paste.
@@ -1181,7 +1207,10 @@ move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
 Qed.
 \end{coq}
-The \C{suff} tactic is like \C{have} but swaps the two goals.  
+\index[ssr]{\C{suff}}
+\index[ssr]{\C{suffices}}
+The \C{suff} tactic (or \C{suffices}) 
+is like \C{have} but swaps the two goals.  
 
 Note that here the sub proof is now the shortest paragraph.  
 This is another recurrent characteristic of the proof script style
@@ -1190,8 +1219,8 @@ we adopt in the \mcbMC{} library.
 There is still a good amount of repetition in the current script.
 In particular the main conjecture has been almost copy-pasted in
 order to invoke \C{have} or \C{suff}.  When this repetition
-is a severe probem, i.e. the statement to copy is large, one
-can resort to the \C{wlog} tactic.
+is a severe problem, i.e. the statement to copy is large, one
+can resort to the \C{wlog} tactic (or \C{without loss}).
 
 \begin{coq}{}{}
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
@@ -1202,6 +1231,8 @@ rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
 Qed.
 \end{coq}
+\index[ssr]{\C{wlog}}
+\index[ssr]{\C{without loss}}
 
 Remark how \C{wlog} only needs the statement of the extra assumption,
 and which portion of the context needs to be abstracted, here \C{n1} and
@@ -1226,7 +1257,8 @@ This is rarely the case in proof scripts of the library, since one typically
 uses the \C{/(_ ...)} intro pattern to specialize the top of the stack.
 
 Shrinking proof scripts is a never ending game.  The avid reader can
-see how intro patterns let one squeeze the last two lines into a single
+see in the next section
+how intro patterns let one squeeze the last two lines into a single
 one.  Indeed there are three steps in this script: remarking we can
 assume \C{(n2 <= n1)} without losing generality, its justification in
 terms of totality of the order relation and commutativity of \C{max}
@@ -1266,11 +1298,11 @@ Rewriting the top assumption fixes \C{b} to \C{n1}, trivializes
 the goal \C{(m <= n1)} to \C{true} and opens a trivial side
 condition \C{(n2 <= n1)}.
 
-This very compact idiom \C{/leq_trans->} is quite frequent in the
+The very compact idiom \C{/leq_trans->} is quite frequent in the
 \mcbMC{} library.
 
 %%%%%%%%%%%%%%%5
-\mcbLEVEL{3}
+\mcbLEVEL{1}
 \mcbsubsection{Euclidean division, simple and correct}\label{sec:edivn}
 \index[concept]{simplifying equation}
 
@@ -1282,6 +1314,7 @@ Definition edivn_rec d :=
 
 Definition edivn m d := if d > 0 then edivn_rec d.-1 m 0 else (0, m).
 \end{coq}
+\index[coq]{\C{fix}}
 
 The \C{fix} keyword lets one write a recursive function locally, without
 providing a global name as \C{Fixpoint} does.  This also means that \C{d}
@@ -1296,12 +1329,15 @@ Lemma edivn_recE d m q :
  edivn_rec d m q = if m - d is m'.+1 then edivn_rec d m' q.+1 else (q,m).
 Proof. by elim: m. Qed.
 \end{coq}
+\index[concept]{unfolding equation}
 It is often useful to state and prove unfolding equations like this one.
 Indeed the simplification tactic \C{/=} may unfold too aggressively.
 Rewriting with such equations gives better control on how many
 unfold steps one performs.
 
-The statement uses a let-in construct to name an expression used multiple
+The statement of our theorem 
+uses a let-in construct (remark the \C{:=} sign)
+to name an expression used multiple
 times, in this case the result of the division of \C{m} by \C{d}.
 
 \begin{coq}{}{}
@@ -1312,7 +1348,8 @@ Proof.
 
 As one expects, being \C{edivn} a recursive program, its specification
 needs to be proved by induction.  Given that the recursive call is on
-the subtraction of the input, we need to perform a strong induction.
+the subtraction of the input, we need to perform a strong induction,
+as we did for the postage example in section~\ref{sec:strongind}.
 
 Bet let's start by dealing with the trivial case of a null divisor.
 
@@ -1327,6 +1364,7 @@ have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
 by rewrite /= mulSnr -addnA -subSS subnKC.
 Qed.
 \end{coq}
+\index[ssr]{\C{.. in ..}}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
 can be appended to each tactic in order to push on the stack the specified
 hypotheses before running the tactic and pulling 
@@ -1341,7 +1379,7 @@ and makes the invariant of the division loop explicit replacing
 already been handled.
 
 Line 4 performs a strong induction, also generalizing the initial
-value of the accumulator, leading to the following goal:
+value of the accumulator \C{0}, leading to the following goal:
 
 \begin{coqout}{}{}
 d, n : nat
@@ -1487,9 +1525,9 @@ raising an errors replaces \lstinline/t/ by \lstinline/(c t)/.
 A function automatically inserted by \Coq{} to prevent a type
 error is called \emph{coercion}.
 The most pervasive coercion in the \mcbMC{} library is
-\lstinline/is_true/ that lets one write statements using boolean
-predicates.\marginnote{I guess in a way or another is true has
-already been introduced}.
+\lstinline/is_true/ one that lets one write statements using boolean
+predicates.
+\index[concept]{coercion}
 
 \begin{coqdef}{name=istrue}
 Lemma example : prime 17.
@@ -1509,7 +1547,7 @@ $~$
 is_true (prime 17)
 \end{coqout}
 
-The statement of the example is processed by type inference,
+The statement of the example is processed by \Coq{}
 it is enforced to be a type, but \lstinline/(prime 27)/ is actually
 a term of type \lstinline/bool/.  Early in the library the
 function \lstinline/is_true/ is declared as a coercion from
@@ -1606,11 +1644,13 @@ coercion & source & target \\ \hline
 The reader already familiar with the concept of coercion
 may find the presentation of this chapter nonstandard.
 Indeed coercions are usually presented as a device to model
-subtyping in a theory that, like \mcbCIC{}, does not
+subtyping in a theory that, like the \mcbCIC{}, does not
 feature subtyping.  As we will see in chapter~\ref{ch:hierarchy}
 the role played by coercions is in the modelling of the hierarchy
-of algrabraic structure is minor.  Indeed what is hard is not to
-forget some fields of a structure to obtain a simpler one.  What
+of algrabraic structure is minor.  Indeed the job of
+coercions in that context is to
+forget some fields of a structure to obtain a simpler one, and
+that is easy.  What
 is hard is to reconstruct the missing fields of a structure
 or compare two structures finding the minimum super structure.
 These tasks are mainly implemented programming type inference.
