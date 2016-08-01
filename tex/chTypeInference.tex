@@ -14,22 +14,8 @@ Abort.
 
 \Chapter{Type Inference}{ Teaching \Coq{} how to read Math}
 
-%NOTES: Refactoring needed: try to organize the content of this chapter
-%and the two following ones along this line:
-%\begin{itemize}
-%\item First eqTypes, with their theory (and not only the synthesis of
-%  the comparison function) and Big operations: this describes
-%  ``algebra'', ie. the design of an interface for a (shared) theory
-%  and notations.
-%\item Then, hierarchies
-%\item Then finally how to relate a concrete type to existing,
-%  ``isomorphic'' instances of the structures in the hierachy (subType,
-%  tuples, CanMixins,...). Here comes the remarks on UIP. May be use
-%  the example of how to equip a type with three constructions with all
-%  the structures up to finite in the hierarchy (and plug your
-%  own preferred datastructure in the framework).
-%\end{itemize}
-The rules of the \mcbCIC{} are expressed on the syntax on terms and
+The rules of the \mcbCIC{}, as the ones schetched in~\ref{sec:ttch},
+are expressed on the syntax on terms and
 are implemented by the kernel of \Coq{}.  Such software component
 performs \emph{type checking}: given a term and type it checks if such
 term has the given type.  To keep type checking simple and decidable
@@ -40,36 +26,39 @@ Luckily the user very rarely interacts directly with the kernel.
 Instead she almost always interacts with the refiner, a software
 component that is able to accept open terms.  Open terms are in
 general way smaller than regular terms because some information can be
-left implicit.  In particular one can omit any subterm by writing
+left implicit.\cite{Pollack92implicitsyntax}
+In particular one can omit any subterm by writing
 ``\lstinline/_/'' in place of it.
-\marginnote{ I'm a bit uneasy about citations, here I think I want to
-add one\cite{Pollack92implicitsyntax}.
-They are good readings but a arbitrary and not easy to find.
-We should define a policy for citations.}
 Each missing piece of information is either reconstructed
 automatically by the \emph{type inference} algorithm, or provided
 interactively by means of proof commands.  In this chapter we
 focus on type inference.
 
 Type inference is \emph{ubiquitous}: whenever the user inputs a term
-(or a type) the system tries to infer a type (or
-a sort) for it.  One can think of the work of the type inference
+(or a type) the system tries to infer a type for it.  
+One can think of the work of the type inference
 algorithm as trying to give a meaning to the input of the
 user possibly completing and constraining it by inferring some
 information.  If the algorithm succeeds the term is accepted,
 otherwise an error is given.
 
-What is crucial to the \mcbMC{} library is that the
-type inference algorithm is \emph{programmable}: one can extend the
-basic algorithm with small declarative programs that have access to
-\marginnote{explain declarative programs}
+What is crucial to the \mcbMC{} library is that
+\emph{the type inference algorithm is programmable}: 
+one can extend the
+basic algorithm with small declarative programs\footnote{A program is
+said to be declarative when it explains what it computes rather than
+how. The programs in question are strictly linked with the Prolog
+programming language, a technology that found applications in artificial
+intelligence and computational linguistic.}
+that have access to
+%\marginnote{explain declarative programs}
 the library of already formalized facts.  In this way one can make the
 type inference algorithm aware of the contents of the library and
 make \Coq{} behave as a trained reader that is able to guess the
 intended meaning of a mathematical expressions from the context
 thanks to his background knowledge.
 
-This chapter introduces the key concepts of \emph{interface}
+This chapter also introduces the key concepts of \emph{interface}
 and \emph{instance}.  An interface is essentially the signature
 of an agebraic structure: operations, properties and notations
 letting one reason abstractly about a family of objects sharing
@@ -96,7 +85,7 @@ although not trivially, using inductive types and the dependent function
 space.   This encoding is not completely orthogonal to the
 actual technology (the type inference and its extension mechanism).
 For this reason we shall need to dive, from time to time, into
-technical details, especially in sections with two stars.
+technical details, especially in sections labelled with two stars.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{HO unif is hard}
@@ -131,7 +120,7 @@ the two types become syntactically equal and hence convertible.
 
 Unfortunately it is not hard to come up with classes of examples where
 guessing appropriate values for implicit arguments is, in general, not
-possible. In fact such guessing has be shown to be as hard as proof
+possible. In fact such guessing has been shown to be as hard as proof
 search in presence of higher order constructs.
 For example to unify \lstinline/(prime _)/ with
 \lstinline/true/ one has to guess a prime number. Remember that
@@ -153,13 +142,11 @@ Given that there is no silver bullet for higher order unification
 heuristic-free algorithm and let the user extend it via an extension
 language.  We refer to such language as the language of
 \emph{Canonical Structures}.  Despite being a very restrictive language,
-it is sufficient to program a wide panel of useful functionalities.  The
-one described in this chapter can be described as \emph{notation
-overloading}.
+it is sufficient to program a wide panel of useful functionalities.
 
 The concrete syntax for implicit arguments, an underscore character,
-does not let one name the missing piece of information.\footnote{This
-may change in \Coq{} 8.5}  If an expression contains multiple occurrence
+does not let one name the missing piece of information.
+If an expression contains multiple occurrence
 of the placeholder ``\lstinline/_/'' they are all considered as
 potentially different by the system, and hence hold (internally)
 unique names.  For the sake of clarity we take the freedom to
@@ -217,7 +204,7 @@ since \Coq{} is able to infer it and complete the input term for us.
 This phenomenon is so frequent that one can ask the system to insert
 the right number of \lstinline/_/ for him.  For more details
 % see section~\ref{sec:declaringimpl} or
-refer to the user manual.  Here
+refer to~\cite[section 2.7]{Coq:manual}.  Here
 we only provide a simple example.
 
 \begin{coq}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
@@ -294,7 +281,7 @@ Qed.
 
 q : nat
 pr_q : prime q
-============================
+========================
 0 < q
 \end{coqout}
 
@@ -315,8 +302,7 @@ type of \lstinline/prime_gt1/ were we substitute \mcbimpl{p} for
 well typed, its type is \lstinline/(1 < q)/ and the place holder
 has been set to be \lstinline{q}.
 As we did for the identity function we can declare the \lstinline/p/
-argument of \lstinline/prime_gt1/ as implicit.  \marginnote{maybe also
-tell why one does not need two underscores in the last line}
+argument of \lstinline/prime_gt1/ as implicit.
 Choosing a good  declaration of implicit arguments for lemmas is
 tricky and requires one to think ahead how the lemma is used.
 % section~\ref{sec:declaringimpl} is dedicated to that.
@@ -348,9 +334,10 @@ read~\cite{unifcoq,betaderekjournal}.
 In computes science a record is a very common data structure.  It is a
 compound data type, a container with named fields.  Records are
 represented faithfully in the \mcbCIC{} as
-inductive data types with just one constructor holding all the data.
+inductive data types with just one constructor,
+recall~\ref{sec:records}.
 The peculiarity of the records we are going to use is that they are
-dependently typed: the type of each field is allowed to depend on
+\emph{dependently typed}: the type of each field is allowed to depend on
 the values of the fields that precedes it.
 
 \Coq{} provides syntactic sugar for declaring record types.
@@ -369,7 +356,7 @@ The sentence above declares a new inductive type called
 \lstinline/Pack/ with two arguments.  The first one
 is named \lstinline/sort/ and holds a type; the second and last
 one is called \lstinline/eq_op/ and holds a comparison function
-on terms of type \lstinline/sort/.  What this special syntax
+on terms of type \lstinline/sort/.  We recall that what this special syntax
 does is declaring at once the following inductive type plus
 a named projection for each record field:
 
@@ -386,22 +373,17 @@ Definition eq_op (c : eqType) : sort c -> sort c -> bool :=
 Note that the type dependency between the two fields requires the first
 projection to be used in order to define the type of the second projection.
 
-We think of the \lstinline/eqType/ record type as a relation linking a
+We think of the \lstinline/eqType/ record type as a \emph{relation} 
+linking a
 data type with a comparison function on that data type.  Before
 putting the \lstinline/eqType/ relation to good use we declare an
 inhabitant of such type, that we call an \emph{instance}, and we
 examine a crucial property of the two projections just defined.
 
-We relate the following comparison function with the \lstinline/nat/
-data type: \marginnote{Maybe this function has been shown already}
+We relate the \C{eqn} comparison function with the \lstinline/nat/
+data type.
 
 \begin{coq}{name=eqn}{}
-Fixpoint eqn m n {struct m} :=
-  match m, n with
-  | 0, 0 => true
-  | m'.+1, n'.+1 => eqn m' n'
-  | _, _ => false
-  end.
 Definition nat_eqType : eqType := @Pack nat eqn.
 \end{coq}
 \coqrun{name=eqn}{ssr,eqtype,eqn}
@@ -420,7 +402,6 @@ Eval simpl in @eq_op nat_eqType.
          sort nat_eqType -> bool
 \end{coqout}
 
-\marginnote{Maybe simpl is already explained?}
 Given that \lstinline/(sort nat_eqType)/ and \lstinline/nat/
 are convertible, equal up to computation, we can use the two terms
 interchangeably.  The same holds for \lstinline/(eq_op nat_eqType)/
@@ -461,27 +442,28 @@ infix symbol $*$ to denote any ring multiplication.  A typical
 computer science example is the use of the same infix
 \lstinline/==/ symbol to denote the comparison over any data type.
 Of course the underlying operation one intends to use depends on
-the values it is applied to, or better their type.\footnote{
-Actually the meaning of a symbol in math is even deeper: by writing $a
-* b$ one expects the reader to figure out from the context which ring
-we are talking about, recall its theory, and use this knowledge to
-eventually justify the steps that follow in a proof.  This very
-same approach let us also model this practice.  We will discuss
-it in section~\ref{rec:itf}}
+the values it is applied to, or better their type.
+\footnote{The meaning of a symbol in math is even deeper: by
+	writing $a * b$ one may expect the reader to figure out which
+	ring she talks about, recall its theory, and use this
+	knowledge to justify some steps a proof.  By programming type
+	inference we model this practice in~\ref{rec:itf}.}
 Using records lets us model these practices.
 Note that, thanks to its higher order nature, the term \lstinline/eq_op/
 can always be the head symbol denoting a comparison.  This makes
 it possible to recognize, hence print, comparisons in a uniform way
 as well as to input them.  On the contrary, in the simpler expression
 \lstinline/(eqn 3 4)/ the name of the head symbol is very specific to
-the type of the objects we are comparing.  Also note that
-\marginnote{A bit too technical and boring}
-polymorphism, in the sense of the \lstinline/ML/ programming language,
-is not what we are looking for, since it would impose the comparison
-function to behave uniformly on every type.  What we are looking
-for is closer to the ad-hoc polymorphism of the \lstinline/Haskell/
-programming language or the notion of subtyping provided by object
-oriented languages.
+the type of the objects we are comparing.
+
+% Also note that
+% \marginnote{A bit too technical and boring}
+% polymorphism, in the sense of the \lstinline/ML/ programming language,
+% is not what we are looking for, since it would impose the comparison
+% function to behave uniformly on every type.  What we are looking
+% for is closer to the ad-hoc polymorphism of the \lstinline/Haskell/
+% programming language or the notion of subtyping provided by object
+% oriented languages.
 
 In the rest of this chapter we focus on the overloading of the
 \lstinline/==/ symbol and we start by defining another comparison
@@ -492,7 +474,6 @@ Definition eqb (a b : bool) := if a then b else ~~ b.
 Definition bool_eqType : eqType := @Pack bool eqb.
 \end{coq}
 
-\marginnote{I need the reader to know something about Notation}
 Now the idea is to define a notation that applies to any occurrence
 of the \lstinline/eq_op/ head constant and use such
 notation for both printing and parsing.
@@ -530,13 +511,15 @@ interpreted as an implicit argument: type inference is expected to find a value
 for it.  Unfortunately such notation does not work as a parsing rule
 yet.
 
-\begin{coq}{name=parsenocs}{title=Error,width=6cm}
+\begin{coq}{name=parsenocs}{width=4cm}
 Check (3 == 4).
+$~$
 \end{coq}
-\coqrun{name=nc;fail}{ssr,eqtype,eqn,infix,parsenocs}
-\begin{coqout}{run=nc}{title=Response,width=6cm}
-Error: The term "3" has type "nat" while it is expected to have type "sort ?e".
+\begin{coqout}{run=nc}{width=8cm}
+Error: The term "3" has type "nat" while
+it is expected to have type "sort ?e".
 \end{coqout}
+\coqrun{name=nc;fail}{ssr,eqtype,eqn,infix,parsenocs}
 
 If we unravel the notation the input term is really
 \lstinline/(eq_op _ 3 4)/. We name the place holder \mcbimpl{e}.
@@ -568,13 +551,13 @@ The keyword \lstinline/Canonical/ was chosen to stress that the
 program is deterministic: each type  \lstinline/T/ is related to
 (at most) one \emph{canonical} comparison function.
 
-\begin{coq}{name=parse}{title=Testing CS Inference,width=6cm}
+\begin{coq}{name=parse}{width=6cm}
 Check (3 == 4).
 Check (true == false).
 Eval compute in (3 == 4).
 \end{coq}
 \coqrun{name=cs}{ssr,eqtype,eqn,bety,infix,declcs,parse}
-\begin{coqout}{run=cs}{title=Response,width=6cm}
+\begin{coqout}{run=cs}{width=6cm}
 3 == 4 : bool
 true == false : bool
 = false : bool
@@ -606,7 +589,7 @@ argument \mcbimpl{S}.
 
 In the table we reported only the relevant entries.  Entries
 corresponding to the \lstinline/eq_op/ projection play no role
-and in the \mcbMC{} library the name of such projections is
+and in the \mcbMC{} library. The name of such projections is
 usually omitted to signal that fact.
 
 What makes this this approach interesting for a large library is that
@@ -614,13 +597,14 @@ record types can play the role of interfaces.  Once a record type has
 been defined and some functionality associated to it, like a notation,
 one can easily hook a new concept up by defining a corresponding
 record instance and declaring it canonical.  One gets immediately all
-the functionalities tied to such interface work on the new concept.
+the functionalities tied to such interface to work on the new concept.
 For example a user defining new data type with a comparison function
 can immediately take advantage of the overloaded \lstinline/==/
 notation by packing the type and the comparison function in an
 \lstinline/eqType/ instance.
 
 This pattern is so widespread and important that the \mcbMC{}
+library
 consistently uses the synonym keyword \lstinline/Structure/ in place of
 \lstinline/Record/ in order to make record types playing the role
 of interfaces easily recognizable.
@@ -646,7 +630,7 @@ section.
 So far we have used the \lstinline/==/ symbol terms whose type is
 atomic, like \lstinline/nat/ or \lstinline/bool/.  If we try for
 example to use it on terms whose type was built using a type
-constructor like the Cartesian product we encounter an error.
+constructor like the one of pairs we encounter an error.
 
 \begin{coq}{name=reccs}{title=Error,width=6cm}
 Check (3, true) == (4, false).
@@ -662,8 +646,7 @@ so far, we only taught \Coq{} how to compare booleans and natural
 numbers, not how to compare pairs.
 Intuitively the way to compare pairs is to compare their components
 \emph{using the appropriate comparison function}.
-Let's write a comparison function for pairs. \marginnote{Do we have
-the Sections mechanism here?}
+Let's write a comparison function for pairs. 
 
 \begin{coq}{name=paircs}{title=Comparing pairs}
 Definition prod_cmp eqA eqB x y :=
@@ -680,7 +663,7 @@ that the records \lstinline/eqA/ and \lstinline/eqB/ hold
 a sensible comparison function for, respectively, terms of
 type \lstinline/(sort eqA)/ and \lstinline/(sort eqB)/.
 
-It is now sufficient to pack together the Cartesian product type
+It is now sufficient to pack together the pair data type
 constructor and this comparison function in an \lstinline/eqType/
 instance to extend the canonical structures inference machinery
 with a new combinator.
@@ -719,39 +702,38 @@ are successful and \lstinline/v1/ is the solution for
 \mcbimpl{e} is \lstinline/(prod_eqType v1 v2)/.
 
 After the table of canonical solutions has been extended our example
-is accepted.\marginnote{no idea if that output can be
-produce by \Coq{}}
+is accepted.
 
-\begin{coq}{name=parsecs2}{title=Example,width=6.3cm}
+\begin{coq}{name=parsecs2}{width=6.3cm}
 Check (3, true) == (4, false).
 \end{coq}
 \coqrun{name=cs2}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs2}
-\begin{coqout}{run=cs2}{title=Response,width=5.7cm}
+\begin{coqout}{run=cs2}{width=5.7cm}
 (3, true) == (4, false) : bool
 \end{coqout}
 
-The term synthesized by \Coq{} is the folowing one:
+The term synthesized by \Coq{} is the following one:
 
 \begin{coq}{name=parsecs3}{}
    @eq_op (prod_eqType nat_eqType bool_eqType) (3, true) (4, false).
 \end{coq}
 \coqrun{name=cs3}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs3}
 
-\marginnote{
-Make other examples? Other overloaded stuff: maybe and example of
-how to hook up to infix in ? or locked? or whatever?
-In any case a table with ``all'' the interfaces should probably be
-part of the book
-}
-
-In the running example of this chapter we use the canonical structures
-language to express structurally recursive programs on the syntax
-of types.  The \mcbCIC{} allows arbitrary terms to occur inside
-types.  As a consequence the language of canonical structures can
-express also structurally recursive programs on the syntax
-of terms.  This capability is used, for example, in
-section~\ref{sec:bigoplemmas} to related Monoid laws to function
-symbols to model the syntax and theory of iterated, ``big'', operators.
+% \marginnote{
+% Make other examples? Other overloaded stuff: maybe and example of
+% how to hook up to infix in ? or locked? or whatever?
+% In any case a table with ``all'' the interfaces should probably be
+% part of the book
+% }
+% 
+% In the running example of this chapter we use the canonical structures
+% language to express structurally recursive programs on the syntax
+% of types.  The \mcbCIC{} allows arbitrary terms to occur inside
+% types.  As a consequence the language of canonical structures can
+% express also structurally recursive programs on the syntax
+% of terms.  This capability is used, for example, in
+% section~\ref{sec:bigoplemmas} to related Monoid laws to function
+% symbols to model the syntax and theory of iterated, ``big'', operators.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -761,7 +743,7 @@ symbols to model the syntax and theory of iterated, ``big'', operators.
 \mcbsection{Records as (first class) interfaces}\label{rec:itf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-When we define an overloaded notation we convoy
+When we define an overloaded notation we convey
 trough it more than just the arity (or the type) of the associated
 operation.  We associate to it a property, or a collection thereof.
 For example, in the context of group theory, the infix \C{+} symbol
@@ -797,7 +779,7 @@ two syntactically different terms.
 
 \mantra{The infix notation \lstinline/==/ stands for
 a comparison function compatible with Leibnitz equality
-(substitution in any context)}
+(substitution in any context).}
 
 The \C{Equality} module enclosing the record acts a name space:
 \C{type}, \C{sort},
@@ -815,7 +797,6 @@ defined classes in order to build new ones by mixing-in additional
 properties (typically called axioms).
 Hence the definition of \C{eqType} in the
 \mcbMC{} library is closer to the following one:
-\marginnote{We assume that \C{rel} is a known concept here}
 
 \begin{coq}{name=eqtype}{title=The real definition of eqType}
 Module Equality.
@@ -845,10 +826,12 @@ field called \C{sort}.  This tells \Coq{} to declare the
 \C{Equality.sort} projection
 as a coercion, enabling one to write \C{(forall T : eqType, forall x y
 : T, P)}.  Ineed \C{T} is not a type, only its \C{sort} projection is.
-\gotcha{being \C{Equality.sort} a coercion, it is not displayed by
+
+\gotcha{Being \C{Equality.sort} a coercion, it is not displayed by
 \Coq{}, hence error messages about a missing canonical structure
-declaration typically look very confusing: has type nat but should
-have type ?e}
+declaration typically look very confusing: ``\ldots has type \C{nat}
+but should have type \C{?e}'', instead of ``\ldots but should have
+type \C{(sort ?e)}''. }
 
 Given the new definition of \lstinline/eqType/,
 when we write \lstinline/(a == b)/ type inference does not only infer
@@ -857,7 +840,7 @@ proof that such function is correct.
 Indeed declaring the \C{eqType} instance for \C{nat} requires some
 extra work, namely proving the correctness of the \C{eqn} function.
 
-\begin{coq}{name=eqtype}{title=The complete definition of nat\_eqType}
+\begin{coq}{name=eqtype}{}
 Lemma eqnP : Equality.axiom eqn.
 Proof.
 move=> n m; apply: (iffP idP) => [|<-]; last by elim n.
@@ -875,8 +858,6 @@ Canonical nat_eqType := @Equality.Pack nat nat_eqMixin.
 Note that the \C{Canonical} declaration is expanded (showing the
 otherwise implicit first argument of \C{Pack}) to document that
 we are relating the type \C{nat} with its comparison operation.
-\marginnote{This is not exactly as in the .v files, but is way closer
-and should ease section 6 (hierarchy)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{overloaded lemmas}
@@ -907,9 +888,9 @@ Proof. by case: T => ty [op prop]; exact: prop. Qed.
 The proof is just unpacking the input \lstinline/T/.
 We can use it on an concrete example of \C{eqType} like \C{nat}
 
-\begin{coq}{name=test}{title=Use of eqP}
+\begin{coq}{name=test}{}
 Lemma test (x y : nat) : x == y -> x + y == y + y.
-Proof. by move=> /eqP def_x; rewrite def_x. Qed.
+Proof. by move=> /eqP ->. Qed.
 \end{coq}
 \coqrun{name=r7}{ssr,eqtype,eqP}
 \coqrun{name=r8}{ssr,test}
@@ -942,9 +923,9 @@ End ProdEqType.
 Like for \C{nat} the generic lemma \C{eqP} applies to
 any \C{eqType} instance, like \C{(bool * nat)}
 
-\begin{coq}{name=test}{title=Use of eqP}
+\begin{coq}{name=test}{}
 Lemma test (x y : nat) (a b : bool) : (a,x) == (b,y) -> fst (a,x) == b.
-Proof. by move/eqP=> def_ax; rewrite def_ax. Qed.
+Proof. by move=> /eqP ->. Qed.
 \end{coq}
 \coqrun{name=r7}{ssr,eqtype,eqP}
 \coqrun{name=r8}{ssr,test}
@@ -956,8 +937,7 @@ all the benefits of a computable function (simplification, reasoning
 by cases), but when we need the underlying logical property of
 substitutivity we access it via the view \lstinline/eqP/.
 
-\begin{coq}{name=test}{title=Why one should always use \C{==}
-	(computation)}
+\begin{coq}{name=test}{}
 Lemma test (x y : nat) : (true,x) == (false,y) -> false.
 Proof. by []. Qed.
 \end{coq}
@@ -967,34 +947,17 @@ Proof. by []. Qed.
 This is true (or better, the hypothesis is false) by computation.
 
 \begin{coq}{name=test}{title=Why one should always use \C{==} (EM)}
-Lemma test (x y : nat) : if x == y.+1 then x != 0 else true.
-Proof. by case E: (x == y.+1) => //; rewrite (eqP E). Qed.
+Lemma test_EM (x y : nat) : if x == y.+1 then x != 0 else true.
+Proof. by case: ifP => // ->. Qed.
 \end{coq}
 \coqrun{name=r7}{ssr,eqtype,eqP}
 \coqrun{name=r8}{ssr,test}
 
 
-\marginnote{Maybe here suggest to use ifP and =P if not already known, or
-do it now}
-
-\mantra{
-	whenever we want to state equality between two expressions, if
-	they live in an eq type, always use \lstinline/==/.
+\mantra{ Whenever we want to state equality between two expressions, if
+	they live in an \C{eqType}, always use \lstinline/==/.
 }
 
-
-Note that the proof language silently adjusted the view
-using \lstinline/elimT/.
-
-\begin{coq}{name=elimt}{title=The eqtype view,width=5.3cm}
-Check elimT.
-
-\end{coq}
-\coqrun{name=et}{ssr,elimt}
-\begin{coqout}{run=et}{title=Response,width=6.7cm}
-elimT : forall (P : Prop) (b : bool),
-          reflect P b -> b -> P
-\end{coqout}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEARN{eqType is the base of (abstract) ssr style}
@@ -1019,10 +982,10 @@ On the contrary when we quantify a theory on the type  \C{(seq T)} for a
 \C{T} that is an \C{eqType}, we recover all that.  In other words
 by better specifying the type that parametrizes a generic container
 we define which operations are lecit and which properties hold.
-So far the only interface we know is \C{eqType}, that is very
-connected with the ``small scale reflection'' approach we follow.
-In the next chapters more elaborate interface will enable us to
-organize knowledge in a more articulated way.
+So far the only interface we know is \C{eqType}, that is primordial to
+boolean reflection.
+In the next chapters more elaborate interfaces will enable us to
+organize knowledge in articulated ways.
 
 Going back to the abstract theory of sequences over an \C{eqType},
 we start by defining the membership operation.
@@ -1033,7 +996,7 @@ Variable T : eqType.
 Implicit Type s : seq T.
 
 Fixpoint mem_seq s x :=
-  if s is y :: s' then (y == x) && mem_seq s' x else false.
+  if s is y :: s' then (y == x) || mem_seq s' x else false.
 \end{coq}
 \coqrun{name=memseq}{ssr,memseq}
 
@@ -1055,7 +1018,6 @@ Fixpoint undup s :=
 Proofs about such concepts can be made pretty much as if
 the type \C{T} was \C{nat} or \C{bool}, i.e. our predicates do
 compute.
-\marginnote{requires \C{=i}}
 
 \begin{coq}{name=undupuniq1}{title=\C{undup} is correct (step 1)}
 Lemma in_cons y s x : (x \in y :: s) = (x == y) || (x \in s).
@@ -1068,11 +1030,12 @@ case Hy: (y \in s); last by rewrite in_cons IHs.
 by rewrite in_cons IHs; case: eqP => // ->.
 Qed.
 \end{coq}
+where \C{(A =i B)} is a synonym for \C{(forall x, x \\in A = x \\in B)},
 
 The \C{in\_cons} lemma is just a convenience rewrite rule, while
 \C{mem\_undup} says that the \C{undup} function does not drop
 any non-duplicate element.  Note that in the proof we use both
-decidability of membership (\C{Hy}) and then the decidability of
+the decidability of membership (\C{Hy}) and the decidability of
 equality (via \C{eqP}).
 
 \begin{coq}{name=undupuniq2}{title=\C{undup} is correct (setp 2)}
@@ -1083,10 +1046,10 @@ Qed.
 \end{coq}
 \coqrun{name=uniqp}{ssr,uniq,undupuniq1,undupuniq2,abort}
 
-The proof of \c{undup\_uniq} requires not new ingredients and
+The proof of \c{undup\_uniq} requires no new ingredients and
 completes the specification of \C{undup}.
 
-A last, very important, step in the theory of sequences is to show
+A last, very important step in the theory of sequences is to show
 that the container preserves the \C{eqType} interface: whenever we can
 compare the elements of a sequence, we can also compare sequences.
 
@@ -1108,6 +1071,7 @@ Qed.
 Definition seq_eqMixin := Equality.Mixin eqseqP.
 Canonical seq_eqType := @Equality.Pack (seq T) seq_eqMixin.
 \end{coq}
+\marginnote{cleanup this scipt}
 
 As an example we build a sequence of sequences, and we assert that
 we can use the \C{==} and \C{\\in} notation on it, as well as apply
@@ -1163,7 +1127,7 @@ provided by \Coq{} can express in a very natural way iterations over
 a finite domain.  In particular such finite domain can be represented
 as a list; the general term $f(i)$ by a function \C{(fun i =>
 ...)}; the operation of evaluating a function on all the
-elements of list and combining the results by the \C{foldr} operator.
+elements of list and combining the results by the \C{foldr} iterator.
 
 Funtional programming can also be used to describe the finite domain.
 For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$ 
@@ -1205,7 +1169,8 @@ of odd numbers is the following:
 \begin{coq}{name=bigop21}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \end{coq}
-
+where \C{.*2} is a postfix notation, smilar to \C{.+1}, 
+standing for doubling.
 Under the hood we expect to find the following expression:
 
 \begin{coq}{name=bigop2}{}
@@ -1296,7 +1261,8 @@ rewrite unlock /=.
 \end{coq}
 
 The \C{bigop} constant is ``locked'' to make the notation steady.  To
-unravel its computational behavior one has to rewrite with \C{unlock}.
+unravel its computational behavior one has to rewrite with 
+the \C{unlock} lemma.
 
 \begin{coqout}{}{}
 ============================
@@ -1407,8 +1373,8 @@ types, but on any term.  In particular we can index them on function
 symbols to relate, for example, \C{addn} and its monoid structure.
 
 Here we only present the \C{Monoid} interface an operation has to
-satisfy in order access a class of generic lemmas.
-chapter~\ref{ch:hierarchy} adds other interfaces to the picture and organizes
+satisfy in order to access a class of generic lemmas.
+Chapter~\ref{ch:hierarchy} adds other interfaces to the picture and organizes
 the bigop library around them.
 
 \begin{coq}{name=bigop}{}
@@ -1436,11 +1402,11 @@ Section MonoidProperties.
 Variable R : Type.
 
 Variable idx : R.
-Notation Local "1" := idx.
+Local Notation "1" := idx.
 
 Variable op : Monoid.law idx.
-Notation Local "*%M" := op (at level 0).
-Notation Local "x * y" := (op x y).
+Local Notation "*%M" := op (at level 0).
+Local Notation "x * y" := (op x y).
 \end{coq}
 
 The lemma we used in the previous section, \C{big\_nat\_recr}, is
@@ -1469,7 +1435,7 @@ big_nat_recr :
 \end{coqout}
 
 Note that wherever the operation \C{op} occurs we also find
-the \C{Monoid.operation} projection.
+the \C{Monoid.operator} projection.
 
 To make this lemma available on the addition on natural numbers
 we need to declare the canonical monoid structure on \C{addn}.
@@ -1497,9 +1463,8 @@ Proof. by apply: big_nat_recr. Qed.
 \end{coq}
 
 the following unification problem has to be solved:
-\C{(BigBody i addn true i)} versus \C{(BigBody i (operator ?m) (?P i) (?F i))}.
-The sub problem \C{addn} versus \C{(operator ?m)} is solved by
-canonical structure inference.  Inferring a value for \C{?m} mean
+\C{addn} versus \C{(operator ?m)}.
+Inferring a value for \C{?m} mean
 inferring a proof that \C{addn} forms a monoid with \C{0}: a
 prerequisite for the \C{big\_nat\_recr} lemma we don't have to provide
 by hand.
@@ -1516,9 +1481,9 @@ by hand.
 \mcbsubsection{Searching the bigop library}
 
 Searching the bigop library for a lemm is slightly harder than
-searching the other libraries as explained in~\ref{sec:search}.
+searching the other libraries as explained in section~\ref{sec:search}.
 In particular one can hardly search with patterns.  For example
-the following searches returns no results:
+the following search returns no results:
 
 \begin{coq}{}{}
 Search _ (\sum_(0 <= i < 0) _).
@@ -1540,16 +1505,16 @@ Search _ (\big[_/_]_(i <- [::] | _) _).
 
 The recommended way to search the library is by name, using the word
 ``big''.  For example to find all lemmas allowing one to prove the
-equality of two iterated operators one can\C{ Search "eq" "big"}.
-Similarly, induction lemmas can be found with\C{ Search "ind"
-"big"};  index exchange lemmas with\C{ Search "exchange" "big"};
+equality of two iterated operators one can \C{ Search "eq" "big"}.
+Similarly, induction lemmas can be found with \C{ Search "ind"
+"big"};  index exchange lemmas with \C{ Search "exchange" "big"};
 lemmas pulling out elements from the iteration
-with\C{ Search "rec" "big"}; lemmas  working on the filter condition
-with\C{ Search "cond" "big"}, etc\ldots
+with \C{ Search "rec" "big"}; lemmas  working on the filter condition
+with \C{ Search "cond" "big"}, etc\ldots
 
 
 Finally the \mcbMC{} user is advised to read the contents of the
-\C{bigop.v} file in order get acquainted with the nameing policy used
+\lib{bigop} file in order get acquainted with the nameing policy used
 in that library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1640,8 +1605,7 @@ For example the following term:
 \begin{coq}{name=infix,print}{}
   (@eq_op bool_eqType true false).
 \end{coq}
-
-can be simplifies (reduced) to the following one
+can be simplified (reduced) to the following one
 
 \begin{coq}{name=infix,print}{}
   (@eqb true false).
@@ -1680,7 +1644,7 @@ rewrite /=.
 by rewrite addnC -big_cat.
 Qed.
 \end{coq}
-\begin{coqout}{run=roar}{title=Response after line 3,width=6.9cm}
+\begin{coqout}{run=roar}{title=Response after line 6,width=6.9cm}
 F : nat -> nat
 l1, l2 : seq nat
 ============================
@@ -1702,7 +1666,7 @@ of the current conjecture.
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{Phantom}
 \mcbLEVEL{3}
-\mcbsection{Querying the canonical structures data base}\label{sec:phantom}
+\mcbsection{Querying canonical structures}\label{sec:phantom}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 It is possible to  ask \Coq{} if a certain term does validate an
@@ -1714,11 +1678,15 @@ check if \C{nat} is equipped with a canonical comparison function.
 This mechanism can also be used to craft notations that assert
 if one of their arguments validates an interface.  For example
 imagine one wants to define the concept of finite set as an
-alias of \C{seq T} but such that only values for \C{T} being
+alias of \C{(seq T)} but such that only values for \C{T} being
 \C{eqType}s are accepted.
 
-This rest of this section introduces the general mechanism of phantom
+The rest of this section introduces the general mechanism of phantom
 types used to trigger canonical structure resolution.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
+\mcbLEVEL{2}
+\mcbsubsection{Phantim types}
 
 First of all, canonical structure resolution kicks in during
 unification that in turn is used to compare types.  Types are
@@ -1741,7 +1709,7 @@ in \C{(Phantom (nat -> nat -> nat) addn)} we obtain a term
 pf type \C{(phantom (nat -> nat -> nat) addn)}.  In both cases the
 input term (\C{nat} and \C{addn} respectively) is now part of a type.
 
-The following example defined a notation \C{{set T}} that
+The following example defined a notation \C{\{set T\}} that
 fails if \C{T} is not an \C{eqType} but is an alias of the type
 \C{(seq T)} that imposes no requirement on the type argument. 
 
@@ -1762,8 +1730,9 @@ we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
 \section{Exercises}
 
 %%%%%%%%%%
-\begin{Exercise}{label=ex:sumoddsquare,difficulty=0,title={Sum of $2n$ odd numbers}}
+\begin{Exercise}[label=ex:sumoddsquare,difficulty=0,title={Sum of $2n$ odd numbers}]
 Show the following lemma using the theory of big operators
+
 \begin{coq}{name=bigop222}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \end{coq}
