@@ -1981,28 +1981,29 @@ algorithm looks for a verbatim occurrence of the head symbol of the
 pattern: in this case it hence looks for an occurence of \C{(_ - _)},
 which is not found. As a consequence, we need an explicit step in the
 proof script in order to expose the subtraction before being able to
-rewrite right to left with \C{mulnBr}. However we can make this
-rewrite step succeed using a user-provided pattern:
+rewrite right to left with \C{mulnBr}. However if we tackle the proof
+in reverse, starting from the right hand side, the first \C{-muln_eq0}
+step will succeed:
 
 \begin{coq}{def=PatForConv}{width=7.7cm}
 Lemma leq_mul2l m n1 n2 :
 (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
-rewrite -[_ <= _]mulnBr.
+rewrite -[_ || _]muln_eq0.
 \end{coq}
 \begin{coqout}{def=PatForConv}{width=5cm}
 m, n1, n2 : nat
 ==========================
-(m * (n1 - n2) == 0) =
-  (m == 0) || (n1 <= n2)
+(m * n1 <= m * n2) =
+  (m * (n1 - n2) == 0)
 \end{coqout}
 
-Indeed, such a pattern identifies term \C{(m * n1 <= m * n2)}, as
+Indeed, the \C{[_ || _]} pattern identifies term \C{(m == 0) || (n1 <= n2)}, as
 their head symbols coincide. Now that we have elected a subterm, the
 \C{rewrite} tactic is able to identify it with term
-\C{(m * n1 - m * n1 == 0)}, itself an instance of the right instance
-of \C{mulnBr}. Note that while matching only sees syntactic
-occurrences of the
+\C{(m == 0) || (n1 - n2 == 0)}, itself an instance of the right instance
+of \C{muln_eq0}. Note that the \C{[_ || _]} pattern is redundant here:
+while matching only sees syntactic occurrences of the
 head symbols of patterns, it is able to compare the other parts of the
 pattern up to symbolic computation.
 
