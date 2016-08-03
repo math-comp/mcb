@@ -22,12 +22,13 @@ Require Import tuple.
 \Chapter{Sub-Types}{Terms with properties}\label{ch:sigmabool}
 
 Inductive data types have been used to both code data, like lists, and
-logical connectives, like and.  Properties were always expressed with
+logical connectives, like the existential quantifier.  
+Properties were always expressed with
 boolean programs.  The questions addressed in this chapter are the
 following ones.  What
 stuts do we want to give to, say, lists of size 5,  or integers
 smaller than 7?  Which relation to put between integers and
-integers smaller than 7.  How to benefit from extra properties
+integers smaller than 7?  How to benefit from extra properties
 integers smaller than 7 have, like being a finite collection?
 
 In standard mathematics one would simple say that the integers are an
@@ -95,7 +96,7 @@ made explicit in the type.
 
 \begin{coq}{name=tupx}{width=\textwidth,title=Tuple sub-type of seq}
 Structure tuple_of n T :=  Tuple { tval :> seq T; _ : size tval == n }.
-Notation "n .-tuple T" := (tuple_of n T) (at level 2).
+Notation "n .-tuple T" := (tuple_of n T).
 \end{coq}
 \coqrun{name=r1}{ssr,tupx}
 
@@ -134,7 +135,7 @@ Proof. by rewrite map_rev revK size_map. Qed.
 \end{coq}
 \coqrun{name=r3}{ssr,tup,sizetup,p1,p2}
 
-Mapping a function over the reverse of a list, it equivalent to
+Mapping a function over the reverse of a list is equivalent to
 first map the function over the list and then reverse the result
 (\lstinline/map_rev/).  Then, reversing twice a list is a no-op, since
 \lstinline/rev/ is an involution
@@ -178,7 +179,7 @@ expression \lstinline/(rev (tval t))/ well typed, but the output
 is of type \lstinline/(seq nat)/.  
 We would like the functions on sequences to return
 data as rich as the one taken in input, i.e. preserve the invariant
-expressed by the tuple type.  Or, alternative, we would like the
+expressed by the tuple type.  Or, in alternative, we would like the
 system to recover such information.
 
 Let us examine what happens if try to unify the left hand side of the
@@ -311,9 +312,8 @@ to ease the declaration of sub-types.
 
 The first step is to define a comparison function for tuples.
 
-\begin{coq}{name=tupcmp}{title=Comparison of tuples}
-Definition tcmp n (T : eqType) (t1 t2 : n.-tuple T) :=
-  tval t1 == tval t2.
+\begin{coq}{name=tupcmp}{}
+Definition tcmp n (T : eqType) (t1 t2 : n.-tuple T) := tval t1 == tval t2.
 \end{coq}
 \coqrun{name=tupcmp}{ssr,require-tuple,tupcmp}
 
@@ -394,8 +394,8 @@ Check forall t : 3.-tuple (7.-tuple nat), undup_uniq [:: t; t].
 
 Although all these proofs and definitions are specific to \C{tuple},
 it seems obvious that we are following a schema here, and that the
-parameters are three: the original type \C{seq T}, the sub type
-\C{n.-tuple T} and the projection \C{tval}.
+parameters are three: the original type \C{(seq T)}, the sub type
+\C{(n.-tuple T)} and the projection \C{tval}.
 The sub-type kit lets one write the following:
 
 \begin{coq}{name=subt}{}
@@ -446,8 +446,11 @@ pattern}~\cite[Section 8.4]{CPDT}.
 The \C{insubd} constructor takes a default
 sub-type value which it returns if the tests fails, while \C{insub}
 takes only a base type value and returns an \C{option}; both are
-\emph{opaque} and will not evaluate the test, even for a ground base
-type value.  Both \C{Sub} and \C{insub} expect the typing context to
+\emph{locked} and will not evaluate the test, even for a ground base
+type value.\footnote{The equations describing the computation
+of \C{insub} are called \C{insubT} and \C{insubF}.}
+
+Both \C{Sub} and \C{insub} expect the typing context to
 specify the sub-type.
 
 Here are a few example uses, using \C{tuple}:
@@ -463,10 +466,16 @@ Let t3 := insubd t s. (* : 3.-tuple nat *)
 We put \C{insub} to good use in section~\ref{sec:ordfintype} when
 an enumeration for sub-types is to be defined.
 
-The \C{subType} structure describes a Boolean sigma-type in terms of
+The \C{subType} structure describes a \emph{boolean sigma-type} (a
+dependent pair whose second component is the proof of a boolean
+formula) in terms of
 its projector, constructor, and elimination rule:
 
 \begin{coq}{name=subtdef}{}
+Definition pred T := T -> bool.
+Section SubTypeKit.
+Variables (T : Type) (P : pred T).
+
 Structure subType : Type := SubType {
   sub_sort :> Type;
   val : sub_sort -> T;
@@ -476,6 +485,7 @@ Structure subType : Type := SubType {
   _ : forall x Px, val (@Sub x Px) = x
 }.
 \end{coq}
+\index[coq]{\C{pred}}
 
 Instances can provide unification hints for any of the three named fields,
 not just for \lstinline/sub_sort/. Hence, \lstinline/val $?_u$/
@@ -488,17 +498,15 @@ generic destructing \C{let}, and the projector-constructor
 identity can be proved by reflexivity.
 
 \begin{coq}{name=subtdecl}{}
-Local Notation inlined_sub_rect :=
-  (fun K K_S u => let (x, Px) as u return K u := u in K_S x Px).
-
-Lemma vrefl_rect {T} {P : pred T} x : P x -> x = x. Proof. by []. Qed.
-  
-Notation "[ 'subType' 'for' v ]" :=
-  (SubType _ v _ inlined_sub_rect vrefl_rect).
+Notation "[ 'subType' 'for' v ]" := (SubType _ v _ 
+  (fun K K_S u => let (x, Px) as u return K u := u in K_S x Px)
+  (fun x px => erefl x)).
 \end{coq}
 
 Note how the value of \C{Sub} is determined by unifying the type
-of \lstinline/inlined_sub_rect/ with the type expected by \C{SubType}.
+of the first function with the type expected by \C{SubType}, with the
+help of the ``\C{as u return K u}'' annotation, see~\cite[section
+1.2.13]{Coq:manual}.
 
 A useful variant of \C{[subType for tval]} is \C{[newType for Sval]}.
 Such specialized constructors forces the predicate defining the
@@ -552,12 +560,11 @@ ones, since they inherit all the theory.}
 \mcbsection{Finite types and their theory}
 
 Before describing other sub-types we introduce the interface of
-types equipped with a finite enumeration.  \marginnote{talk about
-count mem before}.
+types equipped with a finite enumeration.
 
 \begin{coq}{name=fintype}{title=Interface for finite types}
+Notation count_mem x := (count [pred y | y == x]).
 Module finite.
-
 Definition axiom (T : eqType) (e : seq T) :=
   forall x : T, count_mem x e = 1.
 
@@ -565,7 +572,6 @@ Record mixin_of (T : eqType) := Mixin {
   enum : seq T;
   _ : axiom T enum;
 }
-
 End finite.
 \end{coq}
 
@@ -583,7 +589,7 @@ Canonical mytype_finType := @Finite.Pack mytype mytype_finMixin.
 \end{coq}
 
 Given that the most recurrent way of showing that an enumeration
-validates \C{Finite.axiom} is by proving that it both duplicate free
+validates \C{Finite.axiom} is by proving that it is both duplicate free
 and exhaustive, a convenience mixin constructor is provided.
 
 \begin{coq}{name=fintype}{title=Declare a finType}
@@ -594,35 +600,38 @@ Definition mytype_finMixin := Finite.UniqFinMixin myenum_uniq mem_myenum.
 
 The interface of \C{finType} comes equipped with a theory that, among
 other things, provides a caridinality operator \C{#|T|} and bounded
-boolean quantifications \C{[forall x, P]}.
+boolean quantifications like \C{[forall x, P]}.
 
 \begin{coq}{name=fintype-th}{title=Some theory for finType}
 Lemma cardT (T : finType) : #|T| = size (enum T).
 Lemma forallP (T : finType) (P : pred T) : reflect (forall x, P x) [forall x, P x].
 \end{coq}
 
-Give that \C{[forall x, P x]} is a boolean expression
+Given that \C{[forall x, P x]} is a boolean expression
 it enables reasoning by excluded middle and also combines well with
 other boolean connectives.
 
 What makes this formulation of finite types handy is the explicit
-enumeration.  It is hence easy to iterate over the inhabitants of the
-finite type, making them easy to integrate to the bigop library.
+enumeration.  It is hence trivial to iterate over the inhabitants of the
+finite type.  This makes finite type easy to integrate in the
+library of iterated operations.  In particular notations like
+\C{(\\sum_(i : T) F)} are used to express the iteration over the
+inhabitants of the finite type \C{T}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbREQUIRE{eqtype,CS}
-\mcbPROVIDE{fintype}
-\mcbNOTES{}
-\mcbsection{The ordinal subtype}
+% \mcbLEVEL{1}
+% \mcbLEARN{}
+% \mcbREQUIRE{eqtype,CS}
+% \mcbPROVIDE{fintype}
+% \mcbNOTES{}
+\section{The ordinal subtype}\label{sec:ordfintype}
 
 Apart from the aforementioned theory, finite types can serve as a
 powerful notational device for ranges.  For example one may want
 to state that a matrix of size $m \times n$ is only accessed inside
 its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
 be formulated in the \mcbMC{} library is by saying that its row
-accessors accepts only inhabitants of a finite type of size $m$.
+accessors accept only inhabitants of a finite type of size $m$.
 Accessing a matrix out of its bounds becomes a type error.
 Of course one wants to access a matrix using integer coordinates, but
 integers are infinite.  Hence the first step is to define the sub-type
@@ -643,7 +652,7 @@ We start by making ordinals a subtype of natural numbers, and hence
 inherit the theory of \C{eqType}.  To show they form a \C{finType}
 we need to provide a good enumeration.
 
-\begin{coq}{name=ordinals}{title=Enumerating a sub type via insub}
+\begin{coq}{name=ordinals}{}
 Definition ord_enum n : seq (ordinal n) := pmap insub (iota 0 n).
 \end{coq}
 
@@ -706,7 +715,7 @@ Canonical ordinal_finType n :=
 
 An example of ordinals at work is the \C{tnth} function.
 It extracts the $n$-th element of a tuple exactly as
-\C{nth} for a sequence without requiring a default element.
+\C{nth} for a sequence but without requiring a default element.
 Indeed one can use ordinals to type the index making \Coq{} statically
 check that the index is smaller than the size of the tuple.
 
@@ -734,9 +743,10 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 
 In standard mathematics functions that are point wise equal are
 considered as equal.  This principle, that we call \emph{functional
-extensionality} is compatible with the \mcbCIC{} but is not built-in.
+extensionality}, is compatible with the \mcbCIC{} but is not built-in.
 Indeed, at the time of writing, only very recent variations of CIC,
-as Cubical Type Theory, include such principle.
+as Cubical Type Theory~\cite{cubicaltt}, include such principle.
+\index[concept]{functional extensionality}
 
 Still there is a class of functions for which such principle is
 provable in \Coq{}.  These are the functions with a finite domain:
@@ -774,7 +784,7 @@ What \C{codom\_tuple} builds is a list of values \C{f} takes
 when applied to the values in the enumeration of its domain.
 
 \begin{coq}{name=subtdecl}{}
-Check [ffun i : 'I_4 => i + 2].
+Check [ffun i : 'I_4 => i + 2].  (* : {ffun 'I_4 -> nat} *)
 \end{coq}
 
 Finite functions inherit from tuples the \C{eqType} structure
@@ -797,8 +807,7 @@ Definition tuple_enum (T : finType) n : seq (n.-tuple T) :=
 Lemma enumP T n : Finite.axiom (tuple_enum T n).
 
 Definition tuple_finMixin := Eval hnf in FinMixin (@FinTuple.enumP n T).
-Canonical tuple_finType :=
-  Eval hnf in FinType (n.-tuple T) tuple_finMixin.
+Canonical tuple_finType:= Eval hnf in FinType (n.-tuple T) tuple_finMixin.
  
 Definition finfun_finMixin (aT rT : finType) :=
   [finMixin of (finfun aT rT) by <:].
@@ -806,7 +815,7 @@ Canonical finfun_finType  aT rT :=
   Eval hnf in FinType (finfun aT rT) (finfun_finMixin aT rT).
 \end{coq}
 
-A relevant property of the finType of finite functions is its
+A relevant property of the \C{finType} of finite functions is its
 cardinality, begin equal to \C{#|rT| ^ #|aT|}.
 
 \begin{coq}{}{}
@@ -816,8 +825,12 @@ Lemma card_ffun (aT rT : finType) : #| {ffun aT -> rT} | = #|rT| ^ #|aT|.
 Also, as expected, finite function validate extensionality.
 
 \begin{coq}{}{}
+Definition eqfun (f g : B -> A) : Prop := forall x, f x = g x.
+Notation "f1 =1 f2" := (eqfun f1 f2).
+
 Lemma ffunP aT rT (f1 f2 : {ffun aT -> rT}) : f1 =1 f2 <-> f1 = f2.
 \end{coq}
+\index[coq]{\C{(_ =1 _)}}
 
 A first application of the type of finite functions is the following
 lemma.
@@ -892,7 +905,7 @@ predicates, i.e. terms that can be seen as functions from a type to
 \C{bool}.
 
 Since \C{T} is finite, values of type \C{\{set T\}} admit a
-complement and \C{\{set T\}} is closed under power set construction.
+complement and \C{\{set T\}} is closed under power-set construction.
 
 \begin{coq}{}{}
 Lemma setCP x A : reflect (~ x \in A) (x \in ~: A).
@@ -959,9 +972,6 @@ Definition perm_on T (S : {set T}) : pred {perm T} :=
   fun s => [set x | s x != x] \subset S.
 Lemma card_perm A : #|perm_on A| = #|A| `!.
 \end{coq}
-\marginnote{here it uses a pred, but looks like to only shorten
-subsequent proofs since T is finite, so I write set here to avoid
-explaining more about pred}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -985,8 +995,9 @@ Notation "''M[' R ]_ n" := (matrix R n n).
 As for permutations and finite function we declare a coercion
 to let one denote \C{(A i j)} the coefficient in column j of 
 row i.  Note that type inference will play an important role
-here.  If \C{A} as a known type \C{'M[R]_(m,n)}, then type inference
-will infer that \C{(i : 'I_m)} and \C{(j : 'I_n)}.  In combination
+here.  If \C{A} has a known type \C{'M[R]_(m,n)}, then type inference
+will infer that \C{(i : 'I_m)} and \C{(j : 'I_n)} from
+the expression \C{(A i j)}. In combination
 with the notations for iterated operations, this lets one
 define, for example, the trace of a square matrix as follows.
 
@@ -1066,9 +1077,7 @@ see~\ref{sec:castmx}.  At the same time type inference lets one omit
 size information most of the times, playing once again the role of a
 trained reader.
 
-\marginnote{I should conclude this reasoning by giving a rule of thumb
-I guess.}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsection{Example: matrix product commutes under trace}
 
@@ -1278,7 +1287,7 @@ Indeed the real declaration puts reflect in \C{Type} and not in
 
 Recall that \C{reflect} is typically used to state properties about
 decidable predicates. It is quite frequent to reason on such
-class of predicates by excluded middle in \emph{both} proof and programs.
+class of predicates by excluded middle in \emph{both} proofs and programs.
 As soon as one needs proofs to cast terms, the proof evidence carried by
 the reflection lemma becomes doubly useful.  Placing the declaration of 
 \C{reflect} in \C{Type} is enough to make such proof 
