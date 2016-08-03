@@ -68,7 +68,8 @@ rather than the structure itself, and indeed are usually defined
 outside of the module introducing the structure.
 
 The intrinsic interface of a structure is much smaller, and consists mostly
-of functions for creating instances. For structures like \C{eqType}
+of functions for creating instances to be typically
+declared \C{Canonical}. For structures like \C{eqType}
 that are packaged in a submodule (\C{Equality} for \C{eqType}), the
 interface coincides with the contents of the \C{Exports} submodule.
 For \C{eqType} the interface comprises:
@@ -86,6 +87,14 @@ For \C{eqType} the interface comprises:
 \item canonical instances and coercions that link the structures to lower ones
   in the hierarchy or to its elements, e.g., \C{Equality.sort}.
 \end{itemize}
+\index[coq]{\C{eqType}}
+\index[coq]{\C{Equality.type}}
+\index[coq]{\C{Equality.sort}}
+\index[coq]{\C{EqMixin}}
+\index[coq]{\C{PcanEqMixin}}
+\index[coq]{\C{[eqMixin of .. by <:]}}
+\index[coq]{\C{EqType}}
+\index[coq]{\C{[eqType of ..]}}
 Canonical instances and coercions are not mentioned directly in the
 documentation because they are only used indirectly, through type
 inference; a casual user of a structure only needs to be aware of which other
@@ -174,7 +183,7 @@ Section \ref{sec:phant} gives the technical details of instance
 constructors.
 
 Rings are the next step in the algebraic hierarchy. In order to
-simplify the theory of polynomials, see~\ref{ch:PolyLinalg},
+simplify the theory of polynomials, see~\ref{sec:poly},
 \lib{ssralg} only provides structures
 for nontrivial rings, so we now need to restrict to \C{p} of the form
 \lstinline/p'.+2/:
@@ -184,8 +193,7 @@ Variable p' : nat.
 Local Notation p := p'.+2.
 Lemma Zp_nontrivial : Zp1 != 0 :> 'I_p. Proof. by []. Qed.
 Definition Zp_ringMixin :=
-  ComRingMixin (@Zp_mulA _) (@Zp_mulC _) (@Zp_mul1z _) (@Zp_mul_addl _)
-               Zp_nontrivial.
+  ComRingMixin (@Zp_mulA _) (@Zp_mulC _) (@Zp_mul1z _) (@Zp_mul_addl _) Zp_nontrivial.
 Canonical Zp_ringType := RingType 'I_p Zp_ringMixin.
 Canonical Zp_comRingType := ComRingType 'I_p (@Zp_mulC _).
 \end{coq}
@@ -280,8 +288,8 @@ and \lib{ssralg}. However, as we have seen in
 section~\ref{sec:bigoplemmas}, structures can be used to associate
 properties to any logical object, not just types, and the
 \C{Monoid.law} structure introduced in~\ref{sec:bigoplemmas} is part
-of a teelscope hierarchy. Recall that \C{Monoid.law} associates an
-identity elements and monoid axioms to a binary operator:
+of a telescope hierarchy. Recall that \C{Monoid.law} associates an
+identity element and monoid axioms to a binary operator:
 
 \begin{coq}{name=telescope10}{}
 Module Monoid.
@@ -306,7 +314,7 @@ simplification rules such as
 
 Because the \C{Monoid} hierarchy is small there is no need to bundle
 the \C{Monoid.law} properties in a mixin. It thus takes only one line
-to declare an instance for the Boolean ``and'' operator \C{andb}
+to declare an instance for the boolean ``and'' operator \C{andb}
 
 \begin{coq}{name=telescope12}{}
 Canonical andb_monoid := Law andbA andTb andbT.
@@ -319,7 +327,7 @@ simplify the ``big and'' expression
 \big[and/true]_(i in A) true
 \end{coq}
 
-to just \C{true},\footnote{There is no spurrious
+to just \C{true},\footnote{There is no spurious
   \lstinline/add_monoid/ because the identity element is a manifest
   field stored in the structure type.}
 as it informs type inference how to solve the unification problem
@@ -518,7 +526,15 @@ Lemma eq_choose P Q : P =1 Q -> choose P =1 choose Q.
 
 The mixin actually specifies a specific search depth based choice
 strategy: \C{choose} can be defined using \C{find} and countable
-choice, which is derivable in \mcbCIC{}. 
+choice, which is derivable in \mcbCIC{}\footnote{behind the
+\C{\{m|..\}} notation lies the \C{sig} dependent pair.  Such inductive
+data type is a copy of the existential quantifier but is
+declared as a datatype rather than a
+proposition~\cite[section 3.1.4]{Coq:manual}.
+\Coq{} checks that the \C{m} is built without using
+the existential witness \C{n}.  In other words the proof in
+input is only used to justify the termination of the
+search for \C{m}.}.
 
 \begin{coq}{}{}
 Lemma find_ex_minn (P : pred nat)  :
@@ -823,7 +839,7 @@ bespoke classes and mixins subject to dependent typing constraints.
 While it is in principle possible to program this using dependent
 matching and transport, the complexity of doing so can be daunting.
 
-Instead, we propose a simpler, static solution using a simple combination
+Instead, we propose a simpler, static solution using a combination
 of phantom and function types:
 
 \begin{coq}{name=phant20}{}
@@ -852,12 +868,12 @@ In the context of \lstinline/Definition NN := nat/,
 instance with sort \emph{exactly} \C{NN} --- provided it is well typed.
 
 Now type checking
-\lstinline/@clone NN _ _ id/ will try to give
+\lstinline/(@clone NN _ _ id)/ will try to give
 \lstinline/id${}\equiv{}$(fun x => x)/ the type
-\lstinline/phant_id (Choice.class $\mcbimplm{cT}$) $\mcbimplm{c}$/.
+\lstinline/(phant_id (Choice.class $\mcbimplm{cT}$) $\mcbimplm{c}$)/.
 It will assign \C{x} the type
-\lstinline/phantom (Choice.sort $\mcbimplm{cT}$) (Choice.class $\mcbimplm{cT}$)/,
-which it will then unify with \lstinline/phantom NN $\mcbimplm{c}$/.
+\lstinline/(phantom (Choice.sort $\mcbimplm{cT}$) (Choice.class $\mcbimplm{cT}$))/,
+which it will then unify with \lstinline/(phantom NN $\mcbimplm{c}$)/.
 To do so \lstinline/Choice.sort $\mcbimplm{cT}$/
 will first be unified with \C{NN},
 by setting $\mcbimplm{cT}$ to the canonical instance
@@ -931,7 +947,7 @@ for a description of this tenchique.
 
 The sub-type kit of chapter~\ref{ch:sigmabool} is not the only
 way to easily add instances to the library.  For example
-imagine we are interested to define a wind rose and attach
+imagine we are interested to define the type of a wind rose and attach
 to it the theory of finite types.
 
 \begin{coq}{}{}
@@ -982,7 +998,7 @@ Canonical windrose_countType := CountType windrose windrose_countMixin.
 Definition windrose_finMixin := PcanFinMixin pcan_wo4.
 Canonical windrose_finType := FinType windrose windrose_finMixin.	
 \end{coq}
-Only one tiny details is left on the side.  To use \C{windrose}
+Only one tiny detail is left on the side.  To use \C{windrose}
 in conjunction with \C{\\in} and \C{#|...|}, the type declaration has
 to be tagged as a \C{predArgType} as follows.
 \index[coq]{\C{preArgType}}
