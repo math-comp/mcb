@@ -1215,6 +1215,7 @@ A generic notation can now be attached to \C{bigop}.
 Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
   (bigop idx op r (fun i => P%B) (fun i => F)) : big_scope.
 \end{coq}
+\index[coq]{\C{\\big[../..]_(.."|..) ..}}
 
 Here \C{op} is the iterated operation, \C{idx} the neutral element
 \C{r} the range, \C{P} the filter (hence the boolean scope)
@@ -1233,6 +1234,7 @@ Local Notation "+%N" := addn (at level 0, only parsing).
 Notation "\sum_ ( i <- r | P ) F" :=
   (\big[+%N/0%N]_(i <- r | P%B) F%N) : nat_scope.
 \end{coq}
+\index[coq]{\C{\\sum}}
 
 Such notation is placed in \C{nat\_scope} and is indeed specialized
 on \C{addn} and \C{0}.  The general term \C{F} is also placed in

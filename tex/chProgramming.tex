@@ -36,7 +36,7 @@ a natural number}.  This operation is written in the following manner.
 \begin{coq}{name=exfun}{}
   fun n => n + 1
 \end{coq}
-\index[coq]{\C{fun-=>-}}
+\index[coq]{\C{fun .. => ..}}
 To write such an operation, we can start from the expression \C{(2 + 1)}
 and isolate the object in this expression that is considered a
 variable component for the operation, here \C{2}, we then replace
@@ -364,7 +364,7 @@ boolean input is \C{true} or \C{false}.  This construct is written
 \begin{coq}{name=if_example}{}
 if true then 3 else 2
 \end{coq}
-\index[coq]{\C{if-then-else}}
+\index[coq]{\C{if .. then .. else ..}}
 More generally, we can define a function that takes a boolean value as
 input and returns one of two possible natural numbers in the following
 manner:
@@ -429,6 +429,8 @@ the successor operation is given in the definition of the type
 Inductive nat := O | S (n : nat)
 \end{coq}
 \index[coq]{\C{nat}}
+\index[coq]{\C{S}}
+\index[coq]{\C{O}}
 
 This declaration states that the only ways to produce natural numbers
 are by using the constant \C{O}, or by applying the function \C{S} to
@@ -463,7 +465,7 @@ Locate ".+4".
 fun x => f x.+1 : nat -> nat
 Notation "n.+4" := S (S (S (S n)))
 \end{coqout}
-\index[coq]{\C{.+1}}
+\index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
 \index[vernac]{\C{Locate}}
 
 When writing functions that compute on natural numbers, we can
@@ -480,7 +482,7 @@ computation.  Here is an example:
 match n with 0 => true | p.+1 => false end
 \end{coq}
 \index[concept]{inductive type!destructor}
-\index[coq]{\C{match-with-end}}
+\index[coq]{\C{match .. with .. end}}
 In this expression we describe a computation where some decision is
 taken depending on the value of the number \C{n}.  The fragment 
 ``\C{0 => true}'' expresses that when \C{n} is \C{0}, the final value is
@@ -507,7 +509,7 @@ syntax:
 \begin{coq}{name=pattern_on_nat_0}{}
 if n is 0 then true else false
 \end{coq}
-\index[coq]{\C{if-is-then-else}}
+\index[coq]{\C{if .. is .. then .. else ..}}
 
 For an example where the pattern variable is actually used, we can
 observe the function that returns the predecessor of a natural number
@@ -516,6 +518,7 @@ when it exists, or 0 otherwise.
 \begin{coq}{name=pred}{}
 Definition pred n := if n is u.+1 then u else n.
 \end{coq}
+\index[coq]{\C{pred} (predecessor)|seealso {\C{.-1}}}
 Reading this function in detail, we see that the argument \C{n} is
 matched with the pattern \C{u.+1}.  When this comparison
 succeeds, the variable \C{u} receives the value of the immediate
@@ -820,7 +823,11 @@ multiplication
 equality comparison (\C{eqn}, \C{==}), order
 comparison (\C{leq}, \C{<=}) on natural numbers.  The trailing \C{n} in
 the names is indeed to signal that these operations are on the \C{nat} data
-type.
+type.  Postfix notations as \C{.-1} and \C{.*2} are provided for
+the predecessor and double functions.
+\index[coq]{\C{(_ .-1)}}
+\index[coq]{\C{(_ .*2)}}
+
 The \mcbMC{} library also provides concepts that makes sense only
 for the \C{nat} data type (hence the trailing \C{n} is omitted) and
 that we will use many times in this book.  In particular the
@@ -1040,7 +1047,7 @@ fun l => [:: 1, 2, 3 & l]
   : seq nat -> seq nat
 \end{coqout}
 \coqrun{name=check_list_2_run}{check_list_2}
-\index[coq]{\C{[:: .., .., .. & ..]}}
+\index[coq]{\C{[:: .. , .. & ..]}}
 
 In particular \Coq{} provides the infix notation \C{::} for
 \C{cons}.  The \mcbMC{} library follows a general pattern for
@@ -1052,10 +1059,14 @@ can write as \C{[&& true, false & true]} the boolean conjunction
 of three terms.\footnote{For the sake of completeness, some n-ary notation use a
 different, but more evocative, last separator.  For example one writes
 \C{[|| b1, b2 | b3]} and \C{[==> b1, b2 => b3]}.}
+\index[coq]{\C{["|"| .. , .. "| ..]}}
+\index[coq]{\C{[&& .. , .. & ..]}}
+\index[coq]{\C{[==> .. , .. => ..]}}
 For sequences that are \C{nil}-terminated, a very frequent case,
 the \mcbMC{} library provides an additional notation where all elements are
 separated by \C{;} (semi-colon) and the last element, \C{nil},
 is omitted.
+\index[coq]{\C{[seq .. ; ..]}}
 
 When programming with sequences, we can again use the  pattern matching
 construct to express how data can be retrieved from a sequence.  For
@@ -1143,7 +1154,7 @@ Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 \end{coqout}
 \coqrun{name=try_map_notation_run}{try_map_notation}
 \index[concept]{list comprehension}
-\index[coq]{\C{[seq .. | x <- ..]}}
+\index[coq]{\C{[seq .. "| .. <- ..]}}
 In addition to the function \C{map} and the associated notation
 we studied here, the \mcbMC{} library
 provides a large collection of useful functions and notations to work on
@@ -1152,6 +1163,8 @@ instance \C{[seq i <- s | p]} filters the sequence \C{s} keeping only
 the values selected by the boolean test \C{p}.
 Another useful function for sequences is \C{cat} (with infix notation \C{++})
 that is used to catenate two sequences together.
+\index[coq]{\C{(_ ++ _)}}
+\index[coq]{\C{[seq .. <- .. "| ..]}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Other containers}\label{sec:othercontainers}
@@ -1160,7 +1173,7 @@ The simplest polymorphic data type one can think about is the option type
 \begin{coq}{}{}
 Inductive option A := None | Some (a : A).
 \end{coq}
-\index[coq]{option}
+\index[coq]{\C{option}}
 It represents a box that can be either empty or contain a value.
 It is sometimes used to represent a partial function, or a filter.
 
@@ -1408,6 +1421,7 @@ Notation "\sum_ ( m <= i < n ) F" :=
   (foldr (fun i a => F + a) 0 (iota m (n-m)).
 \end{coq}
 \index[coq]{\C{iota}}
+\index[coq]{\C{\\sum}}
 
 The \C{iota} function generates the list of natural numbers
 corresponding to the range of the summation.  We also provide
@@ -1501,7 +1515,7 @@ Abbreviations can also be local to a term, to avoid repetitions.
 let p := n.-1 in
   if n is m.+1 then p == m else p == 0
 \end{coq}
-\index[coq]{\C{let-in}}
+\index[coq]{\C{let .. := .. in ..}}
 Here \C{p} is a name given to the expression \C{n.-1} and
 used twice the following expression.  Let-in abbreviations are
 fully transparent, exactly as notations.  There is no semantic
@@ -1570,7 +1584,7 @@ matching:
 \begin{coq}{}{}
 Definition x (p : point) := let: Point a _ _ := p in a.
 \end{coq}
-\index[coq]{\C{let:-in} (destructor)}
+\index[coq]{\C{let: .. := .. in ..}}
 \index[concept]{pattern matching!irrefutable}
 
 Records can as well be polymorphic, for example the pair data type of
@@ -1704,8 +1718,8 @@ Notation "( A , B )" := (pair A B).
 Definition fst A B (p : A * B) := let: (a, _) := p in a.
 Definition snd A B (p : A * B) := let: (_, b) := p in b.
 \end{coq}
-\index[coq]{\C{(_ * _)} (type scope)}
-\index[coq]{\C{(_ , _)} (pairs)}
+\index[coq]{\C{(_ * _)} (pairs)}
+\index[coq]{\C{(_ , _)}}
 
 \end{Answer}
 
