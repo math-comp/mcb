@@ -26,3 +26,6 @@ coq: $(patsubst %.tex,.%/rt,$(wildcard *.tex))
 		--outenv coqout \
 		--prtenv coq $*.tex
 	@touch $@
+
+stats:
+	gitinspector -F htmlembedded -f tex -T -r -H  > stats.html
