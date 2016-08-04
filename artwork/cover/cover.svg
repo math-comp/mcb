@@ -172,7 +172,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.9401946"
-     inkscape:cx="56.455366"
+     inkscape:cx="58.582585"
      inkscape:cy="433.71571"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
@@ -195,7 +195,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -290,7 +290,7 @@
          id="tspan20264"
          x="50.823551"
          y="84.160561"
-         style="fill:#000000">Y.Bertot, G.Gonthier, A.Mahboubi, E.Tassi, ...</tspan></text>
+         style="fill:#000000">A.Mahboubi, E.Tassi, G.Gonthier, Y.Bertot</tspan></text>
     <g
        transform="matrix(0.83994351,0,0,0.83994351,-197.82101,137.97224)"
        id="g26609"
