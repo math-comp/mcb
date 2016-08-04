@@ -194,7 +194,7 @@ called \emph{normal}.
 For example \C{(f 3)} returns \C{4}.
 
 \begin{coq}{name=print_f}{width=6cm,title=Evaluating a function}
-Eval compute in f 3
+Eval compute in f 3.
 \end{coq}
 \begin{coqout}{run=print_f_run}{title=Response,width=6cm}
  = 4 : nat
@@ -325,7 +325,7 @@ so booleans look like a built-in notion.  On the contrary they are a
 notion defined as follows.
 
 \begin{coq}{name=print_bool}{title=Declaration of bool}
-Inductive bool := true | false
+Inductive bool := true | false.
 \end{coq}
 \index[vernac]{\C{Inductive}}
 This declaration states explicitly that there are only two cases for
@@ -404,7 +404,7 @@ For instance, the function \C{andb} is defined as follows and
 evaluates to \C{true} if and only if both inputs are \C{true}.
 
 \begin{coq}{name=define_andb}{}
-Definition andb b1 b2 := if b1 then b2 else false
+Definition andb b1 b2 := if b1 then b2 else false.
 \end{coq}
 \index[coq]{\C{andb}}
 
@@ -426,7 +426,7 @@ the successor operation is given in the definition of the type
 \C{nat}.
 
 \begin{coq}{}{}
-Inductive nat := O | S (n : nat)
+Inductive nat := O | S (n : nat).
 \end{coq}
 \index[coq]{\C{nat}}
 \index[coq]{\C{S}}
@@ -646,7 +646,7 @@ following manner:
 
 \begin{coq}{name=redefine_add}{}
 Fixpoint addn n m :=
-  if n is p.+1 then (addn p m).+1 else m
+  if n is p.+1 then (addn p m).+1 else m.
 \end{coq}
 \index[vernac]{\C{Fixpoint}}
 \index[coq]{\C{addn}}
@@ -1108,15 +1108,15 @@ elements in a sequence.
 
 \begin{coq}{name=def_size}{}
 Fixpoint size A (s : seq A) :=
-  if s is _ :: s' then (size s').+1 else 0.
+  if s is _ :: tl then (size tl).+1 else 0.
 \end{coq}
 \index[coq]{\C{size}}
 During computation on a given sequence, this function will traverse
 the whole list, adding 1 to the result for ever
 \C{cons} pattern that is encountered.  It should be noted that in this
 definition, the function \C{size} is described as a two argument
-function, but the recursive call \C{(size s')} is done by providing
-explicitly only one argument, \C{s'}.  This is because
+function, but the recursive call \C{(size tl)} is done by providing
+explicitly only one argument, \C{tl}.  This is because
 %we started the
 %\Coq{} session with, among other commands, the command ``\C{Set Implicit
 %  Arguments}''.  According to this directive, 
@@ -1132,7 +1132,7 @@ manner.
 
 \begin{coq}{name=def_map}{}
 Fixpoint map A B (f : A -> B) s :=
-  if s is e :: s' then f e :: map f s' else nil.
+  if s is e :: tl then f e :: map f tl else nil.
 \end{coq}
 \index[coq]{\C{map}}
 With this function it is also interesting to understand how we can
@@ -1193,8 +1193,8 @@ pairs that have a natural number as the first component and a boolean
 value as the second one.
 
 \begin{coq}{}{width=6cm}
-Check (3, false)
-Eval compute in (true, false).1
+Check (3, false).
+Eval compute in (true, false).1.
 \end{coq}
 \begin{coqout}{}{width=6cm}
 (3, false) : nat * bool
@@ -1286,7 +1286,7 @@ as follows:
 
 \begin{coq}{}{width=8cm}
 Eval compute in iter 5 pred 7.
-Eval compute in foldr add 0 [:: 1; 2; 3].
+Eval compute in foldr addn 0 [:: 1; 2; 3].
 \end{coq}
 \begin{coqout}{}{width=4cm}
  = 2 : nat
@@ -1367,7 +1367,7 @@ compute symbolically.  For example, let's consider this alternative
 definition of the addition between natural numbers
 
 \begin{coq}{}{}
-Fixpoint add m n := if m is m'.+1 then add m' n.+1 else n.
+Fixpoint add m n := if m is u.+1 then add u n.+1 else n.
 \end{coq}
 \index[coq]{\C{add}}
 
@@ -1416,9 +1416,9 @@ $$
 They can both be faithfully represented by using \C{foldr}.
 
 \begin{coq}{}{}
-Fixpoint iota m n := if n is n'.+1 then m :: iota m.+1 n' else [::].
+Fixpoint iota m n := if n is u.+1 then m :: iota m.+1 u else [::].
 Notation "\sum_ ( m <= i < n ) F" :=
-  (foldr (fun i a => F + a) 0 (iota m (n-m)).
+  (foldr (fun i a => F + a) 0 (iota m (n-m))).
 \end{coq}
 \index[coq]{\C{iota}}
 \index[coq]{\C{\\sum}}
@@ -1565,8 +1565,8 @@ call these programs \emph{projections}.  I.e. after the \C{Record} declaration
 one can write:
 
 \begin{coq}{}{width=8.5cm,title=Query}
-Eval compute in x (Point 3 0 2)
-Eval compute in y (Point 3 0 2)
+Eval compute in x (Point 3 0 2).
+Eval compute in y (Point 3 0 2).
 \end{coq}{}{}
 \begin{coqout}{}{width=3.5cm,title=Response}
 = 3 : nat
@@ -1746,7 +1746,7 @@ Definition muln n1 n2 := iter n1 (addn n2) 0.
 
 \begin{coq}{}{}
 Fixpoint nth T (def : T) (s : seq T) n :=
-  if s is x :: s' then if n is n'.+1 then nth def s' n' else x else def.
+  if s is x :: tl then if n is u.+1 then nth def tl u else x else def.
 \end{coq}
 
 \end{Answer}
