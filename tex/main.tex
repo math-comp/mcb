@@ -14,14 +14,11 @@
 \begin{document}
 \maketitle
 
-% \input{chConventions.tex}
-
 \input{ch0.tex}
 
 \tableofcontents{}
 
 \part{Definitions and proofs}
-
 
 \input{chProgramming}
 \input{chProofs}
@@ -36,81 +33,14 @@
 
 \part{Mathematics in Mathematical Components}
 
-% OLD STUFF:
-% 
-% \mantra{
-% 	if you have a proof in mind, don't let the system drive you
-%         to another, less clean and abstract, proof.
-% }
-% 
-% \section*{STYLE of these chapters}
-% These chapters hopefully in the following style:
-% \begin{itemize}
-% \item first math mode to review the (not so standard) definitions and
-% \item then touch some real proof script to show why/how the definition
-%   make it possible to model the proofs (as they are in math)
-% \item use the (few) examples to illustrate a cool proof strategy if
-%   any (not necessarily typical of the math subject, but that happens to
-%   be there, like in OOTHM paper: circular leq, symmetries, ad hoc
-%   decision procedure, ...)
-% \item try hard to show how CIC helps (which feature: HO, computation, dependent
-% 	types \ldots), so that at the end we can sum up and make a synthesis of
-% 	all that.
-% \end{itemize}
-% 
-% Maybe it is simpler to do it in 2 steps:
-% 1) in this second part one identifies where CIC or the SSR style plays a
-%    crucial role
-% 2) then we advertise these use cases in the first part to motivate
-%    the techniques, the complexity of the logic...
-
 \input{chNumbers}
-
 \input{chPolyLinalg}
-
-% \chapter{Quotients}
-
-\input{fingroup}
-
-\chapter{Galois Theory}
-
+\input{chFingroup}
+\input{chGalois}
 \input{chRcf}
-
-% \chapter{Algebraic closure}
-
-% \part{Conclusion and perspectives}
-% 
-% Let's be brave:
-% This part looks back to the techniques, methodologies and achieved
-% formalized libraries described in the book and summarizes the role
-% played by each on them, in the spirit of the introduction to the ssr manual.
-% May be also discusses the possible extensions
-% (like CoqEAL) or adaptation to the future evolutions of the system and
-% formalism (Cubical Coq, HITs...).
 
 \part{Indexes}
 
-% \chapter{Foundations}
-
-% \chapter{What is done where?}
-% 
-% \chapter{How tos}
-% suggestions:
-% \begin{itemize}
-% \item Get more information when you do not understand the error
-%   message
-% \item Search in the library
-% \item Canonical structures: define a new instance
-% \item Canonical structures: add a new structure
-% \item Give a relevant name to the lemma I just stated
-% \item Forbid unwanted expansions
-% \item Choose a notation (what not to do...)
-% \item Compute ``for real'' (Natbin, Coqeal)
-% \item MathComp script style
-% \end{itemize}
-
-%\clearpage
-%\addcontentsline{toc}{chapter}{Index}
 \printindex[concept]
 \printindex[ssr]
 \printindex[coq]
