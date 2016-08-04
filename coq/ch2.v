@@ -1,5 +1,56 @@
 Require Import all_ssreflect.
 
+(* statements *)
+Check 3 = 3.
+Check false || true = true.
+Locate "_ = _". 
+About eq.
+Fail Check 3 = [:: 3].
+
+(* proofs *)
+Lemma my_first_lemma : 3 = 3.
+Proof. by []. Qed.
+Lemma my_second_lemma : 2 + 1 = 3. 
+Proof. by []. Qed. 
+Lemma addSn m n : m.+1 + n = (m + n).+1. 
+Proof. by []. Qed.
+ 
+Lemma negbK b : ~~ (~~ b) = b.
+Proof. by case: b. Qed.
+
+Lemma leqn0 n : (n <= 0) = (n == 0).
+Proof. by case: n => [| k]. Qed.
+ 
+Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
+Proof.
+case: m => [|m] //.
+case: n => [|k] //.
+by rewrite muln0.
+Qed.
+
+Lemma leqE m n : (m <= n) = (m - n == 0).
+Admitted.
+Lemma leq_mul2l m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof. by rewrite !leqE -mulnBr muln_eq0. Qed.
+
+(* quantifiers *)
+Section StandardPredicates.
+Variable T : Type.
+Implicit Types (op add : T -> T -> T) (R : rel T).
+Definition associative op := forall x y z, op x (op y z) = op (op x y) z.
+Definition left_distributive op add :=
+  forall x y z, op (add x y) z = add (op x z) (op y z).
+Definition left_id e op := forall x, op e x = x.
+End StandardPredicates.
+
+Section MoreStandardPredicates.
+Variables rT aT : Type.
+Implicit Types (f : aT -> rT).
+Definition injective f := forall x1 x2, f x1 = f x2 -> x1 = x2.
+Definition cancel f g := forall x, g (f x) = x.
+Definition pcancel f g := forall x, g (f x) = Some x.
+End MoreStandardPredicates.
+
 Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
 Proof. by move=> m_gt0 ?; rewrite dvdn_fact ?m_gt0. Qed.
 
@@ -19,8 +70,6 @@ apply: dvdn_fact.
 by []. (* p <= m *)
 Qed.
 
-
-
 Lemma example1 m p : prime p ->
   p %| m `! + 1 -> ~~ (p <= m).
 Proof.
@@ -38,6 +87,15 @@ rewrite dvdn_addr.
   by rewrite gtnNdvd // prime_gt1.
 by rewrite dvdn_fact // prime_gt0.
 Qed.
+
+Lemma foldl_rev T A f (z : A) (s : seq T) :
+ foldl f z (rev s) = foldr (fun x z => f z x) z s .
+Proof.
+elim/last_ind: s z => [|s x IHs] z //.
+by rewrite -cats1 foldr_cat -IHs cats1 rev_rcons.
+Qed.
+
+(** Exercises *)
 
 Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
 Proof. by case: b1; case: b2; case: b3. Qed.

@@ -1219,7 +1219,7 @@ Implicit Types (op add : T -> T -> T) (R : rel T).
 Definition associative op := forall x y z, op x (op y z) = op (op x y) z.
 Definition left_distributive op add :=
   forall x y z, op (add x y) z = add (op x z) (op y z).
-Definition left_id T e op := forall x, op e x = x.
+Definition left_id e op := forall x, op e x = x.
 End StandardPredicates.
 \end{coq}
 \index[coq]{\C{associative}}
@@ -1637,7 +1637,8 @@ For example \C{last_ind} can be used to relate the
 \C{foldr} and \C{foldl} iterators as follows:
 
 \begin{coq}{}{}
-Lemma foldl_rev z s : foldl z (rev s) = foldr (fun x z => f z x) z s.
+Lemma foldl_rev T A f (z : A) (s : seq T) :
+  foldl f z (rev s) = foldr (fun x z => f z x) z s .
 \end{coq}
 
 The proof uses the following lemmas:
@@ -1652,7 +1653,8 @@ Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
 The complete proof script follows:
 
 \begin{coq}{}{}
-Lemma foldl_rev z s : foldl z (rev s) = foldr (fun x z => f z x) z s.
+Lemma foldl_rev T A f (z : A) (s : seq T) :
+  foldl f z (rev s) = foldr (fun x z => f z x) z s .
 Proof.
 elim/last_ind: s z => [|s x IHs] z //.
 by rewrite -cats1 foldr_cat -IHs cats1 rev_rcons.
@@ -1666,7 +1668,7 @@ the accumulator \C{z}.  The resulting value for \C{P} hence
 features a quantification on \C{z}.
 
 \begin{coq}{}{}
-(fun s => forall z, foldl z (rev s) = foldr (fun x z => f z x) z s)
+(fun s => forall z, foldl f z (rev s) = foldr (fun x z => f z x) z s)
 \end{coq}
 
 Thanks to the generalization, \C{IHs} states:
