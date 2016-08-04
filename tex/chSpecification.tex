@@ -1000,6 +1000,8 @@ The first step is to prove that $m! + 1$ is greater than $1$, a triviality.
 Still it gives us the occasion to explain the \C{have} tactic, that let us
 augment the proof context with a new fact, typically an intermediate step of
 our proof.
+\index[ssr]{\C{have name : type}}
+\index[ssr]{\C{have name : type by tactic}}
 
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
@@ -1207,8 +1209,7 @@ move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
 Qed.
 \end{coq}
-\index[ssr]{\C{suff}}
-\index[ssr]{\C{suffices}}
+\index[ssr]{\C{suff} also \C{suffices}}
 The \C{suff} tactic (or \C{suffices}) 
 is like \C{have} but swaps the two goals.  
 
@@ -1231,8 +1232,7 @@ rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
 Qed.
 \end{coq}
-\index[ssr]{\C{wlog}}
-\index[ssr]{\C{without loss}}
+\index[ssr]{\C{wlog} also \C{without loss}}
 
 Remark how \C{wlog} only needs the statement of the extra assumption,
 and which portion of the context needs to be abstracted, here \C{n1} and
@@ -1364,7 +1364,7 @@ have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
 by rewrite /= mulSnr -addnA -subSS subnKC.
 Qed.
 \end{coq}
-\index[ssr]{\C{.. in ..}}
+\index[ssr]{\C{tactic in name}}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
 can be appended to each tactic in order to push on the stack the specified
 hypotheses before running the tactic and pulling 

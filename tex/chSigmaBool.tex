@@ -342,6 +342,7 @@ by rewrite (eq_irrelevance p1 p2).
 Qed.
 \end{coq}
 \coqrun{name=tupcmpP}{ssr,tup,tupcmp,eqtupP}
+\index[concept]{proof irrelevance}
 
 The first direction is trivial by rewriting.
 The converse direction makes an essential use of
@@ -520,6 +521,7 @@ type is useful to attach to it different notations or coercions.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsection{A note on boolean $\Sigma$-types\label{hedberg}}
+\index[concept]{proof irrelevance}
 
 The \C{eq_irrelevace} theorem used to prove that tuples form an
 \C{eqType} is a delicate matter in the \mcbCIC{}.  In particular it
@@ -1127,7 +1129,7 @@ gen have trE, trAB: m n A B / \tr (A *m B) = \sum_i \sum_j A i j * B j i.
   by apply: eq_bigr => i _; rewrite mxE.
 rewrite trAB trE.
 \end{coq}
-\index[ssr]{\C{gen have}}
+\index[ssr]{\C{gen have name : name / type}}
 
 The \C{gen have} step now generates two equations, a general one
 called \C{trE}, and its instance to \C{A} and \C{B} called \C{trAB}.

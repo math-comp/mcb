@@ -186,6 +186,8 @@ chapter~\ref{ch:prog}: everything we mentioned about it also applies
 here. The \C{Proof} keyword marks the beginning of the proof text and
 after it is executed, the system displays the current state of the
 formal proof in a dedicated window.
+\index[vernac]{\C{Lemma}}
+\index[vernac]{\C{Theorem}}
 
 \begin{coqdef}{name=first-lemma}
 Lemma my_first_lemma : 3 = 3.
@@ -214,6 +216,7 @@ We will explain how to proceed with such a proof in
 section~\ref{ssec:proofcomp}.
 For now, let us then just admit this result, using the \C{Admitted}
 command.
+\index[vernac]{\C{Admitted}}
 
 \begin{coq}{name=first-lemma-admitted}{}
 Lemma my_first_lemma : 3 = 3.
@@ -237,7 +240,6 @@ the present section is dedicated to a tour of more complex formal statements.
 
 \subsection{Identities}\label{ssec:id}
 \index[concept]{identity}
-
 
 Ground equalities are just a very special case of mathematical
 statements called \emph{identities}. An \emph{identity} is an equality
@@ -555,7 +557,7 @@ $~$
 subgoal 2 is:
  ~~ ~~ false = false
 \end{coqout}
-\index[ssr]{\C{case}}
+\index[ssr]{\C{case: name}}
 
 More precisely, the tactic ``\C{case: b}'' indicates that we want to
 perform a case analysis on \C{b}, whose
@@ -693,7 +695,7 @@ k : nat
 =========================
   (k < 0) = (k.+1 == 0)
 \end{coqout}
-\index[ssr]{\C{=> [$\mid$m]}}
+\index[ssr]{\C{case: name => [$\mid$m]}}
 The second and now only remaining goal corresponds to the case when
 \C{n} is the successor of \C{k}.
 It can also be  solved by computation, as both hand sides
@@ -1055,7 +1057,6 @@ m, n1, n2 : nat
   (m == 0) || (n1 - n2 == 0)
 \end{coqout}
 \index[ssr]{\C{rewrite}! \C{-} (right-to-left)}
-\index[concept]{rewrite!multiple rules}
 Consecutive rewrite steps can be collapsed as follows:
 
 \begin{coq}{def=LeqMul2lproof2}{width=6.7cm}
@@ -1590,10 +1591,11 @@ At the light of that, reasoning by induction on a term \C{t} means
 finding the induction lemma associated to the type of \C{t} and synthesizing
 the right predicate \C{P}.  The \C{elim:} tactic provides such
 functionalities, while \C{apply:} does not.  Hence \C{elim:}
-has to be used when reasoning by induction.\index[ssr]{\C{elim}}
+has to be used when reasoning by induction.
 
 Lets prove by induction on \C{m} that \C{0} is neutral on the
 right of \C{addn}.
+\index[ssr]{\C{elim: name => [$\mid$m IHm]}}
 
 \begin{coq}{}{width=6cm}
 Lemma addn0 m : m + 0 = m.
@@ -1864,7 +1866,7 @@ tactic.  Whilst being handy, \C{simpl} tends to oversimplify
 expressions, hence we advice using it with care.
 In section~\ref{sec:edivn} we propose a less risky alternative.
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
-\index[ssr]{\C{rewrite}!\C{//=} (simplify and close trivial goals)}
+index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
 
 Last, the unfolding equation \C{leqE} that we used in
 the proof of \C{leq_mul2l} in section~\ref{sec:multirew}
@@ -2056,14 +2058,14 @@ m, n1, n2 : nat
 (m * (0 + n1) <= m * n2) =
 (m == 0) || (0 + n1 <= n2)
 \end{coqout}
-\index[ssr]{\C{rewrite}! \C{-[$\ldots$]/($\ldots$)} (changing)}
+\index[ssr]{\C{rewrite}! \C{-[term]/(term)} (changing)}
 
 Last, an equation local to the proof context, like an
 induction hypothesis, can be disposed after using it by
 prefixing is name with \C{\{\}}.  For example
 ``\C{rewrite -\{\}IHn}'' rewrites with \C{IHn} right to
 left and drops such context item.
-\index[ssr]{\C{rewrite}! \C{\{\}} (clear)}
+\index[ssr]{\C{rewrite}! \C{\{name\}} (clear)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
