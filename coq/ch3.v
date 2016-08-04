@@ -2,7 +2,6 @@ Require Import all_ssreflect.
 
 Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
 Proof.
-move: {-2}n (leqnn n).
 elim: n {-2}n (leqnn n) =>[|n IHn]; first by case.
 do 12! [ case=> // ].
 case; first by exists 3, 0.
