@@ -14,7 +14,7 @@ Abort.
 
 \Chapter{Type Inference}{ Teaching \Coq{} how to read Math}
 
-The rules of the \mcbCIC{}, as the ones schetched in~\ref{sec:ttch},
+The rules of the \mcbCIC{}, as the ones sketched in~\ref{sec:ttch},
 are expressed on the syntax on terms and
 are implemented by the kernel of \Coq{}.  Such software component
 performs \emph{type checking}: given a term and type it checks if such
@@ -60,7 +60,7 @@ thanks to his background knowledge.
 
 This chapter also introduces the key concepts of \emph{interface}
 and \emph{instance}.  An interface is essentially the signature
-of an agebraic structure: operations, properties and notations
+of an algebraic structure: operations, properties and notations
 letting one reason abstractly about a family of objects sharing
 the interface.
 An instance is an example of an algebraic structure,
@@ -778,7 +778,7 @@ comparison function is not allowed to quotient the type by identifying
 two syntactically different terms.
 
 \mantra{The infix notation \lstinline/==/ stands for
-a comparison function compatible with Leibnitz equality
+a comparison function compatible with Leibniz equality
 (substitution in any context).}
 
 The \C{Equality} module enclosing the record acts a name space:
@@ -825,7 +825,7 @@ Remark the use of \C{:>} instead of \C{:} to type the
 field called \C{sort}.  This tells \Coq{} to declare the
 \C{Equality.sort} projection
 as a coercion, enabling one to write \C{(forall T : eqType, forall x y
-: T, P)}.  Ineed \C{T} is not a type, only its \C{sort} projection is.
+: T, P)}.  Indeed \C{T} is not a type, only its \C{sort} projection is.
 
 \gotcha{Being \C{Equality.sort} a coercion, it is not displayed by
 \Coq{}, hence error messages about a missing canonical structure
@@ -896,7 +896,7 @@ Proof. by move=> /eqP ->. Qed.
 \coqrun{name=r8}{ssr,test}
 
 In short, \C{eqP} can be used to change view: turn any
-\C{==} into \C{=} and viceversa.
+\C{==} into \C{=} and vice versa.
 
 The \C{eqP} lemma also applies to abstract instances of \C{eqType}.
 When we rework the instance of the type \C{(T1 * T2)} we see that the
@@ -980,8 +980,8 @@ consequence we lose the form automation provided by computation
 and it also becomes harder to reason by cases on the membership predicate.
 On the contrary when we quantify a theory on the type  \C{(seq T)} for a
 \C{T} that is an \C{eqType}, we recover all that.  In other words
-by better specifying the type that parametrizes a generic container
-we define which operations are lecit and which properties hold.
+by better specifying the type that parameterizes a generic container
+we define which operations are licit and which properties hold.
 So far the only interface we know is \C{eqType}, that is primordial to
 boolean reflection.
 In the next chapters more elaborate interfaces will enable us to
@@ -1071,7 +1071,7 @@ Qed.
 Definition seq_eqMixin := Equality.Mixin eqseqP.
 Canonical seq_eqType := @Equality.Pack (seq T) seq_eqMixin.
 \end{coq}
-%\marginnote{cleanup this scipt}
+%\marginnote{cleanup this script}
 
 As an example we build a sequence of sequences, and we assert that
 we can use the \C{==} and \C{\\in} notation on it, as well as apply
@@ -1129,7 +1129,7 @@ as a list; the general term $f(i)$ by a function \C{(fun i =>
 ...)}; the operation of evaluating a function on all the
 elements of list and combining the results by the \C{foldr} iterator.
 
-Funtional programming can also be used to describe the finite domain.
+Functional programming can also be used to describe the finite domain.
 For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$ 
 corresponding to the range $m \leq i < n$ can be built using the \C{iota}
 function as follows:
@@ -1169,7 +1169,7 @@ of odd numbers is the following:
 \begin{coq}{name=bigop21}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \end{coq}
-where \C{.*2} is a postfix notation, smilar to \C{.+1}, 
+where \C{.*2} is a postfix notation, similar to \C{.+1}, 
 standing for doubling.
 Under the hood we expect to find the following expression:
 
@@ -1197,7 +1197,7 @@ Definition bigop R I idx op r (P : pred I) (F : I -> R) : R :=
   foldr (fun i x => if P i then op (F i) x else x) idx r.
 \end{coq}
 
-Using the \C{bigop} contant to express our statement leads to
+Using the \C{bigop} constant to express our statement leads to
 
 \begin{coq}{name=bigop2}{}
 Lemma sum_odd n :
@@ -1239,7 +1239,7 @@ Notation "\sum_ ( i <- r | P ) F" :=
 Such notation is placed in \C{nat\_scope} and is indeed specialized
 on \C{addn} and \C{0}.  The general term \C{F} is also placed in
 the scope of natural numbers.
-We can proceed even furhter and specialize the notation to
+We can proceed even further and specialize the notation to
 a numerical range:
 
 \begin{coq}{name=bigop3nat2}{}
@@ -1297,10 +1297,10 @@ that, given the filter, what one really pulls out is
 range, \C{0} must also be neutral.
 
 The lemma to pull out the last item of an iterated operation
-is provided as the combination of two simlper lemmas called
+is provided as the combination of two simpler lemmas called
 respectively \C{big\_nat\_recr} and \C{big\_mkcond}.
 
-The former states that one can pull out of an interated operation on a
+The former states that one can pull out of an iterated operation on a
 numerical range the last element, proviso the range is non empty.
 
 \begin{coq}{name=bigop3natrec}{}
@@ -1342,7 +1342,7 @@ and obtain the following goal:
 \end{coqout}
 
 It is clear that for the two lemmas to be provable
-one needs the associativiy property of \C{addn} and also that
+one needs the associativity property of \C{addn} and also that
 \C{0} is neutral.
 In other words the lemmas we used require the operation \C{*\%M} to form
 a monoid together with the unit \C{1}.
@@ -1394,9 +1394,9 @@ Structure law := Law {
 \coqrun{name=uniqp2}{ssr,bigop}
 
 The \C{Monoid.law} structure relates the \C{operator} (the key used by
-canonical structures) to the three propoerties of monois.
+canonical structures) to the three properties of monoids.
 
-We can then parametrize an intire theory on this interface.
+We can then parameterize an entire theory on this interface.
 
 \begin{coq}{name=bigop1}{}
 Coercion operator : law >-> Funclass.
@@ -1473,7 +1473,7 @@ by hand.
 
 % The problem \C{i} versus \C{(?F i)}
 % is a hard problem too, since \C{?F} is a program, but it has
-% a unique solution: being \C{i} a locally boud variable, not in the
+% a unique solution: being \C{i} a locally bound variable, not in the
 % scope of the body of \C{?F}, the only way for \C{(?F i)} to
 % produce \C{i} is to return its input.
 
@@ -1482,7 +1482,7 @@ by hand.
 \mcbLEVEL{1}
 \mcbsubsection{Searching the bigop library}
 
-Searching the bigop library for a lemm is slightly harder than
+Searching the bigop library for a lemma is slightly harder than
 searching the other libraries as explained in section~\ref{sec:search}.
 In particular one can hardly search with patterns.  For example
 the following search returns no results:
@@ -1516,7 +1516,7 @@ with \C{ Search "cond" "big"}, etc\ldots
 
 
 Finally the \mcbMC{} user is advised to read the contents of the
-\lib{bigop} file in order get acquainted with the nameing policy used
+\lib{bigop} file in order get acquainted with the naming policy used
 in that library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1688,7 +1688,7 @@ types used to trigger canonical structure resolution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
 \mcbLEVEL{2}
-\mcbsubsection{Phantim types}
+\mcbsubsection{Phantom types}
 
 First of all, canonical structure resolution kicks in during
 unification that in turn is used to compare types.  Types are
@@ -1756,7 +1756,7 @@ Qed.
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEARN{difference with type classes, limitations}
-% \mcbREQUIRE{RecCanonical,Coqercions}
+% \mcbREQUIRE{RecCanonical,Coercions}
 % \mcbPROVIDE{}
 % \mcbLEVEL{2}
 % \mcbsection{Discussion about type inference}\label{sec:typeinfrelated}

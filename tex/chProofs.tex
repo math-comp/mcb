@@ -410,7 +410,7 @@ the corresponding tactics.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Proofs by computation}\label{ssec:proofcomp}
-\index[ceoncept]{computation}
+\index[concept]{computation}
 
 Here is now the proof script that validates the statement $3 = 3$.
 
@@ -491,7 +491,7 @@ function.
 For instance the proof of the \C{addSn} identity:
 
 
-\begin{coq}{name=addSn}{title=Reflexevity by symbolic computation}
+\begin{coq}{name=addSn}{title=Reflexivity by symbolic computation}
 Lemma addSn m n : m.+1 + n = (m + n).+1. Proof. by []. Qed.
 \end{coq}
 \index[coq]{\C{addSn}}
@@ -1898,7 +1898,7 @@ algorithm, as well as on the control primitives that can drive it.
 First, remember that our first attempt, using the simple
 \C{rewrite leqE} command only
 affected the left hand side of the initial goal because of the
-behaviour of this matching algorithm.
+behavior of this matching algorithm.
 Indeed, the matching algorithm traverses the entire goal
 left-to-right, looking for the first subterm matching pattern
 \C{(_ <= _)},  and hence picks subterm \C{(m * n1 <= m * n2)}.
@@ -1978,7 +1978,7 @@ is equal up to computation to term \C{(m * n1 - m * n1 == 0)}, the matching
 algorithm is not able to see it. This is due to the compromise that
 has been chosen, between predictability and cleverness. Indeed the
 algorithm looks for a verbatim occurrence of the head symbol of the
-pattern: in this case it hence looks for an occurence of \C{(_ - _)},
+pattern: in this case it hence looks for an occurrence of \C{(_ - _)},
 which is not found. As a consequence, we need an explicit step in the
 proof script in order to expose the subtraction before being able to
 rewrite right to left with \C{mulnBr}. However if we tackle the proof
@@ -2256,7 +2256,7 @@ Qed.
 % my_first_lemma : 3 = 3
 % \end{coqout}
 %
-% Now that we are satisfied with the statement, we llok into proving it.
+% Now that we are satisfied with the statement, we look into proving it.
 % At the current stage we need to use the two already existing
 % lemmas \C{add0n} and \C{addnC} and the fact that the equality predicate
 % is substitutive: given an equation we can replace any instance of
@@ -2388,7 +2388,7 @@ Qed.
 % % \subsection{old}
 % %
 % % \begin{itemize}
-% % \item \Coq{} comes with an equality prexdicate, that we see as axiomatic for the
+% % \item \Coq{} comes with an equality predicate, that we see as axiomatic for the
 % % moment (in this section). It is called \C{eq} and has an infix
 % % notation \C{=}. Example: \C{Check 3 = 3}, \C{Check 3 = 4}.
 % % \item Observe that, \C{Check} just checks the well-formedness of the
@@ -2399,12 +2399,12 @@ Qed.
 % % \item We can give a name to a statement, that we would like to prove
 % %   formally. Example \C{Lemma foo : 3 = 3}. Observe what happens at the
 % %   level of the interface (we start a proof).
-% % \item And now, how to prove equality statements. Observationaly, \C{=}
-% %   behaves as expected: this is trivally true because \C{=} is
+% % \item And now, how to prove equality statements. Observational, \C{=}
+% %   behaves as expected: this is trivially true because \C{=} is
 % %   reflexive.
 % % \item End of the proof, \C{Qed}.
 % % \item Now we have a theorem called \C{foo} at hand in the
-% %   environement: \C{Check foo}. We can use it but it is useless...
+% %   environment: \C{Check foo}. We can use it but it is useless...
 % % \item In fact the libraries you load provide theorems that you can use
 % %   in your proofs. Example:  \C{Check add0n}, \C{Check addnC}. Note the
 % %   universal quantification.
@@ -2427,7 +2427,7 @@ Qed.
 % % \item More advanced forms of proofs by the \C{rewrite} tactic allow to
 % %   select a pattern and to simplify the goal for free by
 % %   computation. Hence \C{addn0} just does not need to be stated
-% %   explicitely in the proof script. Warning: simpl is a Pandora
+% %   explicitly in the proof script. Warning: simpl is a Pandora
 % %   box. This should come very early
 % %   and go with/before boolean reflection style proofs by rewriting.
 % %
@@ -2435,7 +2435,7 @@ Qed.
 % %   throughout the libraries: \C{_ = true}. For instance
 % %   \C{odd (2 * x + 7) = true}. This is both a 'logical' statement,
 % %   saying that any expression \C{(2x+7)} is an odd number, and
-% %   an equation that can be rewriten during the course of a proof. Find
+% %   an equation that can be rewritten during the course of a proof. Find
 % %   an example, like \C{odd (2 * x + 7) || odd (2 * x)}. rewrite and
 % %   compute.
 % %
@@ -2734,7 +2734,7 @@ Qed.
 % % \begin{itemize}
 % % \item instantiation of a universal statement is application (also the pair)
 % % \item Excluded middle is not available by default (choice?)
-% % \item Conversion as a pervasive indistinguishably, what inside
+% % \item Conversion as a pervasive indistinguishable, what inside
 % %   (beta, definition unfolding,...)
 % % \item Dependent types: eq, sigma (which example?)
 % % \end{itemize}

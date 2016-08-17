@@ -15,7 +15,7 @@ and decidable predicates or boolean connectives.
 Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
 library.  The computational behavior of programs is at the core of
 type theory.  The fact that a function computes to a value requires no
-proof: 5 and 2+3 are indistinguishible from a logical standpont.
+proof: 5 and 2+3 are indistinguishable from a logical standpoint.
 This fact provided a powerful form of automation, and as we will
 see later will also ease the construction of ``sub sets''.
 
@@ -374,7 +374,7 @@ Indeed this was the modus operandi in the pioneering work of
 De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
 Of course a dedicated proof language can relief the user from
 many tedious details.  The proof commands we have seen so far can all be
-explained in terms of the proof therms they produce behind the scenes.
+explained in terms of the proof terms they produce behind the scenes.
 For example \C{case: n} provides a much more compact syntax
 for \C{(match .. with .. end)} and it produces a
 \C{match} expression with the right
@@ -571,11 +571,11 @@ to be seen both as an opportunity and as a danger: one can easily
 make a proof unreadable by performing too many actions in the bookkeeping
 operator \C{=>}.  At the same time a trivial sub-proof like this one
 should take no more than a line, and in that case one typically
-sacrifices readability in favour of compactness: what would you learn by
+sacrifices readability in favor of compactness: what would you learn by
 reading a trivial proof?  Of course,
 finding the right balance only comes with experience.
 
-\gotcha{The case intro pattern \C{[..|..]} obeys an exception: whe it is the first
+\gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
 on the subgoals.\footnote{not the status quo, but I prefer this exception to the
 current one} Indeed in \C{case: n => [|m]} only one case analysis is performed.}
@@ -969,7 +969,7 @@ Nevertheless, when proving a statement that is not a boolean, like
 
 In other cases axioms can be avoided by rephrasing the mathematics
 in a weaker setting.  A notable example in the \mcbMC{} library
-is the construction of the real closure of an Archimedian
+is the construction of the real closure of an Archimedean
 field~\cite{DBLP:conf/itp/Cohen12}.
 %\marginnote{TODO Cyril: say more about RCF}
 
@@ -989,7 +989,7 @@ like ``\C{ forall P : Prop}'' or ``\C{ forall T : Type}''.  The subtle differenc
 between the label \C{Prop} for propositions and \C{Type} for data types
 is out of scope here, we consider them synonyms.
 
-An excellent example of these quantification is the indutive type
+An excellent example of these quantification is the inductive type
 modelling the existential quantification:
 
 \begin{coq}{}{}
@@ -998,7 +998,7 @@ ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
 \end{coq}
 
 The \C{ex} type constructor is polymorphic in a type \C{A} and a predicate
-on \C{A}.  Remark that also \C{seq} is polimorphic, but only in one argument
+on \C{A}.  Remark that also \C{seq} is polymorphic, but only in one argument
 so the quantification can be non dependent: \C{(seq : Type -> Type)}.
 
 In the constructor \C{ex_intro} the quantification on \C{P} also needs to be
@@ -1006,7 +1006,7 @@ dependent: first because it must build a term of type \C{(ex A P)} (that
 mentions \C{P}); second because the last argument needs to be of a proof of
 \C{P}, so its type must mention the predicate.  Again in the case of \C{seq}
 the constructor \C{(cons : forall A, A -> seq A -> seq A)} needs no dependent
-quantification on the head elemt, while here \C{a} needs to occur in
+quantification on the head element, while here \C{a} needs to occur in
 the type of the argument that follows it, since it must be a proof of
 \C{(P a)}.
 
@@ -1024,7 +1024,7 @@ mulmx : forall R : Type, forall m n p : nat,
 
 This time the data type of matrices exposes the size, and matrix multiplication
 can be given a type that rules out incompatible matrices and also describes
-the dimention of the resulting matrix in terms of the size of the input
+the dimension of the resulting matrix in terms of the size of the input
 ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
 add and multiply elements of \C{R}.  Such detail plays no role in the current
 discussion.}
@@ -1045,7 +1045,7 @@ Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
 %           nat -> nat a function, like pred
 %forall x : nat, p n   a statement, n = n
 %forall x : nat, T n   a rich data type constructor
-%           Type -> Type  a poly data type construtor
+%           Type -> Type  a poly data type constructor
 %forall T : Type, F T     a polymorphic data type
 %(bla : Prop) -> 'I_m
 %

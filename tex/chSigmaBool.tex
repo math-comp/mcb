@@ -26,7 +26,7 @@ logical connectives, like the existential quantifier.
 Properties were always expressed with
 boolean programs.  The questions addressed in this chapter are the
 following ones.  What
-stuts do we want to give to, say, lists of size 5,  or integers
+status do we want to give to, say, lists of size 5,  or integers
 smaller than 7?  Which relation to put between integers and
 integers smaller than 7?  How to benefit from extra properties
 integers smaller than 7 have, like being a finite collection?
@@ -602,7 +602,7 @@ Definition mytype_finMixin := Finite.UniqFinMixin myenum_uniq mem_myenum.
 \end{coq}
 
 The interface of \C{finType} comes equipped with a theory that, among
-other things, provides a caridinality operator \C{#|T|} and bounded
+other things, provides a cardinality operator \C{#|T|} and bounded
 boolean quantifications like \C{[forall x, P]}.
 
 \begin{coq}{name=fintype-th}{title=Some theory for finType}
@@ -1208,7 +1208,7 @@ and a square block of size $n-1$.
 \mcbsubsection{Size casts}\label{sec:castmx}
 
 Types containing values are a doubly sharp weapon.  While we have seen that
-they make the writing of matrix expressions extremely succint, in some case
+they make the writing of matrix expressions extremely succinct, in some case
 they need extra care.  In particular the equality predicate accepts
 arguments of the very same type.  Hence a statement like this one
 requires a size cast:
@@ -1224,7 +1224,7 @@ Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
 Indeed the left hand size has type \C{'M_(m, n1 + (n2 + n3))} while
 the right hand size has type \C{'M_(m, (n1 + n2) + n3)}.  The
 \C{castmx} operator, and all its companion lemmas, lets one deal with
-this inconcevience.
+this inconvenience.
 
 \begin{coq}{}{}
 Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
@@ -1250,7 +1250,7 @@ it is a useless cast.
 
 Another useful tool is \C{conform_mx} that takes a default matrix of
 the right dimension and second one that is returned only if its
-dimentions match.
+dimensions match.
 
 \begin{coq}{}{}
 Definition conform_mx (B : 'M_(m1, n1) (A : 'M_(m, n) :=

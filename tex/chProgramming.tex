@@ -1,6 +1,6 @@
 \Chapter{Computational definitions}{ Defining concepts by writing programs}\label{ch:prog}
 
-% TODO: uniform terminology (a function returns,produces, computes... patter matching,case analysis...program, function, operation...computation, evaluation...data type, inductive type); I mean, we can say we use them interchangeably... but the quotienting must be explicit since the reader may not know it (eg some of it is historical, some justified by curry howard (fwd reference)).  Also "coq session" is something that I would remove.
+% TODO: uniform terminology (a function returns,produces, computes... patter matching,case analysis...program, function, operation...computation, evaluation...data type, inductive type); I mean, we can say we use them interchangeably... but the quotienting must be explicit since the reader may not know it (eg some of it is historical, some justified by curry Howard (fwd reference)).  Also "coq session" is something that I would remove.
 % 
 % TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
 % 
@@ -1484,18 +1484,18 @@ or adopted in the \mcbMC{} library.
 	any character.  For example \C{.+1} is a single symbol, as
 	\C{.+4} and \C{\%/} and \C{<=} and \C{[::}.  Only existing
 	symbols are taken into account: \C{3.+1.+1} is parsed as a number
-	forllowed by two occurrences of the \C{.+1} symbol; \C{.+1.+1} could
+	followed by two occurrences of the \C{.+1} symbol; \C{.+1.+1} could
 	be a symbol, in principle, but no notation declares it.
 %\marginnote{I know it is not correct, but no user would prefer the correct explanation}
 \item Notations that are typically denoted with a letter, like $N(G)$ for the
-	normalizer of the group $G$ are represented with symbols begining
+	normalizer of the group $G$ are represented with symbols beginning
 	with \c{'} as in \C{'N(G)}, where \C{'N} is a symbol.
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
 	specific cases, like binding \C{1} and \C{0} to ring elements.
 \item n-ary notations begin with \C{[} followed by the symbol of the
 	operation being repeated, as in \C{[&& true, false & false]}.
-\item postfix notataions begin with \C{.}, as in \C{.+1} and \C{.-group}
+\item postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
 	to let one write \C{(p.-group G)}.
 \end{itemize}
 
@@ -1531,7 +1531,7 @@ Last, we recall the notion of implicit argument sketched in
 section~\ref{sec:poly}.  Once implicit arguments are active for
 the \C{cons} and \C{nil} constructors the writing \C{(cons 3 nil)} 
 shorthand for \C{(cons _ 3 (nil _))}.  The \C{_} denotes a term,
-here a type, to be inferrer by \Coq{}.  In this case the typing constraints
+here a type, to be inferred by \Coq{}.  In this case the typing constraints
 of impose both \C{_} to be \C{nat}.  To locally disable the
 status of implicit arguments one can prefix the name of a
 constant with \C{@} and pass all arguments explicitly as in
@@ -1635,7 +1635,7 @@ using \C{iter}.
 
 %%%%%%%%
 \begin{Exercise}[label=ex:nth,difficulty=0,title={Find the n-th element}]
-Define a program taking a default valaue, a list and  a natural number.  Such
+Define a program taking a default value, a list and  a natural number.  Such
 program returns the n-th element of the list if n is smaller than the size of
 the list.  It returns the default value otherwise.
 
@@ -2288,8 +2288,8 @@ Definition all_words n T (alphabet : seq T) :=
 % 
 % polymorphism as in F
 % 
-% may be also examples of polymorphisms that can be defined in pure
-% $\lambda$-calculus (identity, argument swaping).
+% may be also examples of polymorphism that can be defined in pure
+% $\lambda$-calculus (identity, argument swapping).
 % 
 % \section{programming in \Coq{}}
 % this contains real programs, and is the excuse to talk about:

@@ -79,7 +79,7 @@ For \C{eqType} the interface comprises:
 \item \C{EqMixin}, \C{PcanEqMixin}, \lstinline/[eqMixin of T by <:]/:
   mixin constructors that bundle the \emph{new} operations and
   properties the structure provides.
-\item \C{EqType}: an instance construtor that creates an instance of
+\item \C{EqType}: an instance constructor that creates an instance of
   the structure from a mixin.  
 \item \lstinline/[eqType of T]/, \lstinline/[eqType of T for S]/:
   cloning constructors that specialize a canonical or given instance
@@ -125,7 +125,7 @@ Implicit Types x y : 'I_p.
 Definition inZp i := Ordinal (ltn_pmod i (ltn0Sn p')).
 \end{coq}
 The \C{inZp} construction injects any natural number \C{i}
-into \C{'I_p} by applying the modolus.  Indeed the
+into \C{'I_p} by applying the modulus.  Indeed the
 type of \C{ltn_pmod} is \C{(forall m d : nat,0 < d -> m \%\% d < d)},
 and \C{(ltn0Sn p')} is a proof that \C{(0 < p)}.
 
@@ -207,7 +207,7 @@ is needed for line 8 as only a single property is added.
 
 Constraining the shape of the modulus $p$ is a simple and robust way
 to enforce $p>1$: it standardizes the proofs of $p>0$ and $p>1$, which
-avoid the unpleaseantness of multiple interpretations of \C{0}
+avoid the unpleasantness of multiple interpretations of \C{0}
 stemming from different proofs of $p>0$ --- the latter tends to happen
 with ad hoc inference of such proofs using canonical structures or
 tactics. The shape constraint can however be inconvenient when the
@@ -234,7 +234,7 @@ Definition Zmn := ('Z_m * 'Z_m)%type.
 While \lib{ssralg} and \lib{zmodp} provide the instances type inference
 needs to synthesize a ring structure for \C{Zmn}, \Coq{} has to expand the
 definition of \C{Zmn} to do so. Declaring \C{Zmn}-specific instances
-will avoid such spurrious expansions, and is easy thanks to cloning
+will avoid such spurious expansions, and is easy thanks to cloning
 constructors:
 
 \begin{coq}{name=zp6}{}
@@ -289,7 +289,7 @@ section~\ref{sec:bigoplemmas}, structures can be used to associate
 properties to any logical object, not just types, and the
 \C{Monoid.law} structure introduced in~\ref{sec:bigoplemmas} is part
 of a telescope hierarchy. Recall that \C{Monoid.law} associates an
-identity element and monoid axioms to a binary operator:
+identity element and Monoid axioms to a binary operator:
 
 \begin{coq}{name=telescope10}{}
 Module Monoid.
@@ -762,7 +762,7 @@ for its algebraic predicate hierarchy).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{3}
-\mcbLEARN{Hiding infered structures in parameters and constructors}
+\mcbLEARN{Hiding inferred structures in parameters and constructors}
 \mcbPROVIDE{\lstinline/phantom/ idioms}
 \mcbREQUIRE{\lstinline/GRing/}
 \mcbsection{Parameters and constructors}\label{sec:phant}
@@ -937,7 +937,7 @@ Definition pack T b0 mul0 (axT: @axiom R (@Lmodule.Pack R _ T b0 T) mul0):=
 Notation LalgType R T a := (@pack _ (Phant R) T _ _ a _ _ id _ _ id _ id).
 \end{coq}
 The interested reader can also refer to~\cite[Section 7]{mahboubi:hal-00816703}
-for a description of this tenchique.
+for a description of this technique.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Linking a custom data type to the library}
