@@ -797,10 +797,7 @@ m : nat
 (m.+1 * 0 == 0) =
   (m.+1 == 0) || (0 == 0)
 \end{coqout}
-\marginnote{We should make the remark somewhere explicitly that
-  reflexivity for 0
-or successor or any closed values is by computation but not
-reflexivity for a variable.}
+%\marginnote{We should make the remark somewhere explicitly that reflexivity for 0 or successor or any closed values is by computation but not reflexivity for a variable.}
 
 This proof script can be made more compact and more linear by using an
 optional part of the introduction pattern, which makes \Coq{}

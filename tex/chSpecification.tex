@@ -269,7 +269,7 @@ Lemma eqnP (n m : nat) : reflect (n = m) (eqn n m).
 \end{coq}
 \index[coq]{\C{eqnP}}
 
-\marginnote{In fact, \C{eqnP} is stated using Equality.axiom}
+%\marginnote{In fact, \C{eqnP} is stated using Equality.axiom}
 Each implication can be proved by a simple induction on one of the
 natural numbers, but we still need to generate the two subgoals
 corresponding to these implications, as the \C{split} tactic is of no
@@ -330,7 +330,7 @@ in conjunction with \C{iffP}.
 Lemma idP (b : bool) : reflect b b.
 \end{coq}
 \index[coq]{\C{idP}}
- \marginnote{The tuning of implicits is crucial for the \C{apply: (iffP idP)} to behave correctly.}
+% \marginnote{The tuning of implicits is crucial for the \C{apply: (iffP idP)} to behave correctly.}
 We can now come back to the proof of lemma \C{eqnP}, and start its
 proof script by applying \C{iffP}.
 
@@ -1399,7 +1399,7 @@ to keep the body of the let-in.
 Line 5 unfolds the recursive function and uses the following lemma to push the
 subtraction into the branches of the if statement. Then it reasons by cases
 on the guard of the if-then-else statement.
-\marginnote{Should we embed this lemma in the unfolding equation?}
+%\marginnote{Should we embed this lemma in the unfolding equation?}
 
 \begin{coq}{}{}
 Lemma subn_if_gt T m n F (E : T) :

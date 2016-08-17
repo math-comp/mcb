@@ -1071,7 +1071,7 @@ Qed.
 Definition seq_eqMixin := Equality.Mixin eqseqP.
 Canonical seq_eqType := @Equality.Pack (seq T) seq_eqMixin.
 \end{coq}
-\marginnote{cleanup this scipt}
+%\marginnote{cleanup this scipt}
 
 As an example we build a sequence of sequences, and we assert that
 we can use the \C{==} and \C{\\in} notation on it, as well as apply

@@ -1436,7 +1436,7 @@ Eval compute in \sum_( 1 <= i < 5 ) i.
 = 16 : nat
 = 10 : nat
 \end{coqout}{}{}
-\marginnote{maybe we should start from 1, give both bounds}
+%\marginnote{maybe we should start from 1, give both bounds}
 
 It is important that the iteration happens following the order of the list.
 In this case the operation, addition, is commutative, so it does not really
@@ -1486,7 +1486,7 @@ or adopted in the \mcbMC{} library.
 	symbols are taken into account: \C{3.+1.+1} is parsed as a number
 	forllowed by two occurrences of the \C{.+1} symbol; \C{.+1.+1} could
 	be a symbol, in principle, but no notation declares it.
-			\marginnote{I know it is not correct, but no user would prefer the correct explanation}
+%\marginnote{I know it is not correct, but no user would prefer the correct explanation}
 \item Notations that are typically denoted with a letter, like $N(G)$ for the
 	normalizer of the group $G$ are represented with symbols begining
 	with \c{'} as in \C{'N(G)}, where \C{'N} is a symbol.
