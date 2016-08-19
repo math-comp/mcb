@@ -35,7 +35,7 @@ interactively by means of proof commands.  In this chapter we
 focus on type inference.
 
 Type inference is \emph{ubiquitous}: whenever the user inputs a term
-(or a type) the system tries to infer a type for it.  
+(or a type) the system tries to infer a type for it.
 One can think of the work of the type inference
 algorithm as trying to give a meaning to the input of the
 user possibly completing and constraining it by inferring some
@@ -43,7 +43,7 @@ information.  If the algorithm succeeds the term is accepted,
 otherwise an error is given.
 
 What is crucial to the \mcbMC{} library is that
-\emph{the type inference algorithm is programmable}: 
+\emph{the type inference algorithm is programmable}:
 one can extend the
 basic algorithm with small declarative programs\footnote{A program is
 said to be declarative when it explains what it computes rather than
@@ -373,7 +373,7 @@ Definition eq_op (c : eqType) : sort c -> sort c -> bool :=
 Note that the type dependency between the two fields requires the first
 projection to be used in order to define the type of the second projection.
 
-We think of the \lstinline/eqType/ record type as a \emph{relation} 
+We think of the \lstinline/eqType/ record type as a \emph{relation}
 linking a
 data type with a comparison function on that data type.  Before
 putting the \lstinline/eqType/ relation to good use we declare an
@@ -646,7 +646,7 @@ so far, we only taught \Coq{} how to compare booleans and natural
 numbers, not how to compare pairs.
 Intuitively the way to compare pairs is to compare their components
 \emph{using the appropriate comparison function}.
-Let's write a comparison function for pairs. 
+Let's write a comparison function for pairs.
 
 \begin{coq}{name=paircs}{title=Comparing pairs}
 Definition prod_cmp eqA eqB x y :=
@@ -725,7 +725,7 @@ The term synthesized by \Coq{} is the following one:
 % In any case a table with ``all'' the interfaces should probably be
 % part of the book
 % }
-% 
+%
 % In the running example of this chapter we use the canonical structures
 % language to express structurally recursive programs on the syntax
 % of types.  The \mcbCIC{} allows arbitrary terms to occur inside
@@ -1101,7 +1101,7 @@ language.
 \mcbsection{The generic theory of ``big'' operators}\label{sec:bigop}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The objective of the \emph{bigop} library is to provide compact notations 
+The objective of the \emph{bigop} library is to provide compact notations
 for definite iterated operations and a library of general results about them.
 
 Lets take two examples of iterated operations:
@@ -1121,7 +1121,7 @@ some times expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
 items being combined by the iterated operation.
 
-As already mentioned in \ref{sec:bigopnat}, 
+As already mentioned in \ref{sec:bigopnat},
 the functional programming language
 provided by \Coq{} can express in a very natural way iterations over
 a finite domain.  In particular such finite domain can be represented
@@ -1130,7 +1130,7 @@ as a list; the general term $f(i)$ by a function \C{(fun i =>
 elements of list and combining the results by the \C{foldr} iterator.
 
 Functional programming can also be used to describe the finite domain.
-For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$ 
+For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$
 corresponding to the range $m \leq i < n$ can be built using the \C{iota}
 function as follows:
 \begin{coq}{name=iota}{}
@@ -1140,7 +1140,7 @@ Definition index_iota m n := iota m (n - m).
 The only component of typical notations for iterated operations we have not
 discussed yet is the filter, used to iterate the operation only on a
 subset of the domain.
-For example to state that the sum of the first $n$ odd numbers is $n^2$ 
+For example to state that the sum of the first $n$ odd numbers is $n^2$
 one could write:
 $$
 \sum_{i < 2n,\, 2 \nmid i} i = n^2
@@ -1169,7 +1169,7 @@ of odd numbers is the following:
 \begin{coq}{name=bigop21}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \end{coq}
-where \C{.*2} is a postfix notation, similar to \C{.+1}, 
+where \C{.*2} is a postfix notation, similar to \C{.+1},
 standing for doubling.
 Under the hood we expect to find the following expression:
 
@@ -1263,7 +1263,7 @@ rewrite unlock /=.
 \end{coq}
 
 The \C{bigop} constant is ``locked'' to make the notation steady.  To
-unravel its computational behavior one has to rewrite with 
+unravel its computational behavior one has to rewrite with
 the \C{unlock} lemma.
 
 \begin{coqout}{}{}
@@ -1290,7 +1290,7 @@ to obtain
 1 + (3 + 0) + 5 = 3^2
 \end{coqout}
 
-one really needs the iterated operation, addition here, 
+one really needs the iterated operation, addition here,
 to be associative.  Also note
 that, given the filter, what one really pulls out is
 \C{(if odd 5 then 5 else 0)}, so for the theorem to be true for any
@@ -1322,7 +1322,7 @@ Lemma big_mkcond I r (P : pred I) F :
 If we chain the two lemmas we can pull out the last item.
 
 \begin{coq}{name=bigop3natrec}{}
-Lemma sum_odd_3 : 
+Lemma sum_odd_3 :
   \sum_(1 <= i < 3.*2) i.*2 = 5 * 4
 Proof.
 rewrite big_mkcond big_nat_recr //=.
@@ -1353,7 +1353,7 @@ Section by showing that the same lemmas also apply to an iterated
 product.
 
 \begin{coq}{name=bigop3natrec}{width=5.5cm}
-Lemma prod_fact_4 : 
+Lemma prod_fact_4 :
   \prod_(1 <= i < 5) i = 4`!.
 Proof.
 rewrite big_nat_recr //=.
@@ -1697,7 +1697,7 @@ particular the type expected by the function and the one of the
 argument are unified.  What we need to craft is is a mechanism that
 takes any input term (proper terms like \C{addn} but also types as \C{nat})
 an puts it into a type.  We will then wire things up so that such
-type is unified with another one containing the application of 
+type is unified with another one containing the application of
 a projection to an unknown canonical structure instance.
 
 \begin{coq}{name=phantom}{}
@@ -1713,7 +1713,7 @@ input term (\C{nat} and \C{addn} respectively) is now part of a type.
 
 The following example defined a notation \C{\{set T\}} that
 fails if \C{T} is not an \C{eqType} but is an alias of the type
-\C{(seq T)} that imposes no requirement on the type argument. 
+\C{(seq T)} that imposes no requirement on the type argument.
 
 \begin{coq}{name=set}{}
 Definition set_of : (T : eqType) (_ : phantom Type (Equality.sort T)) := seq T.
@@ -1724,7 +1724,7 @@ Notation "{ 'set' T }" := (set_of _ (Phantom _ T))
 When type inference runs on \C{\{set nat\}} the underlying term being
 typed is \C{(set\_of ?T (Phantom ?N nat))}.
 The unification problem arising for the last argument of \C{set\_of}
-is \C{(phantom Type (Equality.sort ?T))} versus 
+is \C{(phantom Type (Equality.sort ?T))} versus
 \C{(phantom Type nat)}, that in turn contains the sub problem
 we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
 
@@ -1743,7 +1743,7 @@ Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 \subsection{Solutions}
 
 %%%%%%%%%
-\begin{Answer}[ref=ex:leq]
+\begin{Answer}[ref=ex:sumoddsquare]
 \begin{coq}{name=bigop222}{}
 Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
 Proof.
