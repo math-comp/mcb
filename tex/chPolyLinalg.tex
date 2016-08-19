@@ -1,112 +1,112 @@
 \chapter{Polynomials, Linear algebra}
 
-2-stage presentation: interface plus explicit. Expansion of
-Georges'ITP paper. Here is one of the main application of the choice
-operator (complement a base).
-
-
-\section{Polynomials}
-\label{sec:poly}
-
-The part of the library covering univariate is composed of two main files
-\C{poly} and \C{polydiv}. It contains the basic operations to manipulate
-polynomials: usual ring operations, horner evaluation, composition, derivative, division, remainder, gcd.
-
-\paragraph{Basic formalization choices} 
-The type of polynomials is \C{\{poly R\}}. It is parametrized over a type \C{R}
-that is equipped with a ring type structure.
-A polynomial is represented by a sequence of coefficients whose last element is non-zero.
-This is why there is an automatic coercion from a polynomial to its associated sequence.
-Note that there is no explicit definition of the degree of a polynomial in the library, 
-the size of  its sequence is used instead. This discrepancy with usual mathematical practice can
-be seen in theorems like the one on the degree of the product of two 
-polynomials 
-
-\begin{coq}{}{}
-Lemma size_mul_leq p q : size (p * q) <= (size p + size q).-1.
-\end{coq}
-\paragraph{Formalization trick: nested polynomial}
-One of the  main result that is derived in the file \C{poly} is that polynomials
-form a ring. This means, in particular, that one can create polynomials 
-whose coefficient are polynomials \C{\{poly \{poly R\}\}}. This gives a direct way to 
-represent bi-variate polynomials. One could go a step further and performs this application
-recursively.
-This way of getting multivariate polynomials may be interesting for some applications
-but is not supported by the library.
-
-\paragraph{Formalization trick: division and pseudo-division}
-Division comes in two flavors in the library. A first definition \C{rdivp} applies on an arbitrary ring. 
-It consists on performing a pseudo-divisor where the dividend can be multiplied by a scaling factor.
-A second one \C{divp} on which is attached the notation \C{p \%/ q} requires a stronger assumption: the domain on which polynomials are built must be
-an integral domain type. In this last version, the division tests if the leading coefficient of the divisor
-is a unit. If it is the case it performs the expected inversion. This second division when applied on a field gives
-the usual equality.
-
-\begin{coq}{}{}
-Lemma divp_eq p q : p = (p %/ q) * q + (p %% q).
-\end{coq}
-
-\noindent
-The library is organized in such a way to provide appropriate theorems for the different domains on top of which
-polynomials can be built. Modules are used to regroup
-these theorems . For example, here are the various  versions of \C{div_eq}.
-
-\begin{coq}{}{width=12.5cm}
-Lemma Pdiv.Field.divp_eq (F : fieldType) (p q : {poly F}) :
-  p = (p %/ q * q + p %% q)%R
-Lemma Pdiv.Idomain.divp_eq (R : idomainType) (p q : {poly R}) :
-  (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
-Lemma Pdiv.IdomainMonic.divp_eq (R : idomainType) (q : {poly R}) :
-  q \is monic -> forall p : {poly R}, p = (p %/ q * q + p %% q)%R
-Lemma Pdiv.IdomainUnit.divp_eq (R : idomainType) (d : {poly R}) :
-  lead_coef d \is a GRing.unit -> forall p: {poly R}, p = (p %/ d * d + p %% d)%R
-Lemma Pdiv.WeakIdomain.divp_eq (R : idomainType) (p q : {poly R}) :
-  (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
-\end{coq}
-
-\noindent
-When loading the  \C{polydiv} file, it is the \C{Pdiv.Field} module that is opened by default.
-
-\section{TODO: Linear algebra}
-\C{mxalgebra}
-
-\begin{coq}{}{}
-Fixpoint Gaussian_elimination {m n} : 'M_(m, n) -> 'M_m * 'M_n * nat :=
-  match m, n with
-  | _.+1, _.+1 => fun A : 'M_(1 + _, 1 + _) =>
-    if [pick ij | A ij.1 ij.2 != 0] is Some (i, j) then
-      let a := A i j in let A1 := xrow i 0 (xcol j 0 A) in
-      let u := ursubmx A1 in let v := a^-1 *: dlsubmx A1 in
-      let: (L, U, r) := Gaussian_elimination (drsubmx A1 - v *m u) in
-      (xrow i 0 (block_mx 1 0 v L), xcol j 0 (block_mx a%:M u 0 U), r.+1)
-    else (1%:M, 1%:M, 0%N)
-  | _, _ => fun _ => (1%:M, 1%:M, 0%N)
-  end.
-\end{coq}
-
-Gaussian elimination of a matrix
-\C{A} is a triple \C{(L, U, r)} with \C{L} a column permutation of a
-lower triangular invertible matrix, \C{U} a row permutation of an upper
-triangular invertible matrix, and \C{r} the rank of \C{A}, all
-satisfying the identity \C{(L *m pid_mx r *m U = A)}.
-\C{(pid_mx r)} is a non necessarily square matrix that has \C{1} in \C{r}
-first coefficients on the diagonal and \C{0} elsewhere.
-
-Its main difference with respect to the standard algorithm
-is the \emph{double} pivoting \C{[pick ij | A ij.1 ij.2 != 0]}, that
-looks for a non-null coefficient in the entire matrix.  By bringing
-this element in the top-left cornet iteratively one also computes the rank
-of the matrix.
-
-rank theory, incomplete basis thm
-
-subspace equality and choice type
-
-direct sum
-
-\cite{gonthier:hal-00805966}
-
-\section{TODO: Matrices and polynomials}
-\C{mxpoly}
-
-Cayley Hamilton, Sylvester matrix, characteristic polynomial
+% 2-stage presentation: interface plus explicit. Expansion of
+% Georges'ITP paper. Here is one of the main application of the choice
+% operator (complement a base).
+% 
+% 
+% \section{Polynomials}
+% \label{sec:poly}
+% 
+% The part of the library covering univariate is composed of two main files
+% \C{poly} and \C{polydiv}. It contains the basic operations to manipulate
+% polynomials: usual ring operations, horner evaluation, composition, derivative, division, remainder, gcd.
+% 
+% \paragraph{Basic formalization choices} 
+% The type of polynomials is \C{\{poly R\}}. It is parametrized over a type \C{R}
+% that is equipped with a ring type structure.
+% A polynomial is represented by a sequence of coefficients whose last element is non-zero.
+% This is why there is an automatic coercion from a polynomial to its associated sequence.
+% Note that there is no explicit definition of the degree of a polynomial in the library, 
+% the size of  its sequence is used instead. This discrepancy with usual mathematical practice can
+% be seen in theorems like the one on the degree of the product of two 
+% polynomials 
+% 
+% \begin{coq}{}{}
+% Lemma size_mul_leq p q : size (p * q) <= (size p + size q).-1.
+% \end{coq}
+% \paragraph{Formalization trick: nested polynomial}
+% One of the  main result that is derived in the file \C{poly} is that polynomials
+% form a ring. This means, in particular, that one can create polynomials 
+% whose coefficient are polynomials \C{\{poly \{poly R\}\}}. This gives a direct way to 
+% represent bi-variate polynomials. One could go a step further and performs this application
+% recursively.
+% This way of getting multivariate polynomials may be interesting for some applications
+% but is not supported by the library.
+% 
+% \paragraph{Formalization trick: division and pseudo-division}
+% Division comes in two flavors in the library. A first definition \C{rdivp} applies on an arbitrary ring. 
+% It consists on performing a pseudo-divisor where the dividend can be multiplied by a scaling factor.
+% A second one \C{divp} on which is attached the notation \C{p \%/ q} requires a stronger assumption: the domain on which polynomials are built must be
+% an integral domain type. In this last version, the division tests if the leading coefficient of the divisor
+% is a unit. If it is the case it performs the expected inversion. This second division when applied on a field gives
+% the usual equality.
+% 
+% \begin{coq}{}{}
+% Lemma divp_eq p q : p = (p %/ q) * q + (p %% q).
+% \end{coq}
+% 
+% \noindent
+% The library is organized in such a way to provide appropriate theorems for the different domains on top of which
+% polynomials can be built. Modules are used to regroup
+% these theorems . For example, here are the various  versions of \C{div_eq}.
+% 
+% \begin{coq}{}{width=12.5cm}
+% Lemma Pdiv.Field.divp_eq (F : fieldType) (p q : {poly F}) :
+%   p = (p %/ q * q + p %% q)%R
+% Lemma Pdiv.Idomain.divp_eq (R : idomainType) (p q : {poly R}) :
+%   (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
+% Lemma Pdiv.IdomainMonic.divp_eq (R : idomainType) (q : {poly R}) :
+%   q \is monic -> forall p : {poly R}, p = (p %/ q * q + p %% q)%R
+% Lemma Pdiv.IdomainUnit.divp_eq (R : idomainType) (d : {poly R}) :
+%   lead_coef d \is a GRing.unit -> forall p: {poly R}, p = (p %/ d * d + p %% d)%R
+% Lemma Pdiv.WeakIdomain.divp_eq (R : idomainType) (p q : {poly R}) :
+%   (lead_coef q ^+ scalp (R:=R) p q *: p)%R = (p %/ q * q + p %% q)%R
+% \end{coq}
+% 
+% \noindent
+% When loading the  \C{polydiv} file, it is the \C{Pdiv.Field} module that is opened by default.
+% 
+% \section{TODO: Linear algebra}
+% \C{mxalgebra}
+% 
+% \begin{coq}{}{}
+% Fixpoint Gaussian_elimination {m n} : 'M_(m, n) -> 'M_m * 'M_n * nat :=
+%   match m, n with
+%   | _.+1, _.+1 => fun A : 'M_(1 + _, 1 + _) =>
+%     if [pick ij | A ij.1 ij.2 != 0] is Some (i, j) then
+%       let a := A i j in let A1 := xrow i 0 (xcol j 0 A) in
+%       let u := ursubmx A1 in let v := a^-1 *: dlsubmx A1 in
+%       let: (L, U, r) := Gaussian_elimination (drsubmx A1 - v *m u) in
+%       (xrow i 0 (block_mx 1 0 v L), xcol j 0 (block_mx a%:M u 0 U), r.+1)
+%     else (1%:M, 1%:M, 0%N)
+%   | _, _ => fun _ => (1%:M, 1%:M, 0%N)
+%   end.
+% \end{coq}
+% 
+% Gaussian elimination of a matrix
+% \C{A} is a triple \C{(L, U, r)} with \C{L} a column permutation of a
+% lower triangular invertible matrix, \C{U} a row permutation of an upper
+% triangular invertible matrix, and \C{r} the rank of \C{A}, all
+% satisfying the identity \C{(L *m pid_mx r *m U = A)}.
+% \C{(pid_mx r)} is a non necessarily square matrix that has \C{1} in \C{r}
+% first coefficients on the diagonal and \C{0} elsewhere.
+% 
+% Its main difference with respect to the standard algorithm
+% is the \emph{double} pivoting \C{[pick ij | A ij.1 ij.2 != 0]}, that
+% looks for a non-null coefficient in the entire matrix.  By bringing
+% this element in the top-left cornet iteratively one also computes the rank
+% of the matrix.
+% 
+% rank theory, incomplete basis thm
+% 
+% subspace equality and choice type
+% 
+% direct sum
+% 
+% \cite{gonthier:hal-00805966}
+% 
+% \section{TODO: Matrices and polynomials}
+% \C{mxpoly}
+% 
+% Cayley Hamilton, Sylvester matrix, characteristic polynomial
