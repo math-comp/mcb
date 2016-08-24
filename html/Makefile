@@ -11,3 +11,5 @@ coq:
 
 artwork:
 	cp ../artwork/cover/cover-front-web.png .
+
+clean: rm book.pdf ch*.html cover-front-web.png
