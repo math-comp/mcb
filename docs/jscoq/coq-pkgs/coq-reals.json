@@ -1,0 +1,49 @@
+{
+  "desc": "coq-reals",
+  "deps": [ "coq-arith" ],
+  "pkgs": [
+    {
+      "pkg_id": [ "Coq", "fourier" ],
+      "vo_files": [ "Fourier_util.vo", "Fourier.vo" ],
+      "cma_files": [ "fourier_plugin.cma", "fourier_plugin.cmo" ]
+    },
+    {
+      "pkg_id": [ "Coq", "omega" ],
+      "vo_files": [
+        "OmegaLemmas.vo", "OmegaPlugin.vo", "OmegaTactic.vo", "Omega.vo",
+        "PreOmega.vo"
+      ],
+      "cma_files": [ "omega_plugin.cmo", "omega_plugin.cma" ]
+    },
+    {
+      "pkg_id": [ "Coq", "micromega" ],
+      "vo_files": [
+        "QMicromega.vo", "Psatz.vo", "RingMicromega.vo", "RMicromega.vo",
+        "Tauto.vo", "Env.vo", "EnvRing.vo", "VarMap.vo", "ZCoeff.vo",
+        "OrderedRing.vo", "ZMicromega.vo", "Lia.vo", "Refl.vo"
+      ],
+      "cma_files": [ "micromega_plugin.cmo", "micromega_plugin.cma" ]
+    },
+    {
+      "pkg_id": [ "Coq", "Reals" ],
+      "vo_files": [
+        "Ranalysis2.vo", "Rcomplete.vo", "R_sqrt.vo", "Rbase.vo",
+        "NewtonInt.vo", "Rtrigo_def.vo", "AltSeries.vo", "ROrderedType.vo",
+        "Ranalysis1.vo", "Cos_rel.vo", "Exp_prop.vo", "Rfunctions.vo",
+        "Rseries.vo", "Cos_plus.vo", "SplitAbsolu.vo", "Rpow_def.vo",
+        "Ratan.vo", "SeqSeries.vo", "Rtopology.vo", "Rbasic_fun.vo",
+        "DiscrR.vo", "Rtrigo_alt.vo", "RiemannInt.vo", "MVT.vo", "RList.vo",
+        "ArithProp.vo", "RIneq.vo", "Rderiv.vo", "Ranalysis5.vo",
+        "Ranalysis4.vo", "Ranalysis_reg.vo", "Rpower.vo", "Binomial.vo",
+        "SeqProp.vo", "Integration.vo", "Reals.vo", "Rdefinitions.vo",
+        "Rsqrt_def.vo", "Rlogic.vo", "R_sqr.vo", "R_Ifp.vo", "Rprod.vo",
+        "Ranalysis3.vo", "Alembert.vo", "PartSum.vo", "Rtrigo1.vo",
+        "Cauchy_prod.vo", "Rsigma.vo", "Rtrigo_reg.vo", "Machin.vo",
+        "RiemannInt_SF.vo", "SplitRmult.vo", "Rgeom.vo", "Rtrigo.vo",
+        "Ranalysis.vo", "Raxioms.vo", "Rtrigo_calc.vo", "Sqrt_reg.vo",
+        "PSeries_reg.vo", "Rminmax.vo", "Rlimit.vo", "Rtrigo_fun.vo"
+      ],
+      "cma_files": []
+    }
+  ]
+}

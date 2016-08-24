@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2015-10-23 ven. 00:21 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="viewport" content="width=device-width, initial-scale=1" />
+<title></title>
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Emilio Jesús Gallego Arias" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgheadline2">1. Coq Prelude</a>
+<ul>
+<li><a href="#orgheadline1">1.1. This should be hidden by the hide class of the div.</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline4">2. First Step, encoding the syntax:</a>
+<ul>
+<li><a href="#orgheadline3">2.1. Notations make our life easier</a></li>
+</ul>
+</li>
+<li><a href="#orgheadline5">3. Faust Semantics</a></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgheadline2" class="outline-2">
+<h2 id="orgheadline2"><span class="section-number-2">1</span> Coq Prelude</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-orgheadline1" class="outline-3">
+<h3 id="orgheadline1"><span class="section-number-3">1.1</span> This should be hidden by the hide class of the div.</h3>
+<div class="outline-text-3" id="text-1-1">
+<div class="hide">
+<p>
+<textarea class="src-coq" cols="80" rows="58">
+Require Import Coq.Init.Prelude.
+Require Import Coq.Unicode.Utf8.
+From Ssreflect Require Import ssreflect ssrbool ssrfun eqtype ssrnat seq.
+From Ssreflect Require Import tuple bigop ssralg ssrnum ssrint interval.
+
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+Section Prelude.
+
+(* "V n T" is n copies of type T, noted T^n in the paper. *)
+Section Vector.
+Fixpoint V (n : nat) T {struct n} : Type :=
+  match n with
+  | 0    => unit
+  | n.+1 => match n with
+            | 0 => T
+            | _ => (T * V n T)%type
+            end
+  end.
+
+Definition vhead n T : V n.+1 T -> T :=
+  match n with
+  | 0    => fun t => t
+  | n.+1 => fun t => fst t
+  end.
+
+Definition vtail n T : V n.+1 T -> V n T :=
+  match n with
+  | 0    => fun _ => tt
+  | n.+1 => fun t => snd t
+  end.
+
+Fixpoint vfold2 T U W (x : W) (f : T -> U -> W -> W) n : V n T -> V n U -> W :=
+  match n return V n T -> V n U -> W with
+  | 0    => fun _ _   => x
+  | n.+1 => fun t1 t2 => f (vhead t1) (vhead t2) (vfold2 x f (vtail t1) (vtail t2))
+  end.
+
+End Vector.
+
+Section Seq.
+
+Lemma take_take (T : eqType) m n (s : seq T) : m <= n ->
+  take m (take n s) = take m s.
+Proof. by elim: s n m => [|x s ihs] [|n] [|m] H //=; rewrite ihs. Qed.
+
+Lemma all_take T n (s : seq T) P : all P s -> all P (take n s).
+Proof. by rewrite -{1}[s](cat_take_drop n) all_cat; case/andP. Qed.
+
+Definition sC T n (x : seq T) (p : (size x).+1 == n.+1) : n.-tuple T := Tuple p.
+
+End Seq.
+End Prelude.
+</textarea>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline4" class="outline-2">
+<h2 id="orgheadline4"><span class="section-number-2">2</span> First Step, encoding the syntax:</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+
+<pre class="src src-coq">Reserved Notation "i ↝ o" (at level 30, no associativity).
+
+Section FaustSyntax.
+
+Variable N : ringType.
+
+Inductive fterm : nat -&gt; nat -&gt; Type :=
+| mult : N -&gt; 1 ↝ 1
+| plus : 2 ↝ 1
+| comp : 1 ↝ 1 -&gt; 1 ↝ 1 -&gt; 1 ↝ 1
+| feed : 2 ↝ 1 -&gt; 1 ↝ 1 -&gt; 1 ↝ 1
+where "i ↝ o" := (fterm i o).
+
+End FaustSyntax.
+
+(* We need to declare notations out of the sections again. *)
+Notation "i ↝ o" := (fterm _ i o).
+</pre>
+</div>
+
+<div class="hide">
+<div class="org-src-container">
+
+<pre class="src src-coq">Arguments fterm [N] i o.
+Arguments plus  [N].
+Arguments mult  [N] c.
+Arguments comp  [N] f g.
+Arguments feed  [N] f g.
+</pre>
+</div>
+
+</div>
+</div>
+
+<div id="outline-container-orgheadline3" class="outline-3">
+<h3 id="orgheadline3"><span class="section-number-3">2.1</span> Notations make our life easier</h3>
+<div class="outline-text-3" id="text-2-1">
+<div class="org-src-container">
+
+<pre class="src src-coq">Notation "'+"      := plus.
+Notation "'*( c )" := (mult c).
+Notation "f ∶ g"   := (comp f g) (at level 75).
+Notation "f ~ g"   := (feed f g) (at level 70).
+
+Section SyntaxExample.
+
+Variable N : numDomainType.
+
+(* A simple low-pass filter *)
+Definition smooth (c : N) := '*(1 - c) ∶ '+ ~ '*(c).
+Print smooth.
+
+End SyntaxExample.
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgheadline5" class="outline-2">
+<h2 id="orgheadline5"><span class="section-number-2">3</span> Faust Semantics</h2>
+<div class="outline-text-2" id="text-3">
+<div class="org-src-container">
+
+<pre class="src src-coq">Section FaustSemantics.
+
+Local Open Scope ring_scope.
+
+Variable N : numDomainType.
+Variable x0 : N.
+
+Notation "''S_' n" := (n.-tuple N)
+  (at level 8, n at level 2, format "''S_' n").
+
+Notation "''SP_' ( i , o )" := (forall n, V i 'S_n -&gt; V o 'S_n)
+  (at level 8, format "''SP_' ( i , o )").
+
+Notation "i ↝ o" := (@fterm N i o).
+</pre>
+</div>
+
+
+<div class="hide">
+<div class="org-src-container">
+
+<pre class="src src-coq">Section FeedBack.
+
+Local Open Scope nat.
+
+Definition iter_dep (B : nat -&gt; Type) n
+           (f : forall m (H : m &lt; n), B m -&gt; B m.+1) (x : B 0) : B n.
+Proof.
+  elim: n f =&gt; [H| n ihn f]; first exact: x.
+  pose f' m H bm := f m (ltn_trans H (ltnSn n)) bm.
+  exact: (f n (ltnSn _) (ihn f')).
+Defined.
+
+(* Iteration is extensional on the iterator. *)
+Lemma eq_iter_dep (B : nat -&gt; Type) n
+      (f g : forall m (H : m &lt; n), B m -&gt; B m.+1) (x : B 0)
+      (Hfg : forall m (H : m &lt; n) (a : B m), f m H a = g m H a) :
+  iter_dep f x = iter_dep g x.
+Proof.
+  elim: n f g Hfg =&gt; //= n ihn f g Hfg.
+  pose f' m H bm := f m (ltn_trans H (ltnSn n)) bm. 
+  pose g' m H bm := g m (ltn_trans H (ltnSn n)) bm.
+  have Hfg' m H0 a : f' m H0 a = g' m H0 a by rewrite /f' /g' /= Hfg.
+  by rewrite Hfg (ihn f' g').
+Qed.
+
+(* Auxiliary constructors for the tuples. *)
+Lemma size_take_S n (i : 'S_n) m (H : m &lt; n) : size (take m.+1 i) == m.+1.
+Proof. by rewrite size_takel ?size_tuple. Qed.
+
+Lemma size_take_n n (i : 'S_n.+1) : size (take n i) == n.
+Proof. by rewrite size_takel ?size_tuple. Qed.
+</pre>
+</div>
+
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-coq">Definition feedback_int
+           (f : forall n, 'S_n * 'S_n -&gt; 'S_n)
+           (g : forall n, 'S_n -&gt; 'S_n)
+           (n : nat) (i : 'S_n) : 'S_n.
+Proof.
+  pose fb_it m Hm (fb : 'S_m) :=
+    f _ (g _ [tuple of x0 :: fb], Tuple (size_take_S i Hm)).
+  exact: iter_dep fb_it [tuple].
+Defined.
+
+(* The main interpretation function *)
+Fixpoint I {i o} (t : i ↝ o) : 'SP_(i, o) :=
+  match t in fterm i o return 'SP_(i, o) with
+  | mult n   =&gt; fun _ i =&gt; [tuple of map (fun x =&gt; n * x) i]
+  | plus     =&gt; fun _ i =&gt; [tuple of map (fun x =&gt; x.1 + x.2) (zip i.1 i.2)]
+  | comp f g =&gt; fun n i =&gt; (I g) n ((I f) n i)
+  | feed f g =&gt; fun n i =&gt; feedback_int (I f) (I g) i
+  end.
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-coq">Import GRing.Theory.
+
+(* We check the Fusion of Multiplication Lemma shown in the paper. *)
+Lemma multF a b n (i : 'S_n) : I ('*(a) ∶ '*(b)) i = I ('*(a*b)) i.
+Proof.
+  apply: val_inj; case: i =&gt; s /= _.
+  rewrite -map_comp; apply/eq_map=&gt; x /=.
+  by rewrite mulrCA mulrA.
+Qed.
+
+Check I (smooth 0).
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Emilio Jesús Gallego Arias</p>
+<p class="date">Created: 2015-10-23 ven. 00:21</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

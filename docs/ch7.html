@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+    <link rel="stylesheet" href="jscoq/external/bootstrap.min.css" />
+
+    <title>Use Coq in Your Browser: The Js Coq Theorem Prover Online IDE!</title>
+  </head>
+
+<body>
+  <div id="ide-wrapper" class="toggled">
+  <div id="code-wrapper">
+  <div id="document">
+
+<h1>Chapter 7</h1><div><textarea id='coq'>
+From mathcomp Require Import all_ssreflect perm fingroup.
+
+Inductive windrose : predArgType := N | S | E | W.
+
+Definition w2o w : 'I_4 :=
+  match w with
+  | N => inord 0
+  | S => inord 1
+  | E => inord 2
+  | W => inord 3
+  end.
+
+Definition o2w (o : 'I_4) :=
+  match val o with
+  | 0 => N
+  | 1 => S
+  | 2 => E
+  | 3 => W
+  | _ => N
+  end.
+
+Lemma pcan_wo4 : cancel w2o o2w.
+Proof. by case; rewrite /o2w /= inordK. Qed.
+
+Definition windrose_eqMixin := CanEqMixin pcan_wo4.
+Canonical windrose_eqType := EqType windrose windrose_eqMixin.
+Definition windrose_choiceMixin := CanChoiceMixin pcan_wo4.
+Canonical windrose_choiceType := ChoiceType windrose windrose_choiceMixin.
+Definition windrose_countMixin := CanCountMixin pcan_wo4.
+Canonical windrose_countType := CountType windrose windrose_countMixin.
+Definition windrose_finMixin := CanFinMixin pcan_wo4.
+Canonical windrose_finType := FinType windrose windrose_finMixin.
+
+Check [finType of windrose].
+
+Lemma ord4_is_w : cancel o2w w2o.
+Proof.
+move=> x; apply: val_inj; case: x.
+by do 5! [ case=> [?|//]; first by rewrite /= inordK ].
+Qed.
+
+Lemma test : (N != S) && (N \in windrose) && (#| windrose | == 4).
+Proof.
+case: eqP => //= _; rewrite -[4]card_ord.
+rewrite -(card_image (can_inj pcan_wo4)).
+apply/eqP; apply: eq_card=> o; rewrite inE.
+by apply/imageP; exists (o2w o) => //=; rewrite ord4_is_w.
+Qed.
+
+
+
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+  </div> <!-- /#document     -->
+  </div> <!-- /#code-wrapper -->
+  </div> <!-- /#ide-wrapper  -->
+
+  <script src="./jscoq/js/jscoq-loader.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var coq;
+
+    loadJsCoq('./jscoq/')
+              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/runmode"))
+              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/colorize"))
+              .then( function () {
+                  var coqInline = document.getElementsByClassName("inline-coq");
+                  CodeMirror.colorize(coqInline); })
+              .then( function () {
+                  coq = new CoqManager (coqdoc_ids,
+                                       { base_path: './jscoq/', init_pkgs: ['init'] }
+                  );
+              });
+  </script>
+</body>
+</html>
+

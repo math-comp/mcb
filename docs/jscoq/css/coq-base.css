@@ -1,0 +1,251 @@
+/*!
+ * Start Bootstrap - Simple Sidebar HTML Template (http://startbootstrap.com)
+ * Code licensed under the Apache License v2.0.
+ * For details, see http://www.apache.org/licenses/LICENSE-2.0.
+ */
+
+/* Toggle Styles */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Helvetica, Geneva, Swiss, Arial, SunSans-Regular, sans-serif;
+  line-height: normal;
+  font-size: 11pt;
+}
+
+a, a:link, a:visited, a:active {
+  text-decoration: none;
+}
+
+#ide-wrapper {
+  /*padding-left: 0;*/
+  padding-right: 45%;
+  transition: all 0.5s ease;
+  height: 100vh;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+#ide-wrapper.toggled {
+  padding-right: 0px;
+}
+
+#code-wrapper {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin-left: 0px;
+  padding-right: 45%;
+  transition: all 0.5s ease;
+}
+
+#ide-wrapper.toggled #code-wrapper {
+  padding-right: 0;
+}
+
+#script-panel {
+  height: calc(100% - 37px);
+}
+
+#script-panel textarea {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: none;
+  resize: none;
+}
+
+#panel-wrapper {
+  right: 0;
+  padding: 0;
+  position: fixed;
+  width: 45%;
+  height: 100%;
+  transition: all 0.5s ease;
+  z-index: 6;
+  /* border-left: 1px solid #222; */
+}
+
+#ide-wrapper.toggled #panel-wrapper {
+  width: 0px;
+  /* overflow: auto; */
+}
+
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 35px);
+  overflow: auto;
+}
+
+.flex-panel {
+  border: 1px solid #9f9f9f;
+  flex: 1000 1;
+  overflow: auto;
+  transition: all 0.5s ease-in-out;
+}
+
+.flex-panel > .caption {
+  background: #c4c4c4;
+  height: 20px;
+  padding: 3px 10px 0 10px;
+  position: absolute;
+  z-index: 3;
+  width: 100%;
+  cursor: pointer;
+}
+
+.flex-panel > .caption:after {
+  /* css arrow */
+  position: absolute;
+  content: "";
+  border-top: 8px solid transparent;
+  border-right: 8px solid #565656;
+  border-bottom: 8px solid transparent;
+  top: 1px;
+  right: 7px;
+  transform: rotate(-90deg);
+  transition: all 0.5s ease-in-out;
+}
+
+.flex-panel > .content {
+  margin: 22px 4px 4px 4px;
+  transition: all 0.5s ease-in-out;
+  font-family: monospace;
+  overflow: auto;
+  height: fit-content;
+}
+
+.flex-panel.collapsed {
+  flex: 1 1000 20px;
+}
+
+.flex-panel.collapsed > .caption:after {
+  transform: none;
+}
+
+.flex-panel.collapsed > .content {
+  opacity: 0;
+}
+
+#goal-panel {
+  flex: 2000 1;
+}
+
+#goal-panel.collapsed {
+  flex: 1 1000 20px;
+}
+
+#goal-text {
+  border: 0;
+  padding: 0;
+  white-space: pre;
+}
+
+#vsep, #hsep {
+  position: absolute;
+  z-index: 3;
+}
+
+#hide-panel {
+  cursor: pointer;
+}
+
+#hide-panel g path {
+  fill: #00a806;
+}
+
+#ide-wrapper.toggled #hide-panel g path {
+  fill: #f20000
+}
+
+#toolbar {
+  white-space: nowrap;
+  border-bottom: 1px solid #ddd;
+  /*height: 36px;*/
+}
+
+#toolbar .exits {
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#buttons {
+  display: none;
+  opacity: 0;
+  text-align: left;
+  padding-left: 2em;
+  width: 100%;
+  transition: opacity 500ms ease;
+  vertical-align: middle;
+  width: 100%;
+}
+
+#buttons img {
+  margin: 0 2px;
+  margin-top: 5px;
+  cursor: pointer;
+}
+
+#query-panel > div {
+  line-height: 1.25em;
+  padding-left: 18px;
+  white-space: pre;
+}
+
+/* overloads */
+.CodeMirror {
+  height: 100%;
+}
+
+/* Proper  */
+#code-wrapper {
+}
+
+#document {
+  margin: auto;
+  position: relative;
+  padding: auto;
+  width: 51em;
+  padding: 15px;
+}
+
+#document code {
+  white-space: pre;
+}
+
+#packages-panel > div {
+  padding-bottom: 4px;
+}
+
+#packages-panel > div > img {
+  margin-right: 4px;
+  vertical-align: bottom;
+  cursor: pointer;
+}
+
+.rel-pos {
+  position: relative;
+  height:0;
+}
+
+.progressbar {
+  background: #3c57a6;
+  height:2px;
+  border-radius: 2px;
+  position:relative;
+  width:0;
+}
+
+.progress-egg {
+  position: absolute;
+  top: -18px;
+  right: 0;
+}

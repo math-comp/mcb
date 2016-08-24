@@ -1,0 +1,4 @@
+(function(a){var
+f=32648,e=joo_global_object.jsoo_runtime;function
+d(a,b){return a.length==1?a(b):e.caml_call_gen(a,[b])}var
+b=e.caml_get_global_data(),c=b[23189],g=b[32646],h=b[32647],i=b[f];d(c[12],b[32645]);d(c[12],g);d(c[12],h);d(c[12],i);e.caml_register_global(f,[0]);return 0});

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+
+    <link rel="stylesheet" href="jscoq/external/bootstrap.min.css" />
+
+    <title>Use Coq in Your Browser: The Js Coq Theorem Prover Online IDE!</title>
+  </head>
+
+<body>
+  <div id="ide-wrapper" class="toggled">
+  <div id="code-wrapper">
+  <div id="document">
+
+<h1>Chapter 3</h1><div><textarea id='coq'>
+Require Import all_ssreflect.
+
+Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
+Proof.
+elim: n {-2}n (leqnn n) =>[|n IHn]; first by case.
+do 12! [ case=> // ].
+case; first by exists 3, 0.
+case; first by exists 2, 1.
+case; first by exists 1, 2.
+case; first by exists 0, 3.
+move=> m'; set m := _.+1; move=> mn m11.
+case: (IHn (m-4) _ isT) => [|s4 [s5 def_m4]].
+  by rewrite leq_subLR (leq_trans mn) // addSnnS leq_addl.
+by exists s4.+1, s5; rewrite mulSn -addnA def_m4 subnKC.
+Qed.
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+  </div> <!-- /#document     -->
+  </div> <!-- /#code-wrapper -->
+  </div> <!-- /#ide-wrapper  -->
+
+  <script src="./jscoq/js/jscoq-loader.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var coq;
+
+    loadJsCoq('./jscoq/')
+              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/runmode"))
+              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/colorize"))
+              .then( function () {
+                  var coqInline = document.getElementsByClassName("inline-coq");
+                  CodeMirror.colorize(coqInline); })
+              .then( function () {
+                  coq = new CoqManager (coqdoc_ids,
+                                       { base_path: './jscoq/', init_pkgs: ['init'] }
+                  );
+              });
+  </script>
+</body>
+</html>
+
