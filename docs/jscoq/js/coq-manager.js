@@ -170,7 +170,7 @@ class CoqManager {
             wrapper_id: 'ide-wrapper',
             base_path:  "./",
             init_pkgs: ['init'],
-            all_pkgs:  ['init', 'math-comp'
+            all_pkgs:  ['init', 'math-comp',
                         'coq-base', 'coq-arith', 'coq-reals' ]
         };
 
