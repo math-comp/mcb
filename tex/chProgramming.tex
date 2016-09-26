@@ -204,8 +204,127 @@ This seemingly trivial capability of \Coq{} plays a crucial role
 in the \mcbMC{} library, as we will see in the next chapter when
 doing proofs.
 \index[concept]{computation}
+\subsection{Functions with several arguments}
+When we want to define a function that takes several arguments as input, we
+can use the same syntax as when defining a function with a single argument,
+simply adding the extra arguments separated by space.  Here is an example, 
+concentrating on a function with two arguments:
+
+\begin{coq}{name=two_arg_def}{}
+Definition f2 (x y : nat) : nat :=
+  x + y * 2.
+\end{coq}
+With this form of definition, we give very precise type information.  Firstly
+we assert that both the \C{x} and \C{y} arguments have type \C{nat}, secondly
+we assert that the result also has type \C{nat}.  When we ask the \Coq{}
+system what is the type of \C{f2}, we see how the type of two argument
+function is displayed.
+
+\begin{coq}{name=about_f2}{width=5.5cm,title=Gathering information on f2}
+About f2.
+\end{coq}
+\coqrun{name=about_f2_run}{about_f2}
+\begin{coqout}{run=about_f2_run}{title=Response,width=6.5cm}
+f2 : nat -> nat -> nat
+\end{coqout}
+The notation \C{nat -> nat -> nat} deserves some explanations.  This
+notation actually relies on two uses of the \C{.. -> ..} notation to
+describe function with a single argument.  It shows that multiple
+argument functions are represented as a special kind of single
+argument functions.  {\em A multiple argument function is a single
+argument function that returns a function}.  In our case, we define
+a second function that performs exactly the same computations as function
+\C{f2}.
+
+\begin{coq}{name=tw_arg_as_single_arg}{}
+Definition f2' (x : nat) : nat -> nat := fun y => x + y * 2.
+\end{coq}
+This is a function that takes as argument a number \C{x} and returns
+a function of one argument as a result.  When we ask to see the type
+of \C{f2'} we see that this type is exactly the same as the type for
+\C{f2}.
+
+\begin{coq}{name=about_f2_prime}{width=5.5cm,title=Gathering information on f2'}
+About f2'.
+\end{coq}
+\coqrun{name=about_f2_prime_run}{about_f2_prime}
+\begin{coqout}{run=about_f2_prime_run}{title=Response,width=6.5cm}
+f2' : nat -> nat -> nat
+\end{coqout}
+
+If we go further in our scrutiny and ask the \Coq{} system to print
+the values associated to names \C{f2} and \C{f2'}, we see that these
+values are exactly the same.  The \Coq{} system does not make any
+difference between these two ways of describing a two-argument function.
+
+\begin{coq}{name=print_f}{width=6cm}
+Print f2.
+$~$
+Print f2'.
+$~$
+\end{coq}
+\coqrun{name=print_f_run}{print_f}
+\begin{coqout}{run=print_f_run}{width=6cm}
+f2 = fun x y : nat => x + y * 2
+  : nat -> nat -> nat
+f2' = fun x y : nat => x + y * 2
+  : nat -> nat -> nat
+\end{coqout}
+\index[vernac]{\C{Print}}
+
+Since \C{f2} is also a one-argument function, it is sensible to apply this
+function to only one integer.  We can call this {\em partial application}
+because \C{f2} is also meant to be applied to two arguments.
+ The value we obtain in this case is another
+one-argument function.  Here are a few dialogs with the \Coq{} system 
+that shows what happens.
+
+\begin{coq}{name=about_f2_prime}{width=5.5cm,title=Applying f2 partially}
+Check f2 3.
+\end{coq}
+\coqrun{name=about_f2_prime_run}{about_f2_prime}
+\begin{coqout}{run=about_f2_prime_run}{title=Response,width=6.5cm}
+f2 3 : nat -> nat
+\end{coqout}
+
+In \Coq{} functions with multiple inputs are just functions producing
+functions.  As a consequence \emph{it is legal to apply functions partially},
+and the \C{->} sign associates to the right.
+This idea that multiple argument functions can be represented using
+single argument functions is called {\em currying}.
+\index[concept]{currying of functions}
+\index[concept]{partial application}
+\index[concept]{currying of functions}
+\index[concept]{typing an application}
+
+When we want to apply the function \C{f2} to the numbers \C{2} and \C{3},
+this can be written as follows:
+
+\begin{coq}{name=eval_f2_2_3}{width=7cm}
+Eval compute in f2 2 3.
+\end{coq}
+\begin{coqout}{run=eval_f2_2_3_run}{width=5cm}
+= 8 : nat
+\end{coqout}
+\coqrun{name=eval_f2_2_3_run}{eval_f2_2_3}
+From the syntax point of view, we wrote three subexpressions only separated
+by space.  By default, the parser understands this as \C{((f2 2) 3)}, so
+we actually have a first subexpression which is \C{f2} applied to \C{2}.
+The value of this subexpression is a function, with approximately has the
+following value:
+
+\begin{coq}{}{}
+fun y => 2 + y * 2
+\end{coq}
+In turn, when applying this function to \C{3} we obtain the value
+
+\begin{coq}{}{}
+2 + 3 * 2
+\end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \subsection{Higher order functions}
 
 The function \C{f} operates on natural numbers, of type \C{nat}, but
@@ -260,7 +379,7 @@ From the syntax point of view, we wrote three subexpressions only
 separated by space.  By default, the parser understands this as
 \C{((repeat_twice f) 2)}, so we actually have a first subexpression
 which is \C{repeat_twice} applied to \C{f}.  According to the
-definition of the first function, the value is 
+definition of \C{repeat_twice} function, the value is 
 %an intermediate
 a function 
 % from \C{nat} to \C{nat}, 
@@ -272,9 +391,9 @@ The resulting expression is \C{(f (f 2))}, and given the
 definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
 
-It is worth spending a few more words on the \C{(repeat_twice f)} subexpression.
-The \C{repeat_twice} program takes two arguments in input. However one
-can pass to it only the former one and obtain a perfectly valid term.
+As in the previous section, 
+the \C{repeat_twice} program takes two arguments as input and we can
+apply it to only one argument to obtain a perfectly valid term.
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=6cm,title=Partial application}
 Check (repeat_twice f).
@@ -282,9 +401,6 @@ Check (repeat_twice f).
 \begin{coqout}{run=eval_f_run}{title=Response,width=6cm}
 repeat_twice f : nat -> nat
 \end{coqout}
-\index[concept]{partial application}
-\index[concept]{currying of functions}
-\index[concept]{typing an application}
 If we look at the type of \C{repeat_twice} and add redundant parentheses
 we obtain \C{(|==(nat -> nat)==| -> (|--nat--| -> nat))}:
 once the first argument
@@ -295,10 +411,6 @@ the type of which is, again, the right hand side of the main arrow, here \C{nat}
 Remark that the type of each argument matches the left hand side of
 the arrow (as depicted with different underline styles).
 When this is not the case \Coq{} issues a type error.
-
-In \Coq{} functions with multiple inputs are just functions producing
-functions.  As a consequence \emph{it is legit to apply functions partially},
-and the \C{->} sign associates to the right.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: construction and destruction}
