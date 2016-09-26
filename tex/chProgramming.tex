@@ -433,8 +433,8 @@ turn.
 The type \C{bool} contains two values that can be
 distinguished in computations.  The declaration of this type happens
 in one of the first files to be automatically loaded when \Coq{} starts,
-so booleans look like a built-in notion.  On the contrary they are a
-notion defined as follows.
+so booleans look like a built-in notion.  Nevertheless, the type of
+boolean values is actually defined in the following manner.
 
 \begin{coq}{name=print_bool}{title=Declaration of bool}
 Inductive bool := true | false.
@@ -444,14 +444,15 @@ This declaration states explicitly that there are only two cases for
 elements of type \C{bool}.  The first case is given by the constant
 \C{true}, the second case by the constant \C{false}.  
 The constants \C{true} and \C{false} are provably distinct, and
-are the only way to construct a \C{bool}.
+are the only way to construct a value of type \C{bool}.
 
 % Thus, the
 %declaration of the type gives in an obvious manner the type, \C{bool},
 %and ways to build all its elements, \C{true}, and \C{false}.  
 All definitions
-in \Coq{}, like this one, which define a type by providing at the same time a type
-name and the only ways to build elements of the type are called {\em inductive}
+in \Coq{} that define a type by providing at the same time a type
+name and the only ways to build elements of the type, like this one,
+are called {\em inductive}
 definitions.  The two objects \C{true} and \C{false} are called
 \emph{constructors}.
 \index[concept]{inductive type}
@@ -727,6 +728,7 @@ multiple values at the same time.
 Definition same_bool b1 b2 :=
   match b1, b2 with
   | true, true => true
+  | false, false => true
   | _, _ => false
   end.
 \end{coq}
@@ -737,7 +739,7 @@ This is parsed as follows
 Definition same_bool b1 b2 :=
   match b1 with
   | true => match b2 with true => true | _ => false end
-  | _ => false
+  | false => match b2 with true => false | _ => true end
   end.
 \end{coq}
 
@@ -1615,7 +1617,6 @@ or adopted in the \mcbMC{} library.
 \item Notations that are typically denoted with a letter, like $N(G)$ for the
 	normalizer of the group $G$ are represented with symbols beginning
 	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.
-%% YB : a stragen otation appears here.
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
 	specific cases, like binding \C{1} and \C{0} to ring elements.
