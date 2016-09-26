@@ -29,7 +29,7 @@ Both concepts will only be described fully a few pages later.
 We start by considering the expression
 \[ 2 + 1 \]
 We can read this expression as an object, but also as the result of an
-operation on an object, or as the result of an operation on two
+operation on one object, or as the result of an operation on two
 objects.  Let us first consider the operation of {\em adding one to
 a natural number}.  This operation is written in the following manner.
 
@@ -389,7 +389,7 @@ Eval compute in f23 false.
 
 The \mcbMC{} library provides a collection of boolean operations that
 mirror reasoning steps on truth value.  The functions are called
-\C{negb}, \C{orb}, \C{andb} , \C{implyb}, respectively with notations
+\C{negb}, \C{orb}, \C{andb} , and \C{implyb}, respectively with notations
 \C{\~\~},  \C{||}, \C{&&}, and \C{==>} (the last three operators are
 infix, they appear between the arguments as in \C{b1 && b2}).
   In
@@ -549,7 +549,8 @@ Definition pred5 n :=
   if n is u.+1.+1.+1.+1.+1 then u else 0.
 \end{coq}
 On the other hand, if we want to describe a different computation for
-three different cases and use variables in more than one case, we need
+three different cases and use variables in more than one case, it is
+more convenient
 to revert to the ``\C{match .. with .. end}'' syntax.  Here is an
 example:
 
@@ -567,21 +568,23 @@ any number \(n \in \{1, \ldots, 4\}\) to \(n-1\), and \(0\) to \(0\).
 The pattern matching construct ``\C{match .. with .. end}'' contains an
 arbitrary large number of {\em pattern matching rules} of the form
 ``\emph{pattern}\C{ =>$~$}\emph{result}'' 
-separated by the \C{|} symbol.  Optionally on can
-prefix the fist pattern matching rule with \C{|}, in order to make each line
+separated by the \C{|} symbol.  Optionally one can
+prefix the first pattern matching rule with \C{|}, in order to make each line
 begin with \C{|}.\index[concept]{pattern matching}
 
 For the symbols that are allowed
 in the pattern, they are essentially restricted to \C{O}, \C{S} and
-variable names.  Thanks to notations, a pattern can also contains
+variable names.  Thanks to notations, a pattern can also contain
 occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
 re-used in the result part.  When computing with a natural number, all
-the pattern matching rules are tried successively against this number.
+the pattern matching rules are tried successively against this number.  The
+patterns may overlap, but the result is given by the first pattern that
+matches.
 For instance with the function \C{three_patterns}, if the input is \C{2}, in other words \C{0.+1.+1}, the first
 rule cannot match, because this would require that \C{0} matches
-\C{u.+1.+1.+.1} and we know that \(0\) is not the successor of any
+\C{u.+1.+1.+1} and we know that \(0\) is not the successor of any
 natural number, when it comes to the second rule \C{0.+1.+1} matches
 \C{v.+1}, because the rightmost \C{.+1} in the value of \C{2} matches
 the rightmost \C{.+1} part in the pattern and \C{0.+1} matches the \C{v} part
@@ -638,7 +641,7 @@ defined for a subset of the type.  This adds a new element for which
 the function is defined, and progressively this makes that the
 function is defined for all elements of the type.
 
-\subsection{Recursion for integers}
+\subsection{Recursion for natural numbers}
 
 Many usual functions to deal with natural numbers are
 defined recursively.  For instance, we can define addition in the
@@ -650,7 +653,7 @@ Fixpoint addn n m :=
 \end{coq}
 \index[vernac]{\C{Fixpoint}}
 \index[coq]{\C{addn}}
-In this line, we learn that the keyword for defining a recursive
+In this example, we learn that the keyword for defining a recursive
 function is \C{Fixpoint}.  We see also that the function being
 defined, here called \C{addn}, is used in the definition of the
 function \C{addn} itself.  This text expresses that the value of
@@ -693,7 +696,7 @@ pattern-matching rules describe equalities between two symbolic
 expressions, but these equalities are always used from left to right during
 computations.
 
-When writing recursive functions, the \Coq{} systems imposes the
+When writing recursive functions, the \Coq{} system imposes the
 constraint that the described computation must be \emph{guaranteed to
 terminate}.  The reason for this requirement is sketched in
 section~\ref{sec:indreason}.
@@ -859,8 +862,8 @@ Notation "a <= b <= c" := ((a <= b) && (b <= c)).
 This definition relies on the fact that subtraction computes to \C{0} whenever
 the first argument is less than or equal to the second argument.
  Finally note that the strict order
-relation is just a notation, and that \C{(m > n)} is only accepted in input
-and is always printed as  \C{(n < m)}.
+relation is just a notation, and that \C{(n > m)} is only accepted in input
+and is always printed as  \C{(m < n)}.
 
 \gotcha{There is no function testing if a natural number is strictly
 smaller than another one.  \C{(a < b)} is just syntactic 
@@ -1499,7 +1502,7 @@ or adopted in the \mcbMC{} library.
 %\marginnote{I know it is not correct, but no user would prefer the correct explanation}
 \item Notations that are typically denoted with a letter, like $N(G)$ for the
 	normalizer of the group $G$ are represented with symbols beginning
-	with \c{'} as in \C{'N(G)}, where \C{'N} is a symbol.
+	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.
 %% YB : a stragen otation appears here.
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
