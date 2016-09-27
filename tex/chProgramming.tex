@@ -1807,6 +1807,10 @@ will model the signature of a ring.
 \section{Exercises}
 
 %%%%%%%%
+\begin{Exercise}[label=ex:3sum,difficulty=0,title={A simple arithmetic function}
+Define a function that takes as input three natural numbers and returns
+the sum of their squares.
+\end{Exercise}
 \begin{Exercise}[label=ex:pair,difficulty=0,title={The pair data type}]
 Define the pair data type such that the following notation
 applies.  Also define the projections.
@@ -1915,6 +1919,12 @@ Eval compute in
 \subsection{Solutions}
 
 %%%%%%%%%%
+\begin{Answer}[ref=ex:3sum]
+\begin{coq}{}{}
+Definition sum3squares x y z := x ^ 2 + y ^ 2 + z ^ 2.
+\end{coq}
+\end{Answer}
+
 \begin{Answer}[ref=ex:pair]
 
 \begin{coq}{}{}
