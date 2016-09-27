@@ -303,6 +303,7 @@ this can be written as follows:
 \begin{coq}{name=eval_f2_2_3}{width=7cm}
 Eval compute in f2 2 3.
 \end{coq}
+\coqrun{name=eval_f2_2_3_run}{eval_f2_2_3}
 \begin{coqout}{run=eval_f2_2_3_run}{width=5cm}
 = 8 : nat
 \end{coqout}
@@ -371,7 +372,8 @@ written as follows:
 \begin{coq}{name=eval_repeat_twice_f_two}{width=7cm}
 Eval compute in repeat_twice f 2.
 \end{coq}
-\begin{coqout}{run=eval_f_run}{width=5cm}
+\coqrun{name=evalrepeat_twice_f_two_run}{eval_repeat_twice_f_two}
+\begin{coqout}{run=eval_repeat_twice_f_two_run}{width=5cm}
 = 4 : nat
 \end{coqout}
 \coqrun{name=eval_run}{eval_repeat_twice_f_two}
@@ -395,10 +397,11 @@ As in the previous section,
 the \C{repeat_twice} program takes two arguments as input and we can
 apply it to only one argument to obtain a perfectly valid term.
 
-\begin{coq}{name=eval_repeat_twice_f_two}{width=6cm,title=Partial application}
+\begin{coq}{name=check_repeat_twice_f_two}{width=6cm,title=Partial application}
 Check (repeat_twice f).
 \end{coq}
-\begin{coqout}{run=eval_f_run}{title=Response,width=6cm}
+\coqrun{name=check_repeat_twice_f_two_run}{check_repeat_twice_f_two}
+\begin{coqout}{run=check_repeat_twice_f_two_run}{title=Response,width=6cm}
 repeat_twice f : nat -> nat
 \end{coqout}
 If we look at the type of \C{repeat_twice} and add redundant parentheses
@@ -413,6 +416,53 @@ the arrow (as depicted with different underline styles).
 When this is not the case \Coq{} issues a type error.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Local definitions}
+When we write a function application whose function part has the form
+\C{fun x => ..}, as in \C{(fun x => x + x + x) B}, we actually use the
+variable \C{x} as an abbreviation for \C{B}.  This can be very useful when
+\C{B} is replaced by a very big expression that would be cumbersome to repeat
+several times.  However the readability of this statement is poor, because
+the name \C{x} and the expression \C{B} for which it stands are separated by
+the expression where \C{x} is used, in our example \C{x + x + x}.
+
+The  \Coq{} programming language has recognized this need and added a
+statement for this.  It is written as follows:
+\begin{coq}{}{}
+let x := B in
+   x + x + x
+\end{coq}
+This statement is more readable than the function applications described earlier
+in this section.  There are also variants that make it possible to state the
+type ascribed to the variable \C{x}.  This can come handy when we want the
+code to be very explicit about the nature of the values being exchanged.
+
+In this expression the variable \C{x} is {\em bound} and can be used in
+the text that comes after the \C{in} keyword. \index[Concepts]{binder}.
+
+Here is an example of usage of this syntax.
+\begin{coq}{name=eval_let_expr}{width=6cm,title=Evaluating local definitions}
+Eval compute in
+  let n := 33 in
+  let e := n + n + n in
+    e + e + e.
+\end{coq}
+\coqrun{name=eval_let_expr_run}{eval_let_expr}
+\begin{coqout}{run=eval_let_expr__run}{title=Response,width=6cm}
+ = 297 : nat
+\end{coqout}
+
+When it comes to comparing end values of computations, a local definition
+has the same result as the expression where all occurrences of the bound
+variable are replaced by the corresponding expression.  Thus, the example
+expression above has exactly the same value as the following expression
+\begin{coq}{}{}
+(33 + 33 + 33) + (33 + 33 + 33) + (33 + 33 + 33)
+\end{coq}
+However, in practice the evaluation strategy used in the command
+\C{Eval compute in ..} takes advantage of the \C{let .. in ..} notation to
+avoid duplicating computation efforts.  So this notation can also be used
+to organize intermediate computations.
+
 \section{Data: construction and destruction}
 It is possible to define a data type by giving in one declaration
 the type name and the methods to \emph{build} elements of this type.
@@ -1628,10 +1678,11 @@ operations that distribute.
 \index[concept]{notation}
 \index[concept]{abbreviation}
 
-We mentioned many times already the \C{Notation} command only appealing to the
-reader's intuition: a notation relates some symbols with a term.  The actual
-syntax is more complex, letting one specify associativity and precedence to the
-parsing engine, as well as the group to which the notation belongs and some hint for printing, like good
+We already mentioned several time the \C{Notation} command, relying on the
+reader's intuition to understand roughly how it works.  The actual command is
+quite complex, letting one specify associativity and precedence to the
+parsing engine, as well as the group to which the notation belongs and some
+hint for printing, like good
 line breaking points.  The notation group is usually called a {\em scope} and it
 is usually associated to a {\em scope delimiter}.
 
@@ -1642,7 +1693,7 @@ Notation "n .+1" := (succn n) (at level 2, left associativity,
   format "n .+1") : nat_scope.
 \end{coq}
 \index[vernac]{\C{Notation}}
-A comprehensive description of thiscommand goes behind
+A comprehensive description of this command goes behind
 the scope of this book, the interested reader shall refer to~\cite[Chapter 12]{Coq:manual}.
 
 What is worth mentioning here is some conventions either imposed by \Coq{}
@@ -1653,11 +1704,11 @@ or adopted in the \mcbMC{} library.
 	any character.  For example \C{.+1} is a single symbol, and so are
 	\C{.+4}, \C{\%/}, \C{<=}, and \C{[::}.  Only existing
 	symbols are taken into account: \C{3.+1.+1} is parsed as a number
-	followed by two occurrences of the \C{.+1} symbol; \C{.+1.+1} could
-	be a symbol, in principle, but no notation declares it.
+	followed by two occurrences of the \C{.+1} symbol.  In principle,
+         \C{.+1.+1} could be a symbol, but no notation declares it.
 %\marginnote{I know it is not correct, but no user would prefer the correct explanation}
 \item Notations that are typically denoted with a letter, like $N(G)$ for the
-	normalizer of the group $G$ are represented with symbols beginning
+	normalizer of the group $G$ are represented by symbols beginning
 	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
@@ -1678,25 +1729,10 @@ to, say, denote a ring.
 Notation succn := Datatypes.S.
 \end{coq}
 
-Abbreviations can also be local to a term, to avoid repetitions.
-
-\begin{coq}{}{}
-let p := n.-1 in
-  if n is m.+1 then p == m else p == 0
-\end{coq}
-\index[coq]{\C{let .. := .. in ..}}
-Here \C{p} is a name given to the expression \C{n.-1} and
-used twice in the following expression.  Let-in abbreviations are
-fully transparent, exactly like notations.  There is no semantic
-difference between the previous expression and the following one.
-
-\begin{coq}{}{}
-  if n is m.+1 then n.-1 == m else n.-1 == 0
-\end{coq}
-Still the computation engine of \Coq{} uses the let-in syntax form
-as a hint
-to compute the named expression only once, so the execution time
-of the two expressions above may vary.
+For infix notations, which are meant to be printed between two arguments
+of the operator (like addition in \C{2 + 3}), we advise to always include
+space around the infix operator, so that notations don't get mixed up with
+potential notations occuring in the arguments.
 
 Last, we recall the notion of implicit argument sketched in
 section~\ref{sec:poly}.  Once implicit arguments are active for
