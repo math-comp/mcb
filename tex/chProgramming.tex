@@ -1073,15 +1073,14 @@ It is clear that this approach is problematic.  First, every time we
 write a function that manipulates a list we have to choose a priori
 if the list holds numbers or booleans, even if the program does not
 really use the objects held in the list.
-A concrete example is the function that computes the length of the list,
-%% YB: should we use the word size here, to be consisted with the later def.
+A concrete example is the function that computes the size of the list,
 and in the current setting such function has to be written twice.
 Worse, starting from the next chapter we will prove properties of programs,
 and given the two size functions are ``different'' we are going to prove
 properties twice.
 
 However it is clear that the two data types we just defined follow
-a similar schema, and so do the two functions for computing the length of lists
+a similar schema, and so do the two functions for computing the size of lists
 or the theorems we may prove about these functions.  In other words
 one would write something
 like the following, where $\alpha$ is a schematic variable.
@@ -1274,7 +1273,7 @@ Because the second explicit argument of \C{cons} can also be a sequence, it is
 possible to build sequences that are quite long, but always finite.
 In this respect, the sequences are very similar to the natural
 numbers.  Recursion is again the solution to cope with the arbitrary
-length of sequences with functions that can be described concisely.
+size of sequences using functions that can be described concisely.
 
 For instance, we can define a size function that counts the number of
 elements in a sequence.
@@ -1801,7 +1800,7 @@ Records play a major role in the \mcbMC{} library, in particular
 in the modelling of algebraic structures.   As we see in later chapters
 records let one pack together types, operations on these types and
 finally the properties of these operations.  For example a record
-will model the signature of a Ring.  %% Why a capital letter YB
+will model the signature of a ring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
