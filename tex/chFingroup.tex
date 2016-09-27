@@ -10,6 +10,10 @@ The paper~\cite{DBLP:conf/mkm/Mahboubi13}
 describes the constructions and formalization techniques
 needed in order to prove the Jordan Holder theorem.
 
+\paragraph{contents}
+
+\lib{..}
+
 \paragraph{Basic formalization choices} To ease the study of sub-groups,
 the type of groups is indexed over a container group called
 \C{finGroupType}, fixing the group law and imposing finiteness by
@@ -18,10 +22,19 @@ For example two groups \C{(G H : \{group gT\})},
 where \C{(gT : finGroupType)}, share the same law and unit.  Groups
 naturally coerce to finite sets, and all set-wise operations are available.
 
+Concepts already existing on sets are kept there and not redefined.
 Type inference is programmed to infer the group structure whenever possible.
 For example the type of \C{(G :&: H)} is \C{\{set gT\}} but such expression
 is automatically promoted to a group when needed, similarly to what 
 was done in section~\ref{sec:tupleinvariant} for tuples.
+
+group concepts usually here defined on sets, but then
+possibly using the generated group operation to fulfill
+stricter requirements.  This generalized the math concept and
+ease the integration with set stuff.  This is possible because
+the container is a group and we can always generate from a set.
+
+morphisms carry domain set in type.
 
 \paragraph{Notations} The same infix \C{*} notation can be used to
 multiply both sets (or groups) and their points.  For example
@@ -29,7 +42,7 @@ multiply both sets (or groups) and their points.  For example
 $g\cdot h \in \{ x\cdot y | x \in G, y \in H\}$.  Given the \C{finGroupType}
 container many open notations are also supported, for example the normalizer
 of \C{A}, written \C{'N(A)} for \C{A} being a \C{\{set gT\}}, is a sensible
-writing.
+writing. Another bonus from the container.
 
 \begin{coq}{}{}
 Definition normaliser A := [set x | A :^ x \subset A].
@@ -38,6 +51,17 @@ Lemma normP x A : reflect (A :^ x = A) (x \in 'N(A)).
 \end{coq}
 Here \C{:^} is the notation for conjugating a set by a point:
 $\{x^{-1}*a*x | a\in A\}$.
+
+Notation 1 and * overloaded on points/sets and among different groups (types)
+useful when many quotients arise.
+
+as for pi.-number we have pi.-group~\ref{numbers:natpred}.
+
+\C{\{in A, P\}} (put elsewhere)
+
+img/preimg (elsewhere)
+
+notations for actions acts-on, transitive, Fix, 'N(A|P) and co.
 
 \paragraph{Formalization trick: totality of operations} In standard math one
 can write \C{A/H} only if the normality condition \C{(H <| A)} holds.
@@ -106,6 +130,16 @@ of the dihedral group (\C{'D_m} has order \C{m = q.*2 >= 4}):
 \begin{coq}{}{}
 Lemma Grp_dihedral: 'D_m \isog Grp(x: y: (x ^+ q, y ^+ 2, x ^ y = x^-1)).
 \end{coq}
+
+
+trick: better explain the second message of sdprod (equation with group means not in the default case)
+
+perm T for T finite, and not a set.
+
+
+
+
+
 
 \chapter{Representation and Character theory}
 

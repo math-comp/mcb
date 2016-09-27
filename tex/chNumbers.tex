@@ -1,265 +1,99 @@
 \chapter{Numbers}
 
-% What are the numbers available in the library? How to use them, casts
-% between types... Non trivial point in the formalisation:
-% axiomatization, order is defined from norm, partial orders (in
-% particular for complex numbers).
-% 
-% 
-% The library provides integers, rational numbers, real algebraic
-% numbers and complex numbers.
-% 
-% The numeric library does not cover natural numbers and there is no
-% semi-ring structure in the algebraic hierarchy. The theory of natural
-% numbers is hence kept separate in \C{ssrnat}. Nevertheless, the
-% theorems that accomplish the same result use same naming
-% convention. For example, \C{addnC} and \C{addrC} express the
-% commutativity of addition in respectively \C{nat} and an arbitrary
-% ring.
-% 
-% Requires: ssralg, nat
-% Provides: ssrnum, more nat?, int, rat, rcf, complex and algC.
-% 
-% \begin{enumerate}
-% \item int and rat (Beginner)
-% \item The choice of interfaces (Inter)
-% \item Content of ssrnum (Advanced)
-% \end{enumerate}
-% 
-% \section{Integers and rationals}
-% \label{sec:integers-rationals}
-% 
-% Integers (resp. rationals) are provided an ordered integral domain
-% structure (resp. ordered field structure) through the
-% generic mechanism of overloading described in~\ref{ch:hierarchy}.
-% 
-% In particular, the following symbols are available on both structures:
-% \C{0}, \C{1}, \C{+}, $\ldots$.
-% 
-% The theory of these symbols is also generic and covered in the ssrnum
-% library.
-% 
-% What is not covered by the ssrnum library is specific operations.
-% 
-% \subsection{Integers}
-% \label{sec:integers}
-% 
-% On integers we provide a specific injection from natural numbers
-% \C{\%:Z}
-% 
-% \begin{coq}{name=about_Posz}{width=5cm,title=injection from $\mathbb{N}$
-%   to $\mathbb{Z}$}
-% Locate "%:Z".
-% About Posz.
-% \end{coq}
-% \coqrun{name=about_Posz_run}{about_Posz}
-% \begin{coqout}{run=about_Posz_run}{title=Response,width=7cm}
-% Notation            Scope
-% "n %:Z" := Posz n    : int_scope ...
-% intmul : forall R : zmodType, R -> int -> R
-% Argument scope is [nat_scope] ...
-% \end{coqout}
-% 
-% Every integer can be constructed from an injection from natural
-% numbers to integers and arithmetic operations (in particular,
-% negation).  For example $-42$ is constructed by negating the injection
-% of $42$: \C{- 42\%:Z}.
-% 
-% In fact, integers are defined in the following way.
-% 
-% \begin{coq}{name=int}{width=12cm,title=Definition of $\mathbb{Z}$}
-% CoInductive int : Set := Posz of nat | Negz of nat.
-% \end{coq}
-% 
-% But one should never use the specificities of this implementation, in
-% particular,
-% \begin{itemize}
-% \item Negz should not be used, but rather \C{-_\%:Z},
-% \item one should not match on an integer, but rather use comparison
-%   operations \C{_ <= _} followed by the use of absolute
-%   value. Additionally, the numeric library provides views to reason
-%   easily on such case distinctions: \C{lerP}, \C{ltrP}, \C{ltrgtP},
-%   \C{ger0P}, \C{ler0P}, \C{ltrgt0P}.
-% \end{itemize}
-% 
-% 
-% This injection is in fact a coercion, so that when an integer is
-% expected, one can provide a natural number.
-% 
-% Additionally we provide extension of the operations from the theory of
-% $\mathbb{Z}-$modules which external operations (\C{*+}, \C{*-},
-% \C{\%:R}) were taking natural numbers as arguments. We now provide
-% their generalization \C{*~} and \C{\%:~R}, which are convertible to the
-% former operations when applied to a natural number.
-% Indeed \C{x *~ m} is convertible to \C{x *+ m} when m is a natural
-% number, \C{x *~ (- m.+1\%:Z)} is convertible to \C{x *- m.+1} and
-% \C{m\%:~R} is convertible to {m\%:R}.
-% 
-% There is a similar extension for powers of ring elements \C{^} is the
-% generalization of both \C{^+} and \C{^-}. Indeed \C{x ^ m} is
-% convertible to \C{x ^+ m} when m is a natural number, %
-% \C{x ^ (- m.+1\%:Z)} is convertible to \C{x ^- m.+1}.
-% 
-% 
-% The library ssrnum has a generic sign operation \C{Num.sg : R -> R} which
-% returns \C{-1}, \C{0} or \C{1} in \C{R} as a sign. The library on
-% integers provides an additional sign function \C{sgz : R -> int} which
-% gives the same result in \C{int} instead of \C{R}. \C{Num.sg} and
-% \C{sgz} are convertible on \C{int}, but in general \C{Num.sg x} and
-% \C{(sgz x)\%:~R} are not convertible, however they are provably equal
-% through the lemma~\C{sgrEz}.
-% 
-% We provide the absolute value function \C{absz} denoted with \D{`|n|}
-% which takes an integer to a natural number. Additionally \D{`|m - n|}
-% has a special treatment in order for it to be used without the integer
-% library. This means that one can just import the module \C{IntDist} and
-% take advantage of distance between natural numbers without any
-% knowledge about numbers. \C{IntDist} is instantiated using numeric
-% libraries, but can be used without, since the interface does not
-% expose any integer.
-% 
-% \subsection{Rationals}
-% \label{sec:rationals-1}
-% 
-% On integers we provide a specific injection from integers \C{\%:Q},
-% which is \textbf{not} a coercion, because then it would be ambiguous
-% to the reader whether \C{m + n} should be read \C{m\%:Q + n\%:Q} or
-% \C{(m + n)\%:Q}.
-% 
-% Furthermore, \C{m\%:Q} is an alias for \C{m\%:~R} specialized to
-% rationals, and its theory is hence shared through the algebraic
-% hierarchy.
-% 
-% We also provide an embedding \C{ratr} of rationals into an arbitrary
-% unit ring (we need the existence of an inverse, even when it is not
-% well defined). \C{ratr} is a morphism, as expected, when the target is a
-% numeric field (which guarantees both that the characteristic is zero
-% and the existence of inverse for non zero elements). Additionally, we
-% provide that
-% 
-% Rationals are defined like this:
-% 
-% \vspace{1em}
-% 
-% \begin{coq}{name=rat}{width=12cm,title=Definition of $\mathbb{Q}$}
-% Record rat : Set := Rat {
-%   valq : (int * int) ;
-%   _ : (0 < valq.2) && coprime `|valq.1| `|valq.2|
-% }.
-% \end{coq}
-% 
-% But one should never use the specificities of this implementation, in
-% particular,
-% \begin{itemize}
-% \item one should not use the constructor \C{Rat}, but instead the
-%   generic division operation, composed with injections from integers:
-%   \C{_\%:Q / _\%:Q}.
-% \item one should not pattern match on \C{rat} but use the operations
-%   \C{numq} and \C{denq} which provide the numerator and denominator of
-%   the reduced representative.
-% \end{itemize}
-% 
-% Additionally, we provide the subring of integers \C{Qint} and the
-% sub-semi-ring of natural numbers \C{Qnat} embedded into rationals as
-% predicates. These predicates have canonical structures drawn from the
-% algebraic hierarchy. So one can use the generic theory of substructure
-% predicates of the algebraic hierarchy on them.
-% 
-% 
-% \subsection{The numeric hierarchy}
-% \label{sec:numeric-hierarchy}
-% 
-% The numeric hierarchy was specifically designed to cover the following
-% instances: $\mathbb{Z}$, $\mathbb{Q}$, real algebraic numbers and
-% complex numbers. Hence, we did not provide a general theory of ordered
-% structure, but only of structures with a (potentially partial) order
-% (\C{_ <= _} or \C{_ < _}) that is tied to a norm operation (\D{`|_|}
-% that encompass both absolute value and complex modulus). This is why
-% the axiomatic of these numbers can be instantiated though any of the
-% following operations and their axiomatic: large ordering, strict
-% ordering and norm.
-% 
-% The link between large and strict ordering is obvious and the link
-% between ordering and norm is \D{(0 <= x) = (`|x| == x)}.
-% 
-% Remark that we provide a partial order on complex numbers in order to
-% be able to compare complex numbers that happen to be real. In
-% particular complex number comparable to zero (or to any integer) are
-% real. Some non-real can also comparable, in particular thanks to the
-% additivity of comparison: \C{0 <= x -> y <= x + y} even if~\C{y} is
-% not real. Comparison of non-real values is necessary since the
-% comparison function must be total (not total as in \emph{total order},
-% since the order is partial on non-real values, but total as in
-% \emph{total function}). As for division by $0$, the choice of a
-% ``default'' return value for comparison is guided by the stability of
-% the order by arithmetic operations, in order to minimize the number of
-% hypotheses required by the theory.
-% 
-% We provide the subsemiring of non negative elements \C{nneg} and the
-% subring (with division) of real elements \C{real} as predicates. These
-% predicates have canonical structures drawn from the algebraic
-% hierarchy. So one can use the generic theory of substructure
-% predicates of the algebraic hierarchy on them. Additional positive
-% elements \C{pos} are declared stable by multiplication and division.
-% 
-% The library provide seven interfaces : \C{numDomainType},
-% \C{numFieldType}, \C{numClosedFieldType}, \C{realDomainType},
-% \C{realFieldType}, \C{archiFieldType} and \C{rcfType}.
-% 
-% A \C{numDomainType} is an integral domain (\C{idomainType}), with an
-% order and a norm compatible with \C{+} an \C{*}. \textit{Ie}
-% satisfying the axioms:
-% 
-% \begin{coq}{name=ndtaxioms}{width=12cm, title=Axioms of numeric domains}
-% Lemma normr0_eq0    x   : `|x| = 0 -> x = 0.
-% Lemma ler_norm_add  x y : `|x + y| <= `|x| + `|y|.
-% Lemma addr_gt0      x y : 0 < x -> 0 < y -> 0 < x + y.
-% Lemma ger_leVge     x y : 0 <= x -> 0 <= y -> (x <= y) || (y <= x).
-% Lemma ler_def       x y : (x <= y) = (`|y - x| == y - x).
-% Lemma ltr_def       x y : (x < y) = (y != x) && (x <= y).
-% Lemma normrM            : {morph norm : x y / x * y : R}.
-% 
-% \end{coq}
-% 
-% The two other ``numeric'' structures \C{numFieldType},
-% C{numClosedFieldType} are simply \emph{joins} cf~\ref{str:itf} of the
-% \C{numDomainType} with the \C{fieldType} and \C{closedFieldType} from
-% the algebraic hierarchy.
-% 
-% The \C{realDomainType}, \C{realFieldType}, are joins of the previous
-% structures \C{numDomainType} and \C{numFieldType} with an additional
-% axiom which states that every number is real :
-% 
-% \begin{coq}{name=rdtaxioms}{width=12cm, title=Axiom of real domains}
-% Lemma num_real x : x \is real.
-% \end{coq}
-% 
-% The structure \C{archiFieldType} is a real field together with
-% Archimedes axiom
-% \begin{coq}{name=archiaxioms}{width=12cm, title=Archimedes axiom}
-% Definition archimedean_axiom : Prop := forall x : R, exists ub, `|x| < ub%:R.
-% \end{coq}
-% 
-% Finally, \C{rcfType} is the type of real closed fields, which is a
-% real field together with the intermediate value property for
-% polynomials.
-% \begin{coq}{name=ivtaxioms}{width=12cm, title=Intermediate value
-%     property for polynomials}
-% Definition real_closed_axiom : Prop :=
-%   forall (p : {poly R}) (a b : R),
-%     a <= b -> p.[a] <= 0 <= p.[b] -> exists2 x, a <= x <= b & root p x.
-% \end{coq}
-% This is one of the multiple possible characterization of real closed
-% fields. The other possible characterizations, and their equivalence
-% (whether classical or constructive), have not yet been formalized, and
-% is thus out of the scope of this book.  We prove that the extension of
-% a real closed field with the pure imaginary number $i$ is in fact a
-% numeric closed field.
-% 
-% 
-% NOT TRUE YET: Additionally, we provide an interface to use classical real and
-% complex number
+The library contains various data structure for ``numebers'' 
+starting from natural numbers, integers, rationals, Cauchy reals, as well as
+related constructions as modular integers, algebraic real numbers and algebraic
+complex numbers.
 
-% Local Variables:
-% ispell-dictionary: english
-% End:
+\paragraph{Contents}
+\begin{itemize}
+	
+\item
+Natural numbers $\mathbb{N}$ play a special role in the \mcbMC{} library as they
+are such a basic notion that many other concept needs it (eg sequences, ...).
+The definition of elementary arithmetic operations on natural numbers 
+is given and studied in \lib{ssreflect.ssrnat}, except for division
+that is given in \lib{ssreflect.div}.  Elementary properties of
+prime numbers and factorization in primes are proved in
+\lib{ssreflect.prime}.  Falling factorial and binomial coefficients are defined
+and studied in \lib{ssreflect.binomial}.
+
+\item
+The data structure of integers $\mathbb{Z}$ is defined in \lib{algebra.ssrint}
+as well as the operations that equip it with a structure of
+ordered ring. Library \lib{algebra.intdiv} provides various
+results about integer divisibility.  This library also provides
+results on polynomials and matrices with integer coefficients
+such as properties of the content of a polynomial or the 
+existence of the Smith normal form for integer matrices~\ref{linalg:smith}.
+Library \lib{algebra.zmodp} defines arithmetic modulo a natural number $n$
+and the field structure of $\mathbb{Z}/\mathbb{Z}_p$ for $p$ a prime.
+
+\item
+The library \lib{algebra.rat} defined the ordered Archimedean ring of
+rational numbers $\mathbb{Q}$.
+
+\item
+Libraries \lib{field.algC} and \lib{field.algebraic\_fundamentals}
+provide a construction of algebraic closures and in particular define
+real and complex algebraic numbers.
+
+\item
+Library \lib{real\_closed.cauchyreals} defines Cauchy real numbers.
+
+\item
+The generic theory of ... and order are in \lib{algebra.ssrnum}
+and \lib{algebra.ssralg}.
+
+\end{itemize}
+
+\paragraph{Formalization Choices}
+
+Binomial coefficients are only defined over natural numbers.
+
+Division on integers (choice about the sign, no unique solution).
+
+zmodp is not a quotient of Z but the finite type ordinals equipped with
+arith ops.
+
+cauchy reals have no decideable equality, not an eqtype, unless you axiom
+but then the setoid presentation is stupid.
+
+minor: int = pos nat + neg\_or\_zero nat (you get only 2 cases in proofs)
+
+minor: rat is simple subtype
+
+algebraic closure is nonstandard/clever.
+
+sg/sgz x * x = abs x??
+
+\paragraph{Notations and conventions}
+
+Convention: belonging to a ``subring'' is written \C{\\is a}
+and comes with lemmas.
+
+ring and orderedring notations.
+
+``r'' in lemma names, slide 10 of
+\url{http://www-sop.inria.fr/marelle/math-comp-tut-16/MathCompWS/lesson4.html}
+
+\paragraph{Formalization trick: ...}
+
+spec for 3-way case analysis of int.
+
+pi.-predicate (nat\_pred)
+
+expn x 1 ~ x
+expn x 2 ~ x * x
+
+n < m = n.+1 <= m hence 1 leq\_trans + less lemmas + more conv
+
+nattrec + passerelle
+
+ring
+
+Num of binint
+
+case: (ex\_minnP exP) => m pm m\_minP.
+
+leqif n m C   =   n <= m /\ (n == m = C)
