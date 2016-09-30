@@ -29,6 +29,12 @@ of the formalization style that made the \mcbMC{} library possible.
 By no means this book pretends to be a complete description of \Coq{} or
 Ssreflect: both tools already come with a comprehensive user 
 manual~\cite{Coq:manual,ssrman}.
+%% YB: I am puzzled by the next sentence.  I don't know whether
+%% the author wishes the reader to be quickly put in the middle of a
+%% large library of formalized concepts (in the book), or whether the
+%% the author complains that the reader is put in the middle of large library
+%% in the other documents.  If it is the latter, then I suggest adding
+%% ``in reference manuals'' after ``However''. 
 However, the reader is quickly put in the middle of a large library
 of formalized concepts and given sufficient tools to prove non-trivial
 mathematical results by reusing parts of the library.  
@@ -112,8 +118,9 @@ formalization choices that play a crucial role in the
 definition of the formal object.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Conventions}
+\section{How to use the book}
 
+\subsection{Conventions}
 Sections that are labelled with one $(\star)$ are of medium complexity and are
 of interest to the reader willing to extend the \mcbMC{} library.  Sections
 that are labelled with two $(\star\star)$ are of high complexity and are of
@@ -151,6 +158,47 @@ IHn : \sum_(0 <= i < n.+1) i = (n * n.+1) %/ 2
 
 Names of components one can \C{Require} in \Coq{} are written
 like \lib{ssreflect} or \lib{fintype}.
+
+\subsection{Running examples in the \Coq{} system}
+The contents of this book is mostly about interacting with a computer
+program consisting of the \Coq{} system and the \mcbMC{} library.  Many
+examples are given, and we advise readers to experiment with this program,
+after having installed the \Coq{} system and the \mcbMC{} library on a
+computer.  Documentation on how to install \Coq{} is available
+at \url{http://coq.inria.fr}, while documentation on how to install
+the \mcbMC{} library is available at
+\url{https://math-comp.github.io/math-comp/}.
+
+The initial revision of the book was written and tested against
+version 8.5 of the \Coq{} system and version 1.6 of the \mcbMC{} library.
+
+There are a variety of ways to run the \Coq{} system: a command line is
+provided under the name \texttt{coqtop}, while a windowed interface is
+provided under the name \texttt{coqide}.  The \Coq{} community also develops
+alternative approaches to integrate \Coq{} in their preferred programming
+environment.  For instance, there exist special extensions of \Coq{} for the
+popular \texttt{emacs} programming editor (known as \texttt{proof general})
+and for the \texttt{Eclipse} programming environment
+(known as \texttt{coqoon}).  These extensions and similar projects can easily
+be found by a search on the internet.
+
+When starting a \Coq{} session, a few commands must be sent to the \Coq{}
+system to tell it to load the \mcbMC{} library and to configure its behavior
+so it matches the usual programming style of the \mcbMC{} developers:
+
+\begin{coq}{}{title={Default starting header}}
+From mathcomp Require Import all_ssreflect.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+\end{coq}
+The first line actually instructs the \Coq{} system to load the first level
+of the \mcbMC{} library.  More advanced levels are available under names
+\lib{all\_fingroup}, \lib{all\_algebra}, \lib{all\_solvable}, \lib{all\_field},
+and \lib{all\_character}.  While the first chapters of this book
+rely mainly on the first
+level, later chapters will rely on the other levels.  This will be clearly
+stated as the topics evolve.
 
 % The Mathematical Components library was originally developed to
 % support the formalization of the Odd Order theorem, a result that
