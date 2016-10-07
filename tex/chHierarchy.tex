@@ -80,7 +80,7 @@ For \C{eqType} the interface comprises:
   mixin constructors that bundle the \emph{new} operations and
   properties the structure provides.
 \item \C{EqType}: an instance constructor that creates an instance of
-  the structure from a mixin.  
+  the structure from a mixin.
 \item \lstinline/[eqType of T]/, \lstinline/[eqType of T for S]/:
   cloning constructors that specialize a canonical or given instance
   of the structure (to \C{T} here).
@@ -165,7 +165,7 @@ speeds up type checking, which never need to open the mixin bundle.
 
 The first argument to the instance constructor \C{ZmodType} is
 somewhat redundant, but documents precisely the type for which this
-instance will be used. 
+instance will be used.
 This can be important as the value
 inferred by \Coq{} could be ``different''.
 Indeed line 2 does perform some nontrivial inference, because
@@ -524,6 +524,7 @@ Lemma choose_id P x0 y0 : P x0 -> P y0 -> choose P x0 = choose P y0.
 Lemma eq_choose P Q : P =1 Q -> choose P =1 choose Q.
 \end{coq}
 
+\marginnote{Say more about choice in exercises, like W lemmas.}
 The mixin actually specifies a specific search depth based choice
 strategy: \C{choose} can be defined using \C{find} and countable
 choice, which is derivable in \mcbCIC{}\footnote{behind the
@@ -561,7 +562,7 @@ Definition eqType := Equality.Pack class.
 \end{coq}
 
 Here \C{class} is just the explicit definition of the second component
-of the \lstinline/Section/ variable \C{cT : type}. 
+of the \lstinline/Section/ variable \C{cT : type}.
 
 Thanks to the \lstinline/Coercion/ declarations, the \C{eqType} definition is
 indeed the \C{eqType} structure associated to \C{cT}, with \C{sort}
@@ -590,7 +591,7 @@ structure.
 
 \begin{coq}{name=packed30}{}
 Module GRing.
-  
+
 Module Zmodule.
 
 Record mixin_of (V : Type) : Type := Mixin {
@@ -703,7 +704,7 @@ mixin.
 
 \begin{coq}{name=packed50}{}
 Module ComUnitRing.
-  
+
 Record class_of (R : Type) : Type := Class {
   base : ComRing.class_of R;
   mixin : UnitRing.mixin_of (Ring.Pack base)
@@ -977,7 +978,7 @@ Definition o2w (o : 'I_4) : option windrose :=
   match val o with
   | 0 => Some N | 1 => Some S | 2 => Some E | 3 => Some W
   | _ => None
-  end.	
+  end.
 \end{coq}
 Then we can show that these two functions cancel out.
 
@@ -996,7 +997,7 @@ Canonical windrose_choiceType := ChoiceType windrose windrose_choiceMixin.
 Definition windrose_countMixin := PcanCountMixin pcan_wo4.
 Canonical windrose_countType := CountType windrose windrose_countMixin.
 Definition windrose_finMixin := PcanFinMixin pcan_wo4.
-Canonical windrose_finType := FinType windrose windrose_finMixin.	
+Canonical windrose_finType := FinType windrose windrose_finMixin.
 \end{coq}
 Only one tiny detail is left on the side.  To use \C{windrose}
 in conjunction with \C{\\in} and \C{#|...|}, the type declaration has
@@ -1044,5 +1045,3 @@ natural numbers and leafs carrying a value in \C{T}.
 
 %keyed predicates\\
 %default keying
-
-
