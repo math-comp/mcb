@@ -16,6 +16,7 @@ Definition repeat_twice (g : nat -> nat) : nat -> nat :=
   fun x => g (g x).
 Eval compute in repeat_twice f 2.
 Check (repeat_twice f).
+Fail Check (repeat_twice f f).
 
 (* data *)
 Check true.
@@ -174,4 +175,3 @@ Definition all_words n T (alphabet : seq T) :=
   iter n extend [::[::]].
 
 Eval compute in all_words 2 [:: 1; 2; 3].
-
