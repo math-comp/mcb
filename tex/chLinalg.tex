@@ -1,83 +1,103 @@
 \chapter{Linear algebra}
 \label{linalg:smith}
 
-TODO:
+The library covers linear algebra in finite dimension in two distinct
+and almost independent parts. The first part provides a notion of
+abstract finite dimension vector spaces on top of the algebraic
+hierarchy. The second part represents vectors, families of vectors,
+spaces and linear maps using the same matrix operations, and with a
+maximal sharing of operations.
+
+Warning: If you are going to formalize linear algebra, do not choose
+lightly between the two parts. It is a difficult thing to understand
+which level of abstraction to choose. Often the sensible thing to do
+is to use mxalgebra, as soon as you use a matrix somewhere in your
+development.
+
+\section{Vector spaces}
+\label{sec:vector-spaces}
 
 \paragraph{Contents}
-Only finite dimension covered
 
-\begin{enumerate}
-\item Begins with matrix : array of elements of a type with more or
-  less structure.  
-\item Matrices are the basis of finite dimensional
-  algebra (mxalgebra).
-\item   And then an abstraction to cover vector spaces
-  in a more traditional way.
-\end{enumerate}
-
-Warning: Do not choose lightly. It is a difficult thing to understand
-which level of abstraction to choose. Often the sensible thing to do
-is to use mxalgebra. Point where to find which one to use more
-precisely.
-
-Indeed mxalgebra overloads matrix product which means at the same
-time: composition of linear maps, application of maps and image of
-space by a map. This simplifies the theory as there is less lemmas to
-write.
-
-\paragraph{Not contents anymore}
 \begin{itemize}
-\item Examples. How to use the language of mxalgebra compared to
-  vector spaces.
+\item We provide an abstract interface for vector spaces, which
+  inherits from the interface from left modules from the algebraic
+  hierarchy, together with the axiom \C{Vector.axiom_def} which states
+  an isomorphism between the vector space and $R^n$ for some $n$. This
+  axiom should be read as: ``any vector is uniquely determined by its
+  coordinates in a fixed basis'' All the theory of this interface is
+  described in \lib{algebra.vector}.
+\end{itemize}
 
-\item   A usual treatment of linear algebra would require the use of
-  mxalgebra and not vector. Indeed, going back and forth between
-  matrix representation and linear maps or spaces is only possible for
-  mxalgebra.
+\paragraph{Formalization choices}
 
-\item   Vector spaces is for Galois theory.
+The library provides reasoning on vector spaces (addition, complement,
+intersection) and linear maps (identity, composition and inverse) as a
+primitive objects, with a few bridges with elements (taking the space
+spanned by a family of vectors, taking a basis or picking a non-zero
+element). \emph{There is no bridge from and to matrices at this
+  stage}, so if you want to deal with matrix representations of linear
+maps, you would rather use the other linear algebra library.
 
-\item   Representation theory is in another chapter.
+The incomplete basis theorem is not provided as a theorem in the
+library but is rather viewed as a composition of operations: first
+take the complement space and the get its basis.
 
-\item   How to use mxalgebra and vector spaces.
+\begin{coq}{}{width=8cm}
+Theorem incomplete_basis_theorem (F : fieldType) (E : vectType F) (v : seq E) :
+  free v -> exists v', basis_of fullv (v ++ v').
+Proof.
+move=> v_free; exists (vbasis <<v>>^C); rewrite /basis_of ?subvf /=.
+rewrite cat_free v_free (basis_free (vbasisP _)) /= span_cat.
+rewrite (span_basis (vbasisP _)) directv_addE !directvE capv_compl !eqxx /=.
+by rewrite addv_complf eqxx.
+Qed.
+\end{coq}
 
-\item Incomplete basis theorem: Not a theorem in the library but provided
-  in kits.
+This proof is quite long, however, in practice the incomplete basis
+theorem is never used as such, but only in pieces.
 
-\item   Take three folklore statements and show the bricks. Be in a goal
-  where it is needed, and show how to use the library.
+Galois theory is based on this library but is in another chapter.
 
+\section{Matrix based linear algebra}
+\label{sec:matrix-based-linear}
 
-\item   vector has the same primitives as mxalgebra but with additional
-  casts to go from one type to the other, that were identified in
-  mxalgebra.
+\paragraph{Contents}
 
+\begin{itemize}
+\item The type of matrices and basic operation on them (\textit{i.e.}
+  operations independent from linear algebra) are defined in the
+  library \lib{algebra.matrix}. 
 
-\item   Independent chapters for vector and mxalgebra.
-
-\item   Things in matrix.v that are important for mxalgebra: blocks,
+  Things in matrix.v that are important for mxalgebra: blocks,
   non-zero dimension of matrices, \C{lin_mx}.
 
+\item The library \lib{algebra.mxalgebra} overloads matrix product
+  which means at the same time: composition of linear maps,
+  application of maps and image of space by a map. This simplifies the
+  theory as there is less lemmas to write.
+
 \end{itemize}
-END OF TODO
 
 
+\section{Comparison between vector spaces and matrix algebra}
+\label{sec:comp-betw-vect}
 
+The library \lib{algebra.vector} has the same primitives as mxalgebra
+but with additional casts to go from one type to the other, that were
+identified in mxalgebra.
 
-
-
-
-
-The library covers linear algebra in finite dimension in two distinct
-parts. The first part is using matrices to represent everything and
-the second is building vector spaces on top of the algebraic
-hierarchy.
+A usual treatment of linear algebra would require the use of mxalgebra
+and not vector. Indeed, going back and forth between matrix
+representation and linear maps or spaces is only possible for
+mxalgebra.
 
 
 
 \newcommand{\idmat}{\ensuremath{\mathbb{I}}}
 
-\section{Contents}
+\section{Detailed Contents}
+In the next revision of the book?
 
 \paragraph{Matrices}
 
