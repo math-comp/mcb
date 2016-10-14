@@ -83,7 +83,7 @@ logic. Formalizing a predicate by the means of a boolean specification
 requires implementing a form of decision
 procedure and possibly proving a specification lemma if
 the code of the procedure is not a self-explanatory description of the
-%standard axiomatic description of the 
+%standard axiomatic description of the
 mathematical notion. For instance a
 boolean definition \C{(prime : nat -> bool)} implements a complete
 primality test, which requires a companion lemma proving that it is
@@ -153,7 +153,7 @@ P \/ ~ P
 \end{coqout}
 We could try
 alternate formulations based on the connectives seen in
-section~\ref{sec:ttch}, like for instance
+section~\ref{ch:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
 would be non negligible.
 
@@ -195,18 +195,18 @@ subgoal 2 is:
 A simple case analysis on the hypothesis \C{(reflect P b)} exposes in
 each branch both versions of the statement.
 %: one in its \C{Prop}
-%version, and the corresponding boolean equation. 
+%version, and the corresponding boolean equation.
 Note that the actual
-\C{reflect} predicate defined in the \C{ssrbool} library is 
+\C{reflect} predicate defined in the \C{ssrbool} library is
 slightly different from the one we give here:
 %Listing~\ref{lst:reflect1}:
 this version misses an ultimate refinement
 %\footnote{Moreover the \C{reflect}
 %predicate is in fact in sort \C{Type}, which will hopefully make sense
-%when reading chapter~\ref{ch:sigmabool}}, 
+%when reading chapter~\ref{ch:sigmabool}},
 that will be presented in
-section~\ref{ssec:specs}. 
-%Until then, we 
+section~\ref{ssec:specs}.
+%Until then, we
 %we reach section~\ref{ssec:specs}, we
 %act as if Listing~\ref{lst:reflect1} is the official definition
 %of \C{reflect}.
@@ -247,7 +247,7 @@ More
 generally, a theorem stating an equivalence between a boolean
 expression and a \C{Prop} statement is called a \emph{view},
 since it is typically used to view an assumption from a different
-perspective. 
+perspective.
 
 \mantra{View names always end with a capital \C{P}.}
 
@@ -316,7 +316,7 @@ Lemma \C{iffP} indeed relates two equivalences \C{(reflect P b)}
 and \C{(reflect Q b)} involving a same boolean \C{b} but different
 \C{Prop} statements \C{P} and \C{Q}, as soon as one
 provides a proof of the usual double implication between \C{P} and
-\C{Q}. 
+\C{Q}.
 %\marginnote{Prove it as an exercise?}
 % Statement \C{(@iffP_lr P b)} in the exercise can be obtained as the
 % specialization \C{(@iffP _ _ (@idP b))} where \C{idP} is the
@@ -353,7 +353,7 @@ The proof is now an easy induction, and is left as Exercise~\ref{ex:eqnP}.
 
 % In fact the library does not feature the specialization \C{iffP_lr},
 % and the idiom to remember in order to prove a reflection lemma by
-% double implication is the \C{apply: (iffP idP)} command. 
+% double implication is the \C{apply: (iffP idP)} command.
 Let us now
 showcase the usage of the more general form of \C{iffP} by proving
 that a type equipped with an injection in type \C{nat} has a
@@ -449,7 +449,7 @@ Term \C{(elimTF andP top)} hence has type
 if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\ (m <= k))
 \end{coq}
 which reduces to \C{((n <= m) /\\ (m <= k))} since \} is \C{true}
-(recall the hidden ``\C{.. = true}'' in the type of the top stack entry).  
+(recall the hidden ``\C{.. = true}'' in the type of the top stack entry).
 %\marginnote{Show other examples of inserted hint views? Like negation...}
 
 Going back to  our example: we can then chain this view with a case
@@ -585,7 +585,7 @@ subgoal 2 is:
 Even if it is not displayed here, subgoal 2 has \C{(n1 <= n2)}
 in its context.
 
-Finally, the \C{rewrite} tactic also handles views that relate a 
+Finally, the \C{rewrite} tactic also handles views that relate a
 equation in \C{Prop} with a boolean formula.
 
 \begin{coq}{}{}
@@ -614,7 +614,7 @@ subgoal 2 is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
 
-The full proof of \C{leq_max} is quite interesting and will be 
+The full proof of \C{leq_max} is quite interesting and will be
 detailed in section~\ref{sec:leqmax}
 
 % \marginnote{We could propose another exercise in next section in order
@@ -643,8 +643,8 @@ detailed in section~\ref{sec:leqmax}
 %   the \C{without loss}. This features \C{case/orP: (leq_total n2 n1)}
 %   and \C{rewrite (maxn_idPl le_n21)} which uses the \C{elimT} coercion.
 %   This could be reused in the next section, to illustrate \C{wlog}.
-% 
-% 
+%
+%
 % \item There are more adaptors than \C{introT, introF, elimT, elimF},
 %   in particular with negations \C{elimN,...} and \C{apply/v1/v2}.
 
@@ -964,7 +964,7 @@ After the first line the proof state is the following one:
 m, n : nat
 IHn : m < n -> m.+1 %| n`!
 ========================
-(m == n) || (m < n) -> m.+1 %| (n.+1)`!	
+(m == n) || (m < n) -> m.+1 %| (n.+1)`!
 \end{coqout}
 The case analysis rules out the case \C{(m = 0)}, and simplifies the hypothesis
 to \C{(m <= n)}.  Recall that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
@@ -1046,7 +1046,7 @@ Qed.
 
 Here the first line obtains a prime \C{p} as desired, the second
 one begins to shows it fits by contrapositive reasoning, and the
-third one, already commented in section~\ref{sec:quantifiedst}, concludes.  
+third one, already commented in section~\ref{sec:quantifiedst}, concludes.
 
 A motto accompanying the proof script style we propose that is
 that a full line should represent a meaningful reasoning step
@@ -1157,7 +1157,7 @@ We can then conclude by copy-paste.
 
 
 To avoid copy-pasting, shrink the proof script and finally make the
-symmetry step visible we can resort to the \C{have} tactic. 
+symmetry step visible we can resort to the \C{have} tactic.
 In this case the statement is a variation of what we need to prove.
 Remark that as for \C{Lemma}, we can place parameters, \C{x} and \C{y}
 here, before the \C{:} symbol.
@@ -1196,7 +1196,7 @@ subgoal 2 is:
 This is exactly what is needed in the first branch of the case analysis.
 The last subgoal just requires commuting \C{max} and \C{||}.
 
-We can further improve the script.  For example we could rephrase 
+We can further improve the script.  For example we could rephrase
 the proof putting in front the justification of the symmetry, and
 then prove one case when we pick $x$ to be smaller than $y$.
 
@@ -1210,10 +1210,10 @@ by apply: leq_trans le_mn2 le_n21.
 Qed.
 \end{coq}
 \index[ssr]{\C{suff} also \C{suffices}}
-The \C{suff} tactic (or \C{suffices}) 
-is like \C{have} but swaps the two goals.  
+The \C{suff} tactic (or \C{suffices})
+is like \C{have} but swaps the two goals.
 
-Note that here the sub proof is now the shortest paragraph.  
+Note that here the sub proof is now the shortest paragraph.
 This is another recurrent characteristic of the proof script style
 we adopt in the \mcbMC{} library.
 
@@ -1294,7 +1294,7 @@ the view application, he sees the following stack:
 (forall b, n2 <= b -> m <= b) -> m <= n1.
 \end{coq}
 
-Rewriting the top assumption fixes \C{b} to \C{n1}, trivializes 
+Rewriting the top assumption fixes \C{b} to \C{n1}, trivializes
 the goal \C{(m <= n1)} to \C{true} and opens a trivial side
 condition \C{(n2 <= n1)}.
 
@@ -1309,7 +1309,7 @@ The very compact idiom \C{/leq_trans->} is quite frequent in the
 Euclidean division is defined as one expects: iterating subtraction.
 
 \begin{coq}{}{}
-Definition edivn_rec d := 
+Definition edivn_rec d :=
   fix loop m q := if m - d is m'.+1 then loop m' q.+1 else (q, m).
 
 Definition edivn m d := if d > 0 then edivn_rec d.-1 m 0 else (0, m).
@@ -1335,7 +1335,7 @@ Indeed the simplification tactic \C{/=} may unfold too aggressively.
 Rewriting with such equations gives better control on how many
 unfold steps one performs.
 
-The statement of our theorem 
+The statement of our theorem
 uses a let-in construct (remark the \C{:=} sign)
 to name an expression used multiple
 times, in this case the result of the division of \C{m} by \C{d}.
@@ -1367,7 +1367,7 @@ Qed.
 \index[ssr]{\C{tactic in name}}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
 can be appended to each tactic in order to push on the stack the specified
-hypotheses before running the tactic and pulling 
+hypotheses before running the tactic and pulling
 them back afterwards (see~\cite[Section 6.5]{ssrman}).
 The \C{*} means that the goal is also affected by the tactic, and not just
 the hypotheses explicitly selected.
@@ -1414,11 +1414,11 @@ induction.  In order to satisfy the premise of the induction hypothesis,
 line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
 
 % \section{STOP HERE}
-% 
+%
 % THIS CHAPTER IS ABOUT METHODOLOGY, plus introduces the other logical
 % connectives. May be merged into the previous chapter.
-% 
-% 
+%
+%
 % % Where one learns to do proofs.
 % % Boolean reflection in practice, views, discussion on the definition of leq,
 % % proofs on things defined in the
@@ -1427,22 +1427,22 @@ line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
 % %
 % % spec? A new vernacular to declare specs without typing coinductive and
 % % by writing explicitly the equations.
-% 
+%
 % Discussion prop/bool, intuitionism, extraction (we should be able to
 % avoid talking about impredicativity, but use Prop for computationally
 % irrelevant).
-% 
-% 
+%
+%
 % \begin{itemize}
 % \item can we specify all we have written so far using just = and forall? No.
 % 	Example dvdn needs exists to be specified
 % \item exists, and, or, neg, False, True as inductives (again CH style)
 % \item related tactics: split, left, right,exists,case
 % \end{itemize}
-% 
+%
 % Anyway to take advantage of computation (ssr style) we want to
 % work with bool as much as possible:
-% 
+%
 % \begin{itemize}
 % \item reflect is the right way to write iff, <->, specialized to bool
 % 	so that the proof language recognizes it and offer a bit more ergonomic
@@ -1450,9 +1450,9 @@ line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
 % \item infrastructure for reflect: iffp, altp
 % \item no split if goal is \&\& (metodology)
 % \end{itemize}
-% 
+%
 % Writing good statements
-% 
+%
 % \begin{itemize}
 % \item = as iff for bool, because rewrite is easy to use
 % \item and3p, spec (drive your proof),
@@ -1462,15 +1462,15 @@ line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
 % 	makes it possible to work without evars
 % \item . \C{<=} . ?= iff .
 % \end{itemize}
-% 
+%
 % Statements do also occur in the middle of proofs.  There we have many ways to
 % write them compactly, wlog and have.
-% 
+%
 % Comparison with other possible ways of writing properties:
 % \begin{itemize}
 % \item impact of le v.s. leq in a proof
 % \end{itemize}
-% 
+%
 % In this chapter we should distill a description of our
 % systematic-reactions, reflexes, to typical situations a
 % beginner would screw up. In fact it would be great to explain here the
@@ -1582,7 +1582,7 @@ element in a list that is duplicate free.
 % of the current chapter is \lstinline/sort/.  Typically the projection
 % of a record type extracting the data type is declared as a coercion
 % letting one state generic theorems like in the following example.
-% 
+%
 % \begin{coqdef}{name=sotc}
 % Lemma example (e : eqType) : forall x y : e, x == y -> y == x.
 % \end{coqdef}
@@ -1590,7 +1590,7 @@ element in a list that is duplicate free.
 % Lemma example (e : eqType) : forall x y : e, x == y -> ...
 % \end{coq}
 % \coqrun{name=r5}{ssr,sotc,abort}
-% 
+%
 % Here the type of \lstinline/x/ and \lstinline/y/ is
 % \lstinline/(sort e)/ and not \lstinline/e/ as the user initially wrote.
 % Indeed \lstinline/e/ is a term (of type \lstinline/eqType/) while
@@ -1627,13 +1627,13 @@ coercion & source & target \\ \hline
 % Another device that is used to help type inference is the
 % \lstinline/Implicit Types/ directive.  This directive lets
 % one attach a default type to variable names.
-% 
+%
 % \begin{coq}{name=itype}{title=Example of \lstinline/Implicit Types/}
 % Implicit Types m n : nat.
 % Check forall m n, n == m.
 % \end{coq}
 % \coqrun{name=r7}{ssr,itype}
-% 
+%
 % In the example above the statement we \lstinline/Check/ does not
 % contain enough information alone to be well types.  The overloaded
 % \lstinline/==/ notation needs the terms to which it is applied to
@@ -1763,4 +1763,3 @@ Qed.
 
 \end{coq}
 \end{Answer}
-

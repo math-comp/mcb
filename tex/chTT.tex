@@ -1,5 +1,5 @@
 \Chapter{Type Theory}{The Curry-Howard correspondence}
-\label{sec:ttch}
+\label{ch:ttch}
 
 By now, the informed reader is likely to wonder when the authors of the book
 will eventually mention the mathematical foundation of \Coq{}, a variant of
@@ -96,7 +96,7 @@ The anonymous function constructor \C{(fun .. => ..)} serves as a proof
 for both rules: the term \C{b} is in both cases a proof of $B$.  The only
 difference is that $x$ is only allowed to occur in $B$ in the second rule.
 Said otherwise in type theory $\to$ is a special case of $\forall$ where
-the bound variable does not occur in the quantified formula.  
+the bound variable does not occur in the quantified formula.
 For example
 there is no semantic difference between \C{(nat -> bool)} and
 \C{(forall x : nat, bool)}.
@@ -215,7 +215,7 @@ only constructor \C{conj} that can be used to inhabit \C{and} takes two
 arguments, a proof of \C{A} and a proof of \C{B}, faithfully modelling the
 logical rule \C{$\wedge_I$}.  Note that \C{A} and \C{B} are parameters of the
 inductive definition, similarly to the definition of polymorphic lists
-or pairs.  
+or pairs.
 
 It is worth to note that the definition of the pair data type,
 Exercise~\ref{ex:pair}, is almost identical to the one of \C{and}.
@@ -240,7 +240,7 @@ simple, non dependent, case of the latter.  If we check the type of
 the \C{conj} constructor
 
 \begin{coq}{name=Ande1}{width=4cm}
-About conj. 
+About conj.
 \end{coq}
 \begin{coqout}{}{width=8cm}
 conj: forall A B : Prop, A -> B -> A /\ B
@@ -513,7 +513,7 @@ move=> [x y] /= /prime_gt1-x_gt1 odd_y
 
 The leading \C{/} makes \C{prime\_gt1} do as a function instead of
 as a name to be assigned to the top of the stack.  The \C{-} has no effect but
-to visually link the function and name assigned to its output. 
+to visually link the function and name assigned to its output.
 
 One could also examine \C{y}: it can't be \C{0}, since it would contradict
 the assumption saying that \C{y} is \C{odd}.
@@ -668,7 +668,7 @@ proof commands as \C{move}, \C{case} and \C{elim}
 
 \gotcha{The colon symbol in \C{apply:} is not the discharging operator.
 It is just a marker to distinguish the \C{apply:} tactic of
-Ssreflect from the \C{apply} tactic of \Coq{}.  
+Ssreflect from the \C{apply} tactic of \Coq{}.
 Indeed the two tactics, while
 playing similar roles, behave very differently.}
 
@@ -841,7 +841,7 @@ Check oops (Hide oops).  (* : False *)
 Note how \C{oops} calls itself, as in the previous example,
 even if it is not a recursive function.
 Such restriction, called
-\emph{positivity condition}, is out of scope for this book.  
+\emph{positivity condition}, is out of scope for this book.
 The interested reader shall
 refer to~\cite{Coq:manual}.
 \index[concept]{positivity}
@@ -867,7 +867,7 @@ at a postage amount that, by induction, can be obtained as claimed.\hfill$\squar
 The tricky step is that we want to apply the induction hypothesis not
 on $n-1$, as usual, but on $n-4$, since we know how to turn a
 solution for a stamping amount problem $n$ to one for a problem of
-size $n+4$ (by using a 4-cent stamp).  
+size $n+4$ (by using a 4-cent stamp).
 The induction hypothesis provided by \C{nat_ind}
 is not strong enough.  However we can use the \C{:} operator
 to load the goal before performing the induction.
@@ -893,7 +893,7 @@ Just before the induction step the goal is the following one:
 
 \begin{coq}{}{}
 forall n m : nat,
-  m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m	
+  m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
 \end{coq}
 The corresponding induction hypothesis \C{IHn} is:
 

@@ -38,7 +38,7 @@ Redirect "g2" Show.
 The \Coq{} system lets one not only define data types and programs, but
 also prove properties about them.  In this chapter we explain how
 theorems are stated and proved, focusing on simple statements and
-basic proof commands.  
+basic proof commands.
 
 Stating a lemma is a very delicate matter.  Even if two formulations for the
 same statements are logically equivalent, one can be much simpler to prove or
@@ -101,11 +101,11 @@ keep in mind is that, in \Coq{}, formal statements are themselves
 \emph{terms}. And therefore, statements also have a \emph{type}. An
 equality statement is obtained by applying the constant \C{eq} to two
 arguments, of the same type, which results in a well-formed term of
-type \C{Prop}, for \emph{proposition}. 
+type \C{Prop}, for \emph{proposition}.
 
 Throughout this book, we will
 use the word \emph{proposition} for a term of type \C{Prop}, typically
-something one wants to prove. 
+something one wants to prove.
 Sometimes we say \emph{boolean proposition} to stress that the proposition
 is made by equating two boolean expressions, as in Line 2 above.
 
@@ -144,7 +144,7 @@ constant in both our examples, once for equating two terms of type
 \C{nat} and once for equating two terms of type \C{bool}.
 
 Since its first argument is implicit, its value is not provided by the
-user%\footnote{The system even raises an error if it is provided.} 
+user%\footnote{The system even raises an error if it is provided.}
 but
 rather guessed from the type of the hand-sides of the equality we state: \C{(3
 = 3)} unfolds to \C{(eq _ 3 3)} and the missing value is set to
@@ -265,7 +265,7 @@ Lemma addnA n m k : m + (n + k) = m + n + k.
 \end{coq}
 
 Boolean identities are an important special class of identities. For
-instance, the~\C{orbT} statement expresses that \C{true} is  right absorbing 
+instance, the~\C{orbT} statement expresses that \C{true} is  right absorbing
 for the boolean disjunction operation \C{orb}. Recall that
 \C{orb} is equipped with the \C{||} infix notation:
 
@@ -310,7 +310,7 @@ Given how frequently we state that a boolean predicate is
 equal to true, we are going to omit the ``\C{.. = true}''
 part of the statements.  Indeed \Coq{} is able to insert such
 piece of ``text'' automatically, whenever it fits.
-The \Coq{} mechanism for doing that is out of scope here, it 
+The \Coq{} mechanism for doing that is out of scope here, it
 will be explained in section~\ref{sec:coercions}.
 
 \begin{coq}{name=coercion}{}
@@ -362,7 +362,7 @@ Lemma dvdn_mul d1 d2 m1 m2 : d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
 
 The \C{Section} mechanism we saw in chapter~\ref{ch:prog} is also
 convenient in order to factor the parameters and the hypotheses shared
-by a handful of lemmas. 
+by a handful of lemmas.
 % Yet beware, all the parameters are then fixed
 % inside the section (as well as hypotheses but that's less often
 % problematic). However we cannot really make sense from this remark as
@@ -432,7 +432,7 @@ $~$
 Indeed, this statement trivially holds, because the two hand sides of
 the equality are the same. The tactic ``\C{by []}'' is the command that
 implements this nature of \emph{trivial} proof step.
-\C{by} typically prefixes another tactic (or a list of thereof) and 
+\C{by} typically prefixes another tactic (or a list of thereof) and
 checks that such tactic trivializes the goal.  In this case
 the goal is already trivial, hence the \C{[]}
 standing for an empty list of tactics.
@@ -455,7 +455,7 @@ my_first_lemma : 3 = 3
 Just like when it was \C{Admitted}, this script results in a new definition
 being
 added in our context, that can be reused in future proofs under
-the name \C{my_first_lemma}. 
+the name \C{my_first_lemma}.
 Except that this time we have \emph{a machine checked proof} of
 the statement of \C{my_first_lemma}.  On the contrary
 \C{Admitted} happily accepts false statements!
@@ -465,7 +465,7 @@ What makes the \C{by []}  tactic interesting is that it
 can be used not only when both
 hand sides of an equality coincide syntactically, but also when they are
 equal \emph{modulo the evaluation of programs} used in the formal
-sentence to be proved. 
+sentence to be proved.
 For instance, let us prove that $2 + 1 = 3$.
 
 \begin{coqdef}{name=secondp}
@@ -487,7 +487,7 @@ is performed. We can prove in a similar way the statement \C{(0 <=
 
 Computation is not limited to ground terms, it is really about using
 the rules of the pattern matching describing the code of the
-function. 
+function.
 For instance the proof of the \C{addSn} identity:
 
 
@@ -503,7 +503,7 @@ also \C{(2 + n = n.+2)}, which requires a longer computation.
 The last word to be said about \C{by []} it that it is a terminating
 tactic.  If it is unable to solve the goal it fails and stops
 \Coq{} from processing the proof script.  For this reason
-it is also coloured in red, so that the eye can immediately spot that a 
+it is also coloured in red, so that the eye can immediately spot that a
 proof, or more commonly a subproof, ends there.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -568,7 +568,7 @@ one in which the parameter \C{b} takes the value \C{false}.
 
 
 As a consequence, we are going to provide two distinct pieces of
-script, one per each subproof to be constructed. 
+script, one per each subproof to be constructed.
 We start with the branch associated with the \C{true} value, and
 to signal it is a sub proof we indent the corresponding script.
 Now that \C{b} is a concrete value each proof is trivial
@@ -589,7 +589,7 @@ case: b.
 \end{coqout}
 
 Once the first goal is solved we have only one subgoal left, which we solve
-by the very same means.  
+by the very same means.
 
 \begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Second trivial case}
 Lemma negbK b : ~~ (~~ b) = b.
@@ -676,7 +676,7 @@ of our case analysis command uses two slots: the last one introduces
 the name \C{k} in the second subgoal and the first one is
 empty. Indeed, in the first subgoal, first branch of the case
 analysis, \C{n} is substituted with \C{0}. In the second one, we can
-observe that \C{n} has been substituted with \C{k.+1}. 
+observe that \C{n} has been substituted with \C{k.+1}.
 As hinted in the first chapter, the term \C{(k.+1 <= 0)}
 is displayed as \C{(k < 0)}.
 
@@ -745,7 +745,7 @@ m, n : nat
 \end{coqout}
 Note that we can use the name \C{m} in our case analysis without
 ambiguity. The next step in the proof is a case analysis on the number
-\C{n}. 
+\C{n}.
 In order to let us treat first the successor case,
 despite it corresponds by default to the second subgoal, we are going
 to use the ``\C{; last first}'' tactic suffix:
@@ -851,7 +851,7 @@ computation) and the right one is \C{true}. However we need
 more than symbolic computation to show that the left hand side is
 \C{true} as well: the fact that \C{0} is a right absorbing element for
 multiplication indeed requires reasoning by induction on the code of the
-multiplication. 
+multiplication.
 
 To conclude the proof we introduce one more proof command,
 \C{rewrite}, that lets us appeal to an already existing lemma.
@@ -1102,7 +1102,7 @@ of formal statements.
 
 \subsection{Universal quantification, first examples}
 In chapter~\ref{ch:prog}, we have defined functions
-with boolean values; they are named 
+with boolean values; they are named
 \emph{boolean predicates}.
  For instance, the \C{leq} predicate is defined as
 a boolean predicate on natural numbers, as:
@@ -1269,7 +1269,7 @@ commutative addn : Prop
 \end{coqout}
 Indeed, the class of propositions is closed under universal
 quantification\C{ forall} (and also under implication \C{->}).
-Chapter~\ref{sec:ttch} will
+Chapter~\ref{ch:ttch} will
 provide a more in-depth study of these propositions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1371,7 +1371,7 @@ are hence left with proving this sufficient condition.
 
 The rest of proof informally goes as follows: if $p \le m$, then $p$ certainly
 divides $m!$. But then $p$ divides $m! + 1$ if and only if $p$ divides $1$.
-Since $p$ is a prime, it cannot be $1$.  
+Since $p$ is a prime, it cannot be $1$.
 
 We start our formal writing of such
 proof by naming the hypothesis \C{(p <= m)}.
@@ -1484,7 +1484,7 @@ If one carefully compares the conclusion of \C{gtnNdvd} and
 the former features an explicit ``\C{.. = false}'', in the
 latter one the ``\C{.. = true}'' part is hidden, but is there.
 This means
-both lemmas can be used as identities.  
+both lemmas can be used as identities.
 
 \mantra{All boolean statements can be rewritten as if they
 were regular identities.  The result is that the matched
@@ -1661,7 +1661,7 @@ Qed.
 
 Here ``\C{elim/last_ind: s z}'' performs the induction using the
 \C{last_ind} lemma on \C{s} after having generalized the initial value of
-the accumulator \C{z}.  The resulting value for \C{P} hence 
+the accumulator \C{z}.  The resulting value for \C{P} hence
 features a quantification on \C{z}.
 
 \begin{coq}{}{}
@@ -1774,11 +1774,11 @@ the product of two natural numbers is 1 if and only if they are both 1.
 % \C{addnC} is \C{(commutative addn)}, where \C{addn} is the
 % name of the addition operation and \C{commutative} is the
 % following predicate.
-% 
+%
 % \begin{coq}{name=macro}{title=Predicate for stating commutativity (suffix ``C'')}
 % Definition commutative op := forall x y, op x y = op y x.
 % \end{coq}
-% 
+%
 % Predicates, being standard definitions, are completely transparent for the
 % system.\footnote{not yet for \C{Search}, but here I'm describing an ideal
 % situation}  Consistency is not only aesthetically, but ease the use of
