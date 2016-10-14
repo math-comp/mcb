@@ -16,7 +16,7 @@ numbers and the operations are enumerating and adding.  In fact
 numbers are already the result of an abstraction process.
 
 What are the objects, the operations, and the abstractions in a given
-mathematical corpus is quite fluctuant.  The objects of group theory
+mathematical corpus is quite fluctuating.  The objects of group theory
 may sometimes be viewed as operations in another context.  Nevertheless,
 in this chapter, we describe how some objects are described with the intent
 that they are {\em inert}, that is, they are meant to be
@@ -31,7 +31,7 @@ we review some vocabulary and notations associated with functions.
 We will use the words \emph{function} and \emph{operation}
 interchangeably. Sometimes, we will also use the word \emph{program}
 to talk about functions described in an effective way, i.e. by a code
-that can be excuted. As a consequence we borrow from computer science
+that can be executed. As a consequence we borrow from computer science
 some jargon, like \emph{input} or \emph{return}. For example we say that
 an operation takes as input a number and returns its double to mean
 that the corresponding program computes and output the double of its
@@ -152,7 +152,7 @@ type \C{nat}. The second occurrence \C{ ... : nat := ...} of type
 expression made of the application of \C{f} to an argument.
 \index[concept]{type}
 
-\Coq{} provides a command to retrieve relevant informations about the
+\Coq{} provides a command to retrieve relevant information about the
 definitions completed so far. Here is the response to a query about \C{f}:
 
 \begin{coq}{name=about_f}{width=5.5cm,title=Gathering information on f}
@@ -163,7 +163,7 @@ About f.
 f : nat -> nat
 \end{coqout}
 \index[vernac]{\C{About}}
-which confirms the type informations about the domain and codomain of
+which confirms the type information about the domain and codomain of
 \C{f}: the arrow \C{->} separates the type of the input of \C{f} from
 the type of its output.
 % We also learn that the \Coq{} system will pay attention to
@@ -230,7 +230,7 @@ a function and $1$.
 Expressions that are well typed can be \emph{computed} by \Coq{},
 meaning that they are \emph{reduced} to a ``simpler'' form, also
 called a \emph{normal form}. Being more precise about this normal form
-requires first descrbing in more details the formalism underlying the
+requires first describing in more details the formalism underlying the
 \Coq{} system, which we do only in Chapter~\ref{ch:ttch}: the
 interested reader should actually refer to \cite[Section
 8.7.1]{Coq:manual}. In our case however, the intuition is that this
@@ -271,7 +271,7 @@ which asserts firstly that both arguments \C{x} and \C{y} have type
 \C{nat}, by the \C{(x y : nat)} type annotation, and secondly that the
 output of the function also has type \C{nat}, as prescribed by the
 \C{... : nat := ...} type annotation. The  \C{About} command provides
-here again informations on the type of the arguments and values of
+here again information on the type of the arguments and values of
 \C{f2}:
 \begin{coq}{name=about_f2}{width=5.5cm,title=Gathering information on f2}
 About f2.
@@ -360,9 +360,9 @@ Eval compute in f2 2 3.
 \coqrun{name=eval_f2_2_3_run}{eval_f2_2_3}
 
 Term \C{(f2 2 3)} actually reads \C{((f2 2) 3)} and features three
-subexpressions separated by spaces. The symbol \C{f2} is the deepest
-subexpression and it is applied to \C{2} in \C{(f2 2)}. The value of
-this subexpression is a function, which can be written:
+sub-expressions separated by spaces. The symbol \C{f2} is the deepest
+sub-expression and it is applied to \C{2} in \C{(f2 2)}. The value of
+this sub-expression is a function, which can be written:
 
 \begin{coq}{}{}
 fun m => 2 + m * 2
@@ -413,7 +413,7 @@ the fragment \C{(g x)} describes the application of function \C{g} to
 argument is denoted by the juxtaposing the function (on the left) and
 the argument (on the right), separated by a space. Moreover,
 application associates to the left: expressions made with
-several subexpressions side by side should be read as if there were
+several sub-expressions side by side should be read as if there were
 parentheses around the subgroups on the left. Parentheses are
 only added when they are needed to resolve ambiguities which could
 lead to ill-formed expressions.  For instance, the inner \C{(g x)} in
@@ -436,11 +436,11 @@ Eval compute in repeat_twice f 2.
 \coqrun{name=eval_run}{eval_repeat_twice_f_two}
 
 Expression \C{(repeat_twice f 2)} actually reads
-\C{((repeat_twice f) 2)} and features three subexpressions separated by
+\C{((repeat_twice f) 2)} and features three sub-expressions separated by
 spaces. The symbol \C{repeat_twice} is the deepest
-subexpression and it is applied to \C{f} in \C{(repeat_twice f)}.
+sub-expression and it is applied to \C{f} in \C{(repeat_twice f)}.
 According to the definition of \C{repeat_twice} function, the value of
-this subexpression is a function, which is then applied to \C{2}.
+this sub-expression is a function, which is then applied to \C{2}.
 % The value of the
 %intermediate function is \C{(fun x => f (f x))}, so
 The resulting expression is \C{(f (f 2))}, and given the
@@ -487,17 +487,17 @@ while it is expected to have type "nat".
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Local definitions}
 
-The process of abstraction described at the beginnig of this section
+The process of abstraction described at the beginning of this section
 can be seen as the introduction of a name, the one used for the bound
 variable, in place of a sub-expression that may appear at
 several occurrences. For instance, in expression
 \C{(fun x => x + x + x) B}, we use the variable \C{x} as an
-abbreviation for \C{B}. It is specially usefull when \C{B} happens to
+abbreviation for \C{B}. It is specially useful when \C{B} happens to
 be a very large expression: readability is improved by avoiding the
 repetition of \C{B}, which may otherwise obfuscate the triplication
 pattern. In the \Coq{}
 language, declaring such an abbreviation can be made even more
-readable by briging closer the name of the abbreviation \C{x} and the
+readable by bringing closer the name of the abbreviation \C{x} and the
 expression it refers to:
 
 \begin{coq}{}{}
@@ -570,7 +570,7 @@ In \Coq{}, such expressions are represented using a \emph{data type},
 whose definition provides in a single declaration the name of the type
 and the symbols of (constants and) operations that \emph{build} elements
 of this type. One can define more operations on the elements of
-the type and describe the computational behaviour of these operations
+the type and describe the computational behavior of these operations
 by case analysis, or even recursion, on the syntactic shape of their
 argument.
 
