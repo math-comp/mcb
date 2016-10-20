@@ -900,10 +900,12 @@ that we can define a function while supposing that it is already
 defined for a subset of the type.  This adds a new element for which
 the function is defined, and progressively this makes that the
 function is defined for all elements of the type.
-
+\marginnote{Waiting for input from Yves, relating pattern matching
+  without recursion with the complexity of the function
+  implemented. See also the marginnote at definition of equality.}
 \subsection{Recursion for natural numbers}
 
-Many usual functions to deal with natural numbers are
+Many usual functions dealing with natural numbers are
 defined recursively.  For instance, we can define addition in the
 following manner:
 
@@ -913,8 +915,8 @@ Fixpoint addn n m :=
 \end{coq}
 \index[vernac]{\C{Fixpoint}}
 \index[coq]{\C{addn}}
-In this example, we learn that the keyword for defining a recursive
-function is \C{Fixpoint}.  We see also that the function being
+As this example illustrates, the keyword for defining a recursive
+function in \Coq{} is \C{Fixpoint}: the function being
 defined, here called \C{addn}, is used in the definition of the
 function \C{addn} itself.  This text expresses that the value of
 \C{(addn p.+1 m)} is
@@ -936,12 +938,12 @@ computation:
 \index[concept]{computation}
 When the computation finishes, the symbol \C{addn} disappears.  In
 this sense, the recursive definition is really a definition.  Remark that
-what the \C{(addn n m)} program does is simply to count \C{n} times the
-successor starting from \C{m}.
+what the \C{(addn n m)} program does is simply to pile \C{n} times the
+successor symbol on top of \C{m}.
 
-An alternative way of writing \C{addn} relies explicitly on
-pattern-matching rules instead of relying on an \C{if} statement.
-This can be written as follows:
+An alternative way of writing \C{addn} is to provide explicitly the
+rules of the pattern-matching at stake instead of relying on an \C{if}
+statement. This can be written as follows:
 
 \begin{coq}{name=add_redef}{}
 Fixpoint addn n m :=
@@ -1020,20 +1022,22 @@ Fixpoint subn m n : nat :=
 From a mathematical point of view, this definition can be quite
 unsettling.  The second pattern matching rule indicates that when
 the second argument of the subtraction is \C{0}, then the result is
-the first argument.  But it also covers the case where the second
-argument is non-zero while the first argument is 0.  This phenomenon
-is imposed by the fact that the function must be total (all functions
-are total in the \Coq{} system) and the type \C{nat} does not contain any
-element to represent negative numbers.  When the second argument is non-zero
-and the first argument is zero, a value must still be returned and
-{\em this value must be a natural number}.  In the long run, this
-problem will be solved by introducing another type of numbers with
-negative integers.
+the first argument.  This rule actually also covers the case where the
+second argument is non-zero while the first argument is 0: in that
+case, the result of the function is zero. This oddity is imposed by
+the fact that any function defined in \Coq{} has to be total, i.e. has
+to assign a value to any element in the type of its arguments. Since
+\C{pred} has type \C{nat -> nat}, an element \emph{in type} \C{nat} has to be
+output by the function even in the case when  the second argument is
+non-zero and the first argument is zero. This problem disappears with
+the introduction of another type of numbers, with negative integers.
 
+\marginnote{Paragraph to be rewriten by Yves.}
 Recursive functions also make it possible to test data for
 equality. We can for example write a function with two arguments of
 type \C{nat}, that
 returns \C{true} exactly when the two arguments are equal.
+
 
 \begin{coq}{name=nat_eq_def}{}
 Fixpoint eqn m n :=
@@ -1092,42 +1096,24 @@ the predecessor and double functions.
 \index[coq]{\C{(_ .*2)}}
 
 The \mcbMC{} library also provides concepts that makes sense only
-for the \C{nat} data type (hence the trailing \C{n} is omitted) and
-that we will use many times in this book.  In particular the
-test functions identifying \C{prime} and \C{odd} numbers have no trailing
-\C{n} in their name.
+for the \C{nat} data type, like the
+test functions identifying \C{prime} and \C{odd} numbers. In that
+case, the trailing \C{n} is omitted in their name.
 
-We advise the reader not to ``explore'' the library from \Coq{}, but
-rather to browse the source files.\footnote{\url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}
-While the \C{Print}
-command can be quite useful in some circumstances, there is so much more
-information in the source files.
-The relevant files for this chapter are \lib{ssrbool}, \lib{ssrnat}
-and, later, \lib{seq}.
+We strongly advise the reader wanting to explore the \mcbMC{} library
+to browse their source
+files\footnote{\url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}
+and not to limit herself to queries to the toplevel. The
+information provided by the \C{Print} and \C{About} commands are
+useful to understand how to use the objects defined in the libraries
+once they are known by their name. By contrast, the source
+files describe what is formalized, under which name, in a given library.
+
 
 \mantra{Each file in the \mcbMC{} library
-starts with a banner describing all concepts and associated notations.
+starts with a banner describing all the concepts and associated
+notations introduced by the library.
 There is not better way to browse the library than reading these banners.}
-
-Before moving on it is worth detailing the definition of \C{leq}
-and some associated notations.
-
-\begin{coq}{}{}
-Definition leq m n := m - n == 0.
-Notation "m < n"  := (m.+1 <= n).
-Notation "n > m"  := (m.+1 <= n) (parsing only).
-Notation "a <= b <= c" := ((a <= b) && (b <= c)).
-\end{coq}
-\index[coq]{\C{leq}}
-This definition relies on the fact that subtraction computes to \C{0} whenever
-the first argument is less than or equal to the second argument.
- Finally note that the strict order
-relation is just a notation, and that \C{(n > m)} is only accepted in input
-and is always printed as  \C{(m < n)}.
-
-\gotcha{There is no function testing if a natural number is strictly
-smaller than another one.  \C{(a < b)} is just syntactic
-sugar for \C{(a.+1 <= b)}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1769,7 +1755,7 @@ when the operation is also commutative, and even richer when we combine two
 operations that distribute.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Notations and abbreviations}
+\section{Notations, abbreviations, implicit arguments}
 \index[concept]{notation}
 \index[concept]{abbreviation}
 
@@ -1781,18 +1767,83 @@ hint for printing, like good
 line breaking points.  The notation group is usually called a {\em scope} and it
 is usually associated to a {\em scope delimiter}.
 
+For instance the infix notation that we have used so far for the
+constant \C{addn} can be declared as follows:
 
 \begin{coq}{}{}
 Notation "m + n" := (addn m n) (at level 50, left associativity).
+\end{coq}
+\index[vernac]{\C{Notation}}
+
+For infix notations, which are meant to be printed between two arguments
+of the operator (like addition in \C{2 + 3}), we advise to always include
+space around the infix operator, so that notations don't get mixed up with
+potential notations occuring in the arguments.
+
+
+Similarly, the comparison relation \C{leq} on type \C{nat} comes with
+an infix notation \C{<=} which can be defined as:
+
+\begin{coq}{}{}
+Definition leq m n := m - n == 0.
+Notation "m <= n" := (leq m n) (at level 70, no associativity).
+\end{coq}
+
+\index[coq]{\C{leq}}
+where the rightmost annotations, between parentheses, indicate a
+precedence level and an associativity rule so as to avoid parsing
+ambiguities. A lower level binds more than a higher level. A comprehensive
+description of the \C{Notation} command goes behind the scope of this
+book, the interested reader shall refer to~\cite[Chapter 12]{Coq:manual}.
+Note that the definition of \C{leq} relies on the fact that
+subtraction computes to \C{0} whenever the first argument is less than
+or equal to the second argument.
+
+Notations can also refer to more complex expressions, like in:
+
+\begin{coq}{}{}
+Notation "a <= b <= c" := ((a <= b) && (b <= c)).
+\end{coq}
+
+Actually, the strict order relation is provided by the means of such a
+notation for complex expressions.
+
+\begin{coq}{}{}
+Notation "m < n"  := (m.+1 <= n).
+\end{coq}
+
+\gotcha{There is no function testing if a natural number is strictly
+smaller than another one.  \C{(a < b)} is just syntactic
+sugar for \C{(a.+1 <= b)}}
+
+By the way the converse relation \C{(n > m)} is only accepted in input
+and is always printed as  \C{(m < n)}, thanks to the following declaration:
+
+\begin{coq}{}{}
+Notation "n > m"  := (m.+1 <= n) (parsing only).
+\end{coq}
+
+Another frequently used form of notation is called syntactic abbreviation.
+It simply lets one specify a shorter name.  For example the \C{S} constructor
+of natural numbers (placed in \C{Datatype} Module) can also be accessed
+by writing \C{succn}.  This is useful if \C{S} is used in the current context
+to, say, denote a ring.
+
+\begin{coq}{}{}
+Notation succn := Datatypes.S.
+\end{coq}
+
+The notation \C{_.+1} we have been using so far is defined on top of
+this abbreviation, as:
+\begin{coq}{}{}
 Notation "n .+1" := (succn n) (at level 2, left associativity,
   format "n .+1") : nat_scope.
 \end{coq}
-\index[vernac]{\C{Notation}}
-A comprehensive description of this command goes behind
-the scope of this book, the interested reader shall refer to~\cite[Chapter 12]{Coq:manual}.
 
-What is worth mentioning here is some conventions either imposed by \Coq{}
-or adopted in the \mcbMC{} library.
+
+
+We mention here some conventions either imposed by \Coq{}
+or adopted throughout the \mcbMC{} library.
 
 \begin{itemize}
 \item A symbol starts with a non alpha-numerical character followed by
@@ -1813,21 +1864,6 @@ or adopted in the \mcbMC{} library.
 \item postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
 	to let one write \C{(p.-group G)}.
 \end{itemize}
-
-Another frequently used form of notation is called syntactic abbreviation.
-It simply lets one specify a shorter name.  For example the \C{S} constructor
-of natural numbers (placed in \C{Datatype} Module) can also be accessed
-by writing \C{succn}.  This is useful if \C{S} is used in the current context
-to, say, denote a ring.
-
-\begin{coq}{}{}
-Notation succn := Datatypes.S.
-\end{coq}
-
-For infix notations, which are meant to be printed between two arguments
-of the operator (like addition in \C{2 + 3}), we advise to always include
-space around the infix operator, so that notations don't get mixed up with
-potential notations occuring in the arguments.
 
 Last, we recall the notion of implicit argument sketched in
 section~\ref{sec:poly}.  Once implicit arguments are active for
