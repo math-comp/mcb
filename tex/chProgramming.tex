@@ -1119,10 +1119,13 @@ There is not better way to browse the library than reading these banners.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Data: generic containers}\label{sec:poly}
 
-It is often the case that we wish to group several objects in a
-sequence that can be manipulated as a single object.  For instance, we
-might want to compute the sequence of all predecessors or all divisors
-of a number.  We could define such a data type as follows.
+\marginnote{assia: may be rename the section?}
+
+A \emph{container} is a data type which describes a collection of
+objects grouped together so that it can be manipulated as a single
+object. For instance we might want to compute the sequence of all
+predecessors or all divisors of a number.  We could define such data
+type for this purpose as follows.
 
 \begin{coq}{name=list_def}{}
 Inductive listn := niln | consn (hd : nat) (tl : listn).
@@ -1174,13 +1177,13 @@ Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 \noindent Even if this may look familiar jargon to some readers, we really want
 this $\alpha$ to be a first class citizen, as well as the type of lists carrying
 any type of values and not appeal to some notion of schema that would be
-intuitively added on top of the \Coq{} language.  We want to
-reason and
-prove theorems about such data types and related programs inside the formal
-language \Coq{} provides and we want the proofs of these theorems
-theorems to be first
-class citizen too (see for example chapter~\ref{ch:sigmabool}).
-
+intuitively added on top of the \Coq{} language. %  We want to
+% reason and
+% prove theorems about such data types and related programs inside the formal
+% language \Coq{} provides and we want the proofs of these theorems
+% theorems to be first
+% class citizen too (see for example chapter~\ref{ch:sigmabool}).
+%
 \Coq{}'s language is powerful enough to fully characterize the generic
 list data type without appealing to an intuitive but external notion of
 schema.
@@ -1242,8 +1245,15 @@ thus written as follows:
 \begin{coq}{name=type_of_cons}{}
   forall A : Type, A -> seq A -> seq A
 \end{coq}
-This information can actually be obtained from the system by using the
-command \C{About}.
+which suggests that the sequence holding a single
+element \C{2 : nat} is: \C{(cons nat 2 (nil nat))}. Actually, the two
+occurrences of type \C{nat} are redundant: the tail of a sequence is a
+sequence with elements of the same type. Better, this type can be
+\emph{inferred} from the type of the given element \C{2}. One can
+actually write the sequence as  \C{(cons _ 3 (nil _))}, using \C{_} to
+denote  a term, here a type, to be inferred by \Coq{}. In the case of
+\C{cons} however, one can be even more concise. Let us ask for the
+information about \C{cons} using the command \C{About}:
 
 \begin{coq}{name=about_cons}{width=3cm,title=Query}
 About cons.
@@ -1258,7 +1268,7 @@ Argument A is implicit and maximally inserted
 \coqrun{name=about_cons_run}{about_cons}
 \index[concept]{implicit argument}
 
-In practice, the \Coq{} system implements a mechanism to avoid that
+The \Coq{} system implements a mechanism to avoid that
 people need to give the type argument to the \C{cons} function.  This is
 the information meant by the message ``\C{Argument A is implicit and
   ..}''.  Every time users write \C{cons}, the system automatically
@@ -1285,6 +1295,12 @@ has been guessed so that it matches the actually type of \C{2}.  For
 \C{nil} also, the argument has been guessed to match the constraints
 that it is used in a place where a list of type \C{(seq
 nat)} is expected.
+
+To locally disable the
+status of implicit arguments one can prefix the name of a
+constant with \C{@} and pass all arguments explicitly as in
+\C{(@cons nat 2 nil)} or \C{(@cons nat 2 (@nil nat))} or even
+\C{(@cons _ 2 (@nil _))}.
 
 This example, and the following ones, also show
 that \Coq{} and the \mcbMC{} library provide
@@ -1755,7 +1771,7 @@ when the operation is also commutative, and even richer when we combine two
 operations that distribute.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Notations, abbreviations, implicit arguments}
+\section{Notations, abbreviations}
 \index[concept]{notation}
 \index[concept]{abbreviation}
 
@@ -1865,15 +1881,6 @@ or adopted throughout the \mcbMC{} library.
 	to let one write \C{(p.-group G)}.
 \end{itemize}
 
-Last, we recall the notion of implicit argument sketched in
-section~\ref{sec:poly}.  Once implicit arguments are active for
-the \C{cons} and \C{nil} constructors, writing \C{(cons 3 nil)}
-abbreviates \C{(cons _ 3 (nil _))}.  The \C{_} denotes a term,
-here a type, to be inferred by \Coq{}.  In this case the typing constraints
-impose both \C{_} to be \C{nat}.  To locally disable the
-status of implicit arguments one can prefix the name of a
-constant with \C{@} and pass all arguments explicitly as in
-\C{(@cons nat 3 nil)}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Aggregated data: records}
