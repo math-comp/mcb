@@ -46,11 +46,11 @@ The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
 that we have already seen in the previous chapter in their general
 form of records.
 For example, one can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
-\leq 7$.  Since proofs are terms one can 
+< 7$.  Since proofs are terms one can 
 pack together objects and proofs of some properties to
 represent the objects that have those properties.  For example $3$
 when seen as an inhabitant of \C{'I_7} is represented by a dependent
-pair \C{(3, p)} where \C{(p : 3 <= 7)}.  Note that by forgetting the
+pair \C{(3, p)} where \C{(p : 3 < 7)}.  Note that by forgetting the
 proof \C{p} one recovers a \C{nat} that can be passed to, say, the
 program computing the addition of natural numbers, or to theorems
 quantified on any \C{nat}.  Also, an inhabitant of \C{'I_7} can always
@@ -145,7 +145,7 @@ make the left hand side of the conjecture identical to the right hand
 side, and we can conclude.
 
 This simple example shows that the theory of sequences is usable
-on terms of type tuple.  Still we didn't take any advantage of
+on terms of type tuple.  Still we didn't take any advantage from
 the fact that  \lstinline/t/ is a tuple.
 
 The second way to prove this theorem is to rely on the rich type
@@ -169,7 +169,7 @@ Proof. rewrite size_tuple.
 
 The rewriting replaces the right hand side with \lstinline/n/ as
 expected, but we can't go any further: the lemma does not
-apply (yet) the left hand side, even if we are working
+apply (yet) on the left hand side, even if we are working
 with a tuple \lstinline/t/.  Why is that?  In the left hand side
 \lstinline/t/ is processed using functions on sequences.
 The type of \lstinline/rev/ for example is
@@ -182,7 +182,7 @@ data as rich as the one taken in input, i.e. preserve the invariant
 expressed by the tuple type.  Or, in alternative, we would like the
 system to recover such information.
 
-Let us examine what happens if try to unify the left hand side of the
+Let us examine what happens if we try to unify the left hand side of the
 \lstinline/size_tuple/ equation with the redex
 \lstinline/(rev t)/, using the following toolkit:
 
@@ -239,7 +239,7 @@ problems that is addressed by canonical structure instances.
 We can thus use \C{Canonical} declarations to teach \Coq{}
 the effect of list operations on the length of their input.
 
-\begin{coq}{name=t1}{width=13cm}
+\begin{coq}{name=t1}{width=12cm}
 Section CanonicalTuples.
 Variables (n : nat) (A B : Type).
 
@@ -253,7 +253,8 @@ Canonical map_tuple (f: A -> B) (t: n.-tuple A) := Tuple (map_tupleP f t).
 \end{coq}
 
 Even if it is not needed for the lemma we took as our test bench,
-we add another example where the length is not preserved.
+we add another example where the length is not preserved, but
+rather modified in a statically known way.
 
 \begin{coq}{name=t2}{}
 Lemma cons_tupleP (t : n.-tuple A) x : size (x :: t) == n.+1.
@@ -289,10 +290,10 @@ The iterated rewriting acts now twice replacing both the left hand
 and the right hand side with \lstinline/n/.  It is worth observing
 that the size of this proof (two rewrite steps) does not depend on the
 complexity of the formula involved, while the one using only the
-theory of lists requires one step per list-manipulating function.
+theory of lists requires roughly one step per list-manipulating function.
 What depends on the size of the formula is the number of canonical
 structure resolution steps type inference performs.  Another advantage
-of this last approach is that, unlike in the first, one
+of this last approach is that one
 is not required to know the names of the lemmas:
 it is the new concept of tuple that takes care of the size related
 reasoning steps.
@@ -397,7 +398,8 @@ Although all these proofs and definitions are specific to \C{tuple},
 it seems obvious that we are following a schema here, and that the
 parameters are three: the original type \C{(seq T)}, the sub type
 \C{(n.-tuple T)} and the projection \C{tval}.
-The sub-type kit lets one write the following:
+The \mcbMC{} library provides a \emph{sub-type kit} to let one
+write just the following text:
 
 \begin{coq}{name=subt}{}
 Canonical tuple_subType := Eval hnf in [subType for tval].
@@ -406,10 +408,11 @@ Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
 \end{coq}
 
 Line 1 registers \C{tval} as a canonical projection to obtain a known
-type out of the newly defined type of tuple.  Once the projection
+type out of the newly defined type of tuples.  Once the projection
 is registered the equality axiom can be proved automatically by
 \C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is just a symbol
 that is reminiscent of sub-typing in functional languages like OCaml.
+The following section details the implementation of the sub-type kit.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
@@ -640,6 +643,7 @@ Of course one wants to access a matrix using integer coordinates, but
 integers are infinite.  Hence the first step is to define the sub-type
 of bounded integers.
 
+\marginnote{is \C{of} explained?}
 \begin{coq}{name=ordinals}{title=Ordinals}
 Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
 Notation "''I_' n" := (ordinal n)
@@ -720,7 +724,7 @@ An example of ordinals at work is the \C{tnth} function.
 It extracts the $n$-th element of a tuple exactly as
 \C{nth} for a sequence but without requiring a default element.
 Indeed one can use ordinals to type the index making \Coq{} statically
-check that the index is smaller than the size of the tuple.
+checks that the index is smaller than the size of the tuple.
 
 \begin{coq}{name=subtdecl}{}
 Lemma tnth_default T n (t : n.-tuple T) : 'I_n -> T.
@@ -851,6 +855,10 @@ $$
 \prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
 $$
 
+Remark how the finite type of
+functions from \C{I} to \C{J} is systematically formed in order to
+provide its enumeration as the range of the summation.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbLEARN{}
@@ -875,6 +883,10 @@ Variable T : finType.
 Inductive set_type : Type := FinSet of {ffun pred T}.
 Definition finfun_of_set A := let: FinSet f := A in f.
 \end{coq}
+
+Recall that \C{(pred T)} is the type of functions from \C{T} to
+\C{bool}.
+
 
 Using the sub-type kit we can easily transport the
 \C{eqType} and \C{finType} structure over finite sets.
@@ -942,6 +954,9 @@ Definition pval p := let: Perm f _ := p in f.
 Notation "{ 'perm' T }" := (perm_of T).
 \end{coq}
 
+This time we add the property of being injective, that in conjunction
+with finiteness characterizes permutations as bijections.
+
 Similarly to finite functions we can declare a coercion to let
 one write \C{(s x)} for \C{(s : \{perm T\})} to denote
 the result of applying the permutation \C{s} to \C{x}.
@@ -998,7 +1013,7 @@ Notation "''M[' R ]_ n" := (matrix R n n).
 As for permutations and finite function we declare a coercion
 to let one denote \C{(A i j)} the coefficient in column j of 
 row i.  Note that type inference will play an important role
-here.  If \C{A} has a known type \C{'M[R]_(m,n)}, then type inference
+here.  If \C{A} has type \C{'M[R]_(m,n)}, then \Coq{}
 will infer that \C{(i : 'I_m)} and \C{(j : 'I_n)} from
 the expression \C{(A i j)}. In combination
 with the notations for iterated operations, this lets one
@@ -1014,7 +1029,7 @@ a type equipped with an addition, for example a \C{ringType}.
 We will describe such type only in the next chapter.  From now
 on the reader shall interpret the \C{+} and \C{*} symbols on
 the matrix coefficients as (overloaded) ring operations, exactly
-as \C{==} is an overloaded \C{eqType} operation.
+as \C{==} is the overloaded comparison operation of \C{eqType}.
 
 Via the sub-type kit we can transport \C{eqType} and \C{finType}
 from \C{\{ffun 'I_m * 'I_n -> R\}} to \C{'M[R]_(m,n)}.  We omit
@@ -1029,7 +1044,8 @@ Definition matrix_of_fun R m n F :=
   Matrix [ffun ij : 'I_m * 'I_n => F ij.1 ij.2].
 Notation "\matrix_ ( i < m , j < n ) E" :=
   (matrix_of_fun (fun (i : 'I_m) (j : 'I_n) => E))
-Notation "\matrix_ ( i , j ) E" := (matrix_of_fun (fun i j => E))
+Notation "\matrix_ ( i , j ) E" := (matrix_of_fun (fun i j => E)).
+
 Example diagonal := \matrix_(i < 3, j < 7) if i == j then 1 else 0.
 \end{coq}
 
@@ -1044,7 +1060,7 @@ Definition determinant n (A : 'M_n) : R :=
 \end{coq}
 
 The \C{(-1) ^+ s} denotes signature of the permutation \C{s}:
-\C{s} can be used, thanks to a coercion, as natural number
+\C{s} can be used, thanks to a coercion, as a natural number
 that is \C{0} if \C{s} is an even permutation, \C{1} otherwise,
 and \C{^+} is ring exponentiation.  In other words the \C{(-1)}
 factor is annihilated when \C{s} is even.
@@ -1073,7 +1089,7 @@ was made total by returning a default value, namely \C{0}, outside
 its domain.  In the case of matrix a size annotation is enough to make
 the operation total, while for division a prof would be necessary.
 Working with rich types is not always easy, for example the type
-checker will not understand automatically that a square matrix of
+checker does not understand automatically that a square matrix of
 size \C{(m + n)} can be multiplied with a matrix of size \C{(n + m)}.
 In such case the user has to introduce explicit size casts,
 see~\ref{sec:castmx}.  At the same time type inference lets one omit
@@ -1084,7 +1100,7 @@ trained reader.
 \mcbLEVEL{1}
 \mcbsubsection{Example: matrix product commutes under trace}
 
-As an example let's take a simple property of the trace.
+As an example let's take the following simple property of the trace.
 Note that we can omit the dimensions of \C{B} since it
 is multiplied by \C{A} to the left and to the right.
 
@@ -1117,7 +1133,7 @@ It is worth noticing that the equation we used to expand the left hand
 side and the one we need to expand the right hand side are very
 similar.  Actually the sub proof following \C{have}
 can be generalized to any pair of matrices \C{A} and \C{B}.  The
-ssreflect proof language provides the \C{gen} modifier tell \C{have}
+\mcbSSR{} proof language provides the \C{gen} modifier tell \C{have}
 to abstract the given formula over list of context entries, here \C{m
 n A B}.
 
@@ -1208,8 +1224,9 @@ and a square block of size $n-1$.
 \mcbsubsection{Size casts}\label{sec:castmx}
 
 Types containing values are a doubly sharp weapon.  While we have seen that
-they make the writing of matrix expressions extremely succinct, in some case
-they need extra care.  In particular the equality predicate accepts
+they make the writing of matrix expressions extremely succinct, in
+some cases
+they require extra care.  In particular the equality predicate accepts
 arguments of the very same type.  Hence a statement like this one
 requires a size cast:
 
@@ -1285,7 +1302,7 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs
 from the one part of the \mcbMC{} library in a tiny detail.
-Indeed the real declaration puts reflect in \C{Type} and not in
+Indeed the real declaration puts \C{reflect} in \C{Type} and not in
 \C{Prop}.
 
 Recall that \C{reflect} is typically used to state properties about
