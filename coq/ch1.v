@@ -88,6 +88,12 @@ Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 Check (3, false).
 Eval compute in (true, false).1.
 
+Definition only_odd (n : nat) : option nat :=
+  if odd n then Some n else None.
+
+Definition ohead (A : Type) (s : seq A) :=
+  if s is x :: _ then Some x else None.
+
 (* section *)
 Section iterators.
  Variables (T : Type) (A : Type).
@@ -127,6 +133,7 @@ Eval compute in y (Point 3 0 2).
 
 (** Exercises *************************************** *)
 
+Module exercises.
 (* pair *)
 
 Inductive pair (A B : Type) := mk_pair (a : A) (b : B).
@@ -175,3 +182,5 @@ Definition all_words n T (alphabet : seq T) :=
   iter n extend [::[::]].
 
 Eval compute in all_words 2 [:: 1; 2; 3].
+
+End exercises.
