@@ -1202,11 +1202,14 @@ This definition actually describes the type of lists as a {\em
   polymorphic type}.  This means that there is a different type
 \C{(seq A)} for each possible choice of type \C{A}.  For example
 \C{(seq nat)} is the type of sequences of natural numbers, while
-\C{(seq bool)} is the type of sequences of booleans.
-The type of the
+\C{(seq bool)} is the type of sequences of booleans. It has two
+constructors, named \C{nil} and \C{cons}. Constructor \C{nil}
+represents the empty sequence. The type of the
 constructor \C{cons} is devised specifically to describe how to produce a
-new list of type \C{(seq A)} by combining an element of \C{A} and an
-existing list of type \C{(seq A)}.  This also means that this data-type
+new list of type \C{(seq A)} by combining an element of \C{A}, the
+\emph{head} of the sequence, and an
+existing list of type \C{(seq A)}, the tail of the sequence.  This
+also means that this data-type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
 
@@ -1226,32 +1229,39 @@ reasons \Coq{} may display the type of \C{nat} or \C{bool} as \C{Set}
 and not \C{Type}.  We beg the reader to ignore this detail, that indeed
 plays no role in the \mcbMC{} library.}
 
-In principle, all objects of the data type definition have a type
-argument:
+In principle, the constructors of such a polymorphic data type feature
+a type argument:
 \C{nil} is a function that takes a type \C{A} as argument and returns
-an empty list of type \C{(seq A)}.  The notation ``\C{.. -> ..}'' is not
-well suited for this kind of situation and the type of \C{nil} is
-rather written as follows:
+an empty list of type \C{(seq A)}. The \emph{type} of the output of
+this function hence depends on the \emph{value of this input}. The
+type of \C{nil} is thus not displyed with the arrow notation
+``\C{.. -> ..}'', that we have used so far for the type of
+functions. It is rather written as follows:
 
 \begin{coq}{name=type_of_nil}{}
   forall A : Type, seq A
 \end{coq}
 \index[coq]{\C{forall}}
-The same goes for the other constructor of list, named \C{cons}.  This
-function actually takes three arguments: a type \C{A}, a value in this
-type, and a value in the type \C{(seq A)}.  The type of \C{cons} is
-thus written as follows:
+so as to \emph{bind} the value \C{A} of the argument in the type of
+the output. The same goes for the other constructor of list, named
+\C{cons}.  This function actually takes three arguments: a type \C{A},
+a value in this type, and a value in the type \C{(seq A)}.  The type
+of \C{cons} is thus written as follows:
 
 \begin{coq}{name=type_of_cons}{}
   forall A : Type, A -> seq A -> seq A
 \end{coq}
-which suggests that the sequence holding a single
-element \C{2 : nat} is: \C{(cons nat 2 (nil nat))}. Actually, the two
-occurrences of type \C{nat} are redundant: the tail of a sequence is a
-sequence with elements of the same type. Better, this type can be
+ Since the type of
+the output does not depend on the second and third arguments of
+\C{cons}, respectively of type \C{A} and \C{(seq A)}, the type of
+\C{cons} features two arrow separators for these.
+It suggests that the sequence holding a single element \C{2 : nat} is:
+\C{(cons nat 2 (nil nat))}. Actually, the two
+occurrences of type \C{nat} in this term are redundant: the tail of a
+sequence is a sequence with elements of the same type. Better, this type can be
 \emph{inferred} from the type of the given element \C{2}. One can
 actually write the sequence as  \C{(cons _ 3 (nil _))}, using \C{_} to
-denote  a term, here a type, to be inferred by \Coq{}. In the case of
+denote  a subterm, here a type, to be inferred by \Coq{}. In the case of
 \C{cons} however, one can be even more concise. Let us ask for the
 information about \C{cons} using the command \C{About}:
 
@@ -1268,8 +1278,9 @@ Argument A is implicit and maximally inserted
 \coqrun{name=about_cons_run}{about_cons}
 \index[concept]{implicit argument}
 
-The \Coq{} system implements a mechanism to avoid that
-people need to give the type argument to the \C{cons} function.  This is
+The \Coq{} system provides a mechanism to avoid that
+people need to give the type argument to the \C{cons} function when it
+can be inferred.  This is
 the information meant by the message ``\C{Argument A is implicit and
   ..}''.  Every time users write \C{cons}, the system automatically
 inserts an argument in place of \C{A}, so that this argument does not
@@ -1321,14 +1332,15 @@ fun l => [:: 1, 2, 3 & l]
 
 In particular \Coq{} provides the infix notation \C{::} for
 \C{cons}.  The \mcbMC{} library follows a general pattern for
-n-ary constructors, in particular \C{[::} begins the repetition
+n-ary operations obtained by the iteration of a single binary one. In
+particular \C{[::} begins the repetition
 of \C{::} and \C{]} ends it.  Elements are separated by \C{,} (comma)
 but for the last one separated by \C{&}.
 For example one
-can write as \C{[&& true, false & true]} the boolean conjunction
-of three terms.\footnote{Some n-ary notation use a
-different, but more evocative, last separator.  For example one writes
-\C{[|| b1, b2 | b3]} and \C{[==> b1, b2 => b3]}.}
+can write  the boolean conjunction
+of three terms as \C{[&& true, false & true]}.\footnote{Some n-ary
+  notations use a different, but more evocative, last separator.  For
+  example one writes \C{[|| b1, b2 | b3]} and \C{[==> b1, b2 => b3]}.}
 \index[coq]{\C{["|"| .. , .. "| ..]}}
 \index[coq]{\C{[&& .. , .. & ..]}}
 \index[coq]{\C{[==> .. , .. => ..]}}
@@ -1366,12 +1378,21 @@ Using the \C{if} syntax, we can write:
 Definition first_element_or_0 (s : seq nat) :=
   if s is a :: _ then a else 0.
 \end{coq}
+
+
+\marginnote{assia: What about the polymorphic version (head)? As an exercise?}
+
 \subsection{Recursion for sequences}
-Because the second explicit argument of \C{cons} can also be a sequence, it is
-possible to build sequences that are quite long, but always finite.
-In this respect, the sequences are very similar to the natural
-numbers.  Recursion is again the solution to cope with the arbitrary
+Because the second explicit argument of \C{cons} is an arbitrarily
+sequence, it is possible to build sequences that are arbitrarily long.
+Yet a sequences is always finite, as a finite pile of \C{cons}
+constructors, terminated with a \C{nil}.
+In this respect, the type \C{seq} of sequences is very similar the
+type \C{nat} of natural numbers.  Recursion is again the solution to
+cope with the arbitrary
 size of sequences using functions that can be described concisely.
+\marginnote{assia: here again I am uneasy with this sentence. Can we
+  remove it? Or rewrite it?}
 
 For instance, we can define a size function that counts the number of
 elements in a sequence.
@@ -1382,31 +1403,30 @@ Fixpoint size A (s : seq A) :=
 \end{coq}
 \index[coq]{\C{size}}
 During computation on a given sequence, this function will traverse
-the whole sequence, adding 1 to the result for every
+the whole sequence, incrementing the result for every
 \C{cons} pattern that is encountered.  It should be noted that in this
 definition, the function \C{size} is described as a two argument
 function, but the recursive call \C{(size tl)} is done by providing
-explicitly only one argument, \C{tl}.  This is because
+explicitly only one argument, \C{tl}. Indeed, remember that
 %we started the
 %\Coq{} session with, among other commands, the command ``\C{Set Implicit
 %  Arguments}''.  According to this directive,
 the \Coq{} system makes
 arguments of functions that can be guessed from the type of following
-arguments automatically implicit.  This feature is effective directly
-at definition time.
+arguments automatically implicit, and \C{A} is implicit here. This
+feature is already active in the expression defining \C{size}.
 
 Another example of recursive function on sequences is a function that constructs
 a new sequence where all elements are values of a given function applied to
-the elements of an input sequence.  This function can be defined in this
-manner.
+the elements of an input sequence.  This function can be defined as:
 
 \begin{coq}{name=def_map}{}
 Fixpoint map A B (f : A -> B) s :=
   if s is e :: tl then f e :: map f tl else nil.
 \end{coq}
 \index[coq]{\C{map}}
-With this function it is also interesting to understand how we can
-improve the notations.  For instance, we will add a notation that
+This function provides an interesting case study for the definition of
+appropriate notations. For instance, we will add a notation that
 makes it more apparent that the result is {\em the sequence of all
 expressions \(f(i)\) for \(i\) taken from another sequence}.
 
@@ -1426,7 +1446,7 @@ Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 \index[concept]{list comprehension}
 \index[coq]{\C{[seq .. "| .. <- ..]}}
 In addition to the function \C{map} and the associated notation
-we studied here, the \mcbMC{} library
+we describe here, the \mcbMC{} library
 provides a large collection of useful functions and notations to work on
 sequences, as described in the header of the file \lib{seq}.  For
 instance \C{[seq i <- s | p]} filters the sequence \C{s} keeping only
@@ -1436,23 +1456,45 @@ that is used to catenate two sequences together.
 \index[coq]{\C{(_ ++ _)}}
 \index[coq]{\C{[seq .. <- .. "| ..]}}
 
+\marginnote{assia: Missing exercises here?}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Other containers}\label{sec:othercontainers}
-The simplest polymorphic data type one can think about is the option type
+\subsection{More container datatypes}\label{sec:othercontainers}
+
+Here is another example of polymorphic data type, which represents a
+box that can be either empty, or contain a single value:
 
 \begin{coq}{}{}
 Inductive option A := None | Some (a : A).
 \end{coq}
 \index[coq]{\C{option}}
-It represents a box that can be either empty or contain a value.
-It is sometimes used to represent a partial function, or a filter.
+
+Type  \C{(option A)} contains a copy of all the elements of \C{A},
+built using the \C{Some} constructor, plus an extra element given by
+the constructor \C{None}. It may be used to represent the output of a
+partial function or of a filtering operation, using \C{None} as a
+default element.
+
+For example, function \C{only_odd} ``filters'' natural numbers, keeping the
+odd ones and replacing the evens by the \C{None} default value:
+\begin{coq}{}{}
+Definition only_odd (n : nat) : option nat :=
+  if odd n then Some n else None.
+\end{coq}
+
+Similarly, one can use the \C{option} type to define a partial function
+which computes the head of a non-empty list:
 
 \begin{coq}{}{}
-Definition only_odd n : option n := if odd n then Some n else None.
+Definition ohead (A : Type) (s : seq A) :=
+  if s is x :: _ then Some x else None.
 \end{coq}
-For example the sub-type kit presented in chapter~\ref{ch:sigmabool} makes use
-of the option type to describe a partial injection.
 
+See also the sub-type kit presented in chapter~\ref{ch:sigmabool},
+which makes use of the option type to describe a partial injection.
+\marginnote{assia: mention also odflt, omap and friends, in exercise?}
+
+
+\marginnote{assia: it is a very difficult exercise, isnt'it?}
 Another widespread polymorphic data type is the one of pairs, that
 lets one put together any two values.  While we leave its definition
 as an exercise (see~\ref{ex:pair}) we briefly discuss the associated
@@ -1494,8 +1536,9 @@ useful to set a working environment where the common data is declared
 only once.  Such a working environment is called a \C{Section}, and
 the data that is local to this section is declared using \C{Variable}
 commands.  A typical example happens when describing functions that
-are polymorphic and rely in a uniform way on a given type and existing
-functions in this type.
+are polymorphic. Indeed in that case, they rely in a uniform way on a
+given type parameter plus possibly on existing functions in this type.
+
 
 \begin{coq}{name=simple_monoid_structure}{}
 Section iterators.
@@ -1509,7 +1552,7 @@ Fixpoint iter n op x :=
   if n is p.+1 then op (iter p op x) else x.
 
 Fixpoint foldr a s :=
-  if s is x :: xs then f x (foldr a xs) else a.
+  if s is y :: ys then f y (foldr a ys) else a.
 
 End iterators.
 \end{coq}
@@ -1518,10 +1561,12 @@ End iterators.
 \index[vernac]{\C{Implicit Type}}
 \index[coq]{\C{foldr}}\index[coq]{\C{iter}}
 The \C{Section} and \C{End} keyword delimit a scope in which
-the variables \C{T}, \C{A} and \C{f} are available.  These variables
+the types \C{T} and \C{A} and the function \C{f} are given as
+parameters: \C{T}, \C{A} and \C{f} are called \emph{section
+  variables}.  These variables
 are used in the definition of \C{iter} and \C{foldr}.  When
 the section is closed, these variables appear as arguments to
-the various function that use them.
+the various functions that use them.
 
 \begin{coq}{}{width=3.5cm,title=Query}
 About iter.
@@ -1534,10 +1579,11 @@ foldr :
   forall T A : Type, (T -> A -> A) -> A -> seq T -> A
 \end{coqout}
 The \C{Implicit Type} annotation tells \Coq{} that, whenever we name
-an input \C{x} its type is supposed to be \C{T}.
+an input \C{x} (or \C{x'}, or \C{x1},...) its type is supposed to be
+\C{T}. See \cite{Coq:manual} for more information.
 
-If we observe the definition of \C{iter}, this definition tells us
-that \C{iter} has three argument.  The first one, \C{n}, is used in
+The definition of \C{iter} in the Section has three explicit
+arguments. The first one, \C{n}, is used in
 a pattern-matching if-then-else statement and matched with a pattern of the
 form \C{p.+1}.  For this reason, we can guess that \C{n} has the type \C{nat}.
 The value returned by \C{iter} is either \C{x} or \C{op (iter p op x)}, so this
@@ -1554,14 +1600,14 @@ outside the section, must be ready to receive, {\em first an arbitrary type
 value of type \C{T}}.  In the text defining \C{iter} (inside the section), the
 type \C{T} did not appear to be an argument, but once we are outside
 the section, the type \C{T} has to be an argument of \C{iter}.  Moreover,
-the argument for \C{T} has to receive a name, so that we can refer to it when
-describe the type of the other arguments.  We need to re-use the \C{forall}
+the argument for \C{T} receives a name, so that it can be mentionned
+in the type of the other arguments.  We need to re-use the \C{forall}
 notation that was already useful when mentioning generic data types.
 
 This process, where a function appears to have more arguments outside
 the section where it was defined than inside the section is called
-an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}.
-It only occurs when a section variable is used inside the definition or
+an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}
+It occurs when a section variable is used inside the definition or
 the type of a defined object.  In this case, the type \C{T} is a section
 variable that is used in the type of \C{iter}, so it needs to be
 abstracted for \C{iter} when the section is closed.
@@ -1576,14 +1622,14 @@ we know (from the type declaration at line 4) that the first argument of
 Looking at the ``then'' branch of the if-then-else statement, we also see
 that \C{foldr a xs} is used as the second argument to \C{f}, so it should
 have type \C{A}, so we can also infer that \C{a} should have the type \C{A}.
-So in all, the function \C{foldr} relies on all the section variables and
-they all have to be added as arguments.
+So in all, the function \C{foldr} depends on all the section variables and
+they all have to be mentionned as arguments in its type outside the section.
 
 Variables are abstracted in their order of declaration.  In our example,
 \C{T} and \C{A} appear in the same order in the type of {\tt foldr} as
 in the variables declarations for the section.  Variables that are actually
-not use in a given definition are omitted, for example \C{iter}
-is not abstracted on \C{f}.
+not use in a given definition are omitted. For example \C{f} plays no
+role in the type of \C{iter}.
 
 Once the section is closed, \C{iter} and \C{foldr} behave exactly as
 if they were defined as follows:
@@ -1607,8 +1653,11 @@ Eval compute in foldr addn 0 [:: 1; 2; 3].
  = 6 : nat
 \end{coqout}
 
-The \C{Section} mechanism lets one reuse variable declaration and type
+The \C{Section} mechanism lets one reuse variable declarations and type
 annotations among multiple definitions.
+
+\marginnote{assia: what about a good practice box here? for naming policy
+  for bound variables}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Symbolic computations under a context}
