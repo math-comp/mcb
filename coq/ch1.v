@@ -112,7 +112,7 @@ About iter.
 About foldr.
 Eval compute in iter 5 pred 7.
 Eval compute in foldr addn 0 [:: 1; 2; 3].
-Fixpoint add m n := if m is u.+1 then add u n.+1 else n.
+Fixpoint addn_alt m n := if m is u.+1 then addn_alt u n.+1 else n.
 Section symbolic.
   Variable n : nat.
   Eval simpl in pred (add n.+1 7).
