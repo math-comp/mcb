@@ -23,7 +23,7 @@ that they are {\em inert}, that is, they are meant to be
 manipulated by operations.  We also show how operations are described.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Functions}
+\section{Functions}\label{sec:functions}
 In the formalism underlying the \Coq{} system, functions play a
 central role akin to the one of sets in set theory. Before being more
 precise about this formalism in Chapter~\ref{ch:ttch}, in this Section
@@ -45,6 +45,7 @@ assume implicitly that numerals $1, 2, \dots$ denote natural numbers,
 represented by their analogue \C{1}, \C{2}, \dots in \Coq{} syntax.
 
 
+\subsection{Defining functions}\label{ssec:deffun}
 Mathematical formulas are expressions composed of operation symbols,
 of a certain arity, applied to some arguments which are
 either variables or themselves (sub)-expressions.
@@ -702,7 +703,8 @@ notations, but these are only a parsing and display
 facility provided to the user for readability: \C{O} is displayed
 $0$, \C{(S O)} is displayed $1$, etc.  Users can also type decimal
 numbers to describe values in type \C{nat}: these are automatically
-translated into terms built with \C{O} and \C{S}.
+translated into terms built (only) with \C{O} and \C{S}. In the rest
+of this chapter, we call \emph{numeral}, such a term.
 
 The \mcbMC{} library provides a few notations to make the use of the
 constructor \C{S} more intuitive to read.  In particular, if \C{x}
@@ -903,7 +905,7 @@ function is defined for all elements of the type.
 \marginnote{Waiting for input from Yves, relating pattern matching
   without recursion with the complexity of the function
   implemented. See also the marginnote at definition of equality.}
-\subsection{Recursion for natural numbers}
+\subsection{Recursion for natural numbers}\label{ssec:recnat}
 
 Many usual functions dealing with natural numbers are
 defined recursively.  For instance, we can define addition in the
@@ -1529,7 +1531,7 @@ constructor. The \C{\%N} and \C{\%type} labels are said to be
 \cite[section 12.2]{Coq:manual}).\index[concept]{notation scope}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Section mechanism}
+\section{The Section mechanism}\label{sec:section}
 \index[concept]{section}
 When several functions are designed to work on similar data, it is
 useful to set a working environment where the common data is declared
@@ -1660,11 +1662,21 @@ annotations among multiple definitions.
   for bound variables}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Symbolic computations under a context}
+\section{Symbolic computation}\label{sec:symcomp}
 \index[concept]{computation!symbolic}
 
-Which is the status of the \C{foldr} program \emph{before} the
-\C{Section} is closed?  What are \C{T} and \C{A} and \C{f}?
+As we mentionned in Section~\ref{sec:functions}, the \C{Eval compute}
+command of \Coq{} can be used to normalize expressions, which
+eventually leads to simpler terms, like numerals. This flavour of
+computation can however accommodate to the presence of parameters in
+the expression to be computed.
+
+Let us come back to the example studied in Section~\ref{sec:section} where
+the definition of the \C{iter} function happens under a so called
+\emph{local context}, consisting of the parameter variables \C{T},
+\C{A} and \C{f}. While staying in the scope of the \C{iterators}
+section, this local context is fixed and parameterizes all the
+definitions or queries to \Coq{}.
 
 \begin{coq}{}{}
 Section iterators.
@@ -1676,9 +1688,8 @@ Fixpoint foldr a s :=
   if s is x :: xs then f x (foldr a xs) else a.
 \end{coq}
 
-The variables \C{T}, \C{A} and \C{f} form the so called
-\emph{local context} under which all operations take place.
-For example, computing the type of \C{foldr} gives the following:
+For instance, asking for the type of
+\C{foldr}  under this local context gives the following result:
 
 \begin{coq}{}{width=3.5cm,title=Query}
 About foldr.
@@ -1689,12 +1700,11 @@ foldr : A -> seq T -> A
 
 This indicates that \C{foldr} is not a polymorphic function (yet)
 and that it takes only two arguments, an element of \C{A} and
-a list of \C{T}.
-
-If the operation we intend to perform is computation, then
-\C{T}, \C{A} and, most importantly, \C{f} are symbols.
- \C{f} in particular represents an unknown function.
-Computation involving \C{f} hence becomes symbolic:
+a list of \C{T}. Now if we ask for the result of some computation,
+then \C{T}, \C{A} and, most importantly, \C{f} are inert symbols.
+In particular, the symbol \C{f} represents an unknown, arbitray
+function. Symbolic computation nonetheless normalizes expressions
+featuring \C{f}, like in:
 
 \begin{coq}{}{width=7cm}
 Variable init : A.
@@ -1707,78 +1717,108 @@ Eval compute in
 : A
 \end{coqout}
 
+In order to compute expression \C{foldr init [:: x1; x2; x3]},
 \Coq{} has developed the expression symbolically.  As a mind
 experiment, we can substitute \C{f} with \C{addn}, and
-\C{[:: x1; x2; x3]} with \C{[:: 1; 2; 3]}.  We obtain
+\C{[:: x1; x2; x3]} with \C{[:: 1; 2; 3]}:
+
 \begin{coq}{}{}
 addn 1 (addn 2 (addn 3 0))
 \end{coq}
-that indeed is an expression that computes to 6.
 
-In later chapters we are going to prove properties about \C{foldr}.
-In such cases the local context has to be understood as containing
-names (and type annotations) of fixed, but unknown, objects.
-Hence proving a property of \C{foldr} when the iterated function
-\C{f} is unknown means proving that such a property is true for any
-possible value of \C{f}.
+And this expression indeed computes to 6.
 
-Symbolic computation  is going to play an important role in the activity
-of proving
-and the way programs are written has an impact on the way they
-compute symbolically.  For example, let's consider this alternative
-definition of the addition between natural numbers
+% In later chapters we are going to prove properties about \C{foldr}.
+% In such cases the local context has to be understood as containing
+% names (and type annotations) of fixed, but unknown, objects.
+% Hence proving a property of \C{foldr} when the iterated function
+% \C{f} is unknown means proving that such a property is true for any
+% possible value of \C{f}.
+
+The way functions are described as programs has an impact on the way
+symbolic computations unfold. For example, recall from
+Section~\ref{ssec:recnat} the way we defined an addition operation on
+elements of type \C{nat}. We rephrase it using the \C{if .. is
+  .. then} syntax presented in Section~\ref{}:
+
+\begin{coq}{name=add_redef}{}
+Fixpoint addn n m := if n is p.+1 then (addn p m).+1 else m.
+\end{coq}
+\index[coq]{\C{addn}}
+
+Now let us consider the following alternative definition:
 
 \begin{coq}{}{}
-Fixpoint add m n := if m is u.+1 then add u n.+1 else n.
+Fixpoint addn_alt n m := if n is p.+1 then addn_alt n m.+1 else m.
 \end{coq}
 \index[coq]{\C{add}}
 
-It is a sensible definition, and we can show that the two additions
-compute the same results when computing with completely known natural
-numbers.  Still, their computational behavior differ when computing on
-arbitrary symbolic values.
-This time we use the \C{simpl} evaluation strategy.  The relevant difference
-is that \C{simpl} leaves expressions in nicer forms whenever they contain
-variables.
+Both are sensible definitions, and we can show that the two addition
+functions compute the same results when applied to numerals.  Still,
+their computational behavior may differ when computing on arbitrary
+symbolic values. In order to higlight this, we will use another
+normalization strategy to perform computation, the \C{simpl}
+evaluation strategy.  One difference between the \C{simpl}
+and \C{compute} strategy is that the \C{simpl} one usually leaves
+expressions in nicer forms whenever they contain variables. Here again
+we point the interested reader to \cite[Section 8.7.1]{Coq:manual} for
+more details.
 
 \begin{coq}{}{width=7cm}
 Variable n : nat.
-Eval simpl in pred (add n.+1 7).
+Eval simpl in pred (addn_alt n.+1 7).
 Eval simpl in pred (addn n.+1 7).
 \end{coq}
 \begin{coqout}{}{width=5cm}
-= pred (add n 8)
+= pred (addn_alt n 8)
 = addn n 7
 \end{coqout}
 
-Here we see that since \C{addn} exposes bits of its
-final result early the \C{pred} function can compute, and cancels
-the \C{.+1} coming out of the sum.  On the other hand,
-\C{add} does not expose a successor, instead it carries it on the second
-argument and symbolic computation in \C{pred} is stuck.
-Is some sense \C{addn} is more
-explicit about its result, and this helps, for example, to show that
-\C{(addn n.+1 7)} is different from \C{0} (see for example
-the proof of \C{muln_eq0} in section~\ref{proof:mulneq0}).
-As we have seen \Coq{} computes
-automatically and in this case computation would expose a \C{S} symbol
-and no natural number of the form \C{(S  ..)} can be equal to 0.
+Here we see the impact of the difference in the definitions of
+\C{addn} and \C{addn_alt}: the \C{addn_alt} variant transfers the
+number of pebbles (represented by the successor \C{S} symbol)
+given as first argument to its second argument
+before resorting to its base case, whereas in the \C{addn} variant,
+the resulting pile of pebbles is constructed top down. An intermediate
+expression in the computation of \C{(addn n m)} exposes as many
+successors as recursive calls have been performed so far. Since bits
+of the final result are exposed early, the \C{pred} function can
+eventually compute, and it cancels the \C{.+1} coming out of the sum.
+On the other hand,
+\C{addn_alt} does not expose a successor when a recursive call is
+performed hence symbolic computation in \C{pred} is stuck.
+
+As Chapter~\ref{ch:proofs} illustrates, symbolic computation plays an
+important roles in formal proofs and this kind of differences
+matters. For instance the \C{addn} variant helps
+showing that \C{(addn n.+1 7)} is different from \C{0} because by
+computation \Coq{} would automatically expose  a \C{S} symbol
+and no natural number of the form \C{(S  ..)} is equal to 0.
+For a worked out example, see also the proof of \C{muln_eq0} in
+section~\ref{proof:mulneq0}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Iterators in mathematics}
+\section{Iterators and mathematical notations}
 \index[concept]{general term|seealso {higher order}}
 \label{sec:bigopnat}
 
-Numbers and sequences of objects are common in mathematics, so we feel
-no need to justify our choice to present them in this chapter.
-On the other hand, we can wonder what role programs like \C{foldr}
-play in mathematics.
-Let's take the left hand side of these two formulas:
+Numbers and sequences of objects are so pervasive in the mathematical
+discourse that we could hardly ommit to present them in such an
+introductory chapter. On the other hand, the reader may wonder what role
+programs like \C{foldr} may play in mathematical sentences.
+
+Actually, in order to formalize the left hand side of the two
+following formulas:
 $$
 \sum_{i=1}^n (i * 2) - 1 = n ^ 2 \qquad
 \sum_{i=1}^n i = \frac{n * (n + 1)}{2}
 $$
-They can both be faithfully represented by using \C{foldr}.
+and more generally in order to make explicit the meaning of the capital
+notations like $\bigcap_{i=1}^nA_i,
+\prod_{i=1}^nu_i, \dots$ we need to decribe an iteration procedure
+akin to the \C{foldr} program. We illustrate this on the example of
+the summation symbol (for a finite sum):
 
 \begin{coq}{}{}
 Fixpoint iota m n := if n is u.+1 then m :: iota m.+1 u else [::].
@@ -1789,10 +1829,35 @@ Notation "\sum_ ( m <= i < n ) F" :=
 \index[coq]{\C{\\sum}}
 
 The \C{iota} function generates the list of natural numbers
-corresponding to the range of the summation.  We also provide
-to \C{foldr} the neutral element for the addition as the initial value
-of the iteration.
+corresponding to the range of the summation. Then the notation defines
+expressions with shape \L+\sum_ (m <= i < n) F+, with \C{F} a
+subexpression featuring variable \C{i}, the one used for the
+index. For instance, once the above notation is granted and for any
+natural number \C{(n : nat)}, one may write
+the \Coq{} expression \L+(\sum_(1 <= i < n) i)+ to represent the
+second example of sum above. The name \C{i} is really used as a
+\emph{binder name} here and we may substitute \C{i} with any other
+name we may find more convinent, as in \L+(\sum_(1 <= j < n) j)+,
+without actually changing the expression\footnote{Although this change
+results in two syntactically different expressions, they are
+indistinguishable for \Coq{}}.
 
+The notation represent an instance of the \C{foldr} program, iterating
+a function of type \C{nat -> nat -> nat}: the two type parameter of
+\C{foldr} are set to \C{nat} in this case. The first explicit
+argument given to \C{foldr} is hence a function of
+type \C{nat -> nat -> nat}, which is created by \emph{abstracting} the
+variable \C{i} in the expression \C{F}, as mentionned in
+Section~\ref{ssec:deffun}. The name of the second argument of the
+function, called \C{a} here, should not appear in expression \C{F} in
+order for the notation to be meaningful. Crucially, the \C{foldr}
+iterator takes as
+input a \emph{functional argument that is able to represent faithfully
+  any general term}. As a second explicit argument to \C{foldr}, we
+also provide the neutral element \C{0} for the addition: this is the
+initial value of the iteration, corresponding to an empty index range.
+
+Let us perform a few examples of computations with these iterated sums.
 \begin{coq}{}{width=8.5cm,title=Query}
 Eval compute in \sum_( 1 <= i < 5 ) (i * 2 - 1).
 Eval compute in \sum_( 1 <= i < 5 ) i.
@@ -1802,33 +1867,33 @@ Eval compute in \sum_( 1 <= i < 5 ) i.
 = 10 : nat
 \end{coqout}{}{}
 
-The iteration happens following the order of the list.
-In this case the operation, addition, is commutative, so it does not really
-matter, but it may not be the case for example if the iterated operation
-is group multiplication.  What is even more crucial is that
-\C{foldr} takes as input a \emph{functional argument that
-is able to represent faithfully any general term}.
+Behind the scene, iteration happens following the order of the list,
+as we observed in Section~\ref{sec:symcomp}.
+In the present case the operation we iterate, addition, is
+commutative, so this order does not impact the final result. But it
+may not be the case for example if the iterated operation
+is the product of matrices.
 
-The ability to write programs that manipulate functions, like \C{foldr}, is
-crucial not only to provide convenient notations.  As we sketched in the
-previous section we will be able to prove properties about \C{foldr} without
-knowing the iterated function.  By assuming properties linking the iterated
-operation to the initial value, like forming a Monoid, we will be able to
-provide a generic theory of iterated operations in section~\ref{sec:bigop}.
-Such a theory becomes richer
-when the operation is also commutative, and even richer when we combine two
-operations that distribute.
+Defining the meaning of this family of notations using a generic
+program \C{foldr}, which manipulates functions, is not only useful for
+providing notations but it also facilitates the design of the
+corpus of properties of these expressions. This corpus comprises
+lemmas derived from the generic properties of \C{foldr}, which do not
+depend on the function iterated. By assuming further properties
+linking the iterated operation to the initial value, like forming a
+monoid, we will be able to provide a generic theory of iterated
+operations in section~\ref{sec:bigop}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Notations, abbreviations}
 \index[concept]{notation}
 \index[concept]{abbreviation}
 
-We already mentioned several time the \C{Notation} command, relying on the
+We already mentioned several times the \C{Notation} command, relying on the
 reader's intuition to understand roughly how it works.  The actual command is
 quite complex, letting one specify associativity and precedence to the
-parsing engine, as well as the group to which the notation belongs and some
-hint for printing, like good
+parsing engine of \Coq{}, as well as the group to which the notation
+belongs and some hints for printing, like good
 line breaking points.  The notation group is usually called a {\em scope} and it
 is usually associated to a {\em scope delimiter}.
 
@@ -1864,6 +1929,7 @@ Note that the definition of \C{leq} relies on the fact that
 subtraction computes to \C{0} whenever the first argument is less than
 or equal to the second argument.
 
+
 Notations can also refer to more complex expressions, like in:
 
 \begin{coq}{}{}
@@ -1888,6 +1954,9 @@ and is always printed as  \C{(m < n)}, thanks to the following declaration:
 Notation "n > m"  := (m.+1 <= n) (parsing only).
 \end{coq}
 
+\marginnote{assia: this is probably hard to understand: we do not know
+(yet) about modules and name spaces. I think we could include a
+paragraph on name spaces here.}
 Another frequently used form of notation is called syntactic abbreviation.
 It simply lets one specify a shorter name.  For example the \C{S} constructor
 of natural numbers (placed in \C{Datatype} Module) can also be accessed
@@ -1900,15 +1969,15 @@ Notation succn := Datatypes.S.
 
 The notation \C{_.+1} we have been using so far is defined on top of
 this abbreviation, as:
+
 \begin{coq}{}{}
 Notation "n .+1" := (succn n) (at level 2, left associativity,
   format "n .+1") : nat_scope.
 \end{coq}
 
-
-
 We mention here some conventions either imposed by \Coq{}
 or adopted throughout the \mcbMC{} library.
+\marginnote{assia: mention the prelude?}
 
 \begin{itemize}
 \item A symbol starts with a non alpha-numerical character followed by
