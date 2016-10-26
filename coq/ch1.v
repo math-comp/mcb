@@ -115,7 +115,7 @@ Eval compute in foldr addn 0 [:: 1; 2; 3].
 Fixpoint addn_alt m n := if m is u.+1 then addn_alt u n.+1 else n.
 Section symbolic.
   Variable n : nat.
-  Eval simpl in pred (add n.+1 7).
+  Eval simpl in pred (addn_alt n.+1 7).
   Eval simpl in pred (addn n.+1 7).
 End symbolic.
 
