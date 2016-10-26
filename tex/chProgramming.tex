@@ -45,7 +45,7 @@ assume implicitly that numerals $1, 2, \dots$ denote natural numbers,
 represented by their analogue \C{1}, \C{2}, \dots in \Coq{} syntax.
 
 
-\subsection{Defining functions}\label{ssec:deffun}
+\subsection{Defining functions, performing computation}\label{ssec:deffun}
 Mathematical formulas are expressions composed of operation symbols,
 of a certain arity, applied to some arguments which are
 either variables or themselves (sub)-expressions.
@@ -230,13 +230,8 @@ a function and $1$.
 
 Expressions that are well typed can be \emph{computed} by \Coq{},
 meaning that they are \emph{reduced} to a ``simpler'' form, also
-called a \emph{normal form}. Being more precise about this normal form
-requires first describing in more details the formalism underlying the
-\Coq{} system, which we do only in Chapter~\ref{ch:ttch}: the
-interested reader should actually refer to \cite[Section
-8.7.1]{Coq:manual}. In our case however, the intuition is that this
-normalization provides the ``expected value'' of a computation.
-For example \C{(f 3)} returns \C{4}:
+called a \emph{normal form}. For example computing \C{(f 3)} returns
+value \C{4}:
 
 \begin{coq}{name=print_f}{width=6cm,title=Evaluating a function}
 Eval compute in f 3.
@@ -245,15 +240,29 @@ Eval compute in f 3.
  = 4 : nat
 \end{coqout}
 \index[vernac]{\C{Eval compute}}
-This seemingly trivial capability of \Coq{} plays a crucial role
-in the \mcbMC{} library, as we will see in Chapter~\ref{ch:proofs}.
+
+At the very least, we can observe that the argument \C{3} has been
+substituted for the argument variable in the definition of function
+\C{f} and that the addition has been evaluated.
+Although this capability of \Coq{} plays a crucial role
+in the \mcbMC{} library, as we will see in Chapter~\ref{ch:proofs}, it
+is too early to be
+more precise about this normalization strategy. This would require
+at least describing in more details the formalism underlying the
+\Coq{} system, which we do only in Chapter~\ref{ch:ttch}. The
+interested reader should actually refer to \cite[Section
+8.7.1]{Coq:manual} for the official documentation of \C{compute}.
+For now, we suggest to keep only the intuition that this
+normalization procedure provides the ``expected value'' of a
+computation.
+
 \index[concept]{computation}
 
 \subsection{Functions with several arguments}
 \label{sec:fun-sev-args}
 The syntax we used to define a function with a single argument
 generalizes to the case of functions with several arguments, which are
-separated by a space. Here is an example of a function with two
+then separated by a space. Here is an example of a function with two
 arguments:
 
 \begin{coq}{name=two_arg_def}{}
@@ -544,7 +553,7 @@ the partial sum \C{(33 + 33 + 33)} is computed only once and shared at
 every occurrence of the bound variable. This abbreviation facility can
 thus also be used to organize intermediate computations.
 
-\section{Data: construction and destruction}
+\section{Data types, first examples}
 
 \marginnote{Change the title of the section, at least to find a
   synonym for destruction.}
@@ -568,18 +577,19 @@ cases, the other symbols in the signature represent functions, whose
 computational content is prescribed by the axioms.
 
 In \Coq{}, such expressions are represented using a \emph{data type},
-whose definition provides in a single declaration the name of the type
-and the symbols of (constants and) operations that \emph{build} elements
-of this type. One can define more operations on the elements of
-the type and describe the computational behavior of these operations
-by case analysis, or even recursion, on the syntactic shape of their
-argument.
-
+whose definition provides in a single declaration the name of the
+type, the symbols of (constants and) operations that \emph{build}
+elements of this type, plus some rules on how to compute on these
+elements. These data types are introduced by the means of an
+\emph{inductive type definition}.
+One can define explicitly more operations on the elements of
+the type by describing how they compute on a given argument in the
+type using a case analaysis (or even a recursive definition) on the
+syntactic shape of this argument.
 This approach is used in a systematic way to define a variety of basic
-data types, among which boolean values, natural numbers, pairs and
-sequences of values are the most prominent examples. This Section is
-devoted to the study of these examples, which are all defined by the
-means of an \emph{inductive definition}.
+data types, among which boolean values, natural numbers, pairs or
+sequences of values are among the most prominent examples.
+\index[concept]{inductive type}
 
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Boolean values}
@@ -602,7 +612,7 @@ declaration actually states explicitly that there are exactly two
 elements in type bool: the distinct constants \C{true} and \C{false},
 called the \emph{constructors} of type \C{bool}.
 
-\index[concept]{inductive type}
+
 \index[concept]{inductive type!constructor}
 
 In practice, this means that we can \emph{build} a well-formed expression of
@@ -635,7 +645,7 @@ Definition f23 b := if b then 2 else 3.
 \coqrun{name=definef23_run}{definef23}
 
 As one expects, when \C{b} is \C{true} the expression
-\C{(f23 b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise.
+\C{(f23 b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating f23}
 Eval compute in f23 true.
@@ -646,6 +656,13 @@ Eval compute in f23 false.
   = 2 : nat
   = 3 : nat
 \end{coqout}
+
+Indeed, the \C{compute} normalization strategy includes the
+normalization modulo the rewrite rules
+\C{f23 true $\rightarrow$  2} and \C{f23 false $\rightarrow$  2} that
+model the definition by case analysis of \C{f23}. And for any new
+valid definition of a function by case analysis, similar rules are
+available to the \C{compute} strategy.
 
 The \mcbMC{} library provides a collection of boolean operations that
 mirror reasoning steps on truth value.  The functions are called
@@ -892,7 +909,10 @@ Definition same_bool b1 b2 :=
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data: recursion}\index[concept]{recursion}
+
+\subsection{Recursion on natural numbers}\label{ssec:recnat}
+
+\index[concept]{recursion}
 
 With only pattern-matching, we do not cope well with the fact that the
 type \C{nat} of natural numbers actually contains an infinity of
@@ -905,9 +925,8 @@ function is defined for all elements of the type.
 \marginnote{Waiting for input from Yves, relating pattern matching
   without recursion with the complexity of the function
   implemented. See also the marginnote at definition of equality.}
-\subsection{Recursion for natural numbers}\label{ssec:recnat}
 
-Many usual functions dealing with natural numbers are
+Many usual functions dealing with natural numbers are actually
 defined recursively.  For instance, we can define addition in the
 following manner:
 
@@ -1082,6 +1101,14 @@ Eval compute in 2 == add 1 0.+1
 = true : bool
 \end{coqout}
 
+Indeed, rules \C{eqn 0 0 $rightarrow$ true},
+\C{eqn p.+1 q.+1 $rightarrow$ eqn p q},
+\C{eqn p.+1 0 $rightarrow$ false} and
+\C{eqn 0 p.+1 $rightarrow$ false} are included in the \C{compute}
+normalization strategy, after the recursive definition of the \C{eqn}
+function.
+
+
 In this section, we introduced a variety of functions and notations
 for operations on natural numbers.  In practice, these functions and
 notations are already provided by the \mcbMC{} library.  In particular
@@ -1119,7 +1146,7 @@ There is not better way to browse the library than reading these banners.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Data: generic containers}\label{sec:poly}
+\section{Container datatypes}\label{sec:poly}
 
 \marginnote{assia: may be rename the section?}
 
@@ -1460,7 +1487,7 @@ that is used to catenate two sequences together.
 
 \marginnote{assia: Missing exercises here?}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{More container datatypes}\label{sec:othercontainers}
+\subsection{Option and pair data types}\label{sec:othercontainers}
 
 Here is another example of polymorphic data type, which represents a
 box that can be either empty, or contain a single value:
@@ -1470,7 +1497,8 @@ Inductive option A := None | Some (a : A).
 \end{coq}
 \index[coq]{\C{option}}
 
-Type  \C{(option A)} contains a copy of all the elements of \C{A},
+Akin to a pointed version of \C{A}, type  \C{(option A)} contains a
+copy of all the elements of \C{A},
 built using the \C{Some} constructor, plus an extra element given by
 the constructor \C{None}. It may be used to represent the output of a
 partial function or of a filtering operation, using \C{None} as a
@@ -1478,6 +1506,7 @@ default element.
 
 For example, function \C{only_odd} ``filters'' natural numbers, keeping the
 odd ones and replacing the evens by the \C{None} default value:
+
 \begin{coq}{}{}
 Definition only_odd (n : nat) : option nat :=
   if odd n then Some n else None.
@@ -1529,6 +1558,66 @@ while \C{(a * b)\%type} would interpret \C{*} as the pair data type
 constructor. The \C{\%N} and \C{\%type} labels are said to be
 \emph{notation scope delimiters} (for more details see
 \cite[section 12.2]{Coq:manual}).\index[concept]{notation scope}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Aggregating data in record types}
+\index[concept]{record}\label{sec:records}
+
+Sometime one wants to aggregate already available data into a single object.
+For example a point in the 3-dimensional space could be represented with
+three natural numbers.
+
+Such a need is so frequent that \Coq{} provides a specialized command
+to declare this class of data type.
+
+\begin{coq}{}{}
+Record point := Point { x : nat; y : nat; z : nat }.
+\end{coq}
+\index[vernac]{\C{Record}}
+This is mostly equivalent to writing as follows:
+
+\begin{coq}{}{}
+Inductive point := Point (x : nat) (y : nat) (z : nat).
+\end{coq}
+\index[concept]{record}
+
+The main advantage of using \C{Record} is that \Coq{} uses the names of the
+constructor fields to generate functions to access the field's contents.  We
+call these programs \emph{projections}.  I.e. after the \C{Record} declaration
+one can write:
+
+\begin{coq}{}{width=8.5cm,title=Query}
+Eval compute in x (Point 3 0 2).
+Eval compute in y (Point 3 0 2).
+\end{coq}{}{}
+\begin{coqout}{}{width=3.5cm,title=Response}
+= 3 : nat
+= 0 : nat
+\end{coqout}{}{}
+Where the code for the \C{x} projection is, as expected:
+
+\begin{coq}{}{}
+Definition x (p : point) := match p with Point a _ _ => a end.
+\end{coq}
+Inductive data with a single constructor, like records, comes
+equipped with a specific notation for single-branch pattern
+matching:
+
+\begin{coq}{}{}
+Definition x (p : point) := let: Point a _ _ := p in a.
+\end{coq}
+\index[coq]{\C{let: .. := .. in ..}}
+\index[concept]{pattern matching!irrefutable}
+
+Records can also be polymorphic, for example the pair data type of
+Exercise~\ref{ex:pair} can carry two values of any type.
+
+Records play a major role in the \mcbMC{} library, in particular
+in the modelling of algebraic structures.   As we see in later chapters
+records let one pack together types, operations on these types and
+finally the properties of these operations.  For example a record
+will model the signature of a ring.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Section mechanism}\label{sec:section}
@@ -2000,64 +2089,6 @@ or adopted throughout the \mcbMC{} library.
 \end{itemize}
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Aggregated data: records}
-\index[concept]{record}\label{sec:records}
-
-Sometime one wants to aggregate already available data into a single object.
-For example a point in the 3-dimensional space could be represented with
-three natural numbers.
-
-Such a need is so frequent that \Coq{} provides a specialized command
-to declare this class of data type.
-
-\begin{coq}{}{}
-Record point := Point { x : nat; y : nat; z : nat }.
-\end{coq}
-\index[vernac]{\C{Record}}
-This is mostly equivalent to writing as follows:
-
-\begin{coq}{}{}
-Inductive point := Point (x : nat) (y : nat) (z : nat).
-\end{coq}
-\index[concept]{record}
-
-The main advantage of using \C{Record} is that \Coq{} uses the names of the
-constructor fields to generate functions to access the field's contents.  We
-call these programs \emph{projections}.  I.e. after the \C{Record} declaration
-one can write:
-
-\begin{coq}{}{width=8.5cm,title=Query}
-Eval compute in x (Point 3 0 2).
-Eval compute in y (Point 3 0 2).
-\end{coq}{}{}
-\begin{coqout}{}{width=3.5cm,title=Response}
-= 3 : nat
-= 0 : nat
-\end{coqout}{}{}
-Where the code for the \C{x} projection is, as expected:
-
-\begin{coq}{}{}
-Definition x (p : point) := match p with Point a _ _ => a end.
-\end{coq}
-Inductive data with a single constructor, like records, comes
-equipped with a specific notation for single-branch pattern
-matching:
-
-\begin{coq}{}{}
-Definition x (p : point) := let: Point a _ _ := p in a.
-\end{coq}
-\index[coq]{\C{let: .. := .. in ..}}
-\index[concept]{pattern matching!irrefutable}
-
-Records can also be polymorphic, for example the pair data type of
-Exercise~\ref{ex:pair} can carry two values of any type.
-
-Records play a major role in the \mcbMC{} library, in particular
-in the modelling of algebraic structures.   As we see in later chapters
-records let one pack together types, operations on these types and
-finally the properties of these operations.  For example a record
-will model the signature of a ring.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
