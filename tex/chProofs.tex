@@ -35,17 +35,17 @@ Redirect "g2" Show.
 % We focus here on simple proof commands, conventions and a first taste
 % of boolean reflection. Views and the related tactics are postponed to the
 % next chapter, and so are conjunctions and existential statements.
-The \Coq{} system lets one not only define data types and programs, but
-also prove properties about them.  In this chapter we explain how
-theorems are stated and proved, focusing on simple statements and
-basic proof commands.
 
-Stating a lemma is a very delicate matter.  Even if two formulations for the
-same statements are logically equivalent, one can be much simpler to prove or
-invoke in the proof of another theorem.  The approach we follow in the current
-chapter and that we fully develop in chapter~\ref{ch:boolrefl} is paradigmatic
-in the \mcbMC{} library and roughly consist in favouring the use of computable
-definitions and equational reasoning whenever possible.
+In this chapter, we explain how to use the \Coq{} system to state and
+to prove theorems, focusing on simple statements and basic proof
+commands. In the course of this book, we will see that chosing the
+right way to state a proposition formally can be a rather delicate
+matter. For equivalent wordings of a same propositions, some can be
+much simpler to prove, and some can be more convenient to invoke
+inside the proof of another corollary theorem. This chapter emphasizes
+the use of computable definitions and equational reasoning
+whenever possible, an approach that will be developped fully in
+Chapter~\ref{ch:boolrefl}.
 
 \mcbLEARN{Stating basic theorems involving boolean statements,
   equalities, and arrows. Universal quantification is presented via
@@ -59,31 +59,32 @@ definitions and equational reasoning whenever possible.
 \mcbsection{Formal statements}
 
 
-In this section, we illustrate how to state rather simple (tentative)
-theorems, starting with the simplest, and most pervasive, kind of
-mathematical sentences: identities.
+In this section, we illustrate how to state elementary candidate
+theorems, starting with \emph{identities}.
 
 \subsection{Ground equalities}\label{ssec:groundeq}
 \index[concept]{proposition}
 \index[concept]{equality}
 \index[concept]{ground equality}
 
+\marginnote{We should have somewhere early a paragraph about the prelude.}
 \Coq{} provides a binary predicate named \C{eq} and equipped with the
 infix notation \C{=}. This predicate is used to write sentences
 expressing that two objects are \emph{equal}, like in $2 + 2 = 4$.
 Let us start with examples of \Coq{} \emph{ground} equality
 statements: \emph{ground} means that these statements do not feature
 parameter variables. For instance $2 + 2 = 4$ is a ground
-  statement, but $(a + b)^2 = a^2 + 2ab + b^2$ is not.
+statement, but $(a + b)^2 = a^2 + 2ab + b^2$ has two parameters $a$
+and $b$: it is not ground.
 
-In chapter~\ref{ch:prog}, we have used the \C{Check}
-vernacular command to query the type of a defined object.  We can use
-the very same command to \emph{check} whether a formal statement
+Let us start with calls to the \C{Check} command, which we have used
+in Chapter~\ref{ch:prog} to verify that some expression is well
+formed. This command can be used to check whether a formal statement
 is well formed:
 
 \begin{coq}{name=check-eq}{width=6cm}
 Check 3 = 3.
-Check false || true = true.
+Check false && true = true.
 \end{coq}
 \coqrun{name=r1}{ssr,check-eq}
 \begin{coqout}{run=r1}{width=6cm}
@@ -95,26 +96,27 @@ Let's anatomize the two above examples. Indeed, just like \Coq{}'s
 type system prevents us from applying functions to
 arguments of a wrong nature, it also enforces a certain nature of
 well-formedness at the time we enunciate sentences that are candidate
-theorems. One first important thing to
-keep in mind is that, in \Coq{}, formal statements are themselves
-%\marginnote{Where do we define what are terms and what are types...}
-\emph{terms}. And therefore, statements also have a \emph{type}. An
-equality statement is obtained by applying the constant \C{eq} to two
-arguments, of the same type, which results in a well-formed term of
-type \C{Prop}, for \emph{proposition}.
+theorems. Indeed, formal statement in \Coq{} are themselves
+\emph{terms} and as such they have a \emph{type} and their subterms
+obey type constraints. An
+equality statement in particular is obtained by applying the constant
+\C{eq} to two arguments, \emph{of the same type}. This application
+results in a swell-formed term of type \C{Prop}, for \emph{proposition}.
 
 Throughout this book, we will
 use the word \emph{proposition} for a term of type \C{Prop}, typically
 something one wants to prove.
-Sometimes we say \emph{boolean proposition} to stress that the proposition
-is made by equating two boolean expressions, as in Line 2 above.
+% Sometimes we say \emph{boolean proposition} to stress that the proposition
+% is made by equating two boolean expressions, as in Line 2 above.
 
 The \C{About} vernacular
-command, which lets one obtain information on a constant, like its
-type and the status of its argument, applies just as well to
-propositions and their components. For instance we can learn more
+command provides information on a constant, like its
+type and the status of its argument. It applies just as well to
+propositions and to the components thereof. For instance we can learn more
 about the constant \C{eq}:
 
+\marginnote{I use Locate here because the output of Search is much
+  more verbose.}
 \begin{coq}{name=about}{width=6cm,title=The polymorphic equality predicate}
 Locate "_ = _".
 
@@ -129,30 +131,23 @@ eq : forall A : Type, A -> A -> Prop
 Argument A is implicit ...
 \end{coqout}
 
-We learn here that the constant \C{eq} is a \emph{predicate}, i.e. a
-function letting build a proposition.  Sometimes we say
-\emph{boolean predicate} to indicate a function to \C{bool},
-i.e. a test one can use to form a proposition by equating its
-result to \C{true}, as in section~\ref{sec:bstatements}.
-
-The equality
+The constant \C{eq} is a \emph{predicate}, i.e. a function letting
+build a proposition. The equality
 predicate is polymorphic: exactly as we have seen in the previous
-chapter the\C{ forall} quantifier is used to make the variable \C{A}
-range over types
-  This is why we were able to use the same equality
-constant in both our examples, once for equating two terms of type
-\C{nat} and once for equating two terms of type \C{bool}.
+chapter the \C{forall} quantifier is used to make the (implicit)
+parameter \C{A} range over types. Both examples \C{3 = 3} and \C{false
+&& true = false} thus use the \emph{same} equality constant, but with
+a different value, respectively \C{nat} and \C{bool}, for the type
+parameter. Since the first argument of \C{eq} is implicit, it is not
+part of the infix notation and its value is not
+provided by the user. This value can indeed be guessed from the type of the
+hand-sides of the identity: \C{(3 = 3)} unfolds to \C{(eq _ 3 3)} and
+the missing value is \C{nat}, the type of \C{3}. Similarly,
+\C{(false && true = true)} unfolds to \C{(eq _ (false && true) false)}
+and the missing value is \C{bool}, the common type of \C{true} and
+\C{(false && true)}.
 
-Since its first argument is implicit, its value is not provided by the
-user%\footnote{The system even raises an error if it is provided.}
-but
-rather guessed from the type of the hand-sides of the equality we state: \C{(3
-= 3)} unfolds to \C{(eq _ 3 3)} and the missing value is set to
-\C{nat}, the type of \C{3}. Similarly, \C{(true = false || true)}
-unfolds to \C{(eq _ true (false || true))} and the missing value is found
-to be \C{bool}, the common type of \C{true} and \C{(false || true)}.
-
-As the \Coq{} system checks the well -typedness of statements,
+As the \Coq{} system checks the well-typedness of statements,
 the two hand sides of a well-formed equality should have the same
 type:
 
@@ -177,14 +172,16 @@ Check 3 = 4.
 
 In order to establish that a certain equality holds, the user should
 first announce that she is going to prove a sentence, using a special
-command like \C{Lemma} (or \C{Theorem}, \C{Remark},
-\C{Corollary},\dots which are all synonyms for what matters here).
-The \C{Lemma} keyword is followed by the name chosen for the lemma and
-then by the statement itself. \C{Lemma} (and its siblings) is in fact
+command like \C{Lemma}. This command has several variants \C{Theorem},
+\C{Remark}, \C{Corollary},\dots which are all synonyms for what
+matters here.
+A \C{Lemma} keyword is followed by the name chosen for the lemma and
+then by the statement itself. Command \C{Lemma} and its siblings are in fact
 a variant of the \C{Definition} syntax we used in
 chapter~\ref{ch:prog}: everything we mentioned about it also applies
-here. The \C{Proof} keyword marks the beginning of the proof text and
-after it is executed, the system displays the current state of the
+here. The \C{Proof} command marks the beginning of the proof text,
+which ends either with \C{Qed} and \C{Admitted}. After command
+\C{Proof} is executed, the system displays the current state of the
 formal proof in a dedicated window.
 \index[vernac]{\C{Lemma}}
 \index[vernac]{\C{Theorem}}
@@ -206,10 +203,14 @@ $~$
   ======================
    3 = 3
 \end{coqout}
-Indeed, \Coq{} is now in so-called \emph{proof mode}. The
-current proof state consists in a list of named hypotheses, on top of
-the horizontal bar (empty here), and the statement of the current goal
-(the conjecture to be proved)
+Indeed, \Coq{} is now in so-called \emph{proof mode}: we can execute
+new commands to construct a proof and inspect the current state of a
+proof in progress, but some other commands, like opening sections, are
+no more available. At any stage of the proof construction, \Coq{}
+displays the current state of the (sub)proof currently pending:  a
+list of named hypotheses forms the current contexte and is printed
+on top of the horizontal bar (empty here), and
+the statement of the current goal (the conjecture to be proved) is
 below the bar.
 
 We will explain how to proceed with such a proof in
@@ -220,6 +221,7 @@ command.
 
 \begin{coq}{name=first-lemma-admitted}{}
 Lemma my_first_lemma : 3 = 3.
+Proof.
 Admitted.
 \end{coq}
 
@@ -234,9 +236,9 @@ About my_first_lemma.
 my_first_lemma : 3 = 3
 \end{coqout}
 
-From now on we will omit the \C{Admitted} proof terminator, and simply list the
-statement of the lemmas to discuss their formulation.  Indeed we the rest of
-the present section is dedicated to a tour of more complex formal statements.
+In the rest of the Chapter, we will often omit the \C{Admitted} proof
+terminator, and simply reproduce the statement of some lemmas in
+order to discuss their formulation.
 
 \subsection{Identities}\label{ssec:id}
 \index[concept]{identity}
@@ -255,19 +257,21 @@ Lemma addnA (m n k : nat) : m + (n + k) = m + n + k.
 Note that in the statement of \C{addnA}, the right hand side does not
 feature any parentheses but should be read \C{((m + n) + k)}: this
 associativity has been prescribed at the definition time of the infix
-\C{+} notation. Also
+\C{+} notation, see Section~\ref{sec:notabrev}. Command
 \C{Lemma}, just like \C{Definition}, allows for
-dropping type annotations if these types can be inferred from the
-statement itself:
+dropping the type annotations of parameters if these types can be
+inferred from the statement itself:
 
 \begin{coq}{name=addnA2}{}
 Lemma addnA n m k : m + (n + k) = m + n + k.
 \end{coq}
 
-Boolean identities are an important special class of identities. For
-instance, the~\C{orbT} statement expresses that \C{true} is  right absorbing
-for the boolean disjunction operation \C{orb}. Recall that
-\C{orb} is equipped with the \C{||} infix notation:
+Boolean identities play a central role in the \mbcMC{} library. They
+states equalities between boolean expressions with parameters. For
+instance, the~\C{orbT} statement expresses that \C{true} is right absorbing
+for the boolean disjunction operation \C{orb}. Recall from
+Section~\ref{ssec:boolval} that \C{orb} is equipped with the \C{||}
+infix notation:
 
 \begin{coq}{name=orbT}{}
 Lemma orbT b : b || true = true.
@@ -291,8 +295,11 @@ Their proofs are left as an exercise at the end of this Chapter.
 \subsection{From boolean predicates to formal statements}
 \label{sec:bstatements}
 
+We call \emph{boolean predicate} a function to \C{bool}. A boolean
+predicate is thus a ``test''  and any such test can be used to form a
+proposition by equating its result to \C{true}.
 More generally, boolean identities involve arbitrary boolean
-predicates (not only boolean connectives) and feature variables of
+predicates and boolean connectives. They may also feature variables of
 an arbitrary type (not only of type \C{bool}).
 For instance, we can state
 that for any term \C{n : nat}, the following boolean test holds:

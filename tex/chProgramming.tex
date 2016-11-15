@@ -90,7 +90,8 @@ Note that applying a function to an argument is simply by writing the
 function on left of the argument, with a separating space but {\em not
   necessarily with parentheses around the argument}; we will come back to this
 later in the present Section. As a first approximation, we can see
-that expressions in the syntax of \Coq{} are either variables, or
+that expressions, also called \emph{terms}, in the syntax of \Coq{}
+are either variables, or
 functions of the form \C{fun x => e}, where \C{e} is itself an
 expression, or the application \C{e1 e2} of an expression \C{e1} to
 another expression \C{e2}. However, just like with pen and paper, the addition
@@ -592,7 +593,7 @@ sequences of values are among the most prominent examples.
 \index[concept]{inductive type}
 
 %%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Boolean values}
+\subsection{Boolean values}\label{ssec:boolval}
 
 The collection $\mathbb{B} := \{\top, \bot\}$ of boolean values is
 formalized by a type called \C{bool}, with two inhabitants \C{true}
@@ -1974,7 +1975,7 @@ monoid, we will be able to provide a generic theory of iterated
 operations in section~\ref{sec:bigop}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Notations, abbreviations}
+\section{Notations, abbreviations}\label{sec:notabrev}
 \index[concept]{notation}
 \index[concept]{abbreviation}
 
