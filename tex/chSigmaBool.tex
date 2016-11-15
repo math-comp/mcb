@@ -22,7 +22,7 @@ Require Import tuple.
 \Chapter{Sub-Types}{Terms with properties}\label{ch:sigmabool}
 
 Inductive data types have been used to both code data, like lists, and
-logical connectives, like the existential quantifier.  
+logical connectives, like the existential quantifier.
 Properties were always expressed with
 boolean programs.  The questions addressed in this chapter are the
 following ones.  What
@@ -31,7 +31,7 @@ smaller than 7?  Which relation to put between integers and
 integers smaller than 7?  How to benefit from extra properties
 integers smaller than 7 have, like being a finite collection?
 
-In standard mathematics one would simple say that the integers are an
+In standard mathematics one would simply say that the integers are an
 infinite set (called \C{nat}), and that the integers smaller that 7
 form a finite subset of the integers (called \C{'I_7}).  Integers and
 integers smaller than 7 are interchangeable data: if \C{(n : nat)} and
@@ -46,7 +46,7 @@ The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
 that we have already seen in the previous chapter in their general
 form of records.
 For example, one can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
-< 7$.  Since proofs are terms one can 
+< 7$.  Since proofs are terms one can
 pack together objects and proofs of some properties to
 represent the objects that have those properties.  For example $3$
 when seen as an inhabitant of \C{'I_7} is represented by a dependent
@@ -70,7 +70,7 @@ Finally, let us point out that we have already encountered proof-carrying
 records in the previous chapter, with \C{eqType}.
 The \C{eqType} record played the role of an interface,
 expressing a relation between a type and a function (the comparison operation),
-and giving to access a whole theory of results through type inference.
+and giving access to a whole theory of results through type inference.
 Many such interfaces can be extended to sub-types, and we shall see that
 the \mcbMC{} library provides facilities to automate this.
 
@@ -149,7 +149,7 @@ on terms of type tuple.  Still we didn't take any advantage from
 the fact that  \lstinline/t/ is a tuple.
 
 The second way to prove this theorem is to rely on the rich type
-of \lstinline/t/ to actually compute the length of the underlying 
+of \lstinline/t/ to actually compute the length of the underlying
 sequence.
 
 \begin{coq}{name=p3}{}
@@ -169,14 +169,14 @@ Proof. rewrite size_tuple.
 
 The rewriting replaces the right hand side with \lstinline/n/ as
 expected, but we can't go any further: the lemma does not
-apply (yet) on the left hand side, even if we are working
+apply (yet) to the left hand side, even if we are working
 with a tuple \lstinline/t/.  Why is that?  In the left hand side
 \lstinline/t/ is processed using functions on sequences.
 The type of \lstinline/rev/ for example is
 \lstinline/(forall T, seq T -> seq T)/.  The coercion \lstinline/tval/
 from \lstinline/tuple_of/ to \lstinline/seq/ make the
 expression \lstinline/(rev (tval t))/ well typed, but the output
-is of type \lstinline/(seq nat)/.  
+is of type \lstinline/(seq nat)/.
 We would like the functions on sequences to return
 data as rich as the one taken in input, i.e. preserve the invariant
 expressed by the tuple type.  Or, in alternative, we would like the
@@ -361,7 +361,7 @@ x = y -> tval x = tval y
 
 subgoal 2 is:
   tval x = tval y -> x = y
-$~$  
+$~$
 \end{coqout}
 \begin{coqout}{run=tupcmpP;out=g2}{title=Response after line 5,width=6cm}
 1 subgoal
@@ -442,9 +442,9 @@ in T.
 In addition to the generic projection we get a generic static
 constructor \C{Sub}, which takes a value in T and a proof.
 
-More interestingly the sub-type kit provides the dynamic constructors 
+More interestingly the sub-type kit provides the dynamic constructors
 \C{insub} and \C{insubd} that do not need a proof as they dynamically
-test the property, and offer 
+test the property, and offer
 an attractive encapsulation of the difficult \emph{convoy
 pattern}~\cite[Section 8.4]{CPDT}.
 The \C{insubd} constructor takes a default
@@ -494,7 +494,7 @@ Structure subType : Type := SubType {
 
 Instances can provide unification hints for any of the three named fields,
 not just for \lstinline/sub_sort/. Hence, \lstinline/val $?_u$/
-unifies with \lstinline/tval t/, and \lstinline/Sub $?_x$ $?_{xP}$/ 
+unifies with \lstinline/tval t/, and \lstinline/Sub $?_x$ $?_{xP}$/
 unifies with \lstinline/Tuple s sP/, including in \C{rewrite} patterns.
 
 The \C{subType} constructor notation assumes the sub-type is isomorphic
@@ -503,7 +503,7 @@ generic destructing \C{let}, and the projector-constructor
 identity can be proved by reflexivity.
 
 \begin{coq}{name=subtdecl}{}
-Notation "[ 'subType' 'for' v ]" := (SubType _ v _ 
+Notation "[ 'subType' 'for' v ]" := (SubType _ v _
   (fun K K_S u => let (x, Px) as u return K u := u in K_S x Px)
   (fun x px => erefl x)).
 \end{coq}
@@ -517,7 +517,7 @@ A useful variant of \C{[subType for tval]} is \C{[newType for Sval]}.
 Such specialized constructors forces the predicate defining the
 sub-type to be the trivial one: the sub-type ST adds no property to
 the type T, but the resulting type ST is different from T and
-inhabitants of ST cannot be mistaken by inhabitants of T.  Of course
+inhabitants of ST cannot be mistaken for inhabitants of T.  Of course
 all the theory that equips T is also available on ST.  Aliasing a
 type is useful to attach to it different notations or coercions.
 
@@ -533,7 +533,7 @@ provably equal.
 
 To the rescue comes the result of Hedberg~\cite{Hedberg}
 that proves such property for a wide class of predicates.
-In particular it show that any type with decidable identity
+In particular it shows that any type with decidable identity
 has unique identity proofs. This result can be proved in its full generality
 in the \mcbMC{} library, using to the \C{eqType} interface.
 
@@ -671,7 +671,7 @@ items, and removes the \C{Some} constructor from the others.
 
 What \C{ord\_enum} produces is hence a sequence of ordinals, i.e.
 a sequence of terms like \C{(@Ordinal m p)} where \C{m} is a natural
-number (as produces by \C{iota}) and \C{p} is a proof that \C{(m <=
+number (as produced by \C{iota}) and \C{p} is a proof that \C{(m <=
 n)}.  What we are left to show is that such enumeration is complete
 and non redundant.
 
@@ -774,8 +774,8 @@ Notation "{ 'ffun' fT }" := (finfun fT).
 
 The actual definition in the \mcbMC{} library is slightly more complex
 to statically check that the domain is finite using the tricks
-explained in~\ref{sec:phantom}.  I.e. \Coq{} rejects \C{\{ffun nat -> nat\}}
-but accepts \C{\{ffun 'I_7 -> nat\}}.
+explained in Section~\ref{sec:phantom}.  I.e. \Coq{} rejects
+\C{\{ffun nat -> nat\}} but accepts \C{\{ffun 'I_7 -> nat\}}.
 
 Other utilities let one apply a finite function as a regular function
 or build a finite function from a regular function.
@@ -815,7 +815,7 @@ Lemma enumP T n : Finite.axiom (tuple_enum T n).
 
 Definition tuple_finMixin := Eval hnf in FinMixin (@FinTuple.enumP n T).
 Canonical tuple_finType:= Eval hnf in FinType (n.-tuple T) tuple_finMixin.
- 
+
 Definition finfun_finMixin (aT rT : finType) :=
   [finMixin of (finfun aT rT) by <:].
 Canonical finfun_finType  aT rT :=
@@ -823,13 +823,13 @@ Canonical finfun_finType  aT rT :=
 \end{coq}
 
 A relevant property of the \C{finType} of finite functions is its
-cardinality, begin equal to \C{#|rT| ^ #|aT|}.
+cardinality, being equal to \C{#|rT| ^ #|aT|}.
 
 \begin{coq}{}{}
 Lemma card_ffun (aT rT : finType) : #| {ffun aT -> rT} | = #|rT| ^ #|aT|.
 \end{coq}
 
-Also, as expected, finite function validate extensionality.
+Also, as expected, finite functions validate extensionality.
 
 \begin{coq}{}{}
 Definition eqfun (f g : B -> A) : Prop := forall x, f x = g x.
@@ -848,8 +848,8 @@ Lemma bigA_distr_bigA (I J : finType) F :
     = \big[+%M/0]_(f : {ffun I -> J}) \big[*%M/1]_i F i (f i).
 \end{coq}
 
-Such lemma, rephrased in mathematical notation down below, 
-states that the indexes \C{i} and \C{j} are independently chosen.
+Such lemma, rephrased in mathematical notation down below,
+states that the indices \C{i} and \C{j} are independently chosen.
 
 $$
 \prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
@@ -867,7 +867,7 @@ provide its enumeration as the range of the summation.
 \mcbsection{Finite sets}
 
 We have seen how sub-types let one easily define a new type by, typically,
-enriches an existing one with some properties.  While this is very
+enriching an existing one with some properties.  While this is very
 convenient for defining new types, it does not work well when the
 subject of study are sets and subsets of the type's inhabitants.
 In such case, it is rather inconvenient to define a new type for
@@ -903,7 +903,7 @@ Notation "{ 'set' T }" := (set_type T).
 
 We omit again the trick to statically enforce that \C{T} is
 a finite type whenever we write \C{\{set T\}}, exactly as we did for
-finite functions.  Finite sets do validate extensionality and 
+finite functions.  Finite sets do validate extensionality and
 are equipped with subset-wise and point-wise operations:
 
 \begin{coq}{}{}
@@ -973,7 +973,7 @@ Definition perm_finMixin := [finMixin of perm_type by <:].
 Canonical perm_finType := Eval hnf in FinType perm_type perm_finMixin.
 \end{coq}
 
-A special class of permutations that comes handy to express the
+A special class of permutations that comes in handy to express the
 calculation of a matrix determinant is the permutation of
 \C{'I_n}.
 
@@ -999,7 +999,7 @@ Lemma card_perm A : #|perm_on A| = #|A| `!.
 \mcbsection{Matrix}
 \label{sec:matrix}
 
-We finally have all the bricks to define the the type of matrices
+We finally have all the bricks to define the type of matrices
 and provide compact formulations for their most common operations.
 
 \begin{coq}{}{}
@@ -1010,8 +1010,8 @@ Notation "''M_' ( m , n )" := (matrix _ m n).
 Notation "''M[' R ]_ n" := (matrix R n n).
 \end{coq}
 
-As for permutations and finite function we declare a coercion
-to let one denote \C{(A i j)} the coefficient in column j of 
+As for permutations and finite functions we declare a coercion
+to let one denote \C{(A i j)} the coefficient in column j of
 row i.  Note that type inference will play an important role
 here.  If \C{A} has type \C{'M[R]_(m,n)}, then \Coq{}
 will infer that \C{(i : 'I_m)} and \C{(j : 'I_n)} from
@@ -1087,13 +1087,13 @@ statically rejects multiplication of matrices which sizes don't match.
 This has to be compared with what was done for integer division, that
 was made total by returning a default value, namely \C{0}, outside
 its domain.  In the case of matrix a size annotation is enough to make
-the operation total, while for division a prof would be necessary.
+the operation total, while for division a proof would be necessary.
 Working with rich types is not always easy, for example the type
 checker does not understand automatically that a square matrix of
 size \C{(m + n)} can be multiplied with a matrix of size \C{(n + m)}.
 In such case the user has to introduce explicit size casts,
-see~\ref{sec:castmx}.  At the same time type inference lets one omit
-size information most of the times, playing once again the role of a
+see Section~\ref{sec:castmx}.  At the same time type inference lets one omit
+size information most of the time, playing once again the role of a
 trained reader.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1133,8 +1133,8 @@ It is worth noticing that the equation we used to expand the left hand
 side and the one we need to expand the right hand side are very
 similar.  Actually the sub proof following \C{have}
 can be generalized to any pair of matrices \C{A} and \C{B}.  The
-\mcbSSR{} proof language provides the \C{gen} modifier tell \C{have}
-to abstract the given formula over list of context entries, here \C{m
+\mcbSSR{} proof language provides the \C{gen} modifier in order to tell \C{have}
+to abstract the given formula over a list of context entries, here \C{m
 n A B}.
 
 \begin{coq}{}{}
@@ -1196,7 +1196,7 @@ Definition lsubmx (A : 'M_(m, n1 + n2)) : 'M_(m, n1)
 Definition usubmx (A : 'M_(m1 + m2, n)) : 'M_(m1, n)
 Definition ulsubmx (A : 'M_(m1 + m2, n1 + n2)) : 'M_(m1, n1)
 \end{coq}
-Conversely blocs can be glued together.  This time it is the
+Conversely blocks can be glued together.  This time it is the
 size of the resulting matrix that shows a trace of the way
 it was built.
 \index[coq]{\C{lsubmx}}
@@ -1223,7 +1223,7 @@ and a square block of size $n-1$.
 \mcbLEVEL{2}
 \mcbsubsection{Size casts}\label{sec:castmx}
 
-Types containing values are a doubly sharp weapon.  While we have seen that
+Types containing values are a double edged sword.  While we have seen that
 they make the writing of matrix expressions extremely succinct, in
 some cases
 they require extra care.  In particular the equality predicate accepts
@@ -1238,9 +1238,9 @@ Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
   row_mx A1 (row_mx A2 A3) = row_mx (row_mx A1 A2) A3.
 \end{coq}
 
-Indeed the left hand size has type \C{'M_(m, n1 + (n2 + n3))} while
-the right hand size has type \C{'M_(m, (n1 + n2) + n3)}.  The
-\C{castmx} operator, and all its companion lemmas, lets one deal with
+Indeed the left hand side has type \C{'M_(m, n1 + (n2 + n3))} while
+the right hand side has type \C{'M_(m, (n1 + n2) + n3)}.  The
+\C{castmx} operator, and all its companion lemmas, let one deal with
 this inconvenience.
 
 \begin{coq}{}{}
@@ -1266,11 +1266,11 @@ Remark that \C{erefl_mn} must have type \C{((m = m) * (n = n))}, i.e.
 it is a useless cast.
 
 Another useful tool is \C{conform_mx} that takes a default matrix of
-the right dimension and second one that is returned only if its
+the right dimension and a second one that is returned only if its
 dimensions match.
 
 \begin{coq}{}{}
-Definition conform_mx (B : 'M_(m1, n1) (A : 'M_(m, n) :=
+Definition conform_mx (B : 'M_(m1, n1)) (A : 'M_(m, n)) :=
   match m =P m1, n =P n1 with
   | ReflectT eq_m, ReflectT eq_n => castmx (eq_m, eq_n) A
   | _, _ => B
@@ -1290,7 +1290,7 @@ Lemma conform_mx_id (B A : 'M_(m, n)) : conform_mx B A = A.
 Lemma nonconform_mx (B : 'M_(m1, n1)) (A : 'M_(m, n)) :
   (m != m1) || (n != n1) -> conform_mx B A = B.
 
-Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3)) 
+Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
   (B : 'M_(m1, n1)) (A : 'M_(m2, n2)) :
     conform_mx B (castmx e_mn A) = conform_mx B A.
 \end{coq}
@@ -1309,10 +1309,9 @@ Recall that \C{reflect} is typically used to state properties about
 decidable predicates. It is quite frequent to reason on such
 class of predicates by excluded middle in \emph{both} proofs and programs.
 As soon as one needs proofs to cast terms, the proof evidence carried by
-the reflection lemma becomes doubly useful.  Placing the declaration of 
-\C{reflect} in \C{Type} is enough to make such proof 
+the reflection lemma becomes doubly useful.  Placing the declaration of
+\C{reflect} in \C{Type} is enough to make such proof
 accessible within programs.
 
 However the precise difference between \C{Prop} and \C{Type} in the
 \mcbCIC{} is off topic for this text, so we will not detail further.
-

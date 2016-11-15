@@ -225,7 +225,7 @@ be considered as implicit by surrounding it with curly braces.
 The declaration of implicit arguments can be locally disabled by
 prefixing the name of the constant with the \lstinline/@/ symbol.
 
-Another piece of information that if often left implicit is
+Another piece of information that is often left implicit is
 the type of abstracted or quantified variables.
 
 \begin{coq}{name=infarg}{title=Omitting type annotations,width=7cm}
@@ -335,7 +335,7 @@ In computes science a record is a very common data structure.  It is a
 compound data type, a container with named fields.  Records are
 represented faithfully in the \mcbCIC{} as
 inductive data types with just one constructor,
-recall section~\ref{sec:records}.
+recall Section~\ref{sec:records}.
 The peculiarity of the records we are going to use is that they are
 \emph{dependently typed}: the type of each field is allowed to depend on
 the values of the fields that precedes it.
@@ -528,7 +528,7 @@ step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
 \lstinline/(sort $\mcbimplm{e}$)/ versus \lstinline/nat/.
 This problem falls in one of the problematic classes we presented in
-section~\ref{sec:hounif}: the system has to synthesize a comparison
+Section~\ref{sec:hounif}: the system has to synthesize a comparison
 function (or better a record instance containing a comparison
 function).
 
@@ -592,7 +592,7 @@ corresponding to the \lstinline/eq_op/ projection play no role
 and in the \mcbMC{} library. The name of such projections is
 usually omitted to signal that fact.
 
-What makes this this approach interesting for a large library is that
+What makes this approach interesting for a large library is that
 record types can play the role of interfaces.  Once a record type has
 been defined and some functionality associated to it, like a notation,
 one can easily hook a new concept up by defining a corresponding
@@ -627,7 +627,7 @@ section.
 \mcbsection{Records as first class relations}\label{sec:receqtype}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-So far we have used the \lstinline/==/ symbol terms whose type is
+So far we have used the \lstinline/==/ symbol for terms whose type is
 atomic, like \lstinline/nat/ or \lstinline/bool/.  If we try for
 example to use it on terms whose type was built using a type
 constructor like the one of pairs we encounter an error.
@@ -744,7 +744,7 @@ The term synthesized by \Coq{} is the following one:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 When we define an overloaded notation we convey
-trough it more than just the arity (or the type) of the associated
+through it more than just the arity (or the type) of the associated
 operation.  We associate to it a property, or a collection thereof.
 For example, in the context of group theory, the infix \C{+} symbol
 is typically preferred to \C{*} whenever the group law is
@@ -787,7 +787,7 @@ The \C{Equality} module enclosing the record acts as name space:
 made local to the \C{Equality} name space becoming, respectively,
 \C{Equality.type}, \C{Equality.sort}, \C{Equality.op} and \C{Equality.axiom}.
 
-As in section~\ref{sec:eqtype}, the record plays the role of
+As in Section~\ref{sec:eqtype}, the record plays the role of
 a relation and its \C{sort} component is again the only field
 that drives canonical structure inference. Following
 a terminology typical of object oriented programming languages,
@@ -886,7 +886,7 @@ Proof. by case: T => ty [op prop]; exact: prop. Qed.
 \end{coq}
 
 The proof is just unpacking the input \lstinline/T/.
-We can use it on an concrete example of \C{eqType} like \C{nat}
+We can use it on a concrete example of \C{eqType} like \C{nat}
 
 \begin{coq}{name=test}{}
 Lemma test (x y : nat) : x == y -> x + y == y + y.
@@ -970,7 +970,7 @@ Proof. by case: ifP => // /eqP  ->. Qed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Now that the \lstinline/eqType/ interface equips a type with a well
-specified comparison function we can use it build abstract theories,
+specified comparison function we can use it to build abstract theories,
 for example the one of sequences.
 
 It is worth to remark that the concept of interface is crucial to
@@ -978,7 +978,7 @@ the development of such theory.  If we try to develop the theory
 of the type \C{(seq T)} for an arbitrary \C{T}, we can't go much far.
 For example we can express what belonging to a sequence means, but
 not write a program that tests if a value is indeed in the list.  As a
-consequence we lose the form automation provided by computation
+consequence we lose the former automation provided by computation
 and it also becomes harder to reason by cases on the membership predicate.
 On the contrary when we quantify a theory on the type  \C{(seq T)} for a
 \C{T} that is an \C{eqType}, we recover all that.  In other words
@@ -1105,7 +1105,7 @@ to programmable type inference.
 The objective of the \emph{bigop} library is to provide compact notations
 for definite iterated operations and a library of general results about them.
 
-Lets take two examples of iterated operations:
+Let us take two examples of iterated operations:
 
 $$
 \sum_{i=1}^n f(i) = f(1) + f(2) + \ldots + f(n)
@@ -1114,7 +1114,7 @@ $$
 
 To share an infrastructure for this class of operators we have to
 identify a common pattern.  First the big symbol in front specifies the
-operation begin iterated and the neutral element for such operator.
+operation being iterated and the neutral element for such operator.
 For example if $A$ is empty, then the union of all $g(a)$ is $\emptyset$
 while if $n=0$ then the sum of all $f(i)$ is $0$.
 Then the range is an expression identifying a finite set of elements,
@@ -1122,13 +1122,13 @@ some times expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
 items being combined by the iterated operation.
 
-As already mentioned in section~\ref{sec:bigopnat},
+As already mentioned in Section~\ref{sec:bigopnat},
 the functional programming language
 provided by \Coq{} can express in a very natural way iterations over
 a finite domain.  In particular such finite domain can be represented
 as a list; the general term $f(i)$ by a function \C{(fun i =>
 ...)}; the operation of evaluating a function on all the
-elements of list and combining the results by the \C{foldr} iterator.
+elements of a list and combining the results by the \C{foldr} iterator.
 
 Functional programming can also be used to describe the finite domain.
 For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$
@@ -1162,7 +1162,7 @@ $$
 $$
 
 Last, not all filtering conditions can be naturally expressed in the
-general term. En example is not being a prime number.
+general term. An example is not being a prime number.
 
 At the light of that our formal statement concerning the sum
 of odd numbers is the following:
@@ -1221,7 +1221,7 @@ Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
 Here \C{op} is the iterated operation, \C{idx} the neutral element,
 \C{r} the range, \C{P} the filter (hence the boolean scope)
 and \C{F} the general term.  Using such notation the running example
-can be states as follows.
+can be stated as follows.
 
 \begin{coq}{name=bigop21}{}
 Lemma sum_odd n : \big[addn/0]_(i <- index_iota 0 n.*2 | odd i) i = n^2.
@@ -1366,7 +1366,7 @@ rewrite big_nat_recr //=.
 
 This is the reason why we can say that the bigop library is generic:
 it works uniformly on any iterated operator, and provided the operator
-has certain properties it give uniform access to a palette of lemmas.
+has certain properties it gives uniform access to a palette of lemmas.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Assumptions of a bigop lemma}\label{sec:bigoplemmas}
@@ -1484,7 +1484,7 @@ by hand.
 \mcbsubsection{Searching the bigop library}
 
 Searching the bigop library for a lemma is slightly harder than
-searching the other libraries as explained in section~\ref{sec:search}.
+searching the other libraries as explained in Section~\ref{sec:search}.
 In particular one can hardly search with patterns.  For example
 the following search returns no results:
 
@@ -1618,7 +1618,7 @@ While the two terms are logically equivalent (i.e. the logic cannot
 distinguish them) the pretty printer can.  Indeed the overloaded
 \C{==} notation is attached to the \C{eq\_op} constant, and if such
 constant fades away the notation follows it.  \Coq{} lets one declare
-constants that should not be automatically simplifies away, unless
+constants that should not be automatically simplified away, unless
 they
 occur in a context that demands it.
 
@@ -1696,9 +1696,9 @@ First of all, canonical structure resolution kicks in during
 unification that in turn is used to compare types.  Types are
 compared whenever a function is applied to an argument, and in
 particular the type expected by the function and the one of the
-argument are unified.  What we need to craft is is a mechanism that
+argument are unified.  What we need to craft is a mechanism that
 takes any input term (proper terms like \C{addn} but also types as \C{nat})
-an puts it into a type.  We will then wire things up so that such
+and puts it into a type.  We will then wire things up so that such
 type is unified with another one containing the application of
 a projection to an unknown canonical structure instance.
 
@@ -1713,7 +1713,7 @@ in \C{(Phantom (nat -> nat -> nat) addn)} we obtain a term
 of type \C{(phantom (nat -> nat -> nat) addn)}.  In both cases the
 input term (\C{nat} and \C{addn} respectively) is now part of a type.
 
-The following example defined a notation \C{\{set T\}} that
+The following example defines a notation \C{\{set T\}} that
 fails if \C{T} is not an \C{eqType}: it is an alias of the type
 \C{(seq T)} that imposes extra requirements on the type argument.
 
