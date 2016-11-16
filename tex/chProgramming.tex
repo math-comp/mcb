@@ -1525,16 +1525,44 @@ See also the sub-type kit presented in chapter~\ref{ch:sigmabool},
 which makes use of the option type to describe a partial injection.
 \marginnote{assia: mention also odflt, omap and friends, in exercise?}
 
+Another typical polymorphic data type is the one of pairs, that
+lets one put together any two values:
+\index[coq]{\C{(_ * _)} (triple)}
+\index[coq]{\C{(_ , _)}}
 
-\marginnote{assia: it is a very difficult exercise, isnt'it?}
-Another widespread polymorphic data type is the one of pairs, that
-lets one put together any two values.  While we leave its definition
-as an exercise (see~\ref{ex:pair}) we briefly discuss the associated
-notations: \C{(a,b)} builds the pair of \C{a} and \C{b} while \C{c.1}
-projects the first component of the pair \C{c}.  The type of pairs is
+\begin{coq}{}{}
+Inductive |*pair*| (A B : Type) : Type := mk_pair (a : A) (b : B).
+Notation "( a , b )" := (mk_pair a b).
+Notation "A * B" := (pair A B).
+\end{coq}
+
+The type \C{pair} has two polymorphic parameters, \C{A} and
+\C{B}, so
+that it can be used to form any instance of pairs: \C{(pair nat bool)}
+is the type of pairs with an element of type \C{nat} in its first
+component and of type \C{bool} in its second, but we can also form
+\C{(pair bool nat)}, \C{(pair bool bool)}, etc. he type \C{pair} is
 denoted by an infix \C{*} symbol: \C{(nat * bool)} is the type of
-pairs that have a natural number as the first component and a boolean
-value as the second one.
+pairs that have a natural number as their first component and a boolean
+value as the second one. This type inductive type has
+a \emph{single constructor} \C{mk_pair}. It inherits from the two
+polymorphic parameters, that become its two first, implicit arguments.
+The constructor \C{mk_pair} has two more explicit arguments which are
+the data stored in the pair. This constructor is associated with
+a notation so that \C{(a,b)} builds the pair of \C{a} and \C{b}, and
+\C{(a, b)} has type \C{(@pair A B)} . T For a given pair, we can
+extract its first element, and we can provide a polymorphic definition
+of this projection:
+
+\begin{coq}{}{}
+Definition |*fst*| A B (p : pair A B) :=
+  match p with mk_pair x _ => p in x end.
+\end{coq}
+
+We leave as an exercise the definition of the projection on the second
+component of a pair. The \mcbMC{} library has a notation for these
+projections: \C{c.1} is the first component of the pair \C{c}
+and \C{c.2} is its second.
 
 \begin{coq}{}{width=6cm}
 Check (3, false).
@@ -1544,11 +1572,20 @@ Eval compute in (true, false).1.
 (3, false) : nat * bool
 true : bool
 \end{coqout}
-As one expects pairs can be nested, as in \C{(3,true,4)}, that is sugar
-for \C{((3,true),4)}.  In such situation the value \C{true} can be
-accessed by writing \C{(3,true,4).1.2}.
+As one expects pairs can be nested. \Coq{} has a slightly more complex
+notation for pairs, which makes possible to write \C{(3,true,4)} for
+\C{((3,true),4)}. In this example, the value \C{true} is the third
+component of this tuple, or more precisely the second component of its
+first one: it can thus be obtained as \C{(3,true,4).1.2}. This may be
+a drawback, consequence of representing tuples as nested pairs. If
+tuples of a certain fixed length are pervasive to a development, one
+may consider defining another specific container type for this
+purpose. See for instance Exercise~\ref{ex:triple} for the definition
+of triples.
 
-Given the notation for pairs, the expression \C{(a * b)} is now ``ambiguous'',
+We conclude this example with a remark on notations. After declaring
+such a the notation for the type of pairs, the expression \C{(a * b)}
+becomes ``ambiguous'',
 in the sense that the same infix \C{*} symbol can be used to multiply two
 natural numbers as in \C{(1 * 2)} but also to write the type of pairs \C{(nat *
 bool)}.  Such ambiguity is somewhat justified by the fact that the pair
@@ -1564,28 +1601,37 @@ constructor. The \C{\%N} and \C{\%type} labels are said to be
 \subsection{Aggregating data in record types}
 \index[concept]{record}\label{sec:records}
 
-Sometime one wants to aggregate already available data into a single object.
-For example a point in the 3-dimensional space could be represented with
-three natural numbers.
+Inductive types with a single constructor, like the type \C{pair} in
+Section~\ref{sec:othercontainers} or the type \C{triple} of
+Exercise~\ref{ex:triple} provide a general pattern to define a type
+which aggregates existing objects into a single packaged one. This
+need is so frequent that \Coq{} provides a specialized command
+to declare this class of data type, called \C{Record}.
 
-Such a need is so frequent that \Coq{} provides a specialized command
-to declare this class of data type.
+For example here is an instance of a type representing triples of
+natural numbers, which can be used to represent a grid point in a
+3-dimensional cone:
 
 \begin{coq}{}{}
-Record point := Point { x : nat; y : nat; z : nat }.
+Record |*point*| : Type := Point { x : nat; y : nat; z : nat }.
 \end{coq}
 \index[vernac]{\C{Record}}
-This is mostly equivalent to writing as follows:
+This line of code defines an inductive type \C{point}, with no
+parameter and with a single constructor \C{Point}, which has three
+arguments each of type \C{nat}. Otherwise said, this type is:
 
 \begin{coq}{}{}
-Inductive point := Point (x : nat) (y : nat) (z : nat).
+Inductive |*point*| : Type := Point (x : nat) (y : nat) (z : nat).
 \end{coq}
 \index[concept]{record}
 
-The main advantage of using \C{Record} is that \Coq{} uses the names of the
-constructor fields to generate functions to access the field's contents.  We
-call these programs \emph{projections}.  I.e. after the \C{Record} declaration
-one can write:
+Using the \C{Record} version of this definition instead of its
+equivalent \C{Inductive} allows to declare names for the projections
+at the time of the definition. In our example, the record \C{point}
+defines three projections, named \C{x}, \C{y} and \C{z}
+respectively. In the case when the come from a record definition,
+these projections are also called \emph{fields} of the record.
+One can thus write:
 
 \begin{coq}{}{width=8.5cm,title=Query}
 Eval compute in x (Point 3 0 2).
@@ -1595,29 +1641,29 @@ Eval compute in y (Point 3 0 2).
 = 3 : nat
 = 0 : nat
 \end{coqout}{}{}
-Where the code for the \C{x} projection is, as expected:
+As expected, the code for the \C{x} projection is:
 
 \begin{coq}{}{}
-Definition x (p : point) := match p with Point a _ _ => a end.
+Definition |*x*| (p : point) := match p with Point a _ _ => a end.
 \end{coq}
-Inductive data with a single constructor, like records, comes
-equipped with a specific notation for single-branch pattern
-matching:
+
+When an inductive type has a single constructor, like in the case of
+\C{pair} or for records, the name of this constructor is not relevant
+in pattern matching, as the ``case analysis'' has a single
+branch. There is hence a specific syntax for this artificial case
+analysis on an irrefutable pattern. The above definition of projection
+\C{x} can alternatively be written:
 
 \begin{coq}{}{}
-Definition x (p : point) := let: Point a _ _ := p in a.
+Definition |*x*| (p : point) := let: Point a _ _ := p in a.
 \end{coq}
 \index[coq]{\C{let: .. := .. in ..}}
 \index[concept]{pattern matching!irrefutable}
 
-Records can also be polymorphic, for example the pair data type of
-Exercise~\ref{ex:pair} can carry two values of any type.
-
-Records play a major role in the \mcbMC{} library, in particular
-in the modelling of algebraic structures.   As we see in later chapters
-records let one pack together types, operations on these types and
-finally the properties of these operations.  For example a record
-will model the signature of a ring.
+Record types are as expressive as inductive types with one
+constructors: they can be polymorphic, package datas with
+specifications, etc. In particular, they will be central to the
+formalization techniques presented in Part~\ref{part:form}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2100,24 +2146,28 @@ or adopted throughout the \mcbMC{} library.
 Define a function that takes as input three natural numbers and returns
 the sum of their squares.
 \end{Exercise}
-\begin{Exercise}[label=ex:pair,difficulty=0,title={The pair data type}]
-Define the pair data type such that the following notation
+\begin{Exercise}[label=ex:triple,difficulty=0,title={The pair data type}]
+Define the triple data type such that the following notation
 applies.  Also define the projections.
 
 \begin{coq}{}{width=7cm}
-Notation "( A , B )" := (pair A B).
+Notation "( A , B, C)" := (triple A B C).
 Notation "p .1" := (fst p).
 Notation "p .2" := (snd p).
-Eval compute in (4, 5).1.
-Eval compute in (true, false).2.
+Notation "p .3" := (thrd p).
+Eval compute in (4, 5, 8).1.
+Eval compute in (true, false, 1).2.
+Eval compute in (2, true, false).3.
 \end{coq}
 \begin{coqout}{}{width=5cm}
 $~$
      = 4 : nat
      = true : bool
+     = false : bool
 \end{coqout}
-Remark that the pair data type has to be polymorphic in order to
-be applicable to both natural numbers and booleans.
+Remark that the triple data type has to be polymorphic in order to
+be applicable to each of these combinations of natural numbers and
+booleans.
 \end{Exercise}
 
 %%%%%%%%
@@ -2217,14 +2267,13 @@ Definition sum3squares x y z := x ^ 2 + y ^ 2 + z ^ 2.
 \begin{Answer}[ref=ex:pair]
 
 \begin{coq}{}{}
-Inductive prod (A B : Type) := pair (a : A) (b : B).
-Notation "A * B" := (prod A B) : type_scope.
-Notation "( A , B )" := (pair A B).
-Definition fst A B (p : A * B) := let: (a, _) := p in a.
-Definition snd A B (p : A * B) := let: (_, b) := p in b.
+Inductive triple (A B C: Type) := mk_triple (a : A) (b : B) (c : C).
+Notation "A * B * C" := (triple A B C) : type_scope.
+Notation "( A , B , C )" := (mk_triple A B C).
+Definition fst A B C (p : A * B * C) := let: (a, _, _) := p in a.
+Definition snd A B C (p : A * B * C) := let: (_, b, _) := p in b.
+Definition thrd A B C (p : A * B * C) := let: (_, _, c) := p in c.
 \end{coq}
-\index[coq]{\C{(_ * _)} (pairs)}
-\index[coq]{\C{(_ , _)}}
 
 \end{Answer}
 
