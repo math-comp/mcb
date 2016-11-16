@@ -300,7 +300,9 @@ The two first occurrences of \C{nat} in the response
  function}.  This idea that multiple argument functions can be
 represented using single argument functions (rather for instance than
 tuples of arguments) is called {\em currying} and will play a special
-role in Chapter~\ref{ch:ttch}.
+role in Chapter~\ref{ch:ttch}. For now, let us just insist on the fact
+that in \Coq{}, functions with several arguments are not represented
+with a tuple of arguments.
 \index[concept]{currying of functions}
 
 
@@ -386,6 +388,7 @@ Finally, \C{(f2 2 3)} is in turn the application of the latter function to
 \end{coq}
 by substituting the bound variable \C{m} in \C{fun m => 2 + m * 2} by
 the value \C{3}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

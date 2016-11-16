@@ -38,13 +38,13 @@ Redirect "g2" Show.
 
 In this chapter, we explain how to use the \Coq{} system to state and
 to prove theorems, focusing on simple statements and basic proof
-commands. In the course of this book, we will see that chosing the
+commands. In the course of this book, we will see that choosing the
 right way to state a proposition formally can be a rather delicate
 matter. For equivalent wordings of a same propositions, some can be
 much simpler to prove, and some can be more convenient to invoke
 inside the proof of another corollary theorem. This chapter emphasizes
 the use of computable definitions and equational reasoning
-whenever possible, an approach that will be developped fully in
+whenever possible, an approach that will be developed fully in
 Chapter~\ref{ch:boolrefl}.
 
 \mcbLEARN{Stating basic theorems involving boolean statements,
@@ -208,7 +208,7 @@ new commands to construct a proof and inspect the current state of a
 proof in progress, but some other commands, like opening sections, are
 no more available. At any stage of the proof construction, \Coq{}
 displays the current state of the (sub)proof currently pending:  a
-list of named hypotheses forms the current contexte and is printed
+list of named hypotheses forms the current context and is printed
 on top of the horizontal bar (empty here), and
 the statement of the current goal (the conjecture to be proved) is
 below the bar.
@@ -280,7 +280,7 @@ Lemma orbT b : b || true = true.
 More precisely, lemma \C{orbT}
 expresses that the truth table of the boolean formula \C{(b || true)}
 coincides with the (constant) one of \C{true}: otherwise said that the
-two propositional formulae are equivalent, or that \C{(b || true)} is a
+two propositional formulas are equivalent, or that \C{(b || true)} is a
 propositional tautology. We provide below some other examples of such
 propositional equivalences stated as boolean identities.
 
@@ -289,49 +289,59 @@ Lemma orbA b1 b2 b4 : b1 || (b2 || b3) = b1 || b2 || b3.
 Lemma implybE a b : (a ==> b) = ~~ a || b.
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 \end{coq}
-Their proofs are left as an exercise at the end of this Chapter.
+Proving these identities is left as an exercise (see
+Exercise~\ref{ex:boolid}).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{From boolean predicates to formal statements}
 \label{sec:bstatements}
 
 We call \emph{boolean predicate} a function to \C{bool}. A boolean
-predicate is thus a ``test''  and any such test can be used to form a
-proposition by equating its result to \C{true}.
-More generally, boolean identities involve arbitrary boolean
-predicates and boolean connectives. They may also feature variables of
-an arbitrary type (not only of type \C{bool}).
-For instance, we can state
-that for any term \C{n : nat}, the following boolean test holds:
+predicate can indeed be seen as an effective truth table, which can be
+used to form a proposition in a systematic way by equating its result
+to \C{true}. More generally boolean identities are equality statements
+in type \C{bool}, which may involve arbitrary boolean predicates and boolean
+connectives. They can obviously also feature variables of an arbitrary
+type, and not only of type \C{bool}.
+
+For instance the boolean comparison function
+\C{(leq : nat -> nat -> bool)} is a boolean binary predicate on
+natural numbers. Lemma \C{leq0n} is a proposition asserting that a
+certain comparison always holds, by stating that the truth value of
+the boolean \C{(0 <= n)} is \C{true}, whatever term  of type \C{nat}
+is substituted for the parameter \C{n}.
 
 \begin{coq}{name=leq0n}{title=Stating that a boolean predicate holds}
 Lemma leq0n (n : nat) : 0 <= n = true.
 \end{coq}
-We are expressing here that the statement $0 \leq n$ holds, because
-the truth value of the boolean \C{(0 <= n)} is \C{true}, whatever
-term  of type \C{nat} is substituted for the parameter \C{n} in the
-statement. In section~\ref{ssec:case}, we will see how to build a
-formal proof of such a statement.
 
-Given how frequently we state that a boolean predicate is
-equal to true, we are going to omit the ``\C{.. = true}''
-part of the statements.  Indeed \Coq{} is able to insert such
-piece of ``text'' automatically, whenever it fits.
-The \Coq{} mechanism for doing that is out of scope here, it
-will be explained in section~\ref{sec:coercions}.
+The \mcbMC{} library makes an extensive use of boolean predicates, and
+of the associated propositions. For the sake of readability, the
+default behavior of the  \mcbMC{} library is to omit the ``\C{.. = true}''
+part in these boolean identities. \Coq{} is actually able to insert
+automatically and silently this missing piece whenever it fits and
+it is non-ambiguous, thanks to its \emph{coercion} mechanism. We
+postpone further explanation of this mechanism to
+Section~\ref{sec:coercions} but from now on, we stop displaying the
+\C{..= true} parts of the statement that are silently inserted this
+way. For instance lemma \C{leq0n} is displayed as:
 
 \begin{coq}{name=coercion}{}
 Lemma leq0n (n : nat) : 0 <= n.
 \end{coq}
 
-We can express that two boolean statements are equivalent using
-identities, generalizing the examples of propositional tautologies we
-gave in section~\ref{ssec:id}. Here is a few examples, built with the
-boolean predicate on natural numbers that we crafted in
-chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
+As a general fact, boolean identities express that two boolean
+statements are equivalent. We already encountered special cases of
+such equivalence with propositional tautologies in
+Section~\ref{ssec:id}. Here are a few more examples involving
+boolean predicates on natural numbers, that we have defined in
+Chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
 divisibility predicate \L+%|+.
-We can omit the type of the parameters: they are all of type \C{nat}.
+Note that we omit the type of the parameters: they are all of type
+\C{nat}, as enforced by the type of the operators involved in the
+statements:
 
 \begin{coq}{name=equivalences}{}
 Lemma eqn_leq m n : (m == n) = (m <= n) && (n <= m).
@@ -348,7 +358,7 @@ In the previous sections, we have seen statements of unconditional
 identities, either equalities between ground terms or identities which
 hold for \emph{any} value of their parameters. A property which holds
 only when some condition is verified by its parameters is stated using an
-  \emph{implication}.  The \Coq{} syntax for such connective
+  \emph{implication} and the \Coq{} syntax for this connective
   is ``\C{->}''.  For instance:
 
 \begin{coq}{name=implication}{title=Implication}
@@ -356,20 +366,41 @@ Lemma leq_pmull m n : n > 0 -> m <= n * m.
 Lemma odd_gt0 n : odd n -> n > 0.
 \end{coq}
 
-The attentive reader might have noticed that this arrow \C{->} is the
+This arrow \C{->} is the
 same as the one we have used in chapter~\ref{ch:prog} in order to
-represent function types. This is no accident, but we will explain
-this phenomenon later in section~\ref{sec:chi}. For now let us remark
-that \C{->} associates on the right: therefore a succession of arrows
-expresses a conjunction of conditions:
+represent function types. This is no accident, but we postpone further
+comments on the meaning of this arrow to Section~\ref{sec:chi}. For
+now let us only stress that \C{->} associates on the right and that
+a succession of arrows expresses a conjunction of conditions:
 
 \begin{coq}{name=dvdn-mul}{}
 Lemma dvdn_mul d1 d2 m1 m2 : d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
 \end{coq}
+Replacing conjunctions of hypotheses by a succession of implication is
+akin to replacing a tuple of arguments by functions with a functional
+type, as described in Section~\ref{sec:fun-sev-args}.
 
-The \C{Section} mechanism we saw in chapter~\ref{ch:prog} is also
-convenient in order to factor the parameters and the hypotheses shared
-by a handful of lemmas.
+The \C{Section} mechanism presented in Section~\ref{sec:section} can
+be used to factor not only the parameters but also the hypotheses of a
+corpus of definitions and properties. For instance, the following prelude:
+
+\begin{coq}{}{}
+Section Chinese.
+
+Variables m1 m2 : nat.
+Hypothesis co_m12 : coprime m1 m2.
+
+...
+
+End Chinese.
+\end{coq}
+corresponds to a mathematical sentence of the form: \emph{Let $m_1$
+  and $m_2$ be two coprime natural numbers\dots}.
+\marginnote{We need to say later that outside the scope of the
+  section, the hypothesis is added to the statement of lemmas whose
+  proof use it. But it's too early here since we would need to say
+  also that m1 and m2 are universally quantified.}
+
 % Yet beware, all the parameters are then fixed
 % inside the section (as well as hypotheses but that's less often
 % problematic). However we cannot really make sense from this remark as
@@ -389,6 +420,7 @@ machine-checked theorem. Let us come back to our first example, that
 we left unproved:
 \begin{coq}{name=my-first-proof1}{}
 Lemma my_first_lemma : 3 = 3.
+Proof.
 Admitted.
 \end{coq}
 In the \Coq{} system, the user builds a formal proof by providing,
@@ -407,7 +439,7 @@ Qed.
 \end{coq}
 
 Once the proof is complete, we can replace the \C{Admitted} command by
-the \C{Qed} one. This calls the proof checker part of  the \Coq{}
+the \C{Qed} one. This command calls the proof checker part of  the \Coq{}
 system, which validates a posteriori that the formal proof that has
 been built so far is actually a complete and correct proof of the
 statement, here \C{3 = 3}.
@@ -436,13 +468,16 @@ $~$
 \end{coqout}
 \index[ssr]{\C{by []}}
 
-Indeed, this statement trivially holds, because the two hand sides of
-the equality are the same. The tactic ``\C{by []}'' is the command that
-implements this nature of \emph{trivial} proof step.
-\C{by} typically prefixes another tactic (or a list of thereof) and
-checks that such tactic trivializes the goal.  In this case
-the goal is already trivial, hence the \C{[]}
-standing for an empty list of tactics.
+Indeed, this statement holds trivially, because the two hand sides of
+the equality are syntactically the same. The tactic ``\C{by []}'' is
+the command that
+implements this nature of \emph{trivial} proof step. The proof command
+\C{by} typically prefixes another tactic (or a list of tactics): it is
+a \emph{tactical}. The \C{by} prefix checks that the following tactic
+trivializes the goal. But in our case, no extra work is needed to
+solve the goal, so we pass an empty list of tactic to the tactical
+\C{by}, represented by the empty bracket \C{[]}.
+
 
 The system then informs the user that the proof looks complete. We can hence
 confidently conclude our first proof by the \C{Qed} command:
@@ -464,8 +499,8 @@ being
 added in our context, that can be reused in future proofs under
 the name \C{my_first_lemma}.
 Except that this time we have \emph{a machine checked proof} of
-the statement of \C{my_first_lemma}.  On the contrary
-\C{Admitted} happily accepts false statements!
+the statement of \C{my_first_lemma}.  By contrast
+\C{Admitted} happily accepts false statements\dots
 \index[concept]{machine checked proof}
 
 What makes the \C{by []}  tactic interesting is that it
@@ -488,30 +523,34 @@ Proof. by []. Qed.
 Indeed, this statement holds because the two hand sides of the equality
 are the same, once the definition of the \C{addn} function, hidden
 behind the infix \C{+} notation, is unfolded, and that the calculation
-is performed. We can prove in a similar way the statement \C{(0 <=
-1)}, or \C{(odd 5)}, because both expressions \emph{compute} to
+is performed. In a similar way, we can prove the statement
+\C{(0 <= 1)}, or \C{(odd 5)}, because both expressions \emph{compute} to
 \C{true}.
 
-Computation is not limited to ground terms, it is really about using
-the rules of the pattern matching describing the code of the
-function.
-For instance the proof of the \C{addSn} identity:
-
+As we have seen in Chapter~\ref{ch:prog}, computation is not limited
+to ground terms: it is really about using the rules of the pattern
+matching describing the code of the function. For instance the proof
+of the \C{addSn} identity:
 
 \begin{coq}{name=addSn}{title=Reflexivity by symbolic computation}
 Lemma addSn m n : m.+1 + n = (m + n).+1. Proof. by []. Qed.
 \end{coq}
 \index[coq]{\C{addSn}}
-is trivial because it is a direct application of one of the branches
-of the definition of the \C{addn} function. Statements like
+is trivial as well because it is a direct consequence of the
+definition of the \C{addn} function: this function is defined by
+pattern matching, with one of the branches stating exactly this
+identity. Statements like
 \C{(0 + n = n)} or \C{(0 < n.+1)} can be proved in a similar way, but
-also \C{(2 + n = n.+2)}, which requires a longer computation.
+also \C{(2 + n = n.+2)}, which requires several steps of computation.
 
-The last word to be said about \C{by []} it that it is a terminating
-tactic.  If it is unable to solve the goal it fails and stops
-\Coq{} from processing the proof script.  For this reason
-it is also coloured in red, so that the eye can immediately spot that a
+Last, the \C{by} tactical turns its argument into a \emph{terminating
+tactic} --- and thus  \C{by []} is such a terminating tactic. A tactic
+is terminating if as soon as it does not solve the goal completely, it
+fails and stops \Coq{} from processing the proof script. For this reason
+a terminating tactic of the tactic language is colored in red by the
+user interface, so that the eye can immediately spot that a
 proof, or more commonly a subproof, ends there.
+\index[concept]{terminating tactic}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Case analysis}\label{ssec:case}
@@ -527,7 +566,7 @@ Lemma negbK (b : bool) : ~~ (~~ b) = b.
 Proof.
 \end{coqdef}
 \begin{coq}{name=negbK,done}{width=7cm,title=Double negation elimination}
-Lemma negbK (b : bool) : ~~ (~~ b) = b.
+Lemma |*negbK*| (b : bool) : ~~ (~~ b) = b.
 Proof. by [].
 \end{coq}
 \coqrun{name=negbKerr;fail}{ssr,negbK,done}
@@ -537,19 +576,24 @@ tactic.
 \end{coqout}
 \index[coq]{\C{negbK}}
 
-Indeed, proving this identity requires not only unfolding the
-definition of \C{negb}, but also performing a \emph{case analysis}
-on the boolean value of the parameter \C{b}. The tactic \C{case}
-implements this action:
+Indeed, proving this identity requires more than a simple unfolding of
+the definition of \C{negb}:
+
+\begin{coq}{}{}
+Definition |*negb*| (b : bool) : bool := if b then false else true.
+\end{coq}
+One also need to perform a \emph{case analysis} on the boolean value
+of the parameter \C{b} and notice that the two hand-sides coincide in
+both cases. The tactic \C{case} implements this action:
 
 \begin{coqdef}{name=negbkt2}
-Lemma negbK b : ~~ (~~ b) = b.
+Lemma |*negbK*| b : ~~ (~~ b) = b.
 Proof.
 case: b.
 \end{coqdef}
 \coqrun{name=negbkt2}{ssr,negbkt2,show1,done,show2,verbose,done,qed}
 \begin{coq}{def=negbkt2}{width=6cm,title=Reasoning by cases}
-Lemma negbK b : ~~ (~~ b) = b.
+Lemma |*negbK*| b : ~~ (~~ b) = b.
 Proof.
 case: b.
 $~$
@@ -567,23 +611,33 @@ subgoal 2 is:
 \index[ssr]{\C{case: name}}
 
 More precisely, the tactic ``\C{case: b}'' indicates that we want to
-perform a case analysis on \C{b}, whose
+perform a case analysis on term \C{b}, whose
 name follows the separator \C{:}. The \Coq{} system displays the state
-of the proof after this command: the proof now has two parallel
-branches, one in which the parameter \C{b} takes the value \C{true} and
-one in which the parameter \C{b} takes the value \C{false}.
+of the proof after this command: the proof now has two subcases,
+treated in two parallel branches, one in which the parameter \C{b}
+takes the value \C{true} and one in which the parameter \C{b} takes
+the value \C{false}. More generally, the \C{case: t} tactic performs a
+case analysis on (the shape of) a term \C{t} which should be of an
+inductive type. As any inhabitant of an inductive type is necessary
+built from one of its constructor, this tactic creates as many
+branches in the proof as the type has constructors, in the order in
+which they appear in the definition of the type. In our example, the
+branch for \C{true} comes first, because this constructor comes first
+in the definition of type \C{bool}.
 
+We shall thus provide two distinct pieces of
+script, one per each subproof to be constructed,
+starting with the branch associated with the \C{true} value. In order
+to signal that we are starting a piece of script for a sub-proof, it
+is a good practice to indent the corresponding script.
 
-As a consequence, we are going to provide two distinct pieces of
-script, one per each subproof to be constructed.
-We start with the branch associated with the \C{true} value, and
-to signal it is a sub proof we indent the corresponding script.
-Now that \C{b} is a concrete value each proof is trivial
-by computation, in the spirit of what we did in
-section~\ref{ssec:proofcomp}.
+Once the case analysis has substituted a concrete value for the
+parameter \C{b}, the proof becomes trivial, in both cases: we are in a
+similar situation as in the proofs of Section~\ref{ssec:proofcomp} and
+the tactic \C{by []} applies successfully:
 
 \begin{coq}{def=negbkt2,done}{width=6cm,title=First trivial case}
-Lemma negbK b : ~~ (~~ b) = b.
+Lemma |*negbK*| b : ~~ (~~ b) = b.
 Proof.
 case: b.
   by [].
@@ -595,11 +649,11 @@ case: b.
    ~~ ~~ false = false
 \end{coqout}
 
-Once the first goal is solved we have only one subgoal left, which we solve
-by the very same means.
+Once the first goal is solved we still have only one subgoal left and
+we solve it using the same tactic.
 
 \begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Second trivial case}
-Lemma negbK b : ~~ (~~ b) = b.
+Lemma |*negbK*| b : ~~ (~~ b) = b.
 Proof.
 case: b.
   by [].
@@ -615,24 +669,24 @@ $~$
 $~$
 \end{coqout}
 
-In fact, we can use the \C{by} command as a true prefix, to have the
-system check that after the \C{case} tactic, the proof becomes
-trivial, in both branches of the case analysis. The proof script is
-then a one-liner:
+Yet as we mentioned earlier we can use the \C{by} tactical as a
+prefix for any tactic, and have the system check that after the
+\C{case} tactic, the proof actually becomes trivial, in both branches
+of the case analysis. The proof script becomes this way a one-liner:
 
 \begin{coq}{def=negbkt3,done,done,qed}{title=Double negation elimination: final script}
-Lemma negbK b : ~~ (~~ b) = b.
+Lemma |*negbK*| b : ~~ (~~ b) = b.
 Proof. by case: b. Qed.
 \end{coq}
 
 \subsubsection{Case analysis with naming}
 \index[concept]{case analysis!naming}
 
-The boolean equivalence \C{leqn0} is also an example of statement that
+The boolean equivalence \C{leqn0} is another example of statement that
 cannot be proved by computation only:
 
 \begin{coq}{def=leqn0,done}{width=7cm}
-Lemma leqn0 n : (n <= 0) = (n == 0).
+Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 Proof.
 \end{coq}
 \begin{coqout}{def=leqn0,done}{width=5cm}
@@ -642,17 +696,26 @@ n : nat
 \end{coqout}
 \index[coq]{\C{leqn0}}
 
-The proof requires unfolding the definition of the comparison operations
-\C{<=} and \C{==}, both defined by case analysis on their first
-argument, and to inspect their respective values in the case when the
-second argument is zero. A case analysis on term \C{(n : nat)} has two
-branches: one in which \C{n} is \C{0} and one in which \C{n} is
-\C{(S k)} for some \C{(k : nat)}. We hence need a variant of the \C{case}
-tactic, in order to \emph{name} the parameter \C{k} which pops up in
-the second branch:
+Both comparison operations \C{<=} and \C{==} are defined by case
+analysis on their \emph{first} argument, independently of the shape of
+the second. The proof of \C{leq0n} thus goes by case analysis on
+ term \C{(n : nat)}, as it appears as a first argument to these
+both these comparison operators.  Remember that the inductive type \C{nat} is
+defined as:
+
+\begin{coq}{def=natdef}{}
+Inductive nat := O | S (n : nat)
+\end{coq}
+with two constructors, \C{O} which has no argument and \C{S} which has
+one (recursive) argument. A case analysis on term \C{(n : nat)} thus
+has two branches: one in which \C{n} is \C{0} and one in which \C{n} is
+\C{(S k)}, denoted \C{k.+1}, for some \C{(k : nat)}. We hence need a
+variant of the \C{case} tactic, in order to \emph{name} the parameter
+\C{k} which pops up in the second branch as the argument of the \C{S}
+constructor of type \C{nat}:
 
 \begin{coq}{def=leqn01,done}{width=7cm,title=case with naming}
-Lemma leqn0 n : (n <= 0) = (n == 0).
+Lemma |*leqn0*| n : (n <= 0) = (n == 0).
 Proof.
 case: n => [|k].
 \end{coq}
@@ -671,14 +734,9 @@ that we  perform a case analysis action, on term \C{(n : nat)}, while the right
 block ``\C{[|k]}'' is an \emph{introduction pattern}. The brackets
 surround slots separated by vertical pipes, and each slot allows to
 name the parameters to be introduced in each subgoal created by the
-case analysis, in order.  Remember that the inductive type \C{nat} is
-defined as:
+case analysis, in order.
 
-\begin{coq}{def=natdef}{}
-Inductive nat := O | S (n : nat)
-\end{coq}
-with two constructors, \C{O} which has no argument and \C{S} which has
-one (recursive) argument. Therefore the introduction pattern \C{[|k]}
+As type \C{nat} has two constructors, the introduction pattern \C{[|k]}
 of our case analysis command uses two slots: the last one introduces
 the name \C{k} in the second subgoal and the first one is
 empty. Indeed, in the first subgoal, first branch of the case
@@ -704,10 +762,11 @@ k : nat
 \end{coqout}
 \index[ssr]{\C{case: name => [$\mid$m]}}
 The second and now only remaining goal corresponds to the case when
-\C{n} is the successor of \C{k}.
-It can also be  solved by computation, as both hand sides
-of the equality evaluates to \C{false}.  The final proof
-script is hence:
+\C{n} is the successor of \C{k}. Note that \C{(k < 0)} is a
+superseding notation for \C{(k.+1 <= 0)}, as mentioned in Section
+\ref{sec:notabrev}. This goal can also be  solved by computation, as
+both hand sides of the equality evaluates to \C{false}.  The final
+proof script is hence:
 
 \begin{coq}{def=leqn04,done}{}
 Lemma leqn0 n : (n <= 0) = (n == 0).
@@ -715,17 +774,19 @@ Proof.  by case: n => [| k].  Qed.
 \end{coq}
 ~\\
 
-A similar example, again of a boolean equivalence, let us introduce
-the need of more powerful proof techniques.
-We claim that the product of two (natural) numbers is zero if and only
-if one of the numbers is zero.  We also recall
-the definition of \C{muln}.
+We will use a last example of boolean equivalence to introduce more
+advanced proof techniques, leading to less verbose proof
+scripts. Remember from Chapter~\ref{ch:prog} that the product of two
+natural numbers is be defined as a function
+\C{(muln : nat -> nat -> nat)}. From this definition, we prove that
+the product of two (natural) numbers is zero if and only if one of the
+numbers is zero:
 
 \begin{coq}{def=almostMulnEq0}{title=Specifying muln: a double case analysis attempt}
-Fixpoint muln (m n : nat) : nat :=
+Fixpoint |*muln*| (m n : nat) : nat :=
   if m is p.+1 then n + muln p n else 0.
 
-Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
+Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
 \end{coq}
 \index[coq]{\C{muln_eq0}}
 \index[coq]{\C{muln}}
@@ -736,9 +797,10 @@ equal modulo computation to \C{(0 == 0)}, which itself computes to
 \C{((0 == 0) || (n == 0))}, hence to \C{(true || (n == 0))} and finally to
 \C{true} because the boolean disjunction \C{(_ || _)} is defined by
 case analysis on its first argument.
+\marginnote{We did not show the definition of orb.}
 
 \begin{coq}{def=almostMulnEq1}{width=7cm}
-Lemma muln_eq0 m n :
+Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
@@ -750,16 +812,19 @@ m, n : nat
 (m.+1 * n == 0) =
   (m.+1 == 0) || (n == 0)
 \end{coqout}
-Note that we can use the name \C{m} in our case analysis without
-ambiguity. The next step in the proof is a case analysis on the number
-\C{n}.
-In order to let us treat first the successor case,
-despite it corresponds by default to the second subgoal, we are going
-to use the ``\C{; last first}'' tactic suffix:
+In this script, we used the name \C{m} for the argument of the
+constructor in the second branch of the case analysis. There is no
+ambiguity here and this proof step reads: either \C{m} is zero, or it
+is of the form \C{m.+1}.
+
+By default, the successor case is treated in the second subgoal,
+according to the order of constructors in the definition of type
+\C{nat}. If we want to treat it first, we can use the ``\C{; last
+  first}'' tactic suffix:
 \index[ssr]{\C{last first}}\index[concept]{reordering goals}
 
 \begin{coq}{def=almostMulnEq2}{}
-Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
+Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
   by [].
@@ -770,25 +835,28 @@ case: n => [|k]; last first.
 
 m, n : nat
 ============================
-(m.+1 * n.+1 == 0) = (m.+1 == 0) || (n.+1 == 0)
+(m.+1 * k.+1 == 0) = (m.+1 == 0) || (k.+1 == 0)
 
 subgoal 2 is:
  (m.+1 * 0 == 0) = (m.+1 == 0) || (0 == 0)
 \end{coqout}
-Indeed when \C{n} is of the form \C{k.+1}, it is easy to see that the
+Indeed it is a good practice to get rid of the easiest subgoals as
+early as possible. And here the successor case is such an easy
+subgoal: when \C{n} is of the form \C{k.+1}, it is easy to see that the
 right hand side of the equality evaluates to \C{false}, as both
 arguments of the boolean disjunction do. Now the left hand side also
-evaluates to \C{false}: by the definition of \C{muln} term
+evaluates to \C{false}: by the definition of \C{muln} the term
 \C{(m.+1 * k.+1)} evaluates to \C{(k.+1 + (m * k.+1))} and by
 definition of the addition \C{addn}, this in turn reduces to
 \C{(k + (m * k.+1)).+1}. The left hand side term hence is of the form
 \C{t.+1 == 0}, where \C{t} stands for \C{(k + (m * k.+1))}, and this
 reduces to false.\label{proof:mulneq0}
-To conclude, this branch of the case analysis is
-also solved by computation.
+By consequence, the successor branch of the case analysis is trivial
+by computation.
+
 
 \begin{coq}{def=almostMulnEq3}{width=7cm}
-Lemma muln_eq0 m n :
+Lemma |*muln_eq0*| m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
@@ -806,11 +874,14 @@ m : nat
 \end{coqout}
 %\marginnote{We should make the remark somewhere explicitly that reflexivity for 0 or successor or any closed values is by computation but not reflexivity for a variable.}
 
-This proof script can be made more compact and more linear by using an
-optional part of the introduction pattern, which makes \Coq{}
-inspect the subgoals created by the case analysis and solve the
-trivial ones using the \C{by []} tactic. For instance in our case,
-let us add the optional \C{//} \emph{simplifying} switch to the
+This proof script can actually be made more compact and, more
+importantly, more linear by using extra features of the introduction
+patterns. It is indeed possible, although optional, to
+inspect the subgoals created by a case analysis and to solve the
+trivial ones on the fly, as the \C{by []} tactic would do, except that
+in this case no failure happens in the case some, or even all,
+subgoals remain. For instance in our case,
+we can add the optional \C{//} \emph{simplify} switch to the
 introduction pattern of the first case analysis:
 
 \begin{coq}{def=almostMulnEq3}{title=A simplify intro pattern,width=7cm}
@@ -826,7 +897,7 @@ m, n : nat
   (m.+1 == 0) || (n == 0)
 \end{coqout}
 
-Only the first generated subgoal is trivial, and has been closed, so
+Only the first generated subgoal is trivial: it has been closed and
 we are left with the second one. Similarly, we can get rid of the
 second goal produced by the case analysis on \C{n}:
 
@@ -857,12 +928,12 @@ The right hand side evaluates to
 computation) and the right one is \C{true}. However we need
 more than symbolic computation to show that the left hand side is
 \C{true} as well: the fact that \C{0} is a right absorbing element for
-multiplication indeed requires reasoning by induction on the code of the
-multiplication.
+multiplication indeed requires reasoning by \emph{induction} on the
+code of the multiplication (see Section~\ref{ssec:ind}).
 
-To conclude the proof we introduce one more proof command,
-\C{rewrite}, that lets us appeal to an already existing lemma.
-This is the subject of the next section.
+To conclude the proof we need one more proof command, the
+\C{rewrite} tactic, that lets us appeal to an already existing lemma.
+
 % section~\ref{ssec:rw} explains how to complete this proof.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -905,18 +976,21 @@ the definition of \C{muln} by pattern matching on its \emph{first}
 argument, \C{(m.+1 * 0)} does not evaluate symbolically to \C{0}: this
 equality holds but requires a proof by induction, as explained in
 section~\ref{ssec:ind}.
-Anyway, a lemma proving what we need is already available in the library:
+Library \mcbMC{} nonetheless provides a systematic review of the
+properties of the operations it defines: the lemma we need is
+available in the library as:
 
 \begin{coq}{def=muln0}{}
 Lemma muln0 n : n * 0 = 0.
 \end{coq}
 %\marginnote{But this is not the way lemma \C{muln0} is stated in the library...}
 
-This is not a coincidence since the \mcbMC{} library is huge.  Finding the
-``right'' lemma is a key ability in writing formal proofs. Section~\ref{sec:search}
-is dedicated to this activity.
+As a side remark, being able to find the ``right'' lemma is of
+paramount importance for writing modular libraries of formal
+proofs. See Section~\ref{sec:search} which is dedicated to this topic.
 
-The \C{rewrite} tactic can use such lemma to perform the desired replacement.
+Back yo our example, we use the \C{rewrite} tactic with lemma
+\C{muln0}, in order to perform the desired replacement.
 
 \begin{coq}{def=almostMulnEq4}{title=First rewrite,width=7cm}
 Lemma muln_eq0 m n :
@@ -937,8 +1011,8 @@ m : nat
 The \C{rewrite} tactic uses the \C{muln0} lemma in the following way:
 it replaces an instance of the left hand side of this identity with the
 corresponding instance of the right hand side. The left hand side of
-\C{muln0} can be read as a \emph{pattern} \C{(_ * 0)} where we use \C{_}
-to denote a wild-card, which reflects the fact that the identity is
+\C{muln0} can be read as a \emph{pattern} \C{(_ * 0)}, where \C{_}
+denotes a wild-card: the identity is
 valid for any value of its parameter \C{n}. The tactic
 automatically  finds  where in the goal the replacement should take
 place, by searching for a subterm matching the pattern \C{(_ * 0)}.
@@ -983,23 +1057,22 @@ for the comparison \C{(m * n1 <= m * n2)} to hold:
 Lemma leq_mul2l m n1 n2 : (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 \end{coq}
 
-The proof goes as follows: by definition of the order \C{<=}, the left
-hand side can be written as \C{(m * n1 - m * n2 == 0)}, which in turns
-factors into \C{(m * (n1 - n2) == 0)}. We then conclude using
-lemma \C{muln_eq0}, since \C{(n1 - n2 == 0)} is the definition of
-\C{(n1 <= n2)}.
+The proof goes as follows: the left
+hand side can equivalently be written as \C{(m * n1 - m * n2 == 0)}, which
+factors into \C{(m * (n1 - n2) == 0)}. But this is equivalent to one
+of the arguments of the product being zero. And \C{(n1 - n2 == 0)}
+means \C{(n1 <= n2)}.
 
-The first step hence consists in using the definition of the
-\C{leq} relation, denoted by the \C{<=} infix notation, to replace the
-right hand side by a subtraction. This can be performed using the
-following equation:
+The first step is performed using the following equation:
 
 \begin{coq}{def=LeqDef}{}
 Lemma leqE m n : (m <= n) = (m - n == 0).
+Proof. by []. Qed.
 \end{coq}
-For this purpose, we use the rewrite tactic. However, the command
-\C{rewrite leqE} only affects the first occurrence of \C{<=} and we
-would like to treat both.
+The proof of this identity is trivial, as the right hand side is the
+definition of the \C{leq} relation, denoted by the \C{<=} infix
+notation. Rewriting with this equation turns the left hand side of our
+goal into a subtraction:
 
 \begin{coq}{def=LeqMul2lproof1}{title=Unfolding leq,width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
@@ -1013,9 +1086,10 @@ m, n1, n2 : nat
 (m * n1 - m * n2 == 0) =
   (m == 0) || (n1 <= n2)
 \end{coqout}
-
-In order to rewrite \emph{all} the possible instances, we use a
-repetition flag:
+Unfortunately, the command \C{rewrite leqE} only affects the first
+occurrence of \C{<=} and we would like to substitute both. In order to
+rewrite \emph{all} the possible instances of the rule in the goal, we
+may use a repetition flag:
 
 \begin{coq}{def=LeqMul2lproof1}{width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
@@ -1032,9 +1106,9 @@ m, n1, n2 : nat
 \index[ssr]{\C{rewrite}! "! (iteration)}
 
 Now the definition of \C{<=} has been exposed
-\emph{everywhere} in the goal, i.e. at both its occurrences in this
-initial goal. We can now factor \C{m} on the left, using the appropriate
-distributivity property:
+\emph{everywhere} in the goal, i.e. at both its occurrences in the
+initial goal. We can now factor \C{m} on the left, according to the
+appropriate distributivity property:
 
 \begin{coq}{def=mulnBr}{}
 Lemma mulnBr n m p : n * (m - p) = n * m - n * p.
@@ -1044,8 +1118,8 @@ This time we need to perform a right-to-left rewriting of the
 default left-to-right). The rewriting step first finds in the goal an
 instance of pattern \C{(_ * _ - _ * _)}, where the terms matched by
 the first and the third wild-cards coincide. The syntax for
-right-to-left rewriting consists in adding a minus \C{-} to the name
-of the rewrite rule:
+right-to-left rewriting consists in appending a minus \C{-} as a
+prefix to the name of the rewrite rule:
 
 
 \begin{coq}{def=LeqMul2lproof2}{title=Rewrite right-to-left,width=6.7cm}
@@ -1061,7 +1135,7 @@ m, n1, n2 : nat
   (m == 0) || (n1 - n2 == 0)
 \end{coqout}
 \index[ssr]{\C{rewrite}! \C{-} (right-to-left)}
-Consecutive rewrite steps can be collapsed as follows:
+Consecutive rewrite steps can be chained as follows:
 
 \begin{coq}{def=LeqMul2lproof2}{width=6.7cm}
 Lemma leq_mul2l m n1 n2 :
@@ -1095,11 +1169,10 @@ m, n1, n2 : nat
 The proof can now be completed by prefixing the tactic with the
 \C{by} command, which concludes the proof.
 
-So far we have learnt the basic use of the \C{rewrite} tactic.
-The interested reader can find in section~\ref{sec:rewrite2} more
-details on the matching algorithm and on the flags supported by
-\C{rewrite}.  Lets now move on to a more interesting class
-of formal statements.
+We only provided here some hints on the basic features of the \C{rewrite}
+tactic. Section~\ref{sec:rewrite2} gives more details on the matching
+algorithm and on the flags supported by \C{rewrite} and the complete
+description of the features of this tactic is in the manual~\cite{ssrman}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1108,23 +1181,27 @@ of formal statements.
 \mcbsection{Quantifiers}
 
 \subsection{Universal quantification, first examples}
-In chapter~\ref{ch:prog}, we have defined functions
-with boolean values; they are named
-\emph{boolean predicates}.
- For instance, the \C{leq} predicate is defined as
-a boolean predicate on natural numbers, as:
+
+Let put side by side an example of function we defined in
+Chapter~\ref{ch:prog}:
 
 \begin{coq}{def=LeqDef}{}
 Definition leq n m := m - n == 0.
 \end{coq}
+with an example of parametric statement we have used in the present
+Chapter:
 
-We recall, as seen in chapter~\ref{ch:prog}, that this concise syntax stands
-for:
+\begin{coq}{def=leqn0}{}
+Lemma leqn0 n : (n <= 0) = (n == 0).
+\end{coq}
+
+We recall, as seen in chapter~\ref{ch:prog}, that this concise syntax
+for defining \C{leq} stands for:
 
 \begin{coq}{def=LeqDefFun}{}
-Definition leq := fun n m => m - n == 0.
+Definition leq := fun (n m : nat) => m - n == 0.
 \end{coq}
-and the type of the constant \C{leq} is:
+and that the type of the constant \C{leq} is:
 
 \begin{coq}{name=about-leq}{width=6cm}
 About leq.
@@ -1134,16 +1211,8 @@ About leq.
 leq : nat -> nat -> bool
 \end{coqout}
 
-In the present Chapter, we have used a similar syntax when stating
-parametric statements, like:
-
-\begin{coq}{def=leqn0}{}
-Lemma leqn0 n : (n <= 0) = (n == 0).
-\end{coq}
-
 The curious reader might already have tested the answer of the
-\C{About} command on the parametric lemmas we have used or proved in the
-previous sections, like for instance:
+\C{About} command on some parametric lemmas:
 
 \begin{coq}{def=negbktAbout}{width=5cm,title=Inspecting lemma leqn0}
 About leqn0.
@@ -1154,9 +1223,9 @@ leqn0 : forall n : nat, (n <= 0) = (n == 0)
 
 She has thus observed that \Coq{}'s output features a prenex
 \C{forall} quantifier. This universal quantifier binds a natural number, and
-expresses --as expected-- that the equation holds for any
-natural number. The type of the lemmas and theorems with parameters all feature
-prenex universal quantifiers:
+expresses --as expected-- that the equation holds for \emph{any}
+natural number. In fact, the type of the lemmas and theorems with
+parameters all feature prenex universal quantifiers:
 
 \begin{coq}{}{width=4cm}
 About muln_eq0.
@@ -1166,9 +1235,13 @@ $~$
 muln_eq0 : forall m n : nat,
   (m * n == 0) = (m == 0) || (n == 0)
 \end{coqout}
-Quantifiers do not need to be in prenex position.  In the following
-example the second hypothesis is itself a quantified formula.
-Recall the definition of \C{nth} in exercise~\ref{ex:nth}.
+Quantifiers may also occur elsewhere in statement, and not only in
+prenex position.  In the following example, we use the function
+\C{nth}, extracting the element of a sequence at a position, which was
+the object of Exercise~\ref{ex:nth}. This statement expresses that two
+sequences with the same size and whose $n$-th elements coincide for any
+$n$ are the same. The second hypothesis, about the elements, is
+itself a quantified formula:
 
 \begin{coq}{}{}
 Lemma seq_eq_ext (s1 s2 : seq nat) :
@@ -1195,7 +1268,7 @@ Lemma size_map (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
 \index[coq]{\C{size_map}}
 as all quantifiers are in prenex positions.
 
-We can also use quantifiers in the body of definitions, which is
+Quantifiers may also occur in the body of definitions, which is
 useful to define predicates expressing standard properties on
 objects. For instance the commutativity property of a binary operator
 is defined as:
@@ -1211,10 +1284,9 @@ in fact:
 \begin{coq}{}{}
 Lemma addnC : commutative addn.
 \end{coq}
-The \mcbMC{} library provides many predicates to state in a consistent
-and compact way standard properties.  Here we recall only few of them.
-\index[coq]{\C{rel}} Remark that \C{(rel T)} is an abbreviation for
-the type \C{(T -> T -> bool)}.
+The \mcbMC{} library defines several such predicates, which are used
+as molds in order to state standard properties in a consistent and
+compact way. We provide below a few examples:
 
 \begin{coq}{}{}
 Section StandardPredicates.
@@ -1229,16 +1301,18 @@ End StandardPredicates.
 \index[coq]{\C{associative}}
 \index[coq]{\C{left_id}}
 \index[coq]{\C{left_distributive}}
+\index[coq]{\C{rel}}
+where \C{(rel T)} is an abbreviation for the type \C{(T -> T -> bool)}.
 
-Note that beside the standardization of the statements through these
+Beside the standardization of the statements through these
 predicates, the \mcbMC{} library uses a systematic naming policy for the lemmas
 that are instances of these predicates. A common suffix \C{C} is
 used for commutativity properties like \C{addnC} or \C{mulnC}.
 Such naming convention is also useful to search the library, as detailed
 in section~\ref{sec:search}.
 
-Other relevant predicates worth mentioning are the one describing standard
-function properties:
+Another class of predicates typically features quantifiers in its
+definition, which describes usual properties of functions:
 
 \begin{coq}{}{}
 Section MoreStandardPredicates.
@@ -1252,8 +1326,7 @@ End MoreStandardPredicates.
 \index[coq]{\C{injective}}
 \index[coq]{\C{cancel}}
 \index[coq]{\C{pcancel}}
-
-It is now time to discuss the type of these predicates.
+The type of these predicates deserves a few comments:
 
 \begin{coq}{}{width=3.8cm}
 About commutative.
@@ -1261,10 +1334,13 @@ About commutative.
 \begin{coqout}{}{width=8.2cm}
 commutative : forall T : Type, (T -> T -> T) -> Prop.
 \end{coqout}
-\C{commutative} is a polymorphic function, in \C{T},
-taking a binary operation and
-building a \emph{proposition}, i.e. it has the same status as the
-identity statements that we have seen previously in this chapter:
+The constant \C{commutative} has a polymorphic parameter \C{T},
+takes a binary operation as argument and builds a
+\emph{proposition}. It is hence a polymorphic unary predicate on
+a certain class of functions, the binary functions with both their
+arguments and their result having the same type. Just like the
+polymorphic binary predicate \C{eq}, the predicate \C{commutative} can
+be used to form propositions:
 
 \begin{coq}{}{width=6cm}
 Check 3 = 3.
@@ -1274,33 +1350,37 @@ Check (commutative addn).
 3 = 3 : Prop
 commutative addn : Prop
 \end{coqout}
-Indeed, the class of propositions is closed under universal
-quantification\C{ forall} (and also under implication \C{->}).
-Chapter~\ref{ch:ttch} will
-provide a more in-depth study of these propositions.
+% Indeed, the class of propositions is closed under universal
+% quantification \C{ forall} (and also under implication \C{->}).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Proving with conditional lemmas}
+\subsection{Using lemmas in proofs}
 \label{sec:quantifiedst}
 
-In order to use a lemma with a parameter, we can use the \C{apply}
-tactic, which finds the appropriate instance (as the \C{rewrite}
-tactic does):
+In order to use a known lemma, one should provide the values of its
+parameters which provide the instance relevant to the current
+proof. Fortunately, the proof assistant can assist its user in
+describing these values and the \C{apply:} tactic, like the
+\C{rewrite} one in Section~\ref{sec:rewrite}, finds the appropriate
+instance by comparison to the current goal:
 
 \begin{coq}{}{}
+Lemma leqnn n : n <= n. Proof. Admitted.
+
 Lemma example a b : a + b <= a + b.
 Proof. apply: leqnn. Qed.
 \end{coq}
 \index[ssr]{\C{apply:}}
-Find the appropriate instance works up to computation:
+The look up performed by \C{apply} tactic works up to computation:
 
 \begin{coq}{}{}
 Lemma example a b : a.+1 + b <= (a + b).+1.
 Proof. apply: leqnn. Qed.
 \end{coq}
-By the way, in order to save the effort of mentioning too trivial
+In order to save the effort of mentioning too trivial
 steps in the proof script, we can extend the power of the \C{by}
-terminator to make it aware of some (concluding) lemmas available in
+terminator to make it aware of some lemmas available in
 the library. The \C{Hint Resolve} command is used to tag these lemmas,
 as in:
 \index[vernac]{\C{Hint Resolve}}
@@ -1312,30 +1392,29 @@ Hint Resolve leqnn.
 Lemma example a b : a + b <= a + b.
 Proof.  by [].  Qed.
 \end{coq}
-Observe that the goal is now closed without a mention of \C{leqnn}.
+Observe that the goal is now closed without a mention of \C{leqnn},
+although it has been used by the system to conclude the proof.
 
-The \C{apply} tactic can also be used on non-atomic statements. For
-instance, the following lemma can be used to perform a flavour of
-proof by contra position:
-
-\begin{coq}{}{}
-Lemma contraL (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
-\end{coq}
-\index[coq]{\C{contraL}}
-
-We see this how this lemmas is used in an excerpt of the proof
-that there are infinitely many primes (the full proof will be
-object of study in section~\ref{sec:infprimes}).  Given a number \C{m}
-we show that any prime divisor \C{p} of \D{(m `! + 1}) is greater than \C{m},
-or better that it is not the case that \C{m} is bigger.
+In order to illustrate more proof techniques related to the use of
+lemmas inside proofs, let us scrutinize a formal proof that a prime
+number which divides $m! + 1$ for a certain integer $m$ has to be
+greater than $m$. This lemma is a key step in a proof that there are
+infinitely many primes which will studied in
+section~\ref{sec:infprimes}. The proof of the lemma goes by
+contraposition: if $p$ is a prime number smaller that $m$, then it
+divides $m!$ and thus it cannot divide $m! + 1$ as it does not divide
+$1$. We first state this lemma as follows:
+\marginnote{The negation in the conclusion is a bit weird. Shall we
+  remove it?}
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 \end{coq}
-We start our formal writing of such
-proof by naming the hypothesis \C{(prime p)}, which means that we add it to the
+The first step of our formal proof will be to give a name to the
+hypothesis \C{(prime p)}, which means that we add it to the
 current context of the goal. The dedicated tactic for this naming step is
-\C{move=>} followed by the name given to the hypothesis.
+\C{move=>} followed by the name given to the hypothesis, because the
+hypotheses \emph{moves} from under the bar to above:
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
@@ -1349,10 +1428,20 @@ prime_p : prime p
 ====================
 p %| m `! + 1 -> ~~ (p <= m)
 \end{coqout}
+The second step of the proof is to transform the current goal into its
+contrapositive. For this purpose, we use the following lemma:
 
-By reasoning by contraposition, via \C{apply: contraL}, we are left to
-prove that \C{p} is not a divisor of \D{(m `! + 1)} under the assumption
-that \C{p} is smaller then \C{m}:
+\begin{coq}{}{}
+Lemma contraL (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
+\end{coq}
+\index[coq]{\C{contraL}}
+which describes the shape of the contrapositive of statements with an
+explicit negation in their conclusion and thus describe a family of
+instances of the contraposition law. The \C{apply: contraL} tactic
+finds the appropriate values of the premisse and conclusion and thus
+instantiate the scheme, leaving us to prove that \C{p} is not a
+divisor of \D{(m `! + 1)} under the assumption that \C{p} is smaller
+then \C{m}:
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
@@ -1368,20 +1457,16 @@ prime_p : prime p
  p <= m -> ~~ (p %| m `! + 1)
 \end{coqout}
 
-First observe that the \C{apply:} tactic has found the correct values
-of the two parameters \C{c, b} of lemma \C{contraL}, namely
-\C{(p <= m)} and \D{(p \%| m `! + 1)}, by comparing the statement to be
+More precisely, the values chosen by the tactic for the two parameters
+\C{c, b} of lemma \C{contraL} are \C{(p <= m)} and
+\D{(p \%| m `! + 1)}. They have been found by comparing the statement to be
 proved with the conclusion \C{(b -> ~~ c)} of the statement of the lemma.
-Indeed lemma \C{contraL} provides a sufficient condition for a
-statement of this shape to hold. After the execution of the tactic, we
-are hence left with proving this sufficient condition.
+The new statement of the goal is the corresponding instance of the
+premisse \C{(c -> ~~ b)} of lemma \C{contraL}.
 
-The rest of proof informally goes as follows: if $p \le m$, then $p$ certainly
-divides $m!$. But then $p$ divides $m! + 1$ if and only if $p$ divides $1$.
-Since $p$ is a prime, it cannot be $1$.
+The next step in our formal proof is to give a name to the hypothesis
+\C{(p <= m)}.
 
-We start our formal writing of such
-proof by naming the hypothesis \C{(p <= m)}.
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
@@ -1398,12 +1483,12 @@ leq_p_m :  p <= m
 ====================
  ~~ (p %| m `! + 1)
 \end{coqout}
-The next step is to use the following lemma:
+And the next step uses the following lemma:
 
 \begin{coq}{}{}
 Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 \end{coq}
-It states a conditional equivalence, expressed as a conditional identity.
+This is a conditional equivalence, expressed as a conditional identity.
 We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting (the
 appropriate instance of) this identity.  This operation will open an
 extra goal requiring a proof of (the corresponding instance of) the side
@@ -1433,22 +1518,21 @@ subgoal 2 is:
 Observe the second goal at the bottom of the buffer which displays the
 statement of the side condition to be proved later. The context of
 this subgoal is omitted but we do not really need to see it:
-we know that statement \C{p \%| m!} holds because \C{p <= m}.
-This can be proved combining the following lemmas:
-stated by lemma:
+we know that statement \C{p \%| m!} holds because \C{p <= m} and
+because we can combine  the following lemmas:
 
 \begin{coq}{}{}
 Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
 Lemma prime_gt1 p : prime p -> 1 < p.
 \end{coq}
 
-The first goal can be solve by appealing to the following lemmas:
+The first goal is also easy to solve, using the following basic facts:
 
 \begin{coq}{}{}
 Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
 Lemma prime_gt0 p : prime p -> 0 < p.
 \end{coq}
-The resulting script would then be:
+Finally, the resulting script would be:
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
@@ -1471,9 +1555,11 @@ For brevity we report in comments the goals solved by tactics.
 We improve such script in two steps.  First, we take advantage of
 \C{rewrite} simplification flags.  It is quite common
 for an equation to be conditional, hence for \C{rewrite} to generate side
-conditions.  It is good practice to solve such side conditions
-as soon as possible.  The first two side conditions are indeed
-trivial, and, as we did for \C{case}, can be solved by \C{//}.
+conditions.  We have already suggested that a good practice consists
+in solving the easy side conditions
+as soon as possible.  Here the first two side conditions are indeed
+trivial, and, as for the introduction patterns of the \C{case} tactic,
+we can use a simplification switch \C{//} to solve them.
 We also combine on the same line the first three step, using
 the semicolon.
 
@@ -1539,9 +1625,11 @@ if $\mathcal{P}$ hold on $n$ then it also hold on $n+1$, then $\mathcal{P}$
 holds for any $n$.  Induction is typically regarded as a schema, where
 the variable $\mathcal{P}$ stands for any property we could think about.
 
-As for the type variable in the declaration of the (polymorphic) data type
-\C{seq}, the language of \Coq{} gives to $\mathcal{P}$ a regular status, and
-induction, instead of being a ``schema'' becomes is a regular lemma.
+In the language of \Coq{}, it is possible to use a quantification to
+bind the parameter  $\mathcal{P}$ in the scheme, akin to the universal
+quantification of polymorphic parameters in data types like
+\C{seq}. Induction principles, instead of being ``schemas'', are
+regular lemmas with a prenex quantification on predicates:
 
 \begin{coq}{}{width=3.2cm}
 About nat_ind.
@@ -1560,16 +1648,16 @@ number.  For example the property of being an odd prime can be written as
 follows:
 
 \begin{coq}{}{}
-(fun n : nat => odd n && prime n)
+(fun n : nat => (odd n && prime n) = true)
 \end{coq}
 Indeed if we take such function as the value for \C{P}, the first premise
 of \C{nat_ind} becomes
 
 \begin{coqout}{}{width=6.5cm,title=P 0}
-(fun n : nat => odd n && prime n) 0
+(fun n : nat => (odd n && prime n) = true) 0
 \end{coqout}
 \begin{coqout}{}{width=5.5cm,title=Equivalent by computation}
-odd 0 && prime 0
+odd 0 && prime 0 = true
 \end{coqout}
 \index[concept]{general term}
 \index[concept]{higher order}
@@ -1578,10 +1666,10 @@ that is used describe the general term of an iterated sum in
 section~\ref{sec:bigopnat} and the predicate \C{P} here used
 to describe a general property.
 
-While the language of \Coq{} lets one express the induction principle
-for natural numbers in a general way, the shape of the lemma is
-tied to such data type.  For example the induction principle over
-sequences is similar, but not identical.
+The shape of the lemma expressing an induction principle is governed
+by the structure of the definition of the inductive type. Here is for
+instance the induction principle for sequences, which has some
+similarities with the one for natural numbers:
 
 \begin{coq}{}{width=3.3cm}
 About list_ind.
@@ -1591,11 +1679,14 @@ list_ind : forall A : Type, forall P : list A -> Prop,
   P [::] -> (forall x s, P s -> P (x :: s)) -> forall s, P s.
 \end{coqout}
 
-At the light of that, reasoning by induction on a term \C{t} means
-finding the induction lemma associated to the type of \C{t} and synthesizing
+To sum up reasoning by induction on a term \C{t} means
+finding the induction lemma associated to the type of \C{t}
+\emph{and} synthesizing
 the right predicate \C{P}.  The \C{elim:} tactic provides such
-functionalities, while \C{apply:} does not.  Hence \C{elim:}
-has to be used when reasoning by induction.
+functionalities, while \C{apply:} does not. In particular, the
+\C{elim} tactic has special skills that allow guessing the value of
+the parameter \C{P} of the induction scheme, which the \C{apply:}
+tactic doesn't have.
 
 Lets prove by induction on \C{m} that \C{0} is neutral on the
 right of \C{addn}.
@@ -1612,17 +1703,24 @@ IHm : m + 0 = m
 =======================
 m.+1 + 0 = m.+1
 \end{coqout}
-We used the \C{//} switch to rule out the base case, since if
-\C{m} is \C{0} both sides evaluate to zero.  In order to
-replace use the induction hypothesis we pull out of the
-sum the \C{.+1} by rewriting with \C{addSn}.
-In this proof by induction the value of \C{P} synthesized by
-\C{elim:} for us is \C{(fun n : nat => n + 0 = n)}.
+The \C{elim:} tactic is used here with an introduction pattern similar
+to the one we used for \C{case:}. It has two slots, because of the
+two constructors of type \C{nat}, and in the second branch we give a
+name not only to the argument \C{n} of the successor, but also to the
+induction hypothesis. We also used the \C{//} switch to rule out the
+base case, since if
+\C{m} is \C{0} both sides evaluate to zero. The value of the parameter
+\C{P} synthesized by \C{elim:} for us is
+\C{(fun n : nat => n + 0 = n)}. It has been obtained by
+\emph{abstracting} the term \C{n} in the goal (see
+Section~\ref{ssec:deffun}). The proof concludes by using lemma \C{addSn}
+to  pull the \C{.+1} out of the sum, so that the induction hypothesis
+\C{IHm} can be rewritten.
 
-Unfortunately proof by induction do not always run so smooth.
+Unfortunately proofs by induction do not always run so smooth.
 To our aid the \C{elim:} tactic tactics provides two additional services.
 The first one is to let one \emph{generalize}
-the goal.  It is typically needed when the goal mention a recursive function
+the goal.  It is typically needed when the goal mentions a recursive function
 that uses an accumulator: its value is going to change during recursive calls,
 hence the induction hypothesis must be general.
 
@@ -1637,6 +1735,7 @@ Lemma last_ind A (P : list A -> Prop) :
 where \C{rcons} is a name for the operation of concatenating
 a sequence with an element, as in \C{(s ++ [::x])}.
 
+\marginnote{We do not know foldl.}
 For example \C{last_ind} can be used to relate the
 \C{foldr} and \C{foldl} iterators as follows:
 
@@ -1691,12 +1790,15 @@ foldl f z (rev (s ++ [:: x])) =
 The instance of the induction hypothesis that we need is
 one where \C{z} takes \C{(foldr (fun y w => f w y) z [:: x])},
 i.e. the value of the accumulator to \C{foldr} for a list
-which last element is \C{x}.
+whose last element is \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsection{Searching the library}\label{sec:search}
 \index[concept]{search}
+
+\marginnote{Why is this section here (and not at the end for ex.)?
+  Plus, I have removed the list of suffixes from the manual.}
 
 Finding the ``right'' lemma in a library that contains thousands of them may be
 quite a challenge.  Even more since the state of the art of search tools for
@@ -1748,9 +1850,10 @@ The name can, and should, convey as much information as possible while
 striving to stay short and handy.  We hence refrain from naming lemmas with
 numbers, as is typically done in standard mathematical texts.
 
+\marginnote{This is not true anymore. Should this list be part of the book?}
 The naming convention is documented in the reference
 manual of Ssreflect~\cite[Section 11]{ssrman}.
-Let's get a flavour of it by examples:
+Let's get a flavor of it by examples:
 
 \begin{itemize}
 \item the name of the lemma begins with the name of the main operation
@@ -1794,20 +1897,20 @@ the product of two natural numbers is 1 if and only if they are both 1.
 
 A last remark about naming convention worth making here
 is that uninteresting and frequently used lemmas must have a
-short names, so that they can be easily type in and at the same
+short names, so that they can be easily typed in and at the same
 time quickly identified and disregarded when reading a proof.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsection{Rewrite, a swiss army knife}\label{sec:rewrite2}
 
-Approximatively one third of the proof script in the \mcbMC{} library is made of
-invocations of the \C{rewrite} tactic.  Such proof command provides many
+Approximately one third of the proof script in the \mcbMC{} library is made of
+invocations of the \C{rewrite} tactic. This proof command provides many
 features we cannot extensively cover here.  We just sketch a very common idiom
 involving conditional rewrite rules and the mention the \C{RHS} pattern for
 the casual reader.  The interested reader can find more about the pattern
-language in section~\ref{sec:rewrite2} or in the user manual of the
-Ssreflect language~\cite{ssrman}.
+language in section~\ref{sec:rewrite2} or in the dedicated chapter of
+the Ssreflect language user manual~\cite{ssrman}.
 
 So far we have solved side conditions using the simplification item \C{//}.
 When this does not suffice, one can invoke another rewrite rule using
@@ -1816,7 +1919,7 @@ all goals zero-or-more time.  For example, one could consider the
 second sub goal that follows \C{rewrite dvdn_addr} a side condition
 and solve it on the same line.
 
-Lets take the last version of the proof script for this example.
+Lets us illustrate this on an example of script that we have already used:
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
@@ -1852,6 +1955,7 @@ hand side of an equational goal.
 Lemma silly_example n : n + 0 = (n + 0) + 0.
 Proof. by rewrite [in RHS]addn0. Qed.
 \end{coq}
+
 \index[ssr]{\C{rewrite}! \C{[in RHS]} (focusing)}
 
 The last rewrite flag worth mentioning is the \C{/=} simplification
@@ -1872,7 +1976,7 @@ tactic.  Whilst being handy, \C{simpl} tends to oversimplify
 expressions, hence we advice using it with care.
 In section~\ref{sec:edivn} we propose a less risky alternative.
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
-index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
+\index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
 
 Last, the unfolding equation \C{leqE} that we used in
 the proof of \C{leq_mul2l} in section~\ref{sec:multirew}
@@ -1914,7 +2018,7 @@ the other instance of subterm matching this pattern in the goal. We
 can use the command \C{rewrite [n1 <= _]leqE}: the
 pattern given by the user overrides the one inferred from the rewrite
 rule and is used to select the subterm to be rewritten. In this case,
-term \C{(m * n1 <= m * n2)} is ruled out because the first argument of
+term \C{(m * n1 <= m * n2)} is first ruled out because the first argument of
 \C{<=}, namely \C{(m * n1)}, does not match the first argument \C{n1}
 required in the user-given pattern. Therefore, \C{rewrite} picks term
 \C{(n1 <= n2)}, in the right hand-side.
@@ -1959,10 +2063,11 @@ reference manual~\cite[section 8]{ssrman} for more variants of patterns and for 
 more precise description of the different phases in the matching
 algorithm used by this tactic.
 
-Lemma \C{leqE} in fact does not exist in the library. Indeed the
-identity it states holds by symbolic computation, and we have seen in
-section~\ref{ssec:proofcomp} that such class of proof steps can be
-typically omitted. However if we
+Lemma \C{leqE} in fact does not exist in the library.%  Indeed the
+% identity it states holds by symbolic computation, and we have seen in
+% section~\ref{ssec:proofcomp} that such class of proof steps can be
+% typically omitted.
+However if we
 try to omit the first \C{rewrite !leqE} command, then the next one,
 namely \C{rewrite -mulnBr} fails:
 
@@ -2008,7 +2113,7 @@ m, n1, n2 : nat
 Indeed, the \C{[_ || _]} pattern identifies term \C{(m == 0) || (n1 <= n2)}, as
 their head symbols coincide. Now that we have elected a subterm, the
 \C{rewrite} tactic is able to identify it with term
-\C{(m == 0) || (n1 - n2 == 0)}, itself an instance of the right instance
+\C{(m == 0) || (n1 - n2 == 0)}, itself an instance of the right hand side
 of \C{muln_eq0}. Note that the \C{[_ || _]} pattern is redundant here:
 while matching only sees syntactic occurrences of the
 head symbols of patterns, it is able to compare the other parts of the
