@@ -136,11 +136,8 @@ Eval compute in y (Point 3 0 2).
 Module exercises.
 (* pair *)
 
-Inductive pair (A B : Type) := mk_pair (a : A) (b : B).
 
-Notation "( A , B )" := (mk_pair A B).
 
-Definition fst A B (p : pair A B) := let: (x, _) := p in x.
 
 Eval compute in fst (4,5).
 
