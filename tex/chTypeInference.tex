@@ -26,7 +26,7 @@ Luckily the user very rarely interacts directly with the kernel.
 Instead she almost always interacts with the refiner, a software
 component that is able to accept open terms.  Open terms are in
 general way smaller than regular terms because some information can be
-left implicit.\cite{Pollack92implicitsyntax}
+left implicit~\cite{Pollack92implicitsyntax}.
 In particular one can omit any subterm by writing
 ``\lstinline/_/'' in place of it.
 Each missing piece of information is either reconstructed
@@ -109,7 +109,7 @@ special placeholder ``\lstinline/_/'', usually called \emph{implicit
 argument}, may occur inside types and stands for one, and only one,
 term that is not explicitly given.  Type inference does not check if
 two types are convertible, it checks if they unify.
-Unification is allowed to assigning values to implicit arguments in order
+Unification is allowed to assign values to implicit arguments in order
 to make the resulting terms convertible.  For example unification is
 expected to find an assignment that makes the type
 \lstinline/(list _)/ convertible to \lstinline/(list nat)/.
@@ -141,7 +141,7 @@ Given that there is no silver bullet for higher order unification
 \Coq{} makes a sensible design choice: provide an (almost)
 heuristic-free algorithm and let the user extend it via an extension
 language.  We refer to such language as the language of
-\emph{Canonical Structures}.  Despite being a very restrictive language,
+\emph{canonical structures}.  Despite being a very restrictive language,
 it is sufficient to program a wide panel of useful functionalities.
 
 The concrete syntax for implicit arguments, an underscore character,
@@ -220,7 +220,7 @@ id 3 : nat
 \end{coqout}
 
 The \lstinline/Arguments/ directive ``documents'' the constant
-\lstinline/id/.  In this case it just marks then argument that has to
+\lstinline/id/.  In this case it just marks the argument that has to
 be considered as implicit by surrounding it with curly braces.
 The declaration of implicit arguments can be locally disabled by
 prefixing the name of the constant with the \lstinline/@/ symbol.
@@ -331,14 +331,14 @@ read~\cite{unifcoq,betaderekjournal}.
 \mcbsection{Records as relations}\label{sec:eqtype}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In computes science a record is a very common data structure.  It is a
+In computer science a record is a very common data structure.  It is a
 compound data type, a container with named fields.  Records are
 represented faithfully in the \mcbCIC{} as
 inductive data types with just one constructor,
 recall Section~\ref{sec:records}.
 The peculiarity of the records we are going to use is that they are
 \emph{dependently typed}: the type of each field is allowed to depend on
-the values of the fields that precedes it.
+the values of the fields that precede it.
 
 \Coq{} provides syntactic sugar for declaring record types.
 
@@ -442,12 +442,13 @@ infix symbol $*$ to denote any ring multiplication.  A typical
 computer science example is the use of the same infix
 \lstinline/==/ symbol to denote the comparison over any data type.
 Of course the underlying operation one intends to use depends on
-the values it is applied to, or better their type.%
+the values it is applied to, or better their type
 \footnote{The meaning of a symbol in mathematics is even deeper: by
 	writing $a * b$ one may expect the reader to figure out which
 	ring she talks about, recall its theory, and use this
 	knowledge to justify some steps of a proof.  By programming type
-	inference appropriately we model this practice in~\ref{rec:itf}.}
+	inference appropriately we model this practice
+in~\ref{rec:itf}.}.
 Using records lets us model these practices.
 Note that, thanks to its higher order nature, the term \lstinline/eq_op/
 can always be the head symbol denoting a comparison.  This makes
@@ -542,7 +543,7 @@ extension that picks \lstinline/nat_eqType/ when \lstinline/T/ is
 \lstinline/bool/.  In the language of \C{Canonical Structure}s such
 program is expressed as follows.
 
-\begin{coq}{name=declcs}{title=Declaring Canonical Structures}
+\begin{coq}{name=declcs}{title=Declaring canonical structures}
 Canonical nat_eqType.
 Canonical bool_eqType.
 \end{coq}
@@ -569,7 +570,7 @@ global table of canonical solutions.
 Whenever a record instance is declared as canonical \Coq{}
 adds to such table an entry for each field of the record type.
 
-\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=canonical structures Index]
 projection & value & solution \\ \hline
 \lstinline/sort/ & \lstinline/nat/ & \lstinline/nat_eqType/  \\
 \lstinline/sort/ & \lstinline/bool/ & \lstinline/bool_eqType/   \\
@@ -588,8 +589,8 @@ value.  The corresponding solution is assigned to the implicit
 argument \mcbimpl{S}.
 
 In the table we reported only the relevant entries.  Entries
-corresponding to the \lstinline/eq_op/ projection play no role
-and in the \mcbMC{} library. The name of such projections is
+corresponding to the \lstinline/eq_op/ projection plays no role
+in the \mcbMC{} library. The name of such projections is
 usually omitted to signal that fact.
 
 What makes this approach interesting for a large library is that
@@ -614,7 +615,7 @@ projections are no special, they are simple functions that pattern
 match on an inductive data type to access the record fields.  Being
 first class citizens means that one can write a term that combines
 the fields of two records and builds a new record.  Thanks to this
-fact the language of Canonical Structures is able to forge
+fact the language of canonical structures is able to forge
 new record instances by combining the existing ones via a set
 of user definable combinators.  This is the subject of the next
 section.
@@ -677,7 +678,7 @@ Canonical prod_eqType.
 The global table of canonical solutions is extended as follows.
 
 \noindent
-\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center title,tabularx={ll|l|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,center title,tabularx={ll|l|l},fonttitle=\sffamily\bfseries,title=canonical structures Index]
 projection & value & solution & combines solutions for \\ \hline
 \lstinline/sort/ & \lstinline/nat/ & \lstinline/nat_eqType/ & \\
 \lstinline/sort/ & \lstinline/bool/ & \lstinline/bool_eqType/ &  \\
@@ -781,7 +782,7 @@ two syntactically different terms.
 a comparison function compatible with Leibniz equality
 (substitution in any context).}
 
-The \C{Equality} module enclosing the record acts as name space:
+The \C{Equality} module enclosing the record acts as a name space:
 \C{type}, \C{sort},
 \C{eq} and \C{axiom}, three very generic words, are here
 made local to the \C{Equality} name space becoming, respectively,
@@ -1040,7 +1041,7 @@ any non-duplicate element.  Note that in the proof we use both
 the decidability of membership (\C{Hy}) and the decidability of
 equality (via \C{eqP}).
 
-\begin{coq}{name=undupuniq2}{title=\C{undup} is correct (setp 2)}
+\begin{coq}{name=undupuniq2}{title=\C{undup} is correct (step 2)}
 Lemma undup_uniq s : uniq (undup s).
 Proof.
 by elim: s => //= x s IHs; case sx: (x \in s); rewrite //= mem_undup sx.
@@ -1048,7 +1049,7 @@ Qed.
 \end{coq}
 \coqrun{name=uniqp}{ssr,uniq,undupuniq1,undupuniq2,abort}
 
-The proof of \c{undup\_uniq} requires no new ingredients and
+The proof of \C{undup\_uniq} requires no new ingredients and
 completes the specification of \C{undup}.
 
 A last, very important step in the theory of sequences is to show
@@ -1089,7 +1090,7 @@ Check (ss != [::]) && s1 \in ss && undup_uniq ss.
 \coqrun{name=uniqp2}{ssr,itereqtype}
 
 As we have anticipated in chapter~\ref{ch:prog}, functional programming and lists
-can model, definite, iterated operations like the ``big'' sum
+can model definite, iterated operations like the ``big'' sum
 $\Sigma$.  Next section describes how the generic theory
 of iterated operations can be built and made practical thanks again
 to programmable type inference.
@@ -1131,7 +1132,7 @@ as a list; the general term $f(i)$ by a function \C{(fun i =>
 elements of a list and combining the results by the \C{foldr} iterator.
 
 Functional programming can also be used to describe the finite domain.
-For example the list of natural numbers $m, m+1, \ldots, m + (n-m)$
+For example the list of natural numbers $m, m+1, \ldots, m + (n - m)$
 corresponding to the range $m \leq i < n$ can be built using the \C{iota}
 function as follows:
 \begin{coq}{name=iota}{}
@@ -1219,7 +1220,7 @@ Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
 \index[coq]{\C{\\big[../..]_(.."|..) ..}}
 
 Here \C{op} is the iterated operation, \C{idx} the neutral element,
-\C{r} the range, \C{P} the filter (hence the boolean scope)
+\C{r}, the range, \C{P} the filter (hence the boolean scope)
 and \C{F} the general term.  Using such notation the running example
 can be stated as follows.
 
@@ -1397,7 +1398,7 @@ Structure law := Law {
 The \C{Monoid.law} structure relates the \C{operator} (the key used by
 canonical structures) to the three properties of monoids.
 
-We can then parameterize an entire theory on this interface.
+We can then parametrize an entire theory on this interface.
 
 \begin{coq}{name=bigop1}{}
 Coercion operator : law >-> Funclass.
@@ -1451,7 +1452,7 @@ This command adds the following rule to the canonical structures
 index:
 
 \noindent
-\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=Canonical Structures Index]
+\begin{tcolorbox}[colframe=blue!60!white,before=\hfill,after=\hfill,width=8cm,center title,tabularx={ll|l},fonttitle=\sffamily\bfseries,title=canonical structures Index]
 projection & value & solution \\ \hline
 \lstinline/Monoid.operator/ & \lstinline/addn/ & \lstinline/addn_monoid/  \\
 \hline
@@ -1493,7 +1494,7 @@ Search _ (\sum_(0 <= i < 0) _).
 \end{coq}
 A lemma stating that an empty sum is zero is not part of the library.
 What is part of the library is a lemma that says that if the list
-begin folded is \C{nil} then the result is the initial value.  Such
+beign folded is \C{nil} then the result is the initial value.  Such
 lemma, called \C{big_nil}, indeed mentions only \C{[::]} in its
 statement, and not the (logically) equivalent \C{(index_iota 0 0)}.
 Still the goal \C{(\\sum_(0 <= i < 0) i = 0)} can be solved by
@@ -1528,7 +1529,7 @@ in that library.
 \mcbsection{Stable notations for big operators}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The definition of \C{bigop} and the notations attached to it
+The \C{bigop} constant and the notations attached to it
 are defined in a more complex way in the \mcbMC{} library.
 In particular \C{bigop} is fragile because the predicate and
 the general term do not share the same binder.  For example,

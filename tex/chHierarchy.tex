@@ -198,9 +198,9 @@ Canonical Zp_ringType := RingType 'I_p Zp_ringMixin.
 Canonical Zp_comRingType := ComRingType 'I_p (@Zp_mulC _).
 \end{coq}
 
-Line 7 endows \lstinline/'I_p/ with a \C{ringType} structure, making
+Line 6 endows \lstinline/'I_p/ with a \C{ringType} structure, making
 it possible to multiply in \lstinline/'I_p/ or have polynomials over
-\lstinline/'I_p/. Line 8 adds a \C{comRingType} commutative ring
+\lstinline/'I_p/. Line 7 adds a \C{comRingType} commutative ring
 structure, which makes it possible to reorder products, or distribute
 evaluation over products of polynomials. Note that no mixin definition
 is needed for line 8 as only a single property is added.
@@ -730,7 +730,8 @@ Definition com_unitRingType := @UnitRing.Pack comRingType class.
 \index[coq]{\C{unitRingType}}
 \index[coq]{\C{com_unitRingType}}
 
-Lines 1--6 below \C{comUnitRingType} to each of the 6 structures it
+Lines 1--6 above \C{com_unitRingType} link the new structure to each of the 
+6 structures it
 extends, just as before. Line 7 is needed because \C{comUnitRingType}
 has several direct ancestors in the hierarchy.  Making
 \lstinline/ComUnitRing.com_unitRingType/ a canonical \C{unitRingType}
@@ -848,7 +849,7 @@ Definition phant_id T1 T2 v1 v2 := phantom T1 v1 -> phantom T2 v2.
 \end{coq}
 
 For example each packed class contains exactly the same definition of
-the clone constructor, following the definition of the introduction of
+the clone constructor, following the introduction of
 section variables \C{T} and~\C{cT}, and the definition of \C{class}:
 
 \begin{coq}{name=phant21}{}
