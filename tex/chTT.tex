@@ -1,12 +1,13 @@
 \Chapter{Type Theory}{The Curry-Howard correspondence}
 \label{ch:ttch}
 
-By now, the informed reader is likely to wonder when the authors of the book
-will eventually mention the mathematical foundation of \Coq{}, a variant of
-type theory called \mcbCIC{}, and
+By now the informed reader is likely to wonder when the authors of the book
+will eventually mention the mathematical foundation of \Coq{}, 
+% a variant of type theory called \mcbCIC{}, 
+and
 in particular explain the Curry-Howard isomorphism.  Indeed this text departs
 from the standard presentation of \Coq{}, that typically starts by
-presenting the logic and showing how standard connectives like
+explaining the logic and showing how standard connectives like
 conjunction or disjunction are defined in term of inductive types.
 
 We made a deliberate choice to put forward the programming aspects of
@@ -17,10 +18,10 @@ library.  The computational behavior of programs is at the core of
 type theory.  The fact that a function computes to a value requires no
 proof: 5 and 2+3 are indistinguishable from a logical standpoint.
 This fact provided a powerful form of automation, and as we will
-see later will also ease the construction of ``sub sets''.
+see later will also ease the construction of sub types.
 
-Now it is finally time to provide a minimal presentation of the statements as types
-correspondence.  The universe of boolean predicates is in \mcbMC{} limited: one
+It is finally time to provide a minimal presentation of the statements as types
+correspondence.  The universe of boolean predicates is limited: one
 cannot for example express a general $\exists$ quantification, and also the
 status of the $\forall$ quantification has been so far never really explained.
 This presentation is far from being exhaustive, the interested reader can find
@@ -120,19 +121,19 @@ Function application serves as a proof for both rules.
 
 \begin{center}
 \AxiomC{\C{f : }$~A \to B$}
-\AxiomC{\C{a : }$~A$}
+\AxiomC{\C{t : }$~A$}
 \RightLabel{$\to_E$}
-\BinaryInfC{\C{(f a) :}$~B$}
+\BinaryInfC{\C{(f t) :}$~B$}
 \DisplayProof
 \hspace{1cm}
 \AxiomC{\C{f : }$~\forall x : A, B$}
 \AxiomC{\C{t : }$~A$}
 \RightLabel{$\forall_E$}
-\BinaryInfC{\C{(f a) : }$~B[t/x]$}
+\BinaryInfC{\C{(f t) : }$~B[t/x]$}
 \DisplayProof
 \end{center}
 
-Here the programs as proofs correspondence has a visible impact in the proofs
+The programs as proofs correspondence has a visible impact in the proofs
 part of the \mcbMC{} library.  In particular quantified lemmas, being programs,
 can be instantiated by simply passing arguments to them.  Exactly as one can
 pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
@@ -182,7 +183,7 @@ can represent a ``proof'' of \C{nat}.  For data types we prefer to say
 \emph{inhabited} rather than \emph{proved}, but there is no real difference.
 
 Inductive ``data'' types can be used to represent logical connectives, in
-particular the ones we miss so far, lie the existential quantifier.
+particular the ones we miss so far, like the existential quantifier.
 
 \begin{center}
 \AxiomC{$A$} \AxiomC{$B$}
@@ -198,7 +199,7 @@ particular the ones we miss so far, lie the existential quantifier.
 
 The first rule reads: to prove $A \wedge B$ one needs to prove both
 $A$ and $B$.  The latter lets one prove $A$ whenever one can prove
-the stronger $A \wedge B$ statement.
+the stronger statement $A \wedge B$.
 
 In \Coq{} such connective can be characterized by the following
 inductive definition.
@@ -227,7 +228,7 @@ The striking similarity witnesses how programs (and data) are used in \Coq{}
 to represent proofs.
 
 Pattern matching provides a way to express the elimination rule for
-conjunction.  In particular the elimination rule is just a projection.
+conjunction as follows:
 
 \begin{coq}{name=Ande1}{}
 Definition proj1 A B (p : A /\ B) : A :=
@@ -270,7 +271,8 @@ the predicate of being an even prime number is expressed as
 existence of such number is
 \C{(ex nat (fun x : nat => ~~ (odd x) && prime x))}.
 
-We quickly see the inductive definition of the disjunction.
+We quickly see the inductive definition of the disjunction \C{or}
+and its two constructors \C{or\_introl} and \C{or\_intror}.
 
 \begin{coq}{name=Or}{}
 Inductive or (A B : Prop) : Prop := or_introl (a : A) | or_intror (b : B).
@@ -288,13 +290,13 @@ Definition or_ind (A B P : Prop)
 \index[coq]{\C{or_intror}}
 
 The detail worth noting here is that the pattern match construct has two
-branches in this case.  Each branch represents a distinct sub proof.  In this
+branches, and each branch represents a distinct sub proof.  In this
 case to prove \C{P} starting from \C{A \\/ B} one has to deal with all
-possibilities: prove \C{P} under the assumption \C{A} and prove \C{P}
+cases: prove \C{P} under the assumption \C{A} and prove \C{P}
 under the assumption \C{B}.
 
-Typically a logic comes with the $\top$, $\bot$ and $\neg$ constants.
-They can be defined as follows.
+Usual constants and connectives as $\top$, $\bot$ and $\neg$
+can be defined as follows.
 
 \begin{coq}{name=TrueFalse}{}
 Inductive True : Prop := I.
@@ -308,7 +310,7 @@ Notation "~ A" := (not A).
 \index[coq]{\C{not}}
 
 Remark that to prove \C{True} one has simply to provide \C{I} that has no
-argument.  So proving \C{True} is trivial, and as a consequence eliminating it
+arguments.  So proving \C{True} is trivial, and as a consequence eliminating it
 provides little help (i.e. no extra knowledge is obtained by pattern matching
 over \C{I}).  Conversely it is impossible to prove \C{False}, since it has no
 constructor, and pattern matching on \C{False} can inhabit any type, since no
@@ -338,14 +340,15 @@ Notation "x = y" := (@eq _ x y).
 \index[concept]{equality}
 \index[coq]{\C{erefl}}
 
-This is the first time we see a function type after the \C{:} symbol, line 1.
+This is the first time we see a function type after the \C{:} symbol
+in an inductive type declaration.
 The \C{eq} type constructor takes three arguments: a type \C{A} and
 two terms of that type (the former is named \C{x}).
 Hence one can write \C{(a = b)} whenever \C{a} and \C{b}
 have the same type.
 The \C{erefl} constructor takes no arguments, as \C{I}, but its type
 annotation says it can be used to inhabit only the type \C{(x = x)}.
-Hence one is able to prove \C{(a = b)} it only when \C{a} and \C{b} are
+Hence one is able to prove \C{(a = b)} only when \C{a} and \C{b} are
 equal up to computation (as in indistinguishable from a logical standpoint).
 Conversely by eliminating a term
 of type \C{(a = b)} one discovers that  \C{a} and \C{b} are
@@ -361,7 +364,7 @@ theory and an in depth study of it is out of the scope of this book.  The intere
 finds an extensive study of this subject in~\cite{hottbook}.  Later in this
 chapter we define and use other inductive families to take advantage
 of the ``automatic'' substitution of the implicit equations we see here:
-while the type of \C{px} is \C{(P x)} it is accepted as an
+while \C{px} has type \C{(P x)} it is accepted as an
 inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
 is automatically replaced by \C{x}.
 
@@ -405,7 +408,7 @@ $\forall_I$ logical rule do is to introduce into the proof context a
 new entry.  So far we either expressed this step at the beginning of proofs
 by putting such items just after the name of the lemma being prover, or
 just after a \C{case:} or \C{elim:} proof command.  The current section
-expands this subject covering the full management of the proof context.
+expands on this subject covering the full management of the proof context.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The stack model}
@@ -420,7 +423,7 @@ the proof command.  These decorators deal with what we typically call
 robust proof scripts but that are too frequent to benefit from a move verbose
 syntax.  Bookkeeping actions do convey a lot of information, like where
 names are given to assumptions, but also let one deal with annoying details
-using a compact, symbolic, language.  Note that all bookkeeping action
+using a compact, symbolic, language.  Note that all bookkeeping actions
 correspond to regular, named, proof commands.  It is the use one makes of them
 that may be twofold: a case analysis in the middle of a proof may start two
 distinct lines of reasoning, and hence it is worth being noted explicitly with
@@ -450,7 +453,7 @@ bound variable \C{xy}, exactly as one can only access a stack from its top.
 The execution of \C{=> xy pr\_x odd\_y} is just the composition of
 \C{=> xy} with \C{=> pr\_x} and finally \C{=> odd\_y}.  Each action
 pulls out of the stack an item and names it.  The \C{move} proof
-command is the one that does nothing.  We can use it as a placeholder
+command does nothing,  we use it as a placeholder
 for the postfix \C{=>} bookkeeping action.
 
 \begin{coq}{}{width=7cm}
@@ -514,6 +517,7 @@ move=> [x y] /= /prime_gt1-x_gt1 odd_y
 The leading \C{/} makes \C{prime\_gt1} do as a function instead of
 as a name to be assigned to the top of the stack.  The \C{-} has no effect but
 to visually link the function and name assigned to its output.
+Indeed \C{-} can be omitted.
 
 One could also examine \C{y}: it can't be \C{0}, since it would contradict
 the assumption saying that \C{y} is \C{odd}.
@@ -577,8 +581,8 @@ finding the right balance only comes with experience.
 
 \gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
-on the subgoals.\footnote{not the status quo, but I prefer this exception to the
-current one} Indeed in \C{case: n => [|m]} only one case analysis is performed.}
+on the subgoals.%\footnote{not the status quo, but I prefer this exception to the current one} 
+Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -592,7 +596,7 @@ no need to pull from the stack all items.  If we take the previous example
 ========================
 forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
-and we stop just after applying the view, we end up is a valid situation.
+and we stop just after applying the view, we end up is a valid state.
 
 \begin{coq}{}{width=6cm}
 move=> [x y] /= /prime_gt1.
@@ -624,7 +628,7 @@ and substitution.  Let's take the following conjecture.
 \end{coqout}
 
 The top stack item is a quantified assumption.  To specialize it to, say,
-3 one can write as follows:
+\C{3} one can write as follows:
 
 \begin{coq}{}{width=4cm}
 move=> /(_ 3).
@@ -634,9 +638,10 @@ move=> /(_ 3).
 3 * 2 = 3 + 3 -> 6 = 3 + 3
 \end{coqout}
 \index[ssr]{\C{tactic => ..}!\C{=> /(_ arg)} (specialization)}
-The idea behind the notation is that when applies a view to the top
-stack item, as in \C{/v}, he is forming the term \C{(v top)}, while
-when one specializes the top assumption as in \C{/(_ x)} he is forming the
+The idea behind the notation is that when we apply a view to the top
+stack item (we name it \C{top} here), as in \C{/v}, we are
+forming the term \C{(v top)}, while
+when we specialize the top assumption as in \C{/(_ x)} we form the
 term \C{(top x)}.  The \C{_} is a place holder for the top item, and is
 omitted in \C{/(view _)}.
 
@@ -660,9 +665,10 @@ as in the \C{rewrite} tactic, with the top assumption.
 \mcbsubsubsection{Pushing to the stack}
 \index[ssr]{\C{tactic : ..}}
 
-We have seen how to pull items from the stack to the context.  Now let's see
-how to perform the converse via the \C{:} operator, also called
-\emph{discharging} operator.  Such operator decorates
+We have seen how to pull items from the stack to the context.  
+Now let's see the so called \emph{discharging} operator \C{:}, performing
+the converse operation.
+Such operator decorates
 proof commands as \C{move}, \C{case} and \C{elim}
  with actions to be performed before the command is actually run.
 
@@ -682,11 +688,11 @@ Imagine we want to perform case analysis on \C{y} at this stage
  2 < y + x
 \end{coqout}
 
-Let's dissect the command \C{case: y}.  It is equivalent to
+The command \C{case: y} is equivalent to
 \C{move: y; case.} where \C{move} once again is a place holder,
 \C{: y} pushes onto the stack the \C{y} variable and \C{case}
 operates on the top item of the stack.
-Pushing items on the stack is called \emph{discharging}.
+%Pushing items on the stack is called \emph{discharging}.
 
 Just before running \C{case} the goal looks like this:
 
@@ -699,9 +705,9 @@ Just before running \C{case} the goal looks like this:
 \end{coqout}
 
 Unfortunately the binding for y is needed by the \C{odd\_y}
-context item, so \C{case: y} fails.  One has to push on the stack
-items in a valid order.  \C{case: y odd\_y} would push \C{odd\_y}
-first, then \C{y}, leading to
+context item, so \C{move: y} fails.  One has to push on the stack
+items in a valid order.  \C{move: y odd\_y} would push \C{odd\_y}
+first, then \C{y}, leading to the valid goal
 
 \begin{coqout}{name=Stack2}{}
  x : nat
@@ -780,8 +786,8 @@ will come handy in section~\ref{sec:strongind}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Inductive reasoning}\label{sec:indreason}
 
-In chapter 1 we have seen the \C{fun} construction of functions and inductive
-data types like \C{nat} as well as the pattern matching.  All these
+In chapter 1 we have seen how to build and use (call or destruct)
+anonymous functions and data types.  All these
 constructions have found a correspondence in the Curry-Howard correspondence.
 The only missing piece is recursive programs.  For example
 \C{addn} was written by recursion on its first argument, and is a
@@ -801,7 +807,7 @@ nat_ind : forall P : nat -> Prop,
 \C{nat\_ind} is a program that produces a proof of \C{(P n)} for any \C{n}
 proviso a proof for the base case \C{(P 0)}, and a proof
 of the inductive step \C{(forall n : nat, P n -> P n.+1)}.
-Let's write such program.
+Let's write such program by hand.
 
 \begin{coq}{}{}
 Fixpoint nat_ind (P : nat -> Prop)
@@ -813,7 +819,8 @@ Fixpoint nat_ind (P : nat -> Prop)
 \end{coq}
 \index[coq]{\C{nat\_ind}}
 
-The \Coq{} system generates such program when the \C{nat} data type
+The \Coq{} system generates such program automatically 
+when the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
 trough the lenses of the proofs as programs correspondence this means
 that the induction principle just coded is sound, i.e. based on a well
@@ -960,7 +967,7 @@ Lemma classic_bind P Q :
 \index[coq]{\C{classically}}
 \index[coq]{\C{classically_EM}}
 \index[coq]{\C{classically_bind}}
-Here classically plays the role of a box, typically called \emph{monad}
+Here \C{classically} plays the role of a box, typically called \emph{monad}
 in computer science, that one can only open when the goal is a boolean,
 hence decidable, predicate.  Inside such box the excluded middle is
 made available by combining \C{classic_EM} and \C{classic_bind}.
@@ -978,7 +985,8 @@ field~\cite{DBLP:conf/itp/Cohen12}.
 \mcbLEVEL{1}
 \mcbsection{Terms, types, proofs: all in the same pot}
 
-For a newcomer, a quite confusing feature of the \mcbCIC{} is that the same syntax
+For a newcomer
+a quite confusing feature of the \mcbCIC{} is that the same syntax
 is shared among term, proofs, statements and data types.  In other words terms
 can occur in types and types can occur in terms.  And of course terms and
 types play the double role of proofs and statements respectively.

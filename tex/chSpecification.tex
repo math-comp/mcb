@@ -26,7 +26,7 @@ predicate ``the sequence \C{s} has at least one element satisfying the
 
 \begin{coq}{}{}
 Fixpoint has T (a : T -> bool) (s : seq T) : bool :=
-  if s is x :: s' then a x || has s' else false.
+  if s is x :: s' then a x || has a s' else false.
 \end{coq}
 
 or we can use an alternate formula, like for instance:
@@ -44,8 +44,9 @@ analysis on the fact that sequence
 \begin{coq}{}{}
 case: (has a s).
 \end{coq}
-As we already noted, computation provides some automation for free, as
-for instance in order to establish that \C{(has odd [:: 3; 2; 7]) =
+As we already noted, computation provides some automation for free.
+For example
+in order to establish that \C{(has odd [:: 3; 2; 7]) =
   true}, we only need to observe that the left hand-side \emph{computes} to
 \C{true}.
 
@@ -68,13 +69,14 @@ to be found  --plus a proof of this fact-- which may be better suited
 for instance to an abstract sequence \C{s}.
 
 In summary, boolean statements are especially convenient for excluded
-middle arguments and its variants (contrapositive, reductio ad
+middle arguments and its variants (reductio ad
 absurdum,...). They furthermore provide a form of small step
-automation by computation\footnote{They moreover allow for
+automation by computation.\footnote{They moreover allow for
   proof-irrelevant specifications. This feature is largely used
   throughout the Mathematical Components library but beyond the scope
   of the present chapter: it will be the topic of
-  chapter~\ref{ch:sigmabool}.}. Specifications in the \C{Prop} sort
+  chapter~\ref{ch:sigmabool}.} 
+Specifications in the \C{Prop} sort
 are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
 statements), subformulae (of conjunctions),... They are proved by
@@ -93,7 +95,7 @@ given specification is akin to assuming that the excluded middle
 principle holds on the corresponding predicate.
 
 The boolean reflection methodology proposes to avoid
-committing to one or the other of these options, providing enough
+committing to one or the other of these options, and provides enough
 infrastructure to ease the bureaucracy of navigating between the two.
 The \C{is_true} coercion, which we have been using since the early
 pages of chapter~\ref{ch:proofs}, is in fact one ingredient of this
@@ -152,7 +154,7 @@ hrl : P -> false = true
 P \/ ~ P
 \end{coqout}
 We could try
-alternate formulations based on the connectives seen in
+alternative formulations based on the connectives seen in
 section~\ref{ch:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
 would be non negligible.
@@ -246,7 +248,7 @@ tactic for each subgoal (see~\cite[section 9.2]{Coq:manual}).
 More
 generally, a theorem stating an equivalence between a boolean
 expression and a \C{Prop} statement is called a \emph{view},
-since it is typically used to view an assumption from a different
+since it is used to view an assumption from a different
 perspective.
 
 \mantra{View names always end with a capital \C{P}.}
@@ -432,6 +434,7 @@ conjunction of \emph{two} such implications. The \emph{view mechanism}
 implemented in the tactic language has automatically guessed and
 inserted a term, called \emph{hint view}, which plays the role of an
 adaptor.
+\index[vernac]{\C{Hint View}}
 
 More precisely the \C{/andP} intro pattern has wrapped the top
 stack item, called \C{top} here, of type \C{((n <= m) && (m <= k))} into
@@ -448,7 +451,7 @@ Term \C{(elimTF andP top)} hence has type
 \begin{coq}{}{}
 if true then (n <= m) /\ (m <= k) else ~ ((n <= m) /\ (m <= k))
 \end{coq}
-which reduces to \C{((n <= m) /\\ (m <= k))} since \} is \C{true}
+which reduces to \C{((n <= m) /\\ (m <= k))} since \C{c} is \C{true}
 (recall the hidden ``\C{.. = true}'' in the type of the top stack entry).
 %\marginnote{Show other examples of inserted hint views? Like negation...}
 
@@ -489,9 +492,11 @@ lemk : m <= k
 n = k
 \end{coqout}
 
+\mantra{
 Combining wisely the structured reasoning of inductive predicates
 in \C{Prop} with the ease to reason by equivalence via rewriting
 of boolean identities leads to concise proofs.
+}
 
 Let us now move to a non artificial example to see how the Ssreflect
 tactic language supports the combination of views with the \C{apply},
@@ -579,10 +584,10 @@ le_n21 : n2 <= n1
 ============================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 
-subgoal 2 is:
+subgoal two is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
-Even if it is not displayed here, subgoal 2 has \C{(n1 <= n2)}
+Even if it is not displayed here, subgoal two has \C{(n1 <= n2)}
 in its context.
 
 Finally, the \C{rewrite} tactic also handles views that relate a
@@ -796,7 +801,7 @@ corresponds to the \C{ReflectT} constructor.  Conversely,
 \C{b} is replaced by \C{false} in the second branch.
 
 Let's take an example where we reason by cases on the \C{andP} lemma,
-that states \C{forall a b, (reflect (a /\\ b) (a && b))}.
+that states \C{(forall a b, reflect (a /\\ b) (a && b))}.
 
 \begin{coq}{}{width=6cm}
 Lemma example a b :
@@ -841,7 +846,7 @@ a pattern \C{(_ && _)} and the goal is searched for an instance of
 such pattern by the same matching algorithm the \C{rewrite} tactic
 uses for rewrite rules.
 Tuning of implicit arguments is key to obtain easy to use
-lemmas.
+lemmas, even more the ``spec'' ones.
 
 
 If one needs to override the pattern inferred for the index
@@ -966,12 +971,12 @@ IHn : m < n -> m.+1 %| n`!
 ========================
 (m == n) || (m < n) -> m.+1 %| (n.+1)`!
 \end{coqout}
-The case analysis rules out the case \C{(m = 0)}, and simplifies the hypothesis
+The case analysis rules out \C{(m = 0)}, and simplifies the hypothesis
 to \C{(m <= n)}.  Recall that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
 (y <= z))}, hence when the first inequality evaluates to true (e.g. when \C{x}
 is 0) the conjunction simplifies to the second conjunct.  The \C{leq_eqVlt}
-rewrite rule rephrases \C{<=} as a disjunction.
-The capital \C{V} letter in the lemma name signals a disjunction.
+rewrite rule rephrases \C{<=} as a disjunction (the capital \C{V} letter
+is reminiscent of $\lor$).
 
 When we reason by cases on the top assumption, line 4, we face two goals, both
 easy to solve if we look at the development of the factorial of \C{n.+1},
@@ -1024,7 +1029,7 @@ have m1_gt1: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
 case: (pdivP m1_gt1) => [p pr_p p_dv_m1].
 \end{coq}
 
-It is unsatisfactory because,  in our paper proof what plays an
+It is unsatisfactory because in our paper proof what plays an
 interesting role is the \C{p} that we obtain in the second line,
 and not the \C{m1_gt1} fact we proved as an intermediate fact.
 
@@ -1048,7 +1053,7 @@ Here the first line obtains a prime \C{p} as desired, the second
 one begins to shows it fits by contrapositive reasoning, and the
 third one, already commented in section~\ref{sec:quantifiedst}, concludes.
 
-A motto accompanying the proof script style we propose that is
+A motto accompanying the proof script style we propose is
 that a full line should represent a meaningful reasoning step
 (for a human being).
 
@@ -1366,7 +1371,7 @@ Qed.
 \end{coq}
 \index[ssr]{\C{tactic in name}}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
-can be appended to each tactic in order to push on the stack the specified
+can be appended to any tactic in order to push on the stack the specified
 hypotheses before running the tactic and pulling
 them back afterwards (see~\cite[Section 6.5]{ssrman}).
 The \C{*} means that the goal is also affected by the tactic, and not just
@@ -1547,7 +1552,7 @@ $~$
 is_true (prime 17)
 \end{coqout}
 
-The statement of the example is processed by \Coq{}
+When the statement of the example is processed by \Coq{}
 it is enforced to be a type, but \lstinline/(prime 27)/ is actually
 a term of type \lstinline/bool/.  Early in the library the
 function \lstinline/is_true/ is declared as a coercion from
