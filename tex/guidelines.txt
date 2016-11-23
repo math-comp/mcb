@@ -1,0 +1,5 @@
+English/LaTex:
+
+- Use an american dictionnary for spell checking
+- Capitalize Section, Chapter, Lemma
+- use macros for Coq, ssreflect, mathcomp, as in myacronyms

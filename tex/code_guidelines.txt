@@ -1,0 +1,10 @@
+Coq code:
+
+- Do not use the |* *| delimiters in the code
+- Use Check only for checking well-formednes, and About for queries
+- Use consistent names for bound variables :
+  + n, m, k, l for nat
+  + b for bool
+  + s for seq
+  Enforce type annotations otherwise.
+- Put a type annotation for the sort of inductives.
