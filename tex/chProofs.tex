@@ -566,7 +566,7 @@ Lemma negbK (b : bool) : ~~ (~~ b) = b.
 Proof.
 \end{coqdef}
 \begin{coq}{name=negbK,done}{width=7cm,title=Double negation elimination}
-Lemma |*negbK*| (b : bool) : ~~ (~~ b) = b.
+Lemma negbK (b : bool) : ~~ (~~ b) = b.
 Proof. by [].
 \end{coq}
 \coqrun{name=negbKerr;fail}{ssr,negbK,done}
@@ -580,20 +580,20 @@ Indeed, proving this identity requires more than a simple unfolding of
 the definition of \C{negb}:
 
 \begin{coq}{}{}
-Definition |*negb*| (b : bool) : bool := if b then false else true.
+Definition negb (b : bool) : bool := if b then false else true.
 \end{coq}
 One also need to perform a \emph{case analysis} on the boolean value
 of the parameter \C{b} and notice that the two hand-sides coincide in
 both cases. The tactic \C{case} implements this action:
 
 \begin{coqdef}{name=negbkt2}
-Lemma |*negbK*| b : ~~ (~~ b) = b.
+Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
 \end{coqdef}
 \coqrun{name=negbkt2}{ssr,negbkt2,show1,done,show2,verbose,done,qed}
 \begin{coq}{def=negbkt2}{width=6cm,title=Reasoning by cases}
-Lemma |*negbK*| b : ~~ (~~ b) = b.
+Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
 $~$
@@ -637,7 +637,7 @@ similar situation as in the proofs of Section~\ref{ssec:proofcomp} and
 the tactic \C{by []} applies successfully:
 
 \begin{coq}{def=negbkt2,done}{width=6cm,title=First trivial case}
-Lemma |*negbK*| b : ~~ (~~ b) = b.
+Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
   by [].
@@ -653,7 +653,7 @@ Once the first goal is solved we still have only one subgoal left and
 we solve it using the same tactic.
 
 \begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Second trivial case}
-Lemma |*negbK*| b : ~~ (~~ b) = b.
+Lemma negbK b : ~~ (~~ b) = b.
 Proof.
 case: b.
   by [].
@@ -675,7 +675,7 @@ prefix for any tactic, and have the system check that after the
 of the case analysis. The proof script becomes this way a one-liner:
 
 \begin{coq}{def=negbkt3,done,done,qed}{title=Double negation elimination: final script}
-Lemma |*negbK*| b : ~~ (~~ b) = b.
+Lemma negbK b : ~~ (~~ b) = b.
 Proof. by case: b. Qed.
 \end{coq}
 
@@ -686,7 +686,7 @@ The boolean equivalence \C{leqn0} is another example of statement that
 cannot be proved by computation only:
 
 \begin{coq}{def=leqn0,done}{width=7cm}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 \end{coq}
 \begin{coqout}{def=leqn0,done}{width=5cm}
@@ -715,7 +715,7 @@ variant of the \C{case} tactic, in order to \emph{name} the parameter
 constructor of type \C{nat}:
 
 \begin{coq}{def=leqn01,done}{width=7cm,title=case with naming}
-Lemma |*leqn0*| n : (n <= 0) = (n == 0).
+Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 case: n => [|k].
 \end{coq}
@@ -783,10 +783,10 @@ the product of two (natural) numbers is zero if and only if one of the
 numbers is zero:
 
 \begin{coq}{def=almostMulnEq0}{title=Specifying muln: a double case analysis attempt}
-Fixpoint |*muln*| (m n : nat) : nat :=
+Fixpoint muln (m n : nat) : nat :=
   if m is p.+1 then n + muln p n else 0.
 
-Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
+Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
 \end{coq}
 \index[coq]{\C{muln_eq0}}
 \index[coq]{\C{muln}}
@@ -800,7 +800,7 @@ case analysis on its first argument.
 \marginnote{We did not show the definition of orb.}
 
 \begin{coq}{def=almostMulnEq1}{width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
@@ -824,7 +824,7 @@ according to the order of constructors in the definition of type
 \index[ssr]{\C{last first}}\index[concept]{reordering goals}
 
 \begin{coq}{def=almostMulnEq2}{}
-Lemma |*muln_eq0*| m n : (m * n == 0) = (m == 0) || (n == 0).
+Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].
   by [].
@@ -856,7 +856,7 @@ by computation.
 
 
 \begin{coq}{def=almostMulnEq3}{width=7cm}
-Lemma |*muln_eq0*| m n :
+Lemma muln_eq0 m n :
   (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m].

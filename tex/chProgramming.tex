@@ -1534,7 +1534,7 @@ lets one put together any two values:
 \index[coq]{\C{(_ , _)}}
 
 \begin{coq}{}{}
-Inductive |*pair*| (A B : Type) : Type := mk_pair (a : A) (b : B).
+Inductive pair (A B : Type) : Type := mk_pair (a : A) (b : B).
 Notation "( a , b )" := (mk_pair a b).
 Notation "A * B" := (pair A B).
 \end{coq}
@@ -1558,7 +1558,7 @@ extract its first element, and we can provide a polymorphic definition
 of this projection:
 
 \begin{coq}{}{}
-Definition |*fst*| A B (p : pair A B) :=
+Definition fst A B (p : pair A B) :=
   match p with mk_pair x _ => p in x end.
 \end{coq}
 
@@ -1616,7 +1616,7 @@ natural numbers, which can be used to represent a grid point in a
 3-dimensional cone:
 
 \begin{coq}{}{}
-Record |*point*| : Type := Point { x : nat; y : nat; z : nat }.
+Record point : Type := Point { x : nat; y : nat; z : nat }.
 \end{coq}
 \index[vernac]{\C{Record}}
 This line of code defines an inductive type \C{point}, with no
@@ -1624,7 +1624,7 @@ parameter and with a single constructor \C{Point}, which has three
 arguments each of type \C{nat}. Otherwise said, this type is:
 
 \begin{coq}{}{}
-Inductive |*point*| : Type := Point (x : nat) (y : nat) (z : nat).
+Inductive point : Type := Point (x : nat) (y : nat) (z : nat).
 \end{coq}
 \index[concept]{record}
 
@@ -1647,7 +1647,7 @@ Eval compute in y (Point 3 0 2).
 As expected, the code for the \C{x} projection is:
 
 \begin{coq}{}{}
-Definition |*x*| (p : point) := match p with Point a _ _ => a end.
+Definition x (p : point) := match p with Point a _ _ => a end.
 \end{coq}
 
 When an inductive type has a single constructor, like in the case of
@@ -1658,7 +1658,7 @@ analysis on an irrefutable pattern. The above definition of projection
 \C{x} can alternatively be written:
 
 \begin{coq}{}{}
-Definition |*x*| (p : point) := let: Point a _ _ := p in a.
+Definition x (p : point) := let: Point a _ _ := p in a.
 \end{coq}
 \index[coq]{\C{let: .. := .. in ..}}
 \index[concept]{pattern matching!irrefutable}
