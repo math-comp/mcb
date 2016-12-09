@@ -1797,16 +1797,20 @@ whose last element is \C{x}.
 \mcbsection{Searching the library}\label{sec:search}
 \index[concept]{search}
 
-\marginnote{Why is this section here (and not at the end for ex.)?
-  Plus, I have removed the list of suffixes from the manual.}
+\marginnote{Why is this section here (and not at the end for ex.)?}
 
-Finding the ``right'' lemma in a library that contains thousands of them may be
-quite a challenge.  Even more since the state of the art of search tools for
-formal libraries is not as advanced as the one for, say, the world wide web.
+Finding the name of the ``right'' lemma in a library that contains
+thousands of them may be quite a challenge. In spite of their digital
+nature, formal libraries are not so easy to browse and the state
+of the art of search tools for formal libraries is far from being as
+advanced as what exists for instance for the world wide web.
 
-The Ssreflect proof language provides the \C{Search} command to
-filter the set of available lemmas providing patterns, like \C{(_ * _ + _)}
-or \C{(addn _ _)}, and partial names, like \C{"rev" "cons"}.
+In order to help the users finding their needle in the haystack,
+the \mcbMC{} library follows uniform naming policies and the Ssreflect
+proof language provides a \C{Search} command which displays lists of
+items filtered using patterns, like \C{(_ * _ + _)}
+or \C{(addn _ _)}, and substrings of the names, like \C{"rev" "cons"}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -1841,41 +1845,110 @@ search by writing ``\C{Search eq odd -coprime}''.
 \mcbLEVEL{1}
 \mcbsubsection{Search by name}
 
-Searching by name is the more effective way to find things in the
-\mcbMC{} library.  However one needs to be acquainted to the naming schema
-consistently used to name lemmas.  Indeed the name \C{my_first_lemma} we
-chose in section~\ref{ssec:groundeq} is actually a very bad name:
-hard to guess what the lemma is about by just reading its name.
-The name can, and should, convey as much information as possible while
-striving to stay short and handy.  We hence refrain from naming lemmas with
-numbers, as is typically done in standard mathematical texts.
+Being acquainted to the naming policy followed by the \mcbMC{} library
+provides one of the more effective ways of finding lemmas in the
+loaded libraries. The name  \C{my_first_lemma} we chose in
+section~\ref{ssec:groundeq} is actually a very bad name, as it gives no
+insight about what the lemma says. Most of the time, we actually
+refrain  from naming lemmas with numbers, as is typically done in
+standard mathematical texts. Finding an appropriate name for a
+lemma can be a delicate task. It should convey as much information as
+possible, while striving to remain short and handy. In particular,
+bureaucratic lemmas that are frequently used but represent no deep
+mathematical step should have a short name: this way they are both
+easy to type and easy to disregard when skimming through a proof
+script.
 
-\marginnote{This is not true anymore. Should this list be part of the book?}
-The naming convention is documented in the reference
-manual of Ssreflect~\cite[Section 11]{ssrman}.
-Let's get a flavor of it by examples:
-
-\begin{itemize}
-\item the name of the lemma begins with the name of the main operation
-  involved in the statement: \C{addn} for \C{addnA}, \C{odd} for
-  \C{odd_mul}, \C{leq} in \C{leq0n}.
-\item In \C{leq0n}, the other symbol involved in the name is ``0'',
-that indeed plays an important role in the lemma.  The relative position
-of ``0'' and ``n'' is chosen to recall to the user
-if 0 occurs the left or the right argument of the binary test \C{leq}.
-\item The capital letter suffix ``A'' in \C{addnA} stands for associativity.
-\end{itemize}
-
-Capital letters in the suffix denote standard properties.
-In particular ``A'' stands for associativity and
-``C'' for commutativity.
-
-The \C{Search} command accepts as filters partial names.  For example
+Partial names can be used as filters by the \C{Search} command. For example
 \C{Search "C"} prints, among other things, \C{addnC} and \C{mulnC},
 the commutativity properties of addition and multiplication.  Multiple
 strings can be specified, for example \C{Search "1" "muln"}.  This time
 we find \C{muln1} but also \C{muln_eq1}, the equation saying that
-the product of two natural numbers is 1 if and only if they are both 1.
+the product of two natural numbers is $1$ if and only if they are both $1$.
+
+Here are the general principles ruling the names of the in the \mcbMC{} library:
+\begin{itemize}
+\item{\bf Generalities}
+  \begin{itemize}
+  \item Most of the time the name of a lemma can be read off its
+    statement: a lemma named \L+fee_fie_foe+ will say something about
+    \L+(fee .. (fie ..(foe ..) ..) ..)+, e.g. lemma \L+size_cat+ in
+    {\tt seq.v}.
+  \item We often use a one-letter suffix to resolve overloaded
+    notation, e.g., addn, addb, addr denote nat, boolean, ring
+    addition, respectively. This policy does not necessarily apply to
+    constants that should always be hidden behind a generic notation,
+    and handled by a more generic theory.
+  \item Finally, a handful of theorems have a historical name,
+    e.g, \L+Cayley_Hamilton+ or \L+factor_theorem+.
+  \end{itemize}
+\item{\bf Structures and Records}
+  \begin{itemize}
+  \item Each structure type starts with a
+    lower case letter, and its constructor has the same name but with a
+    capital first letter.
+  \item Each instance of a structure type has a name formed with the
+    name of the carrier type, followed by an underscore and the one of
+    the structure type like in \L+seq_sub_subType+, the structure of
+    \L+subType+ defined on \L+seq_sub+ (see {\tt fintype.v}). Notable
+    exceptions to this rule are canonical constructions taking
+    benefits of modular name spaces, like in {\tt ssralg.v}.
+  \end{itemize}
+\item {\bf Suffixes}
+  \begin{itemize}
+  \item Lemma whose conclusion is a predicate, or an equality
+    for a predicate: that predicate is a suffix of the lemma name,
+    like in \L+addn_eq0+ or \L+rev_uniq+.
+  \item Lemmas whose conclusion is a standard property such as
+    \L+\char+, \L+<|+, etc.\footnote{These examples are taken from
+      libraries in the Mathematical Component distribution.}:
+    the property should be
+    indicated by a suffix (like \L+ _char+, \L+_normal+, etc), so
+    the lemma name
+    should start by a description of the argument of the property, such as
+    its key property, or its head constant.
+    Thus we have \L+quotient_normal+, not \L+normal_quotient+, etc. This
+    convention does not apply to monotony rules, for which we either
+    use the name of the property with the suffix for the operator
+    (e.g., \L+groupM+), or the name of the operator with the S
+    suffix for subset monotony (e.g., \L+mulgS+).
+  \item We try to use and maintain the following set of lemma suffixes:
+    \begin{itemize}
+    \item {\tt 0} : zero, or the empty set
+    \item {\tt 1} : unit, or the singleton set (use \L+_set1+ for
+      the latter to disambiguate)
+    \item {\tt 2} : two, doubling, doubletons
+    \item {\tt 3} etc, similarly
+    \item {\tt A} : associativity
+    \item {\tt C} : commutativity, or set complement (use \L+Cr+
+      for trailing complement)
+    \item {\tt D} : set difference, addition
+    \item {\tt E} : definition elimination (often conversion
+      lemmas)
+    \item {\tt F} : boolean false, finite type variant (as in
+      \L+canF_eq+), or group functor
+    \item {\tt G} : group argument
+    \item {\tt I} : set intersection, injectivity for binary operators
+    \item {\tt J} : group conjugation
+    \item {\tt K} : cancellation lemmas
+    \item {\tt L} : left hand side (as in \L+canLR+)
+    \item {\tt M} : group multiplication
+    \item {\tt N} : boolean negation, additive opposite
+    \item {\tt P} : characteristic properties (often reflection
+      lemmas)
+    \item {\tt R} : group commutator, or right hand side (as in
+      \L+canRL+)
+    \item {\tt S} : subset argument, or integer successor
+    \item {\tt T} : boolean truth and Type-wide sets
+    \item {\tt U} : set union
+    \item {\tt V} : group or ring multiplicative inverse
+    \item {\tt W} : weakening
+    \item {\tt X} : exponentiation, or set cartesian product
+    \item {\tt Y} : group join
+    \item {\tt Z} : module/vector space scaling
+    \end{itemize}
+  \end{itemize}
+\end{itemize}
 
 
 % Standard properties are
@@ -1895,10 +1968,6 @@ the product of two natural numbers is 1 if and only if they are both 1.
 % lemmas: as we will see later, the order of the quantification may make
 % a lemma easier to use under certain circumstances.
 
-A last remark about naming convention worth making here
-is that uninteresting and frequently used lemmas must have a
-short names, so that they can be easily typed in and at the same
-time quickly identified and disregarded when reading a proof.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
