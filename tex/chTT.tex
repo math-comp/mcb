@@ -1,31 +1,50 @@
 \Chapter{Type Theory}{The Curry-Howard correspondence}
 \label{ch:ttch}
 
-By now the informed reader is likely to wonder when the authors of the book
-will eventually mention the mathematical foundation of \Coq{}, 
-% a variant of type theory called \mcbCIC{}, 
-and
-in particular explain the Curry-Howard isomorphism.  Indeed this text departs
-from the standard presentation of \Coq{}, that typically starts by
-explaining the logic and showing how standard connectives like
-conjunction or disjunction are defined in term of inductive types.
+The authors made the deliberate choice to postpone the presentation of
+the mathematical foundations of the \Coq{} system and the formal
+definition of its language. Instead, the previous chapters have
+insisted on the definition of (typed) programs and on the way these
+programs can be used to decribe computable functions and decidable
+predicates. This take on calculations is indeed both at the core of
+the type theory underlying \Coq{} and one of the crucial ingredients
+to the methodology basing the \mcbMC{} library. The present chapter is
+devoted to a more in-depth presentation of these mathematical
+presentation, alhough an exhaustive description shall remain out of
+the scope of the present book. The interested reader can refer to more
+specialized references like~\cite{hottbook} or \cite{ttfp}, or the
+shorter survey in the Handbook of Automated
+Reasoning~\cite[Volume 2, Chapter 18]{handbook-ar}.
 
-We made a deliberate choice to put forward the programming aspects of
-type theory and how programs can be used both to express computable functions
-and decidable predicates or boolean connectives.
-Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
-library.  The computational behavior of programs is at the core of
-type theory.  The fact that a function computes to a value requires no
-proof: 5 and 2+3 are indistinguishable from a logical standpoint.
-This fact provided a powerful form of automation, and as we will
-see later will also ease the construction of sub types.
+.
 
-It is finally time to provide a minimal presentation of the statements as types
-correspondence.  The universe of boolean predicates is limited: one
-cannot for example express a general $\exists$ quantification, and also the
-status of the $\forall$ quantification has been so far never really explained.
-This presentation is far from being exhaustive, the interested reader can find
-a modern presentation of type theory in \cite{hottbook}.
+
+
+% By now the informed reader is likely to wonder when the authors of the book
+% will eventually mention the mathematical foundation of \Coq{},
+% % a variant of type theory called \mcbCIC{},
+% and
+% in particular explain the Curry-Howard isomorphism.  Indeed this text departs
+% from the standard presentation of \Coq{}, that typically starts by
+% explaining the logic and showing how standard connectives like
+% conjunction or disjunction are defined in term of inductive types.
+
+% We made a deliberate choice to put forward the programming aspects of
+% type theory and how programs can be used both to express computable functions
+% and decidable predicates or boolean connectives.
+% Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
+% library.  The computational behavior of programs is at the core of
+% type theory.  The fact that a function computes to a value requires no
+% proof: 5 and 2+3 are indistinguishable from a logical standpoint.
+% This fact provided a powerful form of automation, and as we will
+% see later will also ease the construction of sub types.
+
+% It is finally time to provide a minimal presentation of the statements as types
+% correspondence.  The universe of boolean predicates is limited: one
+% cannot for example express a general $\exists$ quantification, and also the
+% status of the $\forall$ quantification has been so far never really explained.
+% This presentation is far from being exhaustive, the interested reader can find
+% a modern presentation of type theory in \cite{hottbook}.
 
 \section{Connectives}
 
@@ -581,7 +600,7 @@ finding the right balance only comes with experience.
 
 \gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
-on the subgoals.%\footnote{not the status quo, but I prefer this exception to the current one} 
+on the subgoals.%\footnote{not the status quo, but I prefer this exception to the current one}
 Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 
 
@@ -665,7 +684,7 @@ as in the \C{rewrite} tactic, with the top assumption.
 \mcbsubsubsection{Pushing to the stack}
 \index[ssr]{\C{tactic : ..}}
 
-We have seen how to pull items from the stack to the context.  
+We have seen how to pull items from the stack to the context.
 Now let's see the so called \emph{discharging} operator \C{:}, performing
 the converse operation.
 Such operator decorates
@@ -819,7 +838,7 @@ Fixpoint nat_ind (P : nat -> Prop)
 \end{coq}
 \index[coq]{\C{nat\_ind}}
 
-The \Coq{} system generates such program automatically 
+The \Coq{} system generates such program automatically
 when the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
 trough the lenses of the proofs as programs correspondence this means
