@@ -1097,6 +1097,16 @@ the predecessor and double functions.
 \index[coq]{\C{(_ .-1)}}
 \index[coq]{\C{(_ .*2)}}
 
+We detail here the definition of \C{leq} since it will be often used
+in examples.
+\begin{coq}{}{}
+Definition leq m n := m - n == 0.
+Notation "m <= n" := (leq m n)
+\end{coq}
+Note that this definition crucially relies on the fact that
+subtraction computes to \C{0} whenever the first argument is less than
+or equal to the second argument.
+
 The \mcbMC{} library also provides concepts that makes sense only
 for the \C{nat} data type, like the
 test functions identifying \C{prime} and \C{odd} numbers. In that
@@ -2021,7 +2031,6 @@ Similarly, the comparison relation \C{leq} on type \C{nat} comes with
 an infix notation \C{<=} which can be defined as:
 
 \begin{coq}{}{}
-Definition leq m n := m - n == 0.
 Notation "m <= n" := (leq m n) (at level 70, no associativity).
 \end{coq}
 
@@ -2031,10 +2040,6 @@ precedence level and an associativity rule so as to avoid parsing
 ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes behind the scope of this
 book, the interested reader shall refer to~\cite[Chapter 12]{Coq:manual}.
-Note that the definition of \C{leq} relies on the fact that
-subtraction computes to \C{0} whenever the first argument is less than
-or equal to the second argument.
-
 
 Notations can also refer to more complex expressions, like in:
 
