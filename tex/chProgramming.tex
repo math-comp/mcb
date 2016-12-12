@@ -731,20 +731,16 @@ is a value of type \C{nat}, \C{x.+1} is another way to write
 application, so that this notation makes it possible to avoid some
 needs for parentheses: assuming  that \C{f} is a function of type
 \C{nat -> nat} the expression \C{(f n.+1)} reads
-\C{(f (S n))}. Similar notations are provided for up to four
-successive applications of the \C{S} constructor.
+\C{(f (S n))}. 
 
 \begin{coq}{name=f_plus_one}{width=5cm,title=Queries}
 Check fun n => f n.+1.
-Locate ".+4".
 \end{coq}
 \coqrun{name=f_plus_one_run}{f_plus_one}
 \begin{coqout}{f_plus_one_run}{width=7cm,title=Response}
 fun x => f x.+1 : nat -> nat
-Notation "n.+4" := S (S (S (S n)))
 \end{coqout}
 \index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
-\index[vernac]{\C{Locate}}
 
 When defining functions that operate on natural numbers, we can
 proceed by case analysis, as was done in the previous section for boolean
@@ -2010,6 +2006,15 @@ operations in section~\ref{sec:bigop}.
 \index[concept]{notation}
 \index[concept]{abbreviation}
 
+
+
+% Similar notations are provided for up to four
+% successive applications of the \C{S} constructor.
+% \index[vernac]{\C{Locate}}
+% Locate ".+4".
+% Notation "n.+4" := S (S (S (S n)))
+
+
 We already mentioned several times the \C{Notation} command, relying on the
 reader's intuition to understand roughly how it works.  The actual command is
 quite complex, letting one specify associativity and precedence to the
@@ -2029,7 +2034,7 @@ Notation "m + n" := (addn m n) (at level 50, left associativity).
 For infix notations, which are meant to be printed between two arguments
 of the operator (like addition in \C{2 + 3}), we advise to always include
 space around the infix operator, so that notations don't get mixed up with
-potential notations occuring in the arguments.
+potential notations occurring in the arguments.
 
 
 Similarly, the comparison relation \C{leq} on type \C{nat} comes with
