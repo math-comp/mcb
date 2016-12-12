@@ -34,7 +34,7 @@ to talk about functions described in an effective way, i.e. by a code
 that can be executed. As a consequence we borrow from computer science
 some jargon, like \emph{input} or \emph{return}. For example we say that
 an operation takes as input a number and returns its double to mean
-that the corresponding program computes and output the double of its
+that the corresponding program computes or outputs the double of its
 input, or that the function maps a number to its double. For
 this purpose, we study examples involving natural numbers. In \Coq{}
 syntax, we casually use \C{nat} to refer to the collection of natural
@@ -694,7 +694,7 @@ Definition andb b1 b2 := if b1 then b2 else false.
 
 The collection of natural numbers is formalized by a type called
 \C{nat}. An inhabitant of this type is either the constant \C{O}
-(capital ``o'' letter, to represent $0$) representing zero, or an
+(capital ``o'' letter) representing zero, or an
 application to an existing natural number of the function symbol \C{S}
 representing the successor:
 
@@ -1015,7 +1015,7 @@ Fixpoint subn m n : nat :=
 \index[coq]{\C{subn}}
 From a mathematical point of view, this definition can be quite
 unsettling.  The second pattern matching rule indicates that when
-the second argument of the subtraction is \C{0}, then the result is
+the second argument of the subtraction is 0, then the result is
 the first argument.  This rule actually also covers the case where the
 second argument is non-zero while the first argument is 0: in that
 case, the result of the function is zero. This oddity is imposed by
@@ -1109,8 +1109,7 @@ and not to limit herself to queries to the toplevel. The
 information provided by the \C{Print} and \C{About} commands are
 useful to understand how to use the objects defined in the libraries
 once they are known by their name. By contrast, the source
-files describe what is formalized, under which name, in a given library.
-
+files describe what is formalized, under which name and notation.
 
 \mantra{Each file in the \mcbMC{} library
 starts with a banner describing all the concepts and associated
@@ -1353,7 +1352,7 @@ is omitted.
 \index[coq]{\C{[seq .. ; ..]}}
 
 When programming with sequences, we can again use the  pattern matching
-syntax form to express how data can be retrieved from a sequence.  For
+syntax to express how data can be retrieved from a sequence.  For
 instance, to retrieve the first element of a sequence of natural numbers
 or 0 if the sequence does not contain any element, we can write the
 following code:
@@ -1365,7 +1364,7 @@ Definition first_element_or_0 (s : seq nat) :=
   | cons a _ => a
   end.
 \end{coq}
-Using the notations for {\tt cons} and {\tt nil}, we can also write
+Using the notations for \C{cons} and \C{nil}, we can also write
 
 \begin{coq}{name=first_element1}{}
 Definition first_element_or_0 (s : seq nat) :=
@@ -1544,9 +1543,9 @@ Eval compute in (true, false).1.
 (3, false) : nat * bool
 true : bool
 \end{coqout}
-As one expects pairs can be nested. \Coq{} has a slightly more complex
+As one expects pairs can be nested. \Coq{} provides a slightly more complex
 notation for pairs, which makes possible to write \C{(3,true,4)} for
-\C{((3,true),4)}. In this example, the value \C{true} is the third
+\C{((3,true),4)}. In this example, the value \C{true} is the second
 component of this tuple, or more precisely the second component of its
 first one: it can thus be obtained as \C{(3,true,4).1.2}. This may be
 a drawback, consequence of representing tuples as nested pairs. If
@@ -1556,12 +1555,12 @@ purpose. See for instance Exercise~\ref{ex:triple} for the definition
 of triples.
 
 We conclude this example with a remark on notations. After declaring
-such a the notation for the type of pairs, the expression \C{(a * b)}
+such a notation for the type of pairs, the expression \C{(a * b)}
 becomes ``ambiguous'',
 in the sense that the same infix \C{*} symbol can be used to multiply two
 natural numbers as in \C{(1 * 2)} but also to write the type of pairs \C{(nat *
 bool)}.  Such ambiguity is somewhat justified by the fact that the pair
-data type can be seen as the (cartesian) product of the arguments.  Such
+data type can be seen as the (Cartesian) product of the arguments.  The
 ambiguity can be resolved by annotating the expression with a specific
 label: \C{(a * b)\%N} interprets the infix \C{*} as multiplication of natural numbers,
 while \C{(a * b)\%type} would interpret \C{*} as the pair data type
@@ -1621,10 +1620,9 @@ Definition x (p : point) := match p with Point a _ _ => a end.
 
 When an inductive type has a single constructor, like in the case of
 \C{pair} or for records, the name of this constructor is not relevant
-in pattern matching, as the ``case analysis'' has a single
-branch. There is hence a specific syntax for this artificial case
-analysis on an irrefutable pattern. The above definition of projection
-\C{x} can alternatively be written:
+in pattern matching, as the ``case analysis'' has a single, irrefutable,
+branch. There is a specific syntax for irrefutable patterns, letting
+one rewrite the definition above as follows:
 
 \begin{coq}{}{}
 Definition x (p : point) := let: Point a _ _ := p in a.
@@ -1945,10 +1943,10 @@ natural number \C{(n : nat)}, one may write
 the \Coq{} expression \L+(\sum_(1 <= i < n) i)+ to represent the
 second example of sum above. The name \C{i} is really used as a
 \emph{binder name} here and we may substitute \C{i} with any other
-name we may find more convinent, as in \L+(\sum_(1 <= j < n) j)+,
+name we may find more convenient, as in \L+(\sum_(1 <= j < n) j)+,
 without actually changing the expression\footnote{Although this change
-results in two syntactically different expressions, they are
-indistinguishable for \Coq{}}.
+results in two syntactically different expressions, they have the same
+meaning for \Coq{}}.
 
 The notation represent an instance of the \C{foldr} program, iterating
 a function of type \C{nat -> nat -> nat}: the two type parameter of
@@ -2114,10 +2112,6 @@ or adopted throughout the \mcbMC{} library.
 \section{Exercises}
 
 %%%%%%%%
-\begin{Exercise}[label=ex:3sum,difficulty=0,title={A simple arithmetic function}
-Define a function that takes as input three natural numbers and returns
-the sum of their squares.
-\end{Exercise}
 \begin{Exercise}[label=ex:triple,difficulty=0,title={The pair data type}]
 Define the triple data type such that the following notation
 applies.  Also define the projections.
