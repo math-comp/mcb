@@ -1157,15 +1157,17 @@ type "bool" while it is
 expected to have type "nat".
 \end{coqout}{}{}
 
-As expected, elements of this data type cannot hold boolean values.
+As expected, \C{listn} %elements of this data type 
+cannot hold boolean values.
 So if we need to
-manipulate a list of booleans we have do define a similar data type.
+manipulate a list of booleans we have do define a similar data type:
+\C{listb}.
 
 \begin{coq}{name=list_def}{}
 Inductive listb := nilb | consb (hd : bool) (tl : listb).
 \end{coq}
 
-It is clear that this approach is problematic.  First, every time we
+This approach is problematic for two reasons.  First, every time we
 write a function that manipulates a list we have to choose a priori
 if the list holds numbers or booleans, even if the program does not
 really use the objects held in the list.
@@ -1219,7 +1221,7 @@ represents the empty sequence. The type of the
 constructor \C{cons} is devised specifically to describe how to produce a
 new list of type \C{(seq A)} by combining an element of \C{A}, the
 \emph{head} of the sequence, and an
-existing list of type \C{(seq A)}, the tail of the sequence.  This
+existing list of type \C{(seq A)}, the \emph{tail} of the sequence.  This
 also means that this data-type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
@@ -1313,8 +1315,8 @@ This example shows that the function \C{cons} is only applied
 explicitly to two arguments (the two arguments effectively declared
 for \C{cons} in the inductive type declaration).
 The first argument, which is implicit,
-has been guessed so that it matches the actually type of \C{2}.  For
-\C{nil} also, the argument has been guessed to match the constraints
+has been guessed so that it matches the actual type of \C{2}.  Also for
+\C{nil} the argument has been guessed to match the constraints
 that it is used in a place where a list of type \C{(seq
 nat)} is expected.
 
@@ -1517,21 +1519,23 @@ Notation "( a , b )" := (mk_pair a b).
 Notation "A * B" := (pair A B).
 \end{coq}
 
-The type \C{pair} has two polymorphic parameters, \C{A} and
+The type \C{pair} has two type parameters, \C{A} and
 \C{B}, so
 that it can be used to form any instance of pairs: \C{(pair nat bool)}
 is the type of pairs with an element of type \C{nat} in its first
-component and of type \C{bool} in its second, but we can also form
-\C{(pair bool nat)}, \C{(pair bool bool)}, etc. he type \C{pair} is
-denoted by an infix \C{*} symbol: \C{(nat * bool)} is the type of
-pairs that have a natural number as their first component and a boolean
-value as the second one. This type inductive type has
+component and one of type \C{bool} in its second, but we can also form
+\C{(pair bool nat)}, \C{(pair bool bool)}, etc. The type \C{pair} is
+denoted by an infix \C{*} symbol, as in \C{(nat * bool)}.
+% is the type of
+%pairs that have a natural number as their first component and a boolean
+%value as the second one. 
+This type inductive type has
 a \emph{single constructor} \C{mk_pair}. It inherits from the two
 polymorphic parameters, that become its two first, implicit arguments.
 The constructor \C{mk_pair} has two more explicit arguments which are
 the data stored in the pair. This constructor is associated with
-a notation so that \C{(a,b)} builds the pair of \C{a} and \C{b}, and
-\C{(a, b)} has type \C{(@pair A B)} . T For a given pair, we can
+a notation so that \C{(a, b)} builds the pair of \C{a} and \C{b}, and
+\C{(a, b)} has type \C{(pair A B)}. For a given pair, we can
 extract its first element, and we can provide a polymorphic definition
 of this projection:
 
