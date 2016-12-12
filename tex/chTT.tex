@@ -46,12 +46,33 @@ Reasoning~\cite[Volume 2, Chapter 18]{handbook-ar}.
 % This presentation is far from being exhaustive, the interested reader can find
 % a modern presentation of type theory in \cite{hottbook}.
 
-\section{Connectives}
+\section{Terms, types, proofs}\label{sec:chi}
 
-\subsection{Primitive types and terms formers}\label{sec:chi}
+The \Coq{} proof assistant provides a formal language to describe
+mathematical statemants and proofs, called
+\emph{Gallina} and based on a flavour of type theory called the
+\emph{Calculus of Inductive Constructions}.
+\marginnote{More references?}
 
-In type theory we say that \emph{logical statements} correspond to
-\emph{types} and that \emph{proofs} correspond to \emph{programs}.
+There exists several flavours of \emph{type theory} that can be used
+as a foundational language for mathematics, alternative to the
+flavours of set theory usually cited as the formal language of
+reference. The main difference between a type-theoretic framework and
+a set-theoretic one is the status of the deductive system used to
+represent reasoning in formal way. Informally speaking, a
+set-theoretic framework has two stages: first order logic provides the
+logical layer and describes the language of logical sentences and how
+these statements can be combined and proved; this language is then
+used in the second layer, to formulate the axioms of the particular
+theory of interest. A type-theoretic framework is monolithic and the
+same language of types is used in a uniform way to describe
+mathematical objects, statements and proofs. \emph{Logical statements}
+are identified with some \emph{types} and their \emph{proofs} with
+\emph{terms}, or programs, having this type. Thus proving a statement
+consists in fact in contructing a term of the corresponding type.
+
+
+\subsection{Primitive types and terms formers}
 
 The simplest example one could think of is the formal statement saying that
 a proposition $A$ implies itself, namely $A \rightarrow A$.  If one reads
