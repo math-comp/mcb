@@ -115,10 +115,8 @@ type and the status of its argument. It applies just as well to
 propositions and to the components thereof. For instance we can learn more
 about the constant \C{eq}:
 
-\marginnote{I use Locate here because the output of Search is much
-  more verbose.}
 \begin{coq}{name=about}{width=6cm,title=The polymorphic equality predicate}
-Locate "_ = _".
+Locate "=".
 
 About eq.
 $~$
@@ -379,27 +377,6 @@ Lemma dvdn_mul d1 d2 m1 m2 : d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
 Replacing conjunctions of hypotheses by a succession of implication is
 akin to replacing a tuple of arguments by functions with a functional
 type, as described in Section~\ref{sec:fun-sev-args}.
-
-The \C{Section} mechanism presented in Section~\ref{sec:section} can
-be used to factor not only the parameters but also the hypotheses of a
-corpus of definitions and properties. For instance, the following prelude:
-
-\begin{coq}{}{}
-Section Chinese.
-
-Variables m1 m2 : nat.
-Hypothesis co_m12 : coprime m1 m2.
-
-...
-
-End Chinese.
-\end{coq}
-corresponds to a mathematical sentence of the form: \emph{Let $m_1$
-  and $m_2$ be two coprime natural numbers\dots}.
-\marginnote{We need to say later that outside the scope of the
-  section, the hypothesis is added to the statement of lemmas whose
-  proof use it. But it's too early here since we would need to say
-  also that m1 and m2 are universally quantified.}
 
 % Yet beware, all the parameters are then fixed
 % inside the section (as well as hypotheses but that's less often
@@ -1352,6 +1329,48 @@ commutative addn : Prop
 \end{coqout}
 % Indeed, the class of propositions is closed under universal
 % quantification \C{ forall} (and also under implication \C{->}).
+
+
+\subsection{Organizing proofs with sections}
+
+The \C{Section} mechanism presented in Section~\ref{sec:section} can
+be used to factor not only the parameters but also the hypotheses of a
+corpus of definitions and properties. For instance, the proof of the
+chinese remainder theorem is stated within such a section. It uses a
+self-explanatory notation for congruences:
+
+\begin{coq}{}{}
+Section Chinese.
+
+Variables m1 m2 : nat.
+Hypothesis co_m12 : coprime m1 m2.
+
+...
+
+Lemma chinese_remainder x y :
+  (x == y %[mod m1 * m2]) = (x == y %[mod m1]) && (x == y %[mod m2]).
+Proof.
+...
+End.
+
+End Chinese.
+\end{coq}
+corresponds to a mathematical sentence of the form: \emph{In this section,
+  $m_1$ and $m_2$ are two coprime natural numbers\dots}. Within the
+scope of a section the parameters like, \C{k1} and \C{k2}, are
+fixed. Outside the scope of the section, here after the
+\C{End Chinese} command, these variables and the hypotheses are
+\emph{generalized}, so that the statement of the \C{chinese_remainder} is:
+
+\begin{coq}{}{}
+Lemma chinese_remainder m1 m2 (co_m12 : coprime m1 m2) x y :
+  (x == y %[mod m1 * m2]) = (x == y %[mod m1]) && (x == y %[mod m2]).
+\end{coq}
+
+Outside the scope of the section, the type of constants and the
+statement of lemmas only depend on the section variables and
+hypotheses that are actually used in their definition or proof.
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
