@@ -3,7 +3,7 @@ From mathcomp Require Import all_ssreflect.
 (* statements *)
 Check 3 = 3.
 Check false || true = true.
-Locate "_ = _".
+Locate "=".
 About eq.
 Fail Check 3 = [:: 3].
 
