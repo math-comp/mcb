@@ -1,26 +1,26 @@
-Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect.
 
 (* statements *)
 Check 3 = 3.
 Check false || true = true.
-Locate "_ = _". 
+Locate "_ = _".
 About eq.
 Fail Check 3 = [:: 3].
 
 (* proofs *)
 Lemma my_first_lemma : 3 = 3.
 Proof. by []. Qed.
-Lemma my_second_lemma : 2 + 1 = 3. 
-Proof. by []. Qed. 
-Lemma addSn m n : m.+1 + n = (m + n).+1. 
+Lemma my_second_lemma : 2 + 1 = 3.
 Proof. by []. Qed.
- 
+Lemma addSn m n : m.+1 + n = (m + n).+1.
+Proof. by []. Qed.
+
 Lemma negbK b : ~~ (~~ b) = b.
 Proof. by case: b. Qed.
 
 Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof. by case: n => [| k]. Qed.
- 
+
 Lemma muln_eq0 m n : (m * n == 0) = (m == 0) || (n == 0).
 Proof.
 case: m => [|m] //.
@@ -55,13 +55,15 @@ Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
 Proof. by move=> m_gt0 ?; rewrite dvdn_fact ?m_gt0. Qed.
 
 Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+  p %| m `! + 1 -> m < p.
 Proof.
 move=> prime_p.
-apply: contraL.
+apply: contraLR.
+rewrite -leqNgt.
 move=> leq_p_m.
 rewrite dvdn_addr.
   rewrite gtnNdvd.
+About contraLR.
     by [].  (* ~~ false *)
     by [].  (* 0 < 1 *)
   by apply: prime_gt1.  (* 1 < p *)
@@ -110,7 +112,7 @@ Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
 
 
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
-Proof. 
+Proof.
 elim: n => // n IHn.
 rewrite expnS odd_mul {}IHn orbC.
 by case: odd.
@@ -131,4 +133,3 @@ rewrite expnS -{}IHn [in LHS]/all_words iterS -/(all_words _ _).
 elim: alphabet (all_words _ _) => //= w ws IHws aw.
 by rewrite size_cat IHws size_map mulSn.
 Qed.
-
