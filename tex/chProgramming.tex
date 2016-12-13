@@ -956,10 +956,12 @@ This guarantee relies on an analysis of the function's
 description, to make sure that recursive calls always happen with a
 given argument that decreases.  The most frequent technique to
 establish this guarantee is that recursive calls happen on a variable
-and this variable was introduced by a pattern in a pattern-matching
-construct or in an ``\C{if .. is ..}'' statement, with the additional
-constraint that the pattern-matching construct observes a variable
-that was one of the function's inputs.
+and this variable binds a subterm of the input via a pattern maching
+construct.
+%was introduced by a pattern in a pattern-matching
+%construct or in an ``\C{if .. is ..}'' statement, with the additional
+%constraint that the pattern-matching construct observes a variable
+%that was one of the function's inputs.
 \index[concept]{recursion!termination}
 \index[concept]{termination}
 
@@ -1856,7 +1858,7 @@ The way functions are described as programs has an impact on the way
 symbolic computations unfold. For example, recall from
 Section~\ref{ssec:recnat} the way we defined an addition operation on
 elements of type \C{nat}. We rephrase it using the \C{if .. is
-  .. then} syntax presented in Section~\ref{}:
+  .. then .. else ..} syntax: % presented in Section~\ref{}:
 
 \begin{coq}{name=add_redef}{}
 Fixpoint addn n m := if n is p.+1 then (addn p m).+1 else m.
