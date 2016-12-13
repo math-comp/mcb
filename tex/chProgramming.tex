@@ -679,11 +679,11 @@ in the \mcbMC{} library).
 %In practice, readers become quickly accustomed to the
 % distinction between the two symbols.
 
-For instance, the function \C{andb} is defined as follows and
-evaluates to \C{true} if and only if both inputs are \C{true}.
+For instance, the functions \C{andb} and \C{orb} are defined as follows.
 
-\begin{coq}{name=define_andb}{}
-Definition andb b1 b2 := if b1 then b2 else false.
+\begin{coq}{name=define_andb_orb}{}
+Definition andb b1 b2 := if b1 then b2   else false.
+Definition orb  b1 b2 := if b1 then true else b2.
 \end{coq}
 \index[coq]{\C{andb}}
 
@@ -2095,7 +2095,7 @@ represented by a notation.  In order to understand the meaning of an unknown not
 Locate "<=".
 \end{coq}
 \begin{coqout}{}{}
-Notation            Scope     
+Notation            Scope
 "m <= n <= p" := andb (leq m n) (leq n p) : nat_scope
 "m <= n < p" := andb (leq m n) (leq (S n) p) : nat_scope
 "m <= n" := leq m n  : nat_scope
@@ -2110,7 +2110,7 @@ The converse is not true: a sequence of characters is recognized as
 a symbol only if it is used in a previously declared notation.
 For example \C{3.+1.+1 } is parsed as a number followed by two
 occurrences of the \C{.+1} symbol, even if \C{.+1.+1} could, in
-principle, be a single symbol.  
+principle, be a single symbol.
 
 Moreover substrings of a symbol are not necessarily symbols.  As a consequence
 \C{Locate "="} does not find notations like the ones above, since \C{<=} is a
@@ -2118,8 +2118,8 @@ different symbol even if it contains \C{=} as a substring.  For the same reason
 \C{Locate ".+"} returns an empty answer since \C{.+} is not a (complete)
 symbol.
 
-We mention here some notational conventions 
-% either imposed by \Coq{}'s parsing engine or 
+We mention here some notational conventions
+% either imposed by \Coq{}'s parsing engine or
 adopted throughout the \mcbMC{} library.
 
 % \marginnote{assia: mention the prelude?}
@@ -2127,7 +2127,7 @@ adopted throughout the \mcbMC{} library.
 \begin{itemize}
 \item Concepts that are typically denoted with a letter, like $N(G)$ for the
 	normalizer of the group $G$ are represented by symbols beginning
-	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.  
+	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
 	specific cases, like binding \C{1} and \C{0} to ring elements.
@@ -2148,7 +2148,7 @@ adopted throughout the \mcbMC{} library.
 	which means that the restriction of \C{f} to \C{A} is injective.
 \end{itemize}
 
-Each file in the \mcbMC{} library comes with a header documenting 
+Each file in the \mcbMC{} library comes with a header documenting
 all concepts and associated notations it provides.
 
 
