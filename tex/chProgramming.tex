@@ -1,33 +1,41 @@
-\Chapter{Computational definitions}{Defining concepts by writing programs}\label{ch:prog}
+\Chapter{Functions and Computation}{}\label{ch:prog}
 
-\marginnote{May be find a better title}
+%\marginnote{May be find a better title}
 % TODO: uniform terminology (a function returns,produces, computes... patter matching,case analysis...program, function, operation...computation, evaluation...data type, inductive type); I mean, we can say we use them interchangeably... but the quotienting must be explicit since the reader may not know it (eg some of it is historical, some justified by curry Howard (fwd reference)).  Also "coq session" is something that I would remove.
 %
 % TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
 %
 %\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
 
-We will take the point of view that mathematics can be understood as
-the study of objects, operations on these objects, and
-abstractions.\marginnote{This might be a bit general/inaccurate (what
-  about similarities, classifications, etc.}
-Children start learning mathematics by counting, where the objects are
-numbers and the operations are enumerating and adding.  In fact
-numbers are already the result of an abstraction process.
+% We will take the point of view that mathematics can be understood as
+% the study of objects, operations on these objects, and
+% abstractions.\marginnote{This might be a bit general/inaccurate (what
+%   about similarities, classifications, etc.}
+% Children start learning mathematics by counting, where the objects are
+% numbers and the operations are enumerating and adding.  In fact
+% numbers are already the result of an abstraction process.
 
-What are the objects, the operations, and the abstractions in a given
-mathematical corpus is quite fluctuating.  The objects of group theory
-may sometimes be viewed as operations in another context.  Nevertheless,
-in this chapter, we describe how some objects are described with the intent
-that they are {\em inert}, that is, they are meant to be
-manipulated by operations.  We also show how operations are described.
+% What are the objects, the operations, and the abstractions in a given
+% mathematical corpus is quite fluctuating.  The objects of group theory
+% may sometimes be viewed as operations in another context.  Nevertheless,
+% in this chapter, we describe how some objects are described with the intent
+% that they are {\em inert}, that is, they are meant to be
+% manipulated by operations.  We also show how operations are described.
+
+In the formalism underlying the \Coq{} system, functions play a
+central role akin to the one of sets in set theory. In this chapter,
+we give a flavor of how to define functions in \Coq{}, how to perform
+computations and how to define basic mathematical objects in this
+formalism.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Functions}\label{sec:functions}
-In the formalism underlying the \Coq{} system, functions play a
-central role akin to the one of sets in set theory. Before being more
-precise about this formalism in Chapter~\ref{ch:ttch}, in this Section
-we review some vocabulary and notations associated with functions.
+ Before being more
+precise about the logical foundations of the \Coq{} system in
+Chapter~\ref{ch:ttch},
+we review in this Section some vocabulary and notations associated
+with functions.
 We will use the words \emph{function} and \emph{operation}
 interchangeably. Sometimes, we will also use the word \emph{program}
 to talk about functions described in an effective way, i.e. by a code
@@ -49,7 +57,6 @@ represented by their analogue \C{1}, \C{2}, \dots in \Coq{} syntax.
 Mathematical formulas are expressions composed of operation symbols,
 of a certain arity, applied to some arguments which are
 either variables or themselves (sub)-expressions.
-\marginnote{Cite a standard reference?}
 In many cases these
 expressions are written using notations for the operations, like the
 infix $+$ the expression
@@ -542,8 +549,7 @@ Eval compute in
 When it comes to comparing the values of computations, a local definition
 has the same result as the expression where all occurrences of the bound
 variable are replaced by the corresponding expression.  Thus, the example
-expression~\ref{lst:eval_let_expr} has exactly the same value as:
-\marginnote{References to listings does not work}
+expression above has exactly the same value as:
 
 \begin{coq}{}{}
 (33 + 33 + 33) + (33 + 33 + 33) + (33 + 33 + 33)
@@ -559,8 +565,6 @@ thus also be used to organize intermediate computations.
 
 \section{Data types, first examples}
 
-\marginnote{Change the title of the section, at least to find a
-  synonym for destruction.}
 A well-formed mathematical expression is just the juxtaposition of the
 symbols of a given language, which respects the prescribed arities of
 the operations. For instance, the expression:
@@ -883,20 +887,10 @@ Definition same_bool b1 b2 :=
 
 \index[concept]{recursion}
 
-With only pattern-matching, we do not cope well with the fact that the
-type \C{nat} of natural numbers actually contains an infinity of
-elements.  To really handle infinity, the \Coq{} system provides another
-facility, known as {\em recursivity}.  The idea behind recursivity is
-that we can define a function while supposing that it is already
-defined for a subset of the type.  This adds a new element for which
-the function is defined, and progressively this makes that the
-function is defined for all elements of the type.
-\marginnote{Waiting for input from Yves, relating pattern matching
-  without recursion with the complexity of the function
-  implemented. See also the marginnote at definition of equality.}
-
-Many usual functions dealing with natural numbers are actually
-defined recursively.  For instance, we can define addition in the
+Using constructors and pattern matching, it is possible to add or
+subtract one, but not to describe the addition or subtraction of
+arbitrary numbers. For this purpose, we resort to recursive
+definitions. The addition operation is defined in the
 following manner:
 
 \begin{coq}{name=redefine_add}{}
@@ -1024,12 +1018,10 @@ output by the function even in the case when  the second argument is
 non-zero and the first argument is zero. This problem disappears with
 the introduction of another type of numbers, with negative integers.
 
-\marginnote{Paragraph to be rewriten by Yves.}
-Recursive functions also make it possible to test data for
-equality. We can for example write a function with two arguments of
-type \C{nat}, that
-returns \C{true} exactly when the two arguments are equal.
 
+We can also write a recursive function with two arguments of
+type \C{nat}, that returns \C{true} exactly when the two arguments are
+equal:
 
 \begin{coq}{name=nat_eq_def}{}
 Fixpoint eqn m n :=
@@ -1362,61 +1354,43 @@ separated by \C{;} (semi-colon) and the last element, \C{nil},
 is omitted.
 \index[coq]{\C{[seq .. ; ..]}}
 
-When programming with sequences, we can again use the  pattern matching
-syntax to express how data can be retrieved from a sequence.  For
-instance, to retrieve the first element of a sequence of natural numbers
-or 0 if the sequence does not contain any element, we can write the
-following code:
+Pattern matching can be used to define functions on sequences, like
+the following example which computes the first element of a non-empty
+sequence, with a default value for the empty case:
 
-\begin{coq}{name=first_element}{}
-Definition first_element_or_0 (s : seq nat) :=
-  match s with
-  | nil => 0
-  | cons a _ => a
-  end.
+\begin{coq}{name=head}{}
+Definition head T (x0 : T) (s : seq T) := if s is x :: _ then x else x0.
 \end{coq}
-Using the notations for \C{cons} and \C{nil}, we can also write
-
-\begin{coq}{name=first_element1}{}
-Definition first_element_or_0 (s : seq nat) :=
-  match s with
-  | [::] => 0
-  | a :: _ => a
-  end.
-\end{coq}
-Using the \C{if} syntax, we can write:
-
-\begin{coq}{name=first_element2}{}
-Definition first_element_or_0 (s : seq nat) :=
-  if s is a :: _ then a else 0.
-\end{coq}
-
-
-\marginnote{assia: What about the polymorphic version (head)? As an exercise?}
 
 \subsection{Recursion for sequences}
-Because the second explicit argument of \C{cons} is an arbitrarily
-sequence, it is possible to build sequences that are arbitrarily long.
-Yet a sequences is always finite, as a finite pile of \C{cons}
-constructors, terminated with a \C{nil}.
-In this respect, the type \C{seq} of sequences is very similar the
-type \C{nat} of natural numbers.  Recursion is again the solution to
-cope with the arbitrary
-size of sequences using functions that can be described concisely.
-\marginnote{assia: here again I am uneasy with this sentence. Can we
-  remove it? Or rewrite it?}
 
-For instance, we can define a size function that counts the number of
-elements in a sequence.
+\index[concept]{recursion}
+Terms of type \C{(seq A)}, for a type \C{A} are finite piles of
+\C{cons} constructors, terminated with a \C{nil}. They are similar to
+the terms of type \C{nat}, except that each \C{cons} constructor
+carries a datum of type \C{A}. Here as well, recursion provides a way
+to process sequences of arbitrary size.
+
+
+The \Coq{} system provides support for the recursive definition of
+functions over any inductive type (not just \C{nat}). The recursive
+definition of the value of a
+function at a given constructor can use the value of the function at
+the arguments of the constructor. This defines the function over the
+entire type since all values of an inductive type are finite piles of
+constructors.
+
+The size function, that counts the number of elements in a sequence,
+implements the correspondence between natural numbers and sequences:
 
 \begin{coq}{name=def_size}{}
 Fixpoint size A (s : seq A) :=
   if s is _ :: tl then (size tl).+1 else 0.
 \end{coq}
 \index[coq]{\C{size}}
-During computation on a given sequence, this function will traverse
+During computation on a given sequence, this function traverses
 the whole sequence, incrementing the result for every
-\C{cons} pattern that is encountered.  It should be noted that in this
+\C{cons} that is encountered.  It should be noted that in this
 definition, the function \C{size} is described as a two argument
 function, but the recursive call \C{(size tl)} is done by providing
 explicitly only one argument, \C{tl}. Indeed, remember that
@@ -1950,7 +1924,7 @@ Notation "\sum_ ( m <= i < n ) F" :=
 The \C{iota} function generates the list of natural numbers
 corresponding to the range of the summation. Then the notation defines
 expressions with shape \L+\sum_ (m <= i < n) F+, with \C{F} a
-subexpression featuring variable \C{i}, the one used for the
+sub-expression featuring variable \C{i}, the one used for the
 index. For instance, once the above notation is granted and for any
 natural number \C{(n : nat)}, one may write
 the \Coq{} expression \L+(\sum_(1 <= i < n) i)+ to represent the
