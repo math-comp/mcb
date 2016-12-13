@@ -67,7 +67,7 @@ theorems, starting with \emph{identities}.
 \index[concept]{equality}
 \index[concept]{ground equality}
 
-\marginnote{We should have somewhere early a paragraph about the prelude.}
+%\marginnote{We should have somewhere early a paragraph about the prelude.}
 \Coq{} provides a binary predicate named \C{eq} and equipped with the
 infix notation \C{=}. This predicate is used to write sentences
 expressing that two objects are \emph{equal}, like in $2 + 2 = 4$.
@@ -774,7 +774,7 @@ equal modulo computation to \C{(0 == 0)}, which itself computes to
 \C{((0 == 0) || (n == 0))}, hence to \C{(true || (n == 0))} and finally to
 \C{true} because the boolean disjunction \C{(_ || _)} is defined by
 case analysis on its first argument.
-\marginnote{We did not show the definition of orb.}
+%\marginnote{We did not show the definition of orb.}
 
 \begin{coq}{def=almostMulnEq1}{width=7cm}
 Lemma muln_eq0 m n :
@@ -1423,11 +1423,9 @@ section~\ref{sec:infprimes}. The proof of the lemma goes by
 contraposition: if $p$ is a prime number smaller that $m$, then it
 divides $m!$ and thus it cannot divide $m! + 1$ as it does not divide
 $1$. We first state this lemma as follows:
-\marginnote{The negation in the conclusion is a bit weird. Shall we
-  remove it?}
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 \end{coq}
 The first step of our formal proof will be to give a name to the
 hypothesis \C{(prime p)}, which means that we add it to the
@@ -1437,7 +1435,7 @@ hypotheses \emph{moves} from under the bar to above:
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+  p %| m `! + 1 -> m < p.
 Proof.
 move=> prime_p.
 \end{coq}
@@ -1445,22 +1443,23 @@ move=> prime_p.
 m, p : nat
 prime_p : prime p
 ====================
-p %| m `! + 1 -> ~~ (p <= m)
+p %| m `! + 1 -> m < p
 \end{coqout}
 The second step of the proof is to transform the current goal into its
-contrapositive. For this purpose, we use the following lemma:
+contrapositive.
 
 \begin{coq}{}{}
-Lemma contraL (c b : bool) : (c -> ~~ b) -> (b -> ~~ c).
+Lemma contraLR (c b : bool) :  (~~ c -> ~~ b) -> (b -> c).
 \end{coq}
-\index[coq]{\C{contraL}}
-which describes the shape of the contrapositive of statements with an
-explicit negation in their conclusion and thus describe a family of
-instances of the contraposition law. The \C{apply: contraL} tactic
-finds the appropriate values of the premisse and conclusion and thus
+\index[coq]{\C{contraLR}}
+
+which describes the shape of the contrapositive of statements and thus
+describe a family of
+instances of the contraposition law. The \C{apply: contraLR} tactic
+finds the appropriate values of the premisse and conclusion and
 instantiate the scheme, leaving us to prove that \C{p} is not a
-divisor of \D{(m `! + 1)} under the assumption that \C{p} is smaller
-then \C{m}:
+divisor of \D{(m `! + 1)} under the assumption that \C{p} is not
+greater than \C{m}:
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
@@ -1473,18 +1472,18 @@ apply: contraL.
 m, p : nat
 prime_p : prime p
 ====================
- p <= m -> ~~ (p %| m `! + 1)
+ ~~ (m < p) -> ~~ (p %| m `! + 1)
 \end{coqout}
 
 More precisely, the values chosen by the tactic for the two parameters
-\C{c, b} of lemma \C{contraL} are \C{(p <= m)} and
+\C{c, b} of lemma \C{contraLR} are \C{(m < p)} and
 \D{(p \%| m `! + 1)}. They have been found by comparing the statement to be
-proved with the conclusion \C{(b -> ~~ c)} of the statement of the lemma.
+proved with the conclusion \C{(b -> c)} of the statement of the lemma.
 The new statement of the goal is the corresponding instance of the
-premisse \C{(c -> ~~ b)} of lemma \C{contraL}.
+premisse \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
 
-The next step in our formal proof is to give a name to the hypothesis
-\C{(p <= m)}.
+The next step in our formal proof is to improve the shape of the
+hypothesis \C{\~\~ (m < p)} and to give it name.
 
 
 \begin{coq}{}{width=6cm}
@@ -1493,6 +1492,7 @@ Lemma example m p : prime p ->
 Proof.
 move=> prime_p.
 apply: contraL.
+rewrite -leqNgt.
 move=> leq_p_m.
 \end{coq}
 \begin{coqout}{}{width=6cm}
@@ -1557,7 +1557,8 @@ Finally, the resulting script would be:
 Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p.
-apply: contraL.
+apply: contraLR.
+rewrite -leqNgt.
 move=> leq_p_m.
 rewrite dvdn_addr.
   rewrite gtnNdvd.
@@ -1583,9 +1584,9 @@ We also combine on the same line the first three step, using
 the semicolon.
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 Proof.
-move=> prime_p; apply: contraL; move=> leq_p_m.
+move=> prime_p; apply: contraLR; rewrite -leqNgt; move=> leq_p_m.
 rewrite dvdn_addr.
   rewrite gtnNdvd //.
   by apply: prime_gt1.  (* 1 < p *)
@@ -1608,18 +1609,18 @@ and the side condition \C{(prime p)}.  Both are trivial, hence
 solved prefixing the line with \C{by}.
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 Proof.
-move=> prime_p; apply: contraL; move=> leq_p_m.
+move=> prime_p; apply: contraLR; rewrite -leqNgt; move=> leq_p_m.
 rewrite dvdn_addr.
   by rewrite gtnNdvd // prime_gt1.
 \end{coq}
 The same considerations hold for the last goal.
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 Proof.
-move=> prime_p; apply: contraL; move=> leq_p_m.
+move=> prime_p; apply: contraLR; rewrite -leqNgt; move=> leq_p_m.
 rewrite dvdn_addr.
   by rewrite gtnNdvd // prime_gt1.
 by rewrite dvdn_fact // prime_gt0.
