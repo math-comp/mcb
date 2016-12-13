@@ -2088,45 +2088,68 @@ Notation "n .+1" := (succn n) (at level 2, left associativity,
   format "n .+1") : nat_scope.
 \end{coq}
 
-\marginnote{TODO: finish this paragraph}
 The \C{Locate} command can be used to reveal the actual term
-represented by a notation.
+represented by a notation.  In order to understand the meaning of an unknown notation like for instance \C{(a <= b <= c)}, one can use the \C{Locate} command to uncover the symbols it involves.
 
 \begin{coq}{}{}
-Notation "a <= b <= c" := ((a <= b) && (b <= c)).
+Locate "<=".
 \end{coq}
+\begin{coqout}{}{}
+Notation            Scope     
+"m <= n <= p" := andb (leq m n) (leq n p) : nat_scope
+"m <= n < p" := andb (leq m n) (leq (S n) p) : nat_scope
+"m <= n" := leq m n  : nat_scope
+...
+\end{coqout}
 
-% Similar notations are provided for up to four
-% successive applications of the \C{S} constructor.
-% \index[vernac]{\C{Locate}}
-% Locate ".+4".
-% Notation "n.+4" := S (S (S (S n)))
+The only difficulty in using \C{Locate} comes from the fact
+that one has to provide a complete \emph{symbol}.  A symbol
+is composed by one or more non blank characters and its first
+character is necessarily a non alphanumerical one.
+The converse is not true: a sequence of characters is recognized as
+a symbol only if it is used in a previously declared notation.
+For example \C{3.+1.+1 } is parsed as a number followed by two
+occurrences of the \C{.+1} symbol, even if \C{.+1.+1} could, in
+principle, be a single symbol.  
 
+Moreover substrings of a symbol are not necessarily symbols.  As a consequence
+\C{Locate "="} does not find notations like the ones above, since \C{<=} is a
+different symbol even if it contains \C{=} as a substring.  For the same reason
+\C{Locate ".+"} returns an empty answer since \C{.+} is not a (complete)
+symbol.
 
-We mention here some conventions either imposed by \Coq{}
-or adopted throughout the \mcbMC{} library.
-\marginnote{assia: mention the prelude?}
+We mention here some notational conventions 
+% either imposed by \Coq{}'s parsing engine or 
+adopted throughout the \mcbMC{} library.
+
+% \marginnote{assia: mention the prelude?}
 
 \begin{itemize}
-\item A symbol starts with a non alpha-numerical character followed by
-	any character.  For example \C{.+1} is a single symbol, and so are
-	\C{.+4}, \C{\%/}, \C{<=}, and \C{[::}.  Only existing
-	symbols are taken into account: \C{3.+1.+1} is parsed as a number
-	followed by two occurrences of the \C{.+1} symbol.  In principle,
-         \C{.+1.+1} could be a symbol, but no notation declares it.
-%\marginnote{I know it is not correct, but no user would prefer the correct explanation}
-\item Notations that are typically denoted with a letter, like $N(G)$ for the
+\item Concepts that are typically denoted with a letter, like $N(G)$ for the
 	normalizer of the group $G$ are represented by symbols beginning
-	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.
+	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.  
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
 	specific cases, like binding \C{1} and \C{0} to ring elements.
-\item n-ary notations begin with \C{[} followed by the symbol of the
-	operation being repeated, as in \C{[&& true, false & false]}.
-\item postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
+\item Postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
 	to let one write \C{(p.-group G)}.
+\item Taking inspiration from \LaTeX{} some symbols begin with \C{\\},
+	like \C{\\in}, \C{\\matrix}, \C{\\sum}, \ldots
+\item Arguments typically written as subscripts appear after a symbol
+	which ends with an underscore like \C{'N\_} in \C{'N\_G(H)}.
+\item N-ary notations begin with \C{[} followed by the symbol of the
+	operation being repeated, as in \C{[&& true, false & false]}.
+\item Bracket notations are also used  for operations building data as in
+	\C{[seq .. | .. ]}.
+\item Curly braces notations like \C{\{poly R\}} are used for data types
+	with parameters.
+\item Curly braces are also used to write localized statements
+	as \C{\{in A, injective f\}}
+	which means that the restriction of \C{f} to \C{A} is injective.
 \end{itemize}
 
+Each file in the \mcbMC{} library comes with a header documenting 
+all concepts and associated notations it provides.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
