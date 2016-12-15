@@ -61,12 +61,12 @@ In many cases these
 expressions are written using notations for the operations, like the
 infix $+$ the expression
 \[ 2 + 1 \]
-There are actually several ways of decomposing this expression, which
-represents a natural number, into an operation applied to its arguments.
-Indeed it reads both as  the result of the binary operation
-of addition, applied to two natural numbers $2$ and $1$, and as the
-result of the unary operation of {\em adding one on the right to a
-  natural number}, applied to a natural number $2$.
+This expression represents a natural number, obtained as the result of
+an operation applied to its arguments. For instance, it is the result
+of the binary operation of addition, applied to two natural numbers
+$2$ and $1$. The same expression can also represent the result of the
+unary operation of {\em adding one on the right to a natural number},
+applied to a natural number $2$.
 
 In \Coq{}, the operation of {\em adding one on the right to a natural number} is
 written in the following manner:
@@ -233,7 +233,7 @@ has type "nat -> nat" while it is
 expected to have type "nat".
 \end{coqout}
 \index[concept]{type error}
-It makes indeed little sense to compute the addition between
+As expected, it makes little sense to compute the addition between
 a function and $1$.
 
 Expressions that are well typed can be \emph{computed} by \Coq{},
@@ -302,7 +302,8 @@ The two first occurrences of \C{nat} in the response
  \C{nat -> nat -> nat} assert that function \C{f2} has two arguments,
  both of type \C{nat}, and the last occurrence refers to the type of
  the output. This response actually reads \C{nat -> (nat -> nat)},
- as the \C{->} symbol associates to the right. Indeed, {\em a multiple
+ as the \C{->} symbol associates to the right. Otherwise said,
+ {\em a multiple
  argument function is a single argument function that returns a
  function}.  This idea that multiple argument functions can be
 represented using single argument functions (rather for instance than
@@ -577,10 +578,10 @@ is a well formed expression in the language $\{0,S, +, \times\}$ of
 Peano arithmetic. In these examples however, the usual axioms that
 formalize the respective arithmetics confer a distinctive status to
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
-$S$ for natural numbers. Indeed, any variable-free boolean expression
+$S$ for natural numbers. More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
 variable-free expression in Peano arithmetic is equal either to $0$ or
-to an iterated application of the symbol $S$ to $0$. Indeed, in both
+to an iterated application of the symbol $S$ to $0$. In both
 cases, the other symbols in the signature represent functions, whose
 computational content is prescribed by the axioms.
 
@@ -665,7 +666,8 @@ Eval compute in f23 false.
   = 3 : nat
 \end{coqout}
 
-Indeed, the \C{compute} command rewrites any term of the shape
+As illustrated on this example,
+the \C{compute} command rewrites any term of the shape
 \C{if true then t1 else t2} into \C{t1} and any term of the shape
 \C{if true then t1 else t2} into \C{t2}.
 
@@ -789,7 +791,8 @@ occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
 re-used in the result part.
-Remark that we did omit the type of the input \C{n}. Indeed, matching
+Remark that we did omit the type of the input \C{n}. We can ommit this
+type because matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
 \C{nat}, as the \C{S} constructor belongs to \emph{exactly}
 one inductive definition, the one of \C{nat}.
@@ -1229,7 +1232,7 @@ Types again avoid confusion: it is not licit to form the type \C{(seq 3)},
 since the argument \C{3} has type \C{nat}, while the function
 \C{seq} expects an argument of type \C{Type}.\footnote{For historical
 reasons \Coq{} may display the type of \C{nat} or \C{bool} as \C{Set}
-and not \C{Type}.  We beg the reader to ignore this detail, that indeed
+and not \C{Type}.  We beg the reader to ignore this detail, that
 plays no role in the \mcbMC{} library.}
 
 In principle, the constructors of such a polymorphic data type feature
@@ -1389,10 +1392,10 @@ Fixpoint size A (s : seq A) :=
 \index[coq]{\C{size}}
 During computation on a given sequence, this function traverses
 the whole sequence, incrementing the result for every
-\C{cons} that is encountered.  It should be noted that in this
+\C{cons} that is encountered.  Note that in this
 definition, the function \C{size} is described as a two argument
 function, but the recursive call \C{(size tl)} is done by providing
-explicitly only one argument, \C{tl}. Indeed, remember that
+explicitly only one argument, \C{tl}. Remember that
 %we started the
 %\Coq{} session with, among other commands, the command ``\C{Set Implicit
 %  Arguments}''.  According to this directive,
@@ -1630,7 +1633,7 @@ useful to set a working environment where the common data is declared
 only once.  Such a working environment is called a \C{Section}, and
 the data that is local to this section is declared using \C{Variable}
 commands.  A typical example happens when describing functions that
-are polymorphic. Indeed in that case, they rely in a uniform way on a
+are polymorphic. In that case, definitions rely in a uniform way on a
 given type parameter plus possibly on existing functions in this type.
 
 
@@ -1818,7 +1821,7 @@ experiment, we can substitute \C{f} with \C{addn}, and
 addn 1 (addn 2 (addn 3 0))
 \end{coq}
 
-And this expression indeed computes to 6.
+And this expression computes to 6, as expected.
 
 % In later chapters we are going to prove properties about \C{foldr}.
 % In such cases the local context has to be understood as containing

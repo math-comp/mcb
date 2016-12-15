@@ -457,7 +457,7 @@ of \C{insub} are called \C{insubT} and \C{insubF}.}
 Both \C{Sub} and \C{insub} expect the typing context to
 specify the sub-type.
 
-Here are a few example uses, using \C{tuple}:
+Here is a few example uses, using \C{tuple}:
 
 \begin{coq}{name=insub}{}
 Variables (s : seq nat) (t : 3.-tuple nat).
@@ -723,8 +723,10 @@ Canonical ordinal_finType n :=
 An example of ordinals at work is the \C{tnth} function.
 It extracts the $n$-th element of a tuple exactly as
 \C{nth} for a sequence but without requiring a default element.
-Indeed one can use ordinals to type the index making \Coq{} statically
-checks that the index is smaller than the size of the tuple.
+As a matter of fact, one can use ordinals to type the index, making
+\Coq{} statically checks that the index is smaller than the size of
+the tuple.
+
 
 \begin{coq}{name=subtdecl}{}
 Lemma tnth_default T n (t : n.-tuple T) : 'I_n -> T.
@@ -751,14 +753,14 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 In standard mathematics functions that are point wise equal are
 considered as equal.  This principle, that we call \emph{functional
 extensionality}, is compatible with the \mcbCIC{} but is not built-in.
-Indeed, at the time of writing, only very recent variations of CIC,
+At the time of writing, only very recent variations of CIC,
 as Cubical Type Theory~\cite{cubicaltt}, include such principle.
 \index[concept]{functional extensionality}
 
 Still there is a class of functions for which such principle is
 provable in \Coq{}.  These are the functions with a finite domain:
 given their graph is a finite set of points we can represent them
-as regular lists, and lists with the same values are indeed equal.
+as regular lists, and lists with the same values are equal.
 
 \begin{coq}{name=subtdecl}{}
 Section FinFunDef.
@@ -1238,7 +1240,7 @@ Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
   row_mx A1 (row_mx A2 A3) = row_mx (row_mx A1 A2) A3.
 \end{coq}
 
-Indeed the left hand side has type \C{'M_(m, n1 + (n2 + n3))} while
+Observe that the left hand side has type \C{'M_(m, n1 + (n2 + n3))} while
 the right hand side has type \C{'M_(m, (n1 + n2) + n3)}.  The
 \C{castmx} operator, and all its companion lemmas, let one deal with
 this inconvenience.
@@ -1302,7 +1304,7 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs
 from the one part of the \mcbMC{} library in a tiny detail.
-Indeed the real declaration puts \C{reflect} in \C{Type} and not in
+The real declaration indeed puts \C{reflect} in \C{Type} and not in
 \C{Prop}.
 
 Recall that \C{reflect} is typically used to state properties about
