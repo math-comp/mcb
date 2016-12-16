@@ -234,6 +234,7 @@ About my_first_lemma.
 my_first_lemma : 3 = 3
 \end{coqout}
 
+
 In the rest of the Chapter, we will often omit the \C{Admitted} proof
 terminator, and simply reproduce the statement of some lemmas in
 order to discuss their formulation.
@@ -336,7 +337,8 @@ Section~\ref{ssec:id}. Here is a few more examples involving
 boolean predicates on natural numbers, that we have defined in
 Chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
-divisibility predicate \L+%|+.
+divisibility predicate \L+%|+, with \L+(a %| b)+
+meaning \C{a} \emph{divides} \C{b}.
 Note that we omit the type of the parameters: they are all of type
 \C{nat}, as enforced by the type of the operators involved in the
 statements:
@@ -449,7 +451,7 @@ Indeed, this statement holds trivially, because the two hand sides of
 the equality are syntactically the same. The tactic ``\C{by []}'' is
 the command that
 implements this nature of \emph{trivial} proof step. The proof command
-\C{by} typically prefixes another tactic (or a list of tactics): it is
+\C{by} typically prefixes another tactic (or a list thereof): it is
 a \emph{tactical}. The \C{by} prefix checks that the following tactic
 trivializes the goal. But in our case, no extra work is needed to
 solve the goal, so we pass an empty list of tactic to the tactical
@@ -1212,7 +1214,7 @@ $~$
 muln_eq0 : forall m n : nat,
   (m * n == 0) = (m == 0) || (n == 0)
 \end{coqout}
-Quantifiers may also occur elsewhere in statement, and not only in
+Quantifiers may also occur elsewhere in a statement, and not only in
 prenex position.  In the following example, we use the function
 \C{nth}, extracting the element of a sequence at a position, which was
 the object of Exercise~\ref{ex:nth}. This statement expresses that two
@@ -1427,6 +1429,7 @@ $1$. We first state this lemma as follows:
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 \end{coq}
+where \L+p %| m!+ stands for \C{p} \emph{divides the factorial of} \C{m}.
 The first step of our formal proof will be to give a name to the
 hypothesis \C{(prime p)}, which means that we add it to the
 current context of the goal. The dedicated tactic for this naming step is
@@ -1686,7 +1689,10 @@ that is used describe the general term of an iterated sum in
 section~\ref{sec:bigopnat} and the predicate \C{P} here used
 to describe a general property.
 
-The shape of the lemma expressing an induction principle is governed
+\Coq{} defines an induction principle for every inductive type the
+user defines, with standard names formed by adding a suffix \C{_ind}
+to the name of the type. The statement of a generated induction principle
+is shaped
 by the structure of the definition of the inductive type. Here is for
 instance the induction principle for sequences, which has some
 similarities with the one for natural numbers:
@@ -1702,14 +1708,12 @@ list_ind : forall A : Type, forall P : list A -> Prop,
 To sum up reasoning by induction on a term \C{t} means
 finding the induction lemma associated to the type of \C{t}
 \emph{and} synthesizing
-the right predicate \C{P}.  The \C{elim:} tactic provides such
-functionalities, while \C{apply:} does not. In particular, the
-\C{elim} tactic has special skills that allow guessing the value of
-the parameter \C{P} of the induction scheme, which the \C{apply:}
-tactic doesn't have.
-
-Lets prove by induction on \C{m} that \C{0} is neutral on the
-right of \C{addn}.
+the right predicate \C{P}.  The \C{elim:} tactic has these two
+functionalities --while \C{apply:} does not. The induction principle
+to be used is guessed from the type of the argument of the tactic. Let
+us illustrate on an example how the value of the parameter \C{P} is
+guessed by the \C{elim:} tactic and let us prove by induction on \C{m}
+that \C{0} is neutral on the right of \C{addn}.
 \index[ssr]{\C{elim: name => [$\mid$m IHm]}}
 
 \begin{coq}{}{width=6cm}
@@ -1738,7 +1742,7 @@ to  pull the \C{.+1} out of the sum, so that the induction hypothesis
 \C{IHm} can be rewritten.
 
 Unfortunately proofs by induction do not always run so smooth.
-To our aid the \C{elim:} tactic tactics provides two additional services.
+To our aid the \C{elim:} tactic provides two additional services.
 The first one is to let one \emph{generalize}
 the goal.  It is typically needed when the goal mentions a recursive function
 that uses an accumulator: its value is going to change during recursive calls,
@@ -2067,14 +2071,16 @@ In section~\ref{sec:edivn} we propose a less risky alternative.
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 \index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
 
-Last, the unfolding equation \C{leqE} that we used in
+Yet in fact the unfolding equation \C{leqE} that we used in
 the proof of \C{leq_mul2l} in section~\ref{sec:multirew}
-does not exist.  The entire class of ``equations'' linking
-(the name of) a definition to its body can be accessed in
-\C{rewrite} by just prefixing the name of the constant with
-\C{/} as in \C{rewrite /leq}.  Indeed \emph{unfolding} a definition is a free
-operation in \Coq{}, it requires not proof, hence there is
-no lemma for it.
+does not exist in the library and there is no name associate to this
+equation. We actually do not need to state a lemma in order to relate
+the name of a definition, like \C{leq}, to its body
+\C{fun n m => n - m == 0}. This \emph{unfolding} operation can be
+performed by calling the \C{rewrite} tactic, prefixing the name of the
+constant with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
+indeed not a deductive operation but an instance of computation, as
+made more precise in Chapter~\ref{ch:ttch}.
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
