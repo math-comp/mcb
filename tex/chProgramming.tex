@@ -1707,20 +1707,9 @@ an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}
 It occurs when a section variable is used inside the definition or
 the type of a defined object.  In this case, the type \C{T} is a section
 variable that is used in the type of \C{iter}, so it needs to be
-abstracted for \C{iter} when the section is closed.
-
-Now, let us study how this abstraction process works for the other definition
-in this section, \C{foldr}.  We know that the last argument \C{s} of \C{foldr}
-must be a sequence, because it is matched with a pattern that is specific
-to sequences.  Moreover, we know that the first element of this sequence,
-when it exists, is passed as first argument of the function \C{f}, and
-we know (from the type declaration at line 4) that the first argument of
-\C{f} should be of type \C{T}.  So \C{s} has to have type \C{seq T}.
-Looking at the ``then'' branch of the if-then-else statement, we also see
-that \C{foldr a xs} is used as the second argument to \C{f}, so it should
-have type \C{A}, so we can also infer that \C{a} should have the type \C{A}.
-So in all, the function \C{foldr} depends on all the section variables and
-they all have to be mentionned as arguments in its type outside the section.
+abstracted for \C{iter} when the section is closed. We leave as an
+exercise to the reader the decomposition of the similar abstraction
+process happening for the definition of \C{foldr} in the section.
 
 Variables are abstracted in their order of declaration.  In our example,
 \C{T} and \C{A} appear in the same order in the type of {\tt foldr} as
