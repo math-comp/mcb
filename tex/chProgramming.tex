@@ -1783,12 +1783,12 @@ eventually leads to simpler terms, like numerals. This flavour of
 computation can however accommodate to the presence of parameters in
 the expression to be computed.
 
-Let us come back to the example studied in Section~\ref{sec:section} where
-the definition of the \C{iter} function happens under a so called
-\emph{local context}, consisting of the parameter variables \C{T},
-\C{A} and \C{f}. While staying in the scope of the \C{iterators}
-section, this local context is fixed and parameterizes all the
-definitions or queries to \Coq{}.
+% Let us come back to the example studied in Section~\ref{sec:section} where
+% the definition of the \C{iter} function happens under a so called
+% \emph{local context}, consisting of the parameter variables \C{T},
+% \C{A} and \C{f}. While staying in the scope of the \C{iterators}
+% section, this local context is fixed and parameterizes all the
+% definitions or queries to \Coq{}.
 
 \begin{coq}{}{}
 Section iterators.
@@ -1800,8 +1800,9 @@ Fixpoint foldr a s :=
   if s is x :: xs then f x (foldr a xs) else a.
 \end{coq}
 
-For instance, asking for the type of
-\C{foldr}  under this local context gives the following result:
+If we ask for the type of
+\C{foldr} in the middle of the section, we see that
+it is not a polymorphic function (yet).
 
 \begin{coq}{}{width=3.5cm}
 About foldr.
@@ -1810,13 +1811,9 @@ About foldr.
 foldr : A -> seq T -> A
 \end{coqout}
 
-This indicates that \C{foldr} is not a polymorphic function (yet)
-and that it takes only two arguments, an element of \C{A} and
-a list of \C{T}. Now if we ask for the result of some computation,
-then \C{T}, \C{A} and, most importantly, \C{f} are inert symbols.
-In particular, the symbol \C{f} represents an unknown, arbitray
-function. Symbolic computation nonetheless normalizes expressions
-featuring \C{f}, like in:
+We hence postulate a term of type \C{A} and two of type \C{T}
+in order to apply \C{foldr} and we ask \Coq{} to compute such
+expression.
 
 \begin{coq}{}{width=7cm}
 Variable init : A.
@@ -1829,12 +1826,15 @@ $~$
 = f x1 (f x2 init) : A
 \end{coqout}
 
-% In order to compute expression \C{foldr init [:: x1; x2]},
-\Coq{} has developed the expression symbolically.  To convince
+The symbols \C{f}, \C{x1}, \C{x2} and \C{init} are inert,
+they represent unknown values, hence computation cannot
+proceed any further.  Still
+\Coq{} has developed the expression symbolically. 
+To convince
 ourselves that such expression is meaningful
-we can try to substitute \C{f}, \C{x1} and \C{x2} with the
+we can try to substitute \C{f}, \C{x1}, \C{x2} and \C{init} with the
 values we used at the end of the last section to
-play with \C{foldr}, namely \C{addn}, \C{1} and \C{2}:
+play with \C{foldr}, namely \C{addn}, \C{1}, \C{2} and \C{0}:
 
 \begin{coq}{}{width=7cm}
 Eval compute in addn 1 (addn 2 0).
@@ -1843,7 +1843,9 @@ Eval compute in addn 1 (addn 2 0).
  = 3 : nat
 \end{coqout}
 
-And this expression computes to 6, as expected.
+The expression, that now contains no inert symbols, computes to the numeral 3,
+the very same result we obtained by computing \C{(foldr addn 0 [:: 1; 2])}
+directly.
 
 % In later chapters we are going to prove properties about \C{foldr}.
 % In such cases the local context has to be understood as containing
@@ -1887,7 +1889,7 @@ Eval simpl in pred (add  n.+1 7).
 Eval simpl in pred (addn n.+1 7).
 \end{coq}
 \begin{coqout}{}{width=5cm}
-= pred (addn_alt n 8)
+= pred (add n 8)
 = addn n 7
 \end{coqout}
 
