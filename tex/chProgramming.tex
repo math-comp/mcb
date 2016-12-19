@@ -1681,110 +1681,127 @@ End iterators.
 \index[vernac]{\C{Variable}}
 \index[vernac]{\C{Implicit Type}}
 \index[coq]{\C{foldr}}\index[coq]{\C{iter}}
-The \C{Section} and \C{End} keyword delimit a scope in which
+The \C{Section} and \C{End} keywords delimit a scope in which
 the types \C{T} and \C{A} and the function \C{f} are given as
 parameters: \C{T}, \C{A} and \C{f} are called \emph{section
   variables}.  These variables
-are used in the definition of \C{iter} and \C{foldr}.  When
-the section is closed, these variables appear as arguments to
-the various functions that use them.
+are used in the definition of \C{iter} and \C{foldr}. 
 
-\begin{coq}{}{width=3.5cm,title=Query}
-About iter.
+The \C{Implicit Type} annotation 
+tells \Coq{} that, whenever we name
+an input \C{x} (or \C{x'}, or \C{x1}, \ldots) its type is supposed to be
+\C{T}.  Concretely it lets us omit an explicit type annotation
+in the definition of programs using \C{x}, as \C{iter}.
+The  \C{Implicit Type} command is used frequently in the
+\mcbMC{} library, the reader can refer to~\cite[section 2.7.18]{Coq:manual}
+for a more detailed documentation of it.
+
+When
+the section is closed, these variables appear as arguments to
+the various functions that use them in the very same
+% Variables are abstracted in their 
+order in which they are declared.  
+%In our example,
+%\C{T} and \C{A} appear in the same order in the type of {\tt foldr} as
+%in the variables declarations for the section.  
+Variables that are actually
+not used in a given definition are omitted. For example \C{f} plays no
+role in the definition of \C{iter}.
+This process %, where a function appears to have more arguments outside
+%the section where it was defined than inside the section 
+is called
+an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}
+
+
+Concretely, the definitions written inside the section are 
+elaborated to the following ones.
+
+\begin{coq}{}{}
+Fixpoint iter (T : Type) n op (x : T) :=
+  if n is p.+1 then op (iter p op x) else x.
+Fixpoint foldr (T A : Type) (f : T -> A -> A) a s :=
+  if s is x :: xs then f x (foldr f a xs) else a.
+\end{coq}
+
+Finally, remark that \C{T} and \C{A} are implicit arguments, hence they
+are not explicitly passed to \C{iter} and \C{fold} in the recursive calls.
+
+\begin{coq}{}{width=2.9cm}
 About foldr.
 $~$
 \end{coq}
-\begin{coqout}{close_section_run}{title=Response, width=8.5cm}
-iter : forall T : Type, nat -> (T -> T) -> T -> T
-foldr :
-  forall T A : Type, (T -> A -> A) -> A -> seq T -> A
+\begin{coqout}{close_section_run}{width=9.3cm}
+foldr : forall T A : Type, (T -> A -> A) -> A -> seq T -> A
+Arguments T, A are implicit ...
 \end{coqout}
-The \C{Implicit Type} annotation tells \Coq{} that, whenever we name
-an input \C{x} (or \C{x'}, or \C{x1},...) its type is supposed to be
-\C{T}. See \cite{Coq:manual} for more information.
 
-The definition of \C{iter} in the Section has three explicit
-arguments. The first one, \C{n}, is used in
-a pattern-matching if-then-else statement and matched with a pattern of the
-form \C{p.+1}.  For this reason, we can guess that \C{n} has the type \C{nat}.
-The value returned by \C{iter} is either \C{x} or \C{op (iter p op x)}, so this
-tells us the value must have the same type as \C{x}.  Here the type of
-\C{x} is not fixed by the definition of \C{iter}, but by the previous clause:
-\C{Implicit Type x : T}.  So we know that the value returned by \C{iter}
-has to be \C{T}.  Scrutinizing the ``then'' part of the if-then-else statement,
-we can also infer that \C{op} must have the type \C{T -> T}.  So the type
-of \C{iter} relies in several occasions on the type \C{T}.  However, we are
-now outside the section, so the variable \C{T} is not in
-scope anymore.  This means that the function \C{iter}, when considered
-outside the section, must be ready to receive, {\em first an arbitrary type
- \C{T}, then a natural number, then a function of type \C{T ->T}, then a
-value of type \C{T}}.  In the text defining \C{iter} (inside the section), the
-type \C{T} did not appear to be an argument, but once we are outside
-the section, the type \C{T} has to be an argument of \C{iter}.  Moreover,
-the argument for \C{T} receives a name, so that it can be mentionned
-in the type of the other arguments.  We need to re-use the \C{forall}
-notation that was already useful when mentioning generic data types.
 
-This process, where a function appears to have more arguments outside
-the section where it was defined than inside the section is called
-an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}
-It occurs when a section variable is used inside the definition or
-the type of a defined object.  In this case, the type \C{T} is a section
-variable that is used in the type of \C{iter}, so it needs to be
-abstracted for \C{iter} when the section is closed.
+% It occurs when a section variable is used inside the definition or
+% the type of a defined object.  In this case, the type \C{T} is a section
+% variable that is used in the type of \C{iter}, so it needs to be
+% abstracted for \C{iter} when the section is closed.
+% 
+% 
+% The definition of \C{iter} in the Section has three explicit
+% arguments. The first one, \C{n}, is used in
+% a pattern-matching if-then-else statement and matched with a pattern of the
+% form \C{p.+1}.  For this reason, we can guess that \C{n} has the type \C{nat}.
+% The value returned by \C{iter} is either \C{x} or \C{op (iter p op x)}, so this
+% tells us the value must have the same type as \C{x}.  Here the type of
+% \C{x} is not fixed by the definition of \C{iter}, but by the previous clause:
+% \C{Implicit Type x : T}.  So we know that the value returned by \C{iter}
+% has to be \C{T}.  Scrutinizing the ``then'' part of the if-then-else statement,
+% we can also infer that \C{op} must have the type \C{T -> T}.  So the type
+% of \C{iter} relies in several occasions on the type \C{T}.  However, we are
+% now outside the section, so the variable \C{T} is not in
+% scope anymore.  This means that the function \C{iter}, when considered
+% outside the section, must be ready to receive, {\em first an arbitrary type
+%  \C{T}, then a natural number, then a function of type \C{T ->T}, then a
+% value of type \C{T}}.  In the text defining \C{iter} (inside the section), the
+% type \C{T} did not appear to be an argument, but once we are outside
+% the section, the type \C{T} has to be an argument of \C{iter}.  Moreover,
+% the argument for \C{T} receives a name, so that it can be mentioned
+% in the type of the other arguments.  We need to re-use the \C{forall}
+% notation that was already useful when mentioning generic data types.
 
-Now, let us study how this abstraction process works for the other definition
-in this section, \C{foldr}.  We know that the last argument \C{s} of \C{foldr}
-must be a sequence, because it is matched with a pattern that is specific
-to sequences.  Moreover, we know that the first element of this sequence,
-when it exists, is passed as first argument of the function \C{f}, and
-we know (from the type declaration at line 4) that the first argument of
-\C{f} should be of type \C{T}.  So \C{s} has to have type \C{seq T}.
-Looking at the ``then'' branch of the if-then-else statement, we also see
-that \C{foldr a xs} is used as the second argument to \C{f}, so it should
-have type \C{A}, so we can also infer that \C{a} should have the type \C{A}.
-So in all, the function \C{foldr} depends on all the section variables and
-they all have to be mentionned as arguments in its type outside the section.
+% Now, let us study how this abstraction process works for the other definition
+% in this section, \C{foldr}.  We know that the last argument \C{s} of \C{foldr}
+% must be a sequence, because it is matched with a pattern that is specific
+% to sequences.  Moreover, we know that the first element of this sequence,
+% when it exists, is passed as first argument of the function \C{f}, and
+% we know (from the type declaration at line 4) that the first argument of
+% \C{f} should be of type \C{T}.  So \C{s} has to have type \C{seq T}.
+% Looking at the ``then'' branch of the if-then-else statement, we also see
+% that \C{foldr a xs} is used as the second argument to \C{f}, so it should
+% have type \C{A}, so we can also infer that \C{a} should have the type \C{A}.
+% So in all, the function \C{foldr} depends on all the section variables and
+% they all have to be mentioned as arguments in its type outside the section.
 
-Variables are abstracted in their order of declaration.  In our example,
-\C{T} and \C{A} appear in the same order in the type of {\tt foldr} as
-in the variables declarations for the section.  Variables that are actually
-not use in a given definition are omitted. For example \C{f} plays no
-role in the type of \C{iter}.
-
-Once the section is closed, \C{iter} and \C{foldr} behave exactly as
-if they were defined as follows:
-
-\begin{coq}{}{}
-Fixpoint iter T n op (x : T) :=
-  if n is p.+1 then op (iter p op x) else x.
-Fixpoint foldr T A (f : T -> A -> A) a s :=
-  if s is x :: xs then f x (foldr f a xs) else a.
-\end{coq}
-For example we can compute the subtraction of \C{5} from \C{7}, or the
-addition of all numbers in \C{[:: 1; 2; 3]}
-as follows:
+We can now use \C{iter} to compute, for example,
+the subtraction of \C{5} from \C{7}, or \C{foldr}
+to compute the
+addition of all numbers in \C{[:: 1; 2]}:
 
 \begin{coq}{}{width=8cm}
 Eval compute in iter 5 pred 7.
-Eval compute in foldr addn 0 [:: 1; 2; 3].
+Eval compute in foldr addn 0 [:: 1; 2].
 \end{coq}
 \begin{coqout}{}{width=4cm}
  = 2 : nat
- = 6 : nat
+ = 3 : nat
 \end{coqout}
 
-The \C{Section} mechanism lets one reuse variable declarations and type
-annotations among multiple definitions.
+% The \C{Section} mechanism lets one reuse variable declarations and type
+% annotations among multiple definitions.
 
-\marginnote{assia: what about a good practice box here? for naming policy
-  for bound variables}
+%\marginnote{assia: what about a good practice box here? for naming policy
+%  for bound variables}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Symbolic computation}\label{sec:symcomp}
 \index[concept]{computation!symbolic}
 
-As we mentionned in Section~\ref{sec:functions}, the \C{Eval compute}
+As we mentioned in Section~\ref{sec:functions}, the \C{Eval compute}
 command of \Coq{} can be used to normalize expressions, which
 eventually leads to simpler terms, like numerals. This flavour of
 computation can however accommodate to the presence of parameters in
@@ -1810,10 +1827,10 @@ Fixpoint foldr a s :=
 For instance, asking for the type of
 \C{foldr}  under this local context gives the following result:
 
-\begin{coq}{}{width=3.5cm,title=Query}
+\begin{coq}{}{width=3.5cm}
 About foldr.
 \end{coq}
-\begin{coqout}{close_section_run}{title=Response, width=8.5cm}
+\begin{coqout}{close_section_run}{width=8.5cm}
 foldr : A -> seq T -> A
 \end{coqout}
 
@@ -1827,25 +1844,33 @@ featuring \C{f}, like in:
 
 \begin{coq}{}{width=7cm}
 Variable init : A.
-Variables x1 x2 x3 : T.
-Eval compute in
-  foldr init [:: x1; x2; x3].
+Variables x1 x2 : T.
+Eval compute in foldr init [:: x1; x2].
 \end{coq}
 \begin{coqout}{}{width=5cm}
-= f x1 (f x2 (f x3 init))
-: A
+$~$
+$~$
+= f x1 (f x2 init) : A
 \end{coqout}
 
-In order to compute expression \C{foldr init [:: x1; x2; x3]},
-\Coq{} has developed the expression symbolically.  As a mind
-experiment, we can substitute \C{f} with \C{addn}, and
-\C{[:: x1; x2; x3]} with \C{[:: 1; 2; 3]}:
+% In order to compute expression \C{foldr init [:: x1; x2]},
+\Coq{} has developed the expression symbolically.  To convince
+ourselves that such expression is meaningful
+we can try to substitute \C{f}, \C{x1} and \C{x2} with the
+values we used at the end of the last section to
+play with \C{foldr}, namely \C{addn}, \C{1} and \C{2}:
 
-\begin{coq}{}{}
-addn 1 (addn 2 (addn 3 0))
+\begin{coq}{}{width=7cm}
+Eval compute in addn 1 (addn 2 0).
 \end{coq}
+\begin{coqout}{}{width=5cm}
+ = 3 : nat
+\end{coqout}
 
-And this expression indeed computes to 6.
+As expected we obtain the same result: the computation steps
+done when \C{f}, \C{x1} and \C{x2} are variables are a subset of
+the ones Coq performs when such variables are replaced by concrete
+terms.
 
 % In later chapters we are going to prove properties about \C{foldr}.
 % In such cases the local context has to be understood as containing
@@ -1868,14 +1893,14 @@ Fixpoint addn n m := if n is p.+1 then (addn p m).+1 else m.
 Now let us consider the following alternative definition:
 
 \begin{coq}{}{}
-Fixpoint addn_alt n m := if n is p.+1 then addn_alt n m.+1 else m.
+Fixpoint add n m := if n is p.+1 then add n m.+1 else m.
 \end{coq}
 \index[coq]{\C{add}}
 
 Both are sensible definitions, and we can show that the two addition
 functions compute the same results when applied to numerals.  Still,
 their computational behavior may differ when computing on arbitrary
-symbolic values. In order to higlight this, we will use another
+symbolic values. In order to highlight this, we will use another
 normalization strategy to perform computation, the \C{simpl}
 evaluation strategy.  One difference between the \C{simpl}
 and \C{compute} strategy is that the \C{simpl} one usually leaves
@@ -1885,7 +1910,7 @@ more details.
 
 \begin{coq}{}{width=7cm}
 Variable n : nat.
-Eval simpl in pred (addn_alt n.+1 7).
+Eval simpl in pred (add  n.+1 7).
 Eval simpl in pred (addn n.+1 7).
 \end{coq}
 \begin{coqout}{}{width=5cm}
@@ -1894,7 +1919,7 @@ Eval simpl in pred (addn n.+1 7).
 \end{coqout}
 
 Here we see the impact of the difference in the definitions of
-\C{addn} and \C{addn_alt}: the \C{addn_alt} variant transfers the
+\C{addn} and \C{add}: the \C{add} variant transfers the
 number of pebbles (represented by the successor \C{S} symbol)
 given as first argument to its second argument
 before resorting to its base case, whereas in the \C{addn} variant,
@@ -1904,7 +1929,7 @@ successors as recursive calls have been performed so far. Since bits
 of the final result are exposed early, the \C{pred} function can
 eventually compute, and it cancels the \C{.+1} coming out of the sum.
 On the other hand,
-\C{addn_alt} does not expose a successor when a recursive call is
+\C{add} does not expose a successor when a recursive call is
 performed hence symbolic computation in \C{pred} is stuck.
 
 As Chapter~\ref{ch:proofs} illustrates, symbolic computation plays an
