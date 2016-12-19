@@ -77,10 +77,9 @@ parameter variables. For instance $2 + 2 = 4$ is a ground
 statement, but $(a + b)^2 = a^2 + 2ab + b^2$ has two parameters $a$
 and $b$: it is not ground.
 
-Let us start with calls to the \C{Check} command, which we have used
-in chapter~\ref{ch:prog} to verify that some expression is well
-formed. This command can be used to check whether a formal statement
-is well formed:
+The \C{Check} command can not only be used to verify the type
+of some expression, but also check whether a formal statement 
+is well formed or not:
 
 \begin{coq}{name=check-eq}{width=6cm}
 Check 3 = 3.
@@ -96,7 +95,7 @@ Let's anatomize the two above examples. Indeed, just like \Coq{}'s
 type system prevents us from applying functions to
 arguments of a wrong nature, it also enforces a certain nature of
 well-formedness at the time we enunciate sentences that are candidate
-theorems. Indeed, formal statement in \Coq{} are themselves
+theorems. Indeed, formal statements in \Coq{} are themselves
 \emph{terms} and as such they have a \emph{type} and their subterms
 obey type constraints. An
 equality statement in particular is obtained by applying the constant
@@ -141,7 +140,7 @@ part of the infix notation and its value is not
 provided by the user. This value can indeed be guessed from the type of the
 hand-sides of the identity: \C{(3 = 3)} unfolds to \C{(eq _ 3 3)} and
 the missing value is \C{nat}, the type of \C{3}. Similarly,
-\C{(false && true = true)} unfolds to \C{(eq _ (false && true) false)}
+\C{(false && true = true)} unfolds to \C{(eq _ (false && true) true)}
 and the missing value is \C{bool}, the common type of \C{true} and
 \C{(false && true)}.
 
@@ -201,6 +200,7 @@ $~$
   ======================
    3 = 3
 \end{coqout}
+
 Indeed, \Coq{} is now in so-called \emph{proof mode}: we can execute
 new commands to construct a proof and inspect the current state of a
 proof in progress, but some other commands, like opening sections, are
@@ -525,9 +525,9 @@ also \C{(2 + n = n.+2)}, which requires several steps of computation.
 Last, the \C{by} tactical turns its argument into a \emph{terminating
 tactic} --- and thus  \C{by []} is such a terminating tactic. A tactic
 is terminating if as soon as it does not solve the goal completely, it
-fails and stops \Coq{} from processing the proof script. For this reason
-a terminating tactic of the tactic language is colored in red by the
-user interface, so that the eye can immediately spot that a
+fails and stops \Coq{} from processing the proof script. 
+A terminating tactic is colored in red so that
+the eye can immediately spot that a
 proof, or more commonly a subproof, ends there.
 \index[concept]{terminating tactic}
 
@@ -678,7 +678,7 @@ n : nat
 Both comparison operations \C{<=} and \C{==} are defined by case
 analysis on their \emph{first} argument, independently of the shape of
 the second. The proof of \C{leq0n} thus goes by case analysis on
- term \C{(n : nat)}, as it appears as a first argument to these
+ term \C{(n : nat)}, as it appears as a first argument to 
 both these comparison operators.  Remember that the inductive type \C{nat} is
 defined as:
 
@@ -697,8 +697,10 @@ constructor of type \C{nat}:
 Lemma leqn0 n : (n <= 0) = (n == 0).
 Proof.
 case: n => [|k].
+$~$
+$~$
 \end{coq}
-\begin{coqout}{run=leqn01}{width=5cm, title=Proof state}
+\begin{coqout}{run=leqn01}{width=5cm}
 2 subgoals, subgoal 1
 
 ======================
@@ -955,8 +957,8 @@ the definition of \C{muln} by pattern matching on its \emph{first}
 argument, \C{(m.+1 * 0)} does not evaluate symbolically to \C{0}: this
 equality holds but requires a proof by induction, as explained in
 section~\ref{ssec:ind}.
-Library \mcbMC{} nonetheless provides a systematic review of the
-properties of the operations it defines: the lemma we need is
+The \mcbMC{} library nonetheless provides a systematic review of the
+properties of the operations it defines. The lemma we need is
 available in the library as:
 
 \begin{coq}{def=muln0}{}
@@ -1065,7 +1067,8 @@ m, n1, n2 : nat
 (m * n1 - m * n2 == 0) =
   (m == 0) || (n1 <= n2)
 \end{coqout}
-Unfortunately, the command \C{rewrite leqE} only affects the first
+
+The command \C{rewrite leqE} only affects the first
 occurrence of \C{<=} and we would like to substitute both. In order to
 rewrite \emph{all} the possible instances of the rule in the goal, we
 may use a repetition flag:
@@ -1092,13 +1095,15 @@ appropriate distributivity property:
 \begin{coq}{def=mulnBr}{}
 Lemma mulnBr n m p : n * (m - p) = n * m - n * p.
 \end{coq}
+
 This time we need to perform a right-to-left rewriting of the
 \C{mulnBr} lemma (instead of the
 default left-to-right). The rewriting step first finds in the goal an
 instance of pattern \C{(_ * _ - _ * _)}, where the terms matched by
 the first and the third wild-cards coincide. The syntax for
-right-to-left rewriting consists in appending a minus \C{-} as a
-prefix to the name of the rewrite rule:
+right-to-left rewriting consists in prefixing the
+name of the rewrite rule
+with a minus \C{-}:
 
 
 \begin{coq}{def=LeqMul2lproof2}{title=Rewrite right-to-left,width=6.7cm}
@@ -1232,7 +1237,7 @@ Quantifiers are also allowed to range over functions:
 
 \begin{coq}{}{}
 Lemma size_map (T1 T2 : Type) :
-forall (f : T1 -> T2) (s : seq T1), size (map f s) = size s.
+  forall (f : T1 -> T2) (s : seq T1), size (map f s) = size s.
 \end{coq}
 Observe that in the above statement of \C{size_map}, we have used a
 compact notation for successive universal quantifications:
@@ -1242,7 +1247,7 @@ of prenex quantification we would rather write:
 
 \begin{coq}{}{}
 Lemma size_map (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
- size (map f s) = size s.
+  size (map f s) = size s.
 \end{coq}
 \index[coq]{\C{size_map}}
 as all quantifiers are in prenex positions.
@@ -1736,7 +1741,7 @@ base case, since if
 \C{m} is \C{0} both sides evaluate to zero. The value of the parameter
 \C{P} synthesized by \C{elim:} for us is
 \C{(fun n : nat => n + 0 = n)}. It has been obtained by
-\emph{abstracting} the term \C{n} in the goal (see
+\emph{abstracting} the term \C{m} in the goal (see
 section~\ref{ssec:deffun}). The proof concludes by using lemma \C{addSn}
 to  pull the \C{.+1} out of the sum, so that the induction hypothesis
 \C{IHm} can be rewritten.
@@ -2113,7 +2118,7 @@ the other instance of subterm matching this pattern in the goal. We
 can use the command \C{rewrite [n1 <= _]leqE}: the
 pattern given by the user overrides the one inferred from the rewrite
 rule and is used to select the subterm to be rewritten. In this case,
-term \C{(m * n1 <= m * n2)} is first ruled out because the first argument of
+term \C{(m * n1 <= m * n2)} is ruled out because the first argument of
 \C{<=}, namely \C{(m * n1)}, does not match the first argument \C{n1}
 required in the user-given pattern. Therefore, \C{rewrite} picks term
 \C{(n1 <= n2)}, in the right hand-side.
