@@ -12,7 +12,7 @@ Unset Printing Implicit Defensive.
 Abort.
 \end{coqdef}
 
-\Chapter{Type Inference}{ Teaching \Coq{} how to read Math}
+\Chapter{Implicit Parameters}{}
 
 The rules of the \mcbCIC{}, as the ones sketched in~\ref{ch:ttch},
 are expressed on the syntax of terms and
@@ -102,7 +102,7 @@ checking types are compared taking computation into account.  Types
 that compare as equal are said to be \emph{convertible}.
 Termination of reduction and uniqueness of normal forms provide
 guidance for implementing the convertibility test, for which a
-complete and sound algorithm indeed exists.  Unfortunately type
+complete and sound algorithm exists.  Unfortunately type
 inference works on open terms, and this fact turns convertibility into
 a much harder problem called \emph{higher order unification}.  The
 special placeholder ``\lstinline/_/'', usually called \emph{implicit
@@ -177,8 +177,8 @@ id nat 3 : nat
 id nat 3 : nat
 \end{coqout}
 
-In the expression \lstinline/(id nat 3)/ no subterm was omitted, and
-indeed \Coq{} accepted the term and printed its type.  In the third
+In the expression \lstinline/(id nat 3)/ no subterm was omitted,
+therefore \Coq{} accepted the term and printed its type.  In the third
 line even if the sub term \lstinline/nat/ was omitted, \Coq{} accepted
 the term.  Type inference found a value for the place holder
 for us by proceeding in the following way:  it traversed the term
@@ -307,13 +307,16 @@ Choosing a good  declaration of implicit arguments for lemmas is
 tricky and requires one to think ahead how the lemma is used.
 % section~\ref{sec:declaringimpl} is dedicated to that.
 
-So far type inference and in particular unification has been used in
-its simplest form, and indeed a first order unification algorithm
-incapable of computing or synthesizing functions would have sufficed.
-In the next section we introduce the encoding of the relations that
-is at the base of the declarative programs we write to
-extend unification in the higher order case.
-As of today there is no precise, published, documentation of the type
+So far we have been using only the simplest for of type inference in
+our interaction with the system. The unification problems we have
+encountered would have been solved by a first order unification
+algorithm and we did not need to compute or synthesize
+\emph{functions}. In the next section we illustrate how the
+unification algorithm used in type inference can be extended in order
+to deal with higher order problem. This extension is based on the use
+of declarative programs, and we present the encoding of the relations
+which describe these programs.
+As of today however there is no precise, published, documentation of the type
 inference and unification algorithms implemented in \Coq{}.  For a
 technical presentation of a type inference algorithm close enough to
 the one of \Coq{} we suggest the interested reader to
@@ -752,9 +755,8 @@ is typically preferred to \C{*} whenever the group law is
 commutative.
 
 Going back to our running example, the actual definition of \lstinline/eqType/
-used in the \mcbMC{} library also contains a property.
-Indeed there is little one can do with a comparison function if that
-function is not ``correct''.
+used in the \mcbMC{} library also contains a property which enforces
+the correctness and the completeness of the comparison test.
 
 \begin{coq}{name=eqtype}{title=eqType}
 Module Equality.
@@ -824,13 +826,14 @@ relates a type with a signature.
 
 Remark the use of \C{:>} instead of \C{:} to type the
 field called \C{sort}.  This tells \Coq{} to declare the
-\C{Equality.sort} projection
-as a coercion, enabling one to write \C{(forall T : eqType, forall x y
-: T, P)}.  Indeed \C{T} is not a type, only \C{(sort T)} is.
+\C{Equality.sort} projection as a coercion. This makes possible to
+write \C{(forall T : eqType, forall x y : T, P)} even if \C{T} is not
+a type and only \C{(sort T)} is.
 
-\gotcha{Being \C{Equality.sort} a coercion, it is not displayed by
-\Coq{}, hence error messages about a missing canonical structure
-declaration typically look very confusing: ``\ldots has type \C{nat}
+
+\gotcha{Since \C{Equality.sort} is a coercion, it is not displayed by
+\Coq{}, hence error messages about a missing canonical instance
+declaration typically look very confusing, akin to: ``\ldots has type \C{nat}
 but should have type \C{?e}'', instead of ``\ldots but should have
 type \C{(sort ?e)}''. }
 
@@ -838,7 +841,7 @@ Given the new definition of \lstinline/eqType/,
 when we write \lstinline/(a == b)/ type inference does not only infer
 a function to compare \lstinline/a/ with \lstinline/b/ but also a
 proof that such function is correct.
-Indeed declaring the \C{eqType} instance for \C{nat} requires some
+Declaring the \C{eqType} instance for \C{nat} now requires some
 extra work, namely proving the correctness of the \C{eqn} function.
 
 \begin{coq}{name=eqtype}{}
@@ -978,7 +981,7 @@ It is worth to remark that the concept of interface is crucial to
 the development of such theory.  If we try to develop the theory
 of the type \C{(seq T)} for an arbitrary \C{T}, we can't go much far.
 For example we can express what belonging to a sequence means, but
-not write a program that tests if a value is indeed in the list.  As a
+not write a program that tests if a value is actually in the list.  As a
 consequence we lose the former automation provided by computation
 and it also becomes harder to reason by cases on the membership predicate.
 On the contrary when we quantify a theory on the type  \C{(seq T)} for a
@@ -1238,8 +1241,8 @@ Notation "\sum_ ( i <- r | P ) F" :=
 \end{coq}
 \index[coq]{\C{\\sum}}
 
-Such notation is placed in \C{nat\_scope} and is indeed specialized
-on \C{addn} and \C{0}.  The general term \C{F} is also placed in
+Such a notation is placed in \C{nat\_scope} as it is specialized
+to \C{addn} and \C{0}.  The general term \C{F} is also placed in
 the scope of natural numbers.
 We can proceed even further and specialize the notation to
 a numerical range:
@@ -1495,7 +1498,7 @@ Search _ (\sum_(0 <= i < 0) _).
 A lemma stating that an empty sum is zero is not part of the library.
 What is part of the library is a lemma that says that if the list
 beign folded is \C{nil} then the result is the initial value.  Such
-lemma, called \C{big_nil}, indeed mentions only \C{[::]} in its
+a lemma, called \C{big_nil}, thus mentions only \C{[::]} in its
 statement, and not the (logically) equivalent \C{(index_iota 0 0)}.
 Still the goal \C{(\\sum_(0 <= i < 0) i = 0)} can be solved by
 \C{big_nil}.  Finally, the pattern we provide specifies a trivial
@@ -1616,12 +1619,11 @@ can be simplified (reduced) to the following one
 \end{coq}
 
 While the two terms are logically equivalent (i.e. the logic cannot
-distinguish them) the pretty printer can.  Indeed the overloaded
+distinguish them) the pretty printer can.  The overloaded
 \C{==} notation is attached to the \C{eq\_op} constant, and if such
 constant fades away the notation follows it.  \Coq{} lets one declare
 constants that should not be automatically simplified away, unless
-they
-occur in a context that demands it.
+they occur in a context that demands it.
 
 \begin{coq}{name=infix,print}{}
 Arguments eq_op {_} _ _ : simpl never.

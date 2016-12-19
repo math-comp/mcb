@@ -1,4 +1,4 @@
-\Chapter{Boolean reflection}{Towards real proofs}
+\Chapter{Boolean Reflection}{}
 \label{ch:boolrefl}
 
 % in addition to the photos:
@@ -75,7 +75,7 @@ automation by computation.\footnote{They moreover allow for
   proof-irrelevant specifications. This feature is largely used
   throughout the Mathematical Components library but beyond the scope
   of the present chapter: it will be the topic of
-  chapter~\ref{ch:sigmabool}.} 
+  chapter~\ref{ch:sigmabool}.}
 Specifications in the \C{Prop} sort
 are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
@@ -314,7 +314,7 @@ iffP : forall (P Q : Prop) (b : bool),
   reflect P b -> (P -> Q) -> (Q -> P) -> reflect Q b
 \end{coqout}
 \index[coq]{\C{iffP}}
-Lemma \C{iffP} indeed relates two equivalences \C{(reflect P b)}
+Lemma \C{iffP} relates two equivalences \C{(reflect P b)}
 and \C{(reflect Q b)} involving a same boolean \C{b} but different
 \C{Prop} statements \C{P} and \C{Q}, as soon as one
 provides a proof of the usual double implication between \C{P} and
@@ -365,7 +365,7 @@ decidable equality:
 Lemma nat_inj_eq T (f : T -> nat) x y :
   injective f -> reflect (x = y) (eqn (f x) (f y)).
 \end{coq}
-The equality decision procedure indeed just consists in pre-applying
+The equality decision procedure just consists in pre-applying
 the injection \C{f} to the decision procedure \C{eqn} available on
 type \C{nat}. Since we already know that \C{eqn} is a decision
 procedure for equality, we just need to prove that \C{(x = y)} if and
@@ -830,8 +830,8 @@ Proof. by case: andP => [[-> ->] |]. Qed.
 \end{coq}
 
 Note that we have not specified a value for the
-variables quantified in the statement of \C{andP}.  Indeed
-such view is accompanied by an implicit argument declaration
+variables quantified in the statement of \C{andP}.
+Such view is in fact accompanied by an implicit argument declaration
 as follows:
 
 \begin{coq}{}{}
@@ -1261,14 +1261,15 @@ To keep the script similar to the previous one, we named explicitly
 This is rarely the case in proof scripts of the library, since one typically
 uses the \C{/(_ ...)} intro pattern to specialize the top of the stack.
 
-Shrinking proof scripts is a never ending game.  The avid reader can
-see in the next section
-how intro patterns let one squeeze the last two lines into a single
-one.  Indeed there are three steps in this script: remarking we can
+Shrinking proof scripts is a never ending game.  The impatient reader can
+jump to the next section to see
+how intro patterns can be used to squeeze the last two lines into a
+single one.  In the end, this proof script consists of three steps:
+the remark that we can
 assume \C{(n2 <= n1)} without losing generality, its justification in
 terms of totality of the order relation and commutativity of \C{max}
-and \C{||}, and finally proving, by transitivity, what is left
-when \C{max} is computed away thanks to the extra \C{(n2 <= n1)} assumption.
+and \C{||}, and the final proof, by transitivity, in the case when
+the \C{max} is \C{n1} due to the extra assumption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -1276,7 +1277,9 @@ when \C{max} is computed away thanks to the extra \C{(n2 <= n1)} assumption.
 
 A less important, but very widespread feature, of the Ssreflect
 proof language can be used to shrink even further the proof.
-Indeed we name the fact \C{le_mn2} just to apply transitivity to it.
+In this proof script, we have named the fact \C{le_mn2} only for the
+purpose of refering to this fact in the transitivity step.
+
 
 \begin{coq}{}{}
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
@@ -1287,9 +1290,9 @@ by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
 Qed.
 \end{coq}
 
-The statement of
+Remember that the statement of
 \C{leq_trans} is \C{(forall c a b, a <= c -> c <= b -> a <= b)} and
-we use it to transform the top assumption \C{(m <= n2)}.  Note that
+we have used it to transform the top assumption \C{(m <= n2)}.  Note that
 the \C{leq_trans} expects a second proof argument, and that its type
 would fix \C{b}, that is otherwise unspecified.  If one puts a
 full stop just before the terminating \C{->}, to see the output of
@@ -1336,8 +1339,8 @@ Proof. by elim: m. Qed.
 \end{coq}
 \index[concept]{unfolding equation}
 It is often useful to state and prove unfolding equations like this one.
-Indeed the simplification tactic \C{/=} may unfold too aggressively.
-Rewriting with such equations gives better control on how many
+Whwn the simplification tactic \C{/=} unfolds too aggressively,
+rewriting with such equations gives better control on how many
 unfold steps one performs.
 
 The statement of our theorem
@@ -1648,13 +1651,13 @@ coercion & source & target \\ \hline
 
 The reader already familiar with the concept of coercion
 may find the presentation of this chapter nonstandard.
-Indeed coercions are usually presented as a device to model
+Coercions are usually presented as a device to model
 subtyping in a theory that, like the \mcbCIC{}, does not
 feature subtyping.  As we will see in chapter~\ref{ch:hierarchy}
-the role played by coercions is in the modelling of the hierarchy
-of algebraic structure is minor.  Indeed the job of
-coercions in that context is to
-forget some fields of a structure to obtain a simpler one, and
+the role played by coercions in the modelling of the hierarchy
+of algebraic structure is minor.  The job of
+coercions in that context is limited to
+forgeting some fields of a structure to obtain a simpler one, and
 that is easy.  What
 is hard is to reconstruct the missing fields of a structure
 or compare two structures finding the minimum super structure.
