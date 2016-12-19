@@ -1764,12 +1764,14 @@ Lemma last_ind A (P : list A -> Prop) :
 where \C{rcons} is a name for the operation of concatenating
 a sequence with an element, as in \C{(s ++ [::x])}.
 
-\marginnote{We do not know foldl.}
 For example \C{last_ind} can be used to relate the
 \C{foldr} and \C{foldl} iterators as follows:
 
 \begin{coq}{}{}
-Lemma foldl_rev T A f (z : A) (s : seq T) :
+Fixpoint foldl T R (f : R -> T -> R) z s :=
+  if s is x :: s' then foldl f (f z x) s' else z.
+
+Lemma foldl_rev T R f (z : R) (s : seq T) :
   foldl f z (rev s) = foldr (fun x z => f z x) z s .
 \end{coq}
 
