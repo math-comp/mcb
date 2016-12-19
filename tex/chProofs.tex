@@ -45,7 +45,7 @@ much simpler to prove, and some can be more convenient to invoke
 inside the proof of another corollary theorem. This chapter emphasizes
 the use of computable definitions and equational reasoning
 whenever possible, an approach that will be developed fully in
-Chapter~\ref{ch:boolrefl}.
+chapter~\ref{ch:boolrefl}.
 
 \mcbLEARN{Stating basic theorems involving boolean statements,
   equalities, and arrows. Universal quantification is presented via
@@ -78,7 +78,7 @@ statement, but $(a + b)^2 = a^2 + 2ab + b^2$ has two parameters $a$
 and $b$: it is not ground.
 
 Let us start with calls to the \C{Check} command, which we have used
-in Chapter~\ref{ch:prog} to verify that some expression is well
+in chapter~\ref{ch:prog} to verify that some expression is well
 formed. This command can be used to check whether a formal statement
 is well formed:
 
@@ -235,7 +235,7 @@ my_first_lemma : 3 = 3
 \end{coqout}
 
 
-In the rest of the Chapter, we will often omit the \C{Admitted} proof
+In the rest of the chapter, we will often omit the \C{Admitted} proof
 terminator, and simply reproduce the statement of some lemmas in
 order to discuss their formulation.
 
@@ -335,7 +335,7 @@ statements are equivalent. We already encountered special cases of
 such equivalence with propositional tautologies in
 section~\ref{ssec:id}. Here is a few more examples involving
 boolean predicates on natural numbers, that we have defined in
-Chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
+chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
 divisibility predicate \L+%|+, with \L+(a %| b)+
 meaning \C{a} \emph{divides} \C{b}.
@@ -506,7 +506,7 @@ is performed. In a similar way, we can prove the statement
 \C{(0 <= 1)}, or \C{(odd 5)}, because both expressions \emph{compute} to
 \C{true}.
 
-As we have seen in Chapter~\ref{ch:prog}, computation is not limited
+As we have seen in chapter~\ref{ch:prog}, computation is not limited
 to ground terms: it is really about using the rules of the pattern
 matching describing the code of the function. For instance the proof
 of the \C{addSn} identity:
@@ -755,7 +755,7 @@ Proof.  by case: n => [| k].  Qed.
 
 We will use a last example of boolean equivalence to introduce more
 advanced proof techniques, leading to less verbose proof
-scripts. Remember from Chapter~\ref{ch:prog} that the product of two
+scripts. Remember from chapter~\ref{ch:prog} that the product of two
 natural numbers is be defined as a function
 \C{(muln : nat -> nat -> nat)}. From this definition, we prove that
 the product of two (natural) numbers is zero if and only if one of the
@@ -1162,13 +1162,13 @@ description of the features of this tactic is in the manual~\cite{ssrman}.
 \subsection{Universal quantification, first examples}
 
 Let put side by side an example of function we defined in
-Chapter~\ref{ch:prog}:
+chapter~\ref{ch:prog}:
 
 \begin{coq}{def=LeqDef}{}
 Definition leq n m := m - n == 0.
 \end{coq}
 with an example of parametric statement we have used in the present
-Chapter:
+chapter:
 
 \begin{coq}{def=leqn0}{}
 Lemma leqn0 n : (n <= 0) = (n == 0).
@@ -2080,7 +2080,7 @@ the name of a definition, like \C{leq}, to its body
 performed by calling the \C{rewrite} tactic, prefixing the name of the
 constant with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
 indeed not a deductive operation but an instance of computation, as
-made more precise in Chapter~\ref{ch:ttch}.
+made more precise in chapter~\ref{ch:ttch}.
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

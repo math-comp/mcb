@@ -33,7 +33,7 @@ formalism.
 \section{Functions}\label{sec:functions}
  Before being more
 precise about the logical foundations of the \Coq{} system in
-Chapter~\ref{ch:ttch},
+chapter~\ref{ch:ttch},
 we review in this section some vocabulary and notations associated
 with functions.
 We will use the words \emph{function} and \emph{operation}
@@ -149,8 +149,8 @@ the \C{nat} label to annotate the argument and the output in the
 Definition f (n : nat) : nat := n + 1.
 \end{coq}
 The label \C{nat} is actually called a {\em type}.
-We refer once again to Chapter~\ref{ch:ttch} for a more accurate
-description of types: in the present Chapter we rely on the loose intuition
+We refer once again to chapter~\ref{ch:ttch} for a more accurate
+description of types: in the present chapter we rely on the loose intuition
 that a type refers to a collection of objects that can be treated in a
 uniform way. A type annotation has the shape \C{t : T}, where a colon
 \C{:} surrounded by two spaces separates an expression \C{t} on its
@@ -253,11 +253,11 @@ At the very least, we can observe that the argument \C{3} has been
 substituted for the argument variable in the definition of function
 \C{f} and that the addition has been evaluated.
 Although this capability of \Coq{} plays a crucial role
-in the \mcbMC{} library, as we will see in Chapter~\ref{ch:proofs}, it
+in the \mcbMC{} library, as we will see in chapter~\ref{ch:proofs}, it
 is too early to be
 more precise about this normalization strategy. This would require
 at least describing in more details the formalism underlying the
-\Coq{} system, which we do only in Chapter~\ref{ch:ttch}. The
+\Coq{} system, which we do only in chapter~\ref{ch:ttch}. The
 interested reader should actually refer to \cite[section
 8.7.1]{Coq:manual} for the official documentation of \C{compute}.
 For now, we suggest to keep only the intuition that this
@@ -308,7 +308,7 @@ The two first occurrences of \C{nat} in the response
  function}.  This idea that multiple argument functions can be
 represented using single argument functions (rather for instance than
 tuples of arguments) is called {\em currying} and will play a special
-role in Chapter~\ref{ch:ttch}. For now, let us just insist on the fact
+role in chapter~\ref{ch:ttch}. For now, let us just insist on the fact
 that in \Coq{}, functions with several arguments are not represented
 with a tuple of arguments.
 \index[concept]{currying of functions}
@@ -1907,7 +1907,7 @@ On the other hand,
 \C{add} does not expose a successor when a recursive call is
 performed hence symbolic computation in \C{pred} is stuck.
 
-As Chapter~\ref{ch:proofs} illustrates, symbolic computation plays an
+As chapter~\ref{ch:proofs} illustrates, symbolic computation plays an
 important roles in formal proofs and this kind of differences
 matters. For instance the \C{addn} variant helps
 showing that \C{(addn n.+1 7)} is different from \C{0} because by
@@ -2046,7 +2046,7 @@ where the rightmost annotations, between parentheses, indicate a
 precedence level and an associativity rule so as to avoid parsing
 ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes behind the scope of this
-book, the interested reader shall refer to~\cite[Chapter 12]{Coq:manual}.
+book, the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
 
 The definition behind a notations can involve more than one symbol,
 as in the example of the strict order relation:
