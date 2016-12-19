@@ -2160,7 +2160,7 @@ all concepts and associated notations it provides.
 Define the triple data type such that the following notation
 applies.  Also define the projections.
 
-\begin{coq}{}{width=7cm}
+\begin{coq}{}{width=8cm}
 Notation "( A , B, C)" := (triple A B C).
 Notation "p .1" := (fst p).
 Notation "p .2" := (snd p).
@@ -2169,7 +2169,7 @@ Eval compute in (4, 5, 8).1.
 Eval compute in (true, false, 1).2.
 Eval compute in (2, true, false).3.
 \end{coq}
-\begin{coqout}{}{width=5cm}
+\begin{coqout}{}{width=4cm}
 $~$
      = 4 : nat
      = true : bool
@@ -2255,6 +2255,8 @@ of symbols) of size \C{n}.
 \begin{coq}{}{width=5.5cm}
 Eval compute in
   all_words 2 [:: 1; 2; 3].
+$~$
+$~$
 \end{coq}
 \begin{coqout}{}{width=7cm}
  = [:: [:: 1; 1]; [:: 1; 2]; [:: 1; 3];
@@ -2268,20 +2270,15 @@ Eval compute in
 \subsection{Solutions}
 
 %%%%%%%%%%
-\begin{Answer}[ref=ex:3sum]
-\begin{coq}{}{}
-Definition sum3squares x y z := x ^ 2 + y ^ 2 + z ^ 2.
-\end{coq}
-\end{Answer}
 
-\begin{Answer}[ref=ex:pair]
+\begin{Answer}[ref=ex:triple]
 
 \begin{coq}{}{}
-Inductive triple (A B C: Type) := mk_triple (a : A) (b : B) (c : C).
+Inductive triple (A B C : Type) := mk_triple (a : A) (b : B) (c : C).
 Notation "A * B * C" := (triple A B C) : type_scope.
 Notation "( A , B , C )" := (mk_triple A B C).
-Definition fst A B C (p : A * B * C) := let: (a, _, _) := p in a.
-Definition snd A B C (p : A * B * C) := let: (_, b, _) := p in b.
+Definition fst  A B C (p : A * B * C) := let: (a, _, _) := p in a.
+Definition snd  A B C (p : A * B * C) := let: (_, b, _) := p in b.
 Definition thrd A B C (p : A * B * C) := let: (_, _, c) := p in c.
 \end{coq}
 
