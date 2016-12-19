@@ -2067,39 +2067,37 @@ and is always printed as  \C{(m < n)}, thanks to the following declaration:
 Notation "n > m"  := (m.+1 <= n) (parsing only).
 \end{coq}
 
-\marginnote{assia: this is probably hard to understand: we do not know
-(yet) about modules and name spaces. I think we could include a
-paragraph on name spaces here.}
 Another frequently used form of notation is called syntactic abbreviation.
-It simply lets one specify a shorter name.  For example the \C{S} constructor
-of natural numbers (placed in \C{Datatype} Module) can also be accessed
+It simply lets one specify a different name for the same object.
+For example the \C{S} constructor of natural numbers can also be accessed
 by writing \C{succn}.  This is useful if \C{S} is used in the current context
 to, say, denote a ring.
 
 \begin{coq}{}{}
-Notation succn := Datatypes.S.
+Notation succn := S.
 \end{coq}
 
 The notation \C{_.+1} we have been using so far is defined on top of
 this abbreviation, as:
 
 \begin{coq}{}{}
-Notation "n .+1" := (succn n) (at level 2, left associativity,
-  format "n .+1") : nat_scope.
+Notation "n .+1" := (succn n) (at level 2, left associativity): nat_scope.
 \end{coq}
 
 The \C{Locate} command can be used to reveal the actual term
 represented by a notation.  In order to understand the meaning of an unknown notation like for instance \C{(a <= b <= c)}, one can use the \C{Locate} command to uncover the symbols it involves.
 
-\begin{coq}{}{}
+\begin{coq}{}{width=2.9cm}
 Locate "<=".
+$~$
+$~$
+$~$
 \end{coq}
-\begin{coqout}{}{}
-Notation            Scope
-"m <= n <= p" := andb (leq m n) (leq n p) : nat_scope
+\begin{coqout}{}{width=9.5cm}
+Notation                                       Scope
+"m <= n <= p" := andb (leq m n) (leq n p)    : nat_scope
 "m <= n < p" := andb (leq m n) (leq (S n) p) : nat_scope
-"m <= n" := leq m n  : nat_scope
-...
+"m <= n" := leq m n                          : nat_scope
 \end{coqout}
 
 The only difficulty in using \C{Locate} comes from the fact
