@@ -99,8 +99,8 @@ function on left of the argument, with a separating space but {\em not
 later in the present section. As a first approximation, we can see
 that expressions, also called \emph{terms}, in the syntax of \Coq{}
 are either variables, or
-functions of the form \C{fun x => e}, where \C{e} is itself an
-expression, or the application \C{e1 e2} of an expression \C{e1} to
+functions of the form \C{(fun x => e)}, where \C{e} is itself an
+expression, or the application \C{(e1 e2)} of an expression \C{e1} to
 another expression \C{e2}. However, just like with pen and paper, the addition
 operation is denoted in the \Coq{} syntax using an infix notation \C{+}.
 The transformation we just detailed, from expression \C{(2 + 1)} to expression
@@ -152,7 +152,7 @@ The label \C{nat} is actually called a {\em type}.
 We refer once again to chapter~\ref{ch:ttch} for a more accurate
 description of types: in the present chapter we rely on the loose intuition
 that a type refers to a collection of objects that can be treated in a
-uniform way. A type annotation has the shape \C{t : T}, where a colon
+uniform way. A type annotation has the shape \C{(t : T)}, where a colon
 \C{:} surrounded by two spaces separates an expression \C{t} on its
 left from the type \C{T} itself on the right. For instance in
 \C{(n : nat)}, the argument \C{n} of the function \C{f} is annotated with
@@ -649,17 +649,17 @@ More generally, we can define a function that takes a boolean value as
 input and returns one of two possible natural numbers in the following
 manner:
 
-\begin{coq}{name=definef23}{}
-Definition f23 b := if b then 2 else 3.
+\begin{coq}{name=definetwoVthree}{}
+Definition twoVthree b := if b then 2 else 3.
 \end{coq}
-\coqrun{name=definef23_run}{definef23}
+\coqrun{name=definetwoVthree_run}{definetwoVthree}
 
 As one expects, when \C{b} is \C{true} the expression
-\C{(f23 b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
+\C{(twoVthree b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
 
-\begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating f23}
-Eval compute in f23 true.
-Eval compute in f23 false.
+\begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating twoVthree}
+Eval compute in twoVthree true.
+Eval compute in twoVthree false.
 \end{coq}
 \coqrun{name=eval_run}{eval_repeat_twice_f_two}
 \begin{coqout}{run=eval_f_run}{title=Response,width=5cm}
