@@ -857,7 +857,7 @@ Lemma example a b : (a || ~ a) && (a && b ==> (a == b))
 Proof. by case: (a && _) / andP => [[-> ->] |] //; rewrite orbN. Qed.
 \end{coq}
 A more detailed explanation of this syntax can be found
-in~\cite[Section 5.6]{ssrman}.
+in~\cite[section 5.6]{ssrman}.
 
 The \mcbMC{} library provides many spec lemmas to be used this way.
 A paradigmatic one is \C{ifP}.
@@ -1376,7 +1376,7 @@ Qed.
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
 can be appended to any tactic in order to push on the stack the specified
 hypotheses before running the tactic and pulling
-them back afterwards (see~\cite[Section 6.5]{ssrman}).
+them back afterwards (see~\cite[section 6.5]{ssrman}).
 The \C{*} means that the goal is also affected by the tactic, and not just
 the hypotheses explicitly selected.
 

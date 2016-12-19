@@ -34,7 +34,7 @@ formalism.
  Before being more
 precise about the logical foundations of the \Coq{} system in
 Chapter~\ref{ch:ttch},
-we review in this Section some vocabulary and notations associated
+we review in this section some vocabulary and notations associated
 with functions.
 We will use the words \emph{function} and \emph{operation}
 interchangeably. Sometimes, we will also use the word \emph{program}
@@ -48,7 +48,7 @@ this purpose, we study examples involving natural numbers. In \Coq{}
 syntax, we casually use \C{nat} to refer to the collection of natural
 numbers and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
 (resp. product) operation on natural numbers,  before providing their
-actual formal definition in Section~\ref{ssec:nat}. We will also
+actual formal definition in section~\ref{ssec:nat}. We will also
 assume implicitly that numerals $1, 2, \dots$ denote natural numbers,
 represented by their analogue \C{1}, \C{2}, \dots in \Coq{} syntax.
 
@@ -96,7 +96,7 @@ Now we still need to \emph{apply} this operation to the argument
 Note that applying a function to an argument is simply by writing the
 function on left of the argument, with a separating space but {\em not
   necessarily with parentheses around the argument}; we will come back to this
-later in the present Section. As a first approximation, we can see
+later in the present section. As a first approximation, we can see
 that expressions, also called \emph{terms}, in the syntax of \Coq{}
 are either variables, or
 functions of the form \C{fun x => e}, where \C{e} is itself an
@@ -258,7 +258,7 @@ is too early to be
 more precise about this normalization strategy. This would require
 at least describing in more details the formalism underlying the
 \Coq{} system, which we do only in Chapter~\ref{ch:ttch}. The
-interested reader should actually refer to \cite[Section
+interested reader should actually refer to \cite[section
 8.7.1]{Coq:manual} for the official documentation of \C{compute}.
 For now, we suggest to keep only the intuition that this
 normalization procedure provides the ``expected value'' of a
@@ -443,7 +443,7 @@ lead to ill-formed expressions.  For instance, the inner \C{(g x)} in
 \C{(g (g x))} needs surrounding parentheses because expression
 \C{(g g x)} reads \C{((g g) x)} and is thus ill-formed.
 
-We can play a similar game as in Section~\ref{sec:fun-sev-args},
+We can play a similar game as in section~\ref{sec:fun-sev-args},
 and scrutinize the expression obtained by applying the
 function \C{repeat_twice} to  the function
 \C{f} and the number \C{2}. Let us compute the resulting value of this
@@ -472,7 +472,7 @@ definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
 
 Function  \C{repeat_twice} is an instance of function with several
-arguments: as illustrated in Section~\ref{sec:fun-sev-args}, its
+arguments: as illustrated in section~\ref{sec:fun-sev-args}, its
 partial application to a single argument provide a well-formed
 function, from \C{nat} to \C{nat}:
 
@@ -1563,7 +1563,7 @@ constructor. The \C{\%N} and \C{\%type} labels are said to be
 \index[concept]{record}\label{sec:records}
 
 Inductive types with a single constructor, like the type \C{pair} in
-Section~\ref{sec:othercontainers} or the type \C{triple} of
+section~\ref{sec:othercontainers} or the type \C{triple} of
 Exercise~\ref{ex:triple} provide a general pattern to define a type
 which aggregates existing objects into a single packaged one. This
 need is so frequent that \Coq{} provides a specialized command
@@ -1777,7 +1777,7 @@ Eval compute in foldr addn 0 [:: 1; 2].
 \section{Symbolic computation}\label{sec:symcomp}
 \index[concept]{computation!symbolic}
 
-As we mentioned in Section~\ref{sec:functions}, the \C{Eval compute}
+As we mentioned in section~\ref{sec:functions}, the \C{Eval compute}
 command of \Coq{} can be used to normalize expressions, which
 eventually leads to simpler terms, like numerals. This flavour of
 computation can however accommodate to the presence of parameters in
@@ -1856,9 +1856,9 @@ directly.
 
 The way functions are described as programs has an impact on the way
 symbolic computations unfold. For example, recall from
-Section~\ref{ssec:recnat} the way we defined an addition operation on
+section~\ref{ssec:recnat} the way we defined an addition operation on
 elements of type \C{nat}. We rephrase it using the \C{if .. is
-  .. then .. else ..} syntax: % presented in Section~\ref{}:
+  .. then .. else ..} syntax: % presented in section~\ref{}:
 
 \begin{coq}{name=add_redef}{}
 Fixpoint addn n m := if n is p.+1 then (addn p m).+1 else m.
@@ -1880,7 +1880,7 @@ normalization strategy to perform computation, the \C{simpl}
 evaluation strategy.  One difference between the \C{simpl}
 and \C{compute} strategy is that the \C{simpl} one usually leaves
 expressions in nicer forms whenever they contain variables. Here again
-we point the interested reader to \cite[Section 8.7.1]{Coq:manual} for
+we point the interested reader to \cite[section 8.7.1]{Coq:manual} for
 more details.
 
 \begin{coq}{}{width=7cm}
@@ -1967,7 +1967,7 @@ a function of type \C{nat -> nat -> nat}: the two type parameter of
 argument given to \C{foldr} is hence a function of
 type \C{nat -> nat -> nat}, which is created by \emph{abstracting} the
 variable \C{i} in the expression \C{F}, as mentionned in
-Section~\ref{ssec:deffun}. The name of the second argument of the
+section~\ref{ssec:deffun}. The name of the second argument of the
 function, called \C{a} here, should not appear in expression \C{F} in
 order for the notation to be meaningful. Crucially, the \C{foldr}
 iterator takes as
@@ -1987,7 +1987,7 @@ Eval compute in \sum_( 1 <= i < 5 ) i.
 \end{coqout}{}{}
 
 Behind the scene, iteration happens following the order of the list,
-as we observed in Section~\ref{sec:symcomp}.
+as we observed in section~\ref{sec:symcomp}.
 In the present case the operation we iterate, addition, is
 commutative, so this order does not impact the final result. But it
 may not be the case for example if the iterated operation

@@ -338,7 +338,7 @@ In computer science a record is a very common data structure.  It is a
 compound data type, a container with named fields.  Records are
 represented faithfully in the \mcbCIC{} as
 inductive data types with just one constructor,
-recall Section~\ref{sec:records}.
+recall section~\ref{sec:records}.
 The peculiarity of the records we are going to use is that they are
 \emph{dependently typed}: the type of each field is allowed to depend on
 the values of the fields that precede it.
@@ -532,7 +532,7 @@ step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
 \lstinline/(sort $\mcbimplm{e}$)/ versus \lstinline/nat/.
 This problem falls in one of the problematic classes we presented in
-Section~\ref{sec:hounif}: the system has to synthesize a comparison
+section~\ref{sec:hounif}: the system has to synthesize a comparison
 function (or better a record instance containing a comparison
 function).
 
@@ -790,7 +790,7 @@ The \C{Equality} module enclosing the record acts as a name space:
 made local to the \C{Equality} name space becoming, respectively,
 \C{Equality.type}, \C{Equality.sort}, \C{Equality.op} and \C{Equality.axiom}.
 
-As in Section~\ref{sec:eqtype}, the record plays the role of
+As in section~\ref{sec:eqtype}, the record plays the role of
 a relation and its \C{sort} component is again the only field
 that drives canonical structure inference. Following
 a terminology typical of object oriented programming languages,
@@ -1126,7 +1126,7 @@ some times expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
 items being combined by the iterated operation.
 
-As already mentioned in Section~\ref{sec:bigopnat},
+As already mentioned in section~\ref{sec:bigopnat},
 the functional programming language
 provided by \Coq{} can express in a very natural way iterations over
 a finite domain.  In particular such finite domain can be represented
@@ -1488,7 +1488,7 @@ by hand.
 \mcbsubsection{Searching the bigop library}
 
 Searching the bigop library for a lemma is slightly harder than
-searching the other libraries as explained in Section~\ref{sec:search}.
+searching the other libraries as explained in section~\ref{sec:search}.
 In particular one can hardly search with patterns.  For example
 the following search returns no results:
 

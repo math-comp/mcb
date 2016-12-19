@@ -256,7 +256,7 @@ Lemma addnA (m n k : nat) : m + (n + k) = m + n + k.
 Note that in the statement of \C{addnA}, the right hand side does not
 feature any parentheses but should be read \C{((m + n) + k)}: this
 associativity has been prescribed at the definition time of the infix
-\C{+} notation, see Section~\ref{sec:notabrev}. Command
+\C{+} notation, see section~\ref{sec:notabrev}. Command
 \C{Lemma}, just like \C{Definition}, allows for
 dropping the type annotations of parameters if these types can be
 inferred from the statement itself:
@@ -269,7 +269,7 @@ Boolean identities play a central role in the \mcbMC{} library. They
 states equalities between boolean expressions with parameters. For
 instance, the~\C{orbT} statement expresses that \C{true} is right absorbing
 for the boolean disjunction operation \C{orb}. Recall from
-Section~\ref{ssec:boolval} that \C{orb} is equipped with the \C{||}
+section~\ref{ssec:boolval} that \C{orb} is equipped with the \C{||}
 infix notation:
 
 \begin{coq}{name=orbT}{}
@@ -322,7 +322,7 @@ part in these boolean identities. \Coq{} is actually able to insert
 automatically and silently this missing piece whenever it fits and
 it is non-ambiguous, thanks to its \emph{coercion} mechanism. We
 postpone further explanation of this mechanism to
-Section~\ref{sec:coercions} but from now on, we stop displaying the
+section~\ref{sec:coercions} but from now on, we stop displaying the
 \C{..= true} parts of the statement that are silently inserted this
 way. For instance lemma \C{leq0n} is displayed as:
 
@@ -333,7 +333,7 @@ Lemma leq0n (n : nat) : 0 <= n.
 As a general fact, boolean identities express that two boolean
 statements are equivalent. We already encountered special cases of
 such equivalence with propositional tautologies in
-Section~\ref{ssec:id}. Here is a few more examples involving
+section~\ref{ssec:id}. Here is a few more examples involving
 boolean predicates on natural numbers, that we have defined in
 Chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
@@ -369,7 +369,7 @@ Lemma odd_gt0 n : odd n -> n > 0.
 This arrow \C{->} is the
 same as the one we have used in chapter~\ref{ch:prog} in order to
 represent function types. This is no accident, but we postpone further
-comments on the meaning of this arrow to Section~\ref{sec:chi}. For
+comments on the meaning of this arrow to section~\ref{sec:chi}. For
 now let us only stress that \C{->} associates on the right and that
 a succession of arrows expresses a conjunction of conditions:
 
@@ -378,7 +378,7 @@ Lemma dvdn_mul d1 d2 m1 m2 : d1 %| m1 -> d2 %| m2 -> d1 * d2 %| m1 * m2
 \end{coq}
 Replacing conjunctions of hypotheses by a succession of implication is
 akin to replacing a tuple of arguments by functions with a functional
-type, as described in Section~\ref{sec:fun-sev-args}.
+type, as described in section~\ref{sec:fun-sev-args}.
 
 % Yet beware, all the parameters are then fixed
 % inside the section (as well as hypotheses but that's less often
@@ -612,7 +612,7 @@ is a good practice to indent the corresponding script.
 
 Once the case analysis has substituted a concrete value for the
 parameter \C{b}, the proof becomes trivial, in both cases: we are in a
-similar situation as in the proofs of Section~\ref{ssec:proofcomp} and
+similar situation as in the proofs of section~\ref{ssec:proofcomp} and
 the tactic \C{by []} applies successfully:
 
 \begin{coq}{def=negbkt2,done}{width=6cm,title=First trivial case}
@@ -742,7 +742,7 @@ k : nat
 \index[ssr]{\C{case: name => [$\mid$m]}}
 The second and now only remaining goal corresponds to the case when
 \C{n} is the successor of \C{k}. Note that \C{(k < 0)} is a
-superseding notation for \C{(k.+1 <= 0)}, as mentioned in Section
+superseding notation for \C{(k.+1 <= 0)}, as mentioned in section
 \ref{sec:notabrev}. This goal can also be  solved by computation, as
 both hand sides of the equality evaluates to \C{false}.  The final
 proof script is hence:
@@ -908,7 +908,7 @@ computation) and the right one is \C{true}. However we need
 more than symbolic computation to show that the left hand side is
 \C{true} as well: the fact that \C{0} is a right absorbing element for
 multiplication indeed requires reasoning by \emph{induction} on the
-code of the multiplication (see Section~\ref{ssec:ind}).
+code of the multiplication (see section~\ref{ssec:ind}).
 
 To conclude the proof we need one more proof command, the
 \C{rewrite} tactic, that lets us appeal to an already existing lemma.
@@ -966,7 +966,7 @@ Lemma muln0 n : n * 0 = 0.
 
 As a side remark, being able to find the ``right'' lemma is of
 paramount importance for writing modular libraries of formal
-proofs. See Section~\ref{sec:search} which is dedicated to this topic.
+proofs. See section~\ref{sec:search} which is dedicated to this topic.
 
 Back yo our example, we use the \C{rewrite} tactic with lemma
 \C{muln0}, in order to perform the desired replacement.
@@ -1383,7 +1383,7 @@ In order to use a known lemma, one should provide the values of its
 parameters which provide the instance relevant to the current
 proof. Fortunately, the proof assistant can assist its user in
 describing these values and the \C{apply:} tactic, like the
-\C{rewrite} one in Section~\ref{sec:rewrite}, finds the appropriate
+\C{rewrite} one in section~\ref{sec:rewrite}, finds the appropriate
 instance by comparison to the current goal:
 
 \begin{coq}{}{}
@@ -1737,7 +1737,7 @@ base case, since if
 \C{P} synthesized by \C{elim:} for us is
 \C{(fun n : nat => n + 0 = n)}. It has been obtained by
 \emph{abstracting} the term \C{n} in the goal (see
-Section~\ref{ssec:deffun}). The proof concludes by using lemma \C{addSn}
+section~\ref{ssec:deffun}). The proof concludes by using lemma \C{addSn}
 to  pull the \C{.+1} out of the sum, so that the induction hypothesis
 \C{IHm} can be rewritten.
 

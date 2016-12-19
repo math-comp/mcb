@@ -446,7 +446,7 @@ More interestingly the sub-type kit provides the dynamic constructors
 \C{insub} and \C{insubd} that do not need a proof as they dynamically
 test the property, and offer
 an attractive encapsulation of the difficult \emph{convoy
-pattern}~\cite[Section 8.4]{CPDT}.
+pattern}~\cite[section 8.4]{CPDT}.
 The \C{insubd} constructor takes a default
 sub-type value which it returns if the tests fails, while \C{insub}
 takes only a base type value and returns an \C{option}; both are
@@ -776,7 +776,7 @@ Notation "{ 'ffun' fT }" := (finfun fT).
 
 The actual definition in the \mcbMC{} library is slightly more complex
 to statically check that the domain is finite using the tricks
-explained in Section~\ref{sec:phantom}.  I.e. \Coq{} rejects
+explained in section~\ref{sec:phantom}.  I.e. \Coq{} rejects
 \C{\{ffun nat -> nat\}} but accepts \C{\{ffun 'I_7 -> nat\}}.
 
 Other utilities let one apply a finite function as a regular function
@@ -1094,7 +1094,7 @@ Working with rich types is not always easy, for example the type
 checker does not understand automatically that a square matrix of
 size \C{(m + n)} can be multiplied with a matrix of size \C{(n + m)}.
 In such case the user has to introduce explicit size casts,
-see Section~\ref{sec:castmx}.  At the same time type inference lets one omit
+see section~\ref{sec:castmx}.  At the same time type inference lets one omit
 size information most of the time, playing once again the role of a
 trained reader.
 
