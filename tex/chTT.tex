@@ -11,90 +11,172 @@ the type theory underlying \Coq{} and one of the crucial ingredients
 to the methodology basing the \mcbMC{} library. The present chapter is
 devoted to a more in-depth presentation of these mathematical
 presentation, alhough an exhaustive description shall remain out of
-the scope of the present book. The interested reader can refer to more
-specialized references like~\cite{hottbook} or \cite{ttfp}, or the
+the scope of the present book. For more comprehensive presentations of
+type theory for formalized mathematics, the reader shall refer to more
+specialized references like~\cite{ttfp}, or the
 shorter survey in the Handbook of Automated
 Reasoning~\cite[Volume 2, chapter 18]{handbook-ar}.
-
-.
-
-
-
-% By now the informed reader is likely to wonder when the authors of the book
-% will eventually mention the mathematical foundation of \Coq{},
-% % a variant of type theory called \mcbCIC{},
-% and
-% in particular explain the Curry-Howard isomorphism.  Indeed this text departs
-% from the standard presentation of \Coq{}, that typically starts by
-% explaining the logic and showing how standard connectives like
-% conjunction or disjunction are defined in term of inductive types.
-
-% We made a deliberate choice to put forward the programming aspects of
-% type theory and how programs can be used both to express computable functions
-% and decidable predicates or boolean connectives.
-% Indeed this formalization choice is one of the main ingredients of the \mcbMC{}
-% library.  The computational behavior of programs is at the core of
-% type theory.  The fact that a function computes to a value requires no
-% proof: 5 and 2+3 are indistinguishable from a logical standpoint.
-% This fact provided a powerful form of automation, and as we will
-% see later will also ease the construction of sub types.
-
-% It is finally time to provide a minimal presentation of the statements as types
-% correspondence.  The universe of boolean predicates is limited: one
-% cannot for example express a general $\exists$ quantification, and also the
-% status of the $\forall$ quantification has been so far never really explained.
-% This presentation is far from being exhaustive, the interested reader can find
-% a modern presentation of type theory in \cite{hottbook}.
 
 \section{Terms, types, proofs}\label{sec:chi}
 
 The \Coq{} proof assistant provides a formal language to describe
-mathematical statemants and proofs, called
-\emph{Gallina} and based on a flavour of type theory called the
-\emph{Calculus of Inductive Constructions}.
-\marginnote{More references?}
+mathematical statements and proofs, called
+\emph{Gallina} and based on a type theory called the
+\emph{Calculus of Inductive
+  Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}. In this section, we
+provide some hints on the main features of this formalism. The
+Calculus of Inductive Constructions is described formally in Chapter 4
+of the reference manual of \Coq{}~\cite{Coq:manual}. The reference book on
+homotopy type theory~\cite{hottbook} describes a very close formalism.
 
-There exists several flavours of \emph{type theory} that can be used
+
+
+\subsection{Propositions as types, proofs as programs}
+There exists several flavors of \emph{type theory} that can be used
 as a foundational language for mathematics, alternative to the
-flavours of set theory usually cited as the formal language of
-reference. The main difference between a type-theoretic framework and
+flavors of set theory usually cited as the formal language of
+reference.
+\marginnote{Cite Bourbaki}
+The main difference between a type-theoretic framework and
 a set-theoretic one is the status of the deductive system used to
-represent reasoning in formal way. Informally speaking, a
-set-theoretic framework has two stages: first order logic provides the
-logical layer and describes the language of logical sentences and how
-these statements can be combined and proved; this language is then
+represent reasoning in a formal way. Informally speaking, a
+set-theoretic framework has two stages. First order logic provides the
+logical layer: it describes the language of logical sentences and how
+these statements can be combined and proved. This language is then
 used in the second layer, to formulate the axioms of the particular
 theory of interest. A type-theoretic framework is monolithic and the
 same language of types is used in a uniform way to describe
 mathematical objects, statements and proofs. \emph{Logical statements}
 are identified with some \emph{types} and their \emph{proofs} with
 \emph{terms}, or programs, having this type. Thus proving a statement
-consists in fact in contructing a term of the corresponding type.
+consists in fact in constructing a term of the corresponding type. In a
+set theoretic statement, the rules which govern the construction of
+gramatically correct statements are rather loose and the goal of the
+game is to construct a proof for a given proposition, using the rules
+of first-order logic. The analogue of the meta-statement that a given
+proposition has a proof is the meta-statement that a given term has a
+given type. Such a meta-statement is called a \emph{typing
+  judgment}. It is written:
+$$\Gamma \vdash t : T$$
+which means:
+\emph{in the context $\Gamma$, the term $t$ has the type $T$}.
+Typing judgments are justified from typing rules, and these
+justifications form trees similar to the proof trees of natural deduction.
+Before being more precise about what are contexts, terms and types,
+let us emphasize a couple of important differences with set theory
+here: first, the typing judgment features explicit expressions for
+the term and the type, whereas the proof of a statement in first-order
+logic is seldom mentionned. Second, the term $t$ shall represent an
+arbitrary object of the mathematical discourse, like a number or a
+group, and not only a proof.
 
 
-\subsection{Primitive types and terms formers}
+\subsection{First types, terms and computations}
 
-The simplest example one could think of is the formal statement saying that
-a proposition $A$ implies itself, namely $A \rightarrow A$.  If one reads
-the implication symbol $\to$ as the type of functions, the statements reads
-as a function from $A$ to $A$.  A program with that type would be
-\C{(fun x : A => x)}.  Such program takes in input a term $x$ of
-type $A$, that we here see as a proof of $A$, and returns it, i.e. it
-produces in output a proof of $A$.  We say that such program is a
-proof of $A \rightarrow A$.
+So every expression we have manipulated so far is a \emph{term} of the
+Calculus of Inductive Constructions, and any term of this formalism
+has a type in the context in which it occurs.
 
-What is striking here is that the same class of terms represents both programs
-and proofs, for example the identity function of natural numbers has the very
-same shape of the proof we've just seen.  So we are left with only two
-concepts, types and terms, playing a double role.  We now see how types and
-terms can be formed.
+We put aside inductive types until section~\ref{ssec:ind} and define
+inductively what are the terms of the formalism. We suppose that we
+have a countable infinite set of symbols available for names, so that it is
+always possible to exhibit a name distinct from a given arbitrary
+finite collection of names. The simplest, atomic, terms are the
+\emph{variables}, and the \emph{sorts} \C{Prop} and \C{Type}$_i$, for
+$i \in \mathbb{N}$\footnote{Coq has
+another sort \C{Set} but we do not use it here.}. We shall also
+use constants (for instance to introduce definitions). Constants and
+variables are represented using the pre-existing set of names. If \C{x} is a
+variable, and \C{T} and \C{U} are two terms, then \C{forall x : T, U} is
+also a term. In fact this term will be used as a type, and it
+represents a family of types \C{U} indexed by elements of type \C{T}.
+Importantly, if \C{x} does not occur in term \C{U} as a
+free variable, then this term is usually denoted \C{T -> U}: it is
+used for the type of functions having their argument of type \C{T} and
+their results of type \C{U}. There is thus no difference
+between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, except the
+notation. If \C{x} is a variable and \C{T}, \C{u}
+are terms then \C{fun x:T =>  u} is a term, which represents a function
+with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
+\C{u t} is also a term, which represents the application of (function)
+\C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
+if \C{t, u} are terms and \C{x} is a variable.
 
-Regarding types, the primitive type formers we have seen are the function space
-$\to$, also logical implication, and the universal quantification
-$\forall$, used to describe polymorphic function as well as parametric lemmas
-(like induction principles).
-Standard logical rules describing how one can prove formulas involving these
-connectives are:
+A typing judgement $\Gamma \vdash t : T$ relates a
+context $\Gamma$ and two terms $t$ and $T$. As it name suggests,
+the context logs all the facts assumed at the moment when the term
+occurs. It can be empty but otherwise contains pairs of a name and a
+type: after executing the command \C{Variable n : nat}, the context
+contains the pair (\C{n} : \C{nat}). We have not yet defined what a
+type is, because it is a special case of term, defined using typing
+judgments. Actually, well-formed contexts and typing judgments are
+defined inductively and simlutaneously.
+
+Typing judgments with an empty context express the
+axiom rules of the formalism, like for instance the types of sorts:
+$$\vdash \C{Prop} : \C{Type}_1 \quad \vdash \C{Type}_i : \C{Type}_{i+1}.$$
+From now on and as the default display mode of Coq does, we will leave
+the index of the sorts \C{Type}$_i$ implicit and just write \C{Type},
+as these indices do not play a significant role in what is presented
+in this book. A \emph{type} is a term which can be typed by a sort:
+$$\vdash \C{T} : \C{Prop} \quad \textrm{ or}
+\quad \vdash \C{T} : \C{Type}.$$
+Sorts are thus particular types and they are types of types.
+A \emph{well-formed context} is either an empty context, or the
+extension of an existing context with a pair \C{(x : T)}, where \C{x}
+is a fresh name and \C{T} is a type. As expected, a well-formed
+context provides a type to the variables it contains:
+$$\textrm{if } \Gamma \textrm{ is well-formed  and }
+\C{(x : T)} \in \Gamma \textrm{ then }
+\Gamma \vdash \C{x} : \C{T}.$$
+Contexts not only store global assumptions: they are also used to
+forge more complex typing judgments, for more complex types. For
+instance, the following rule explains how to construct non-atomic
+types:
+$$\textrm{if }\quad \Gamma \vdash T : \C{Type} \quad\textrm{ and }\quad
+\Gamma, x : T \vdash U : \C{Type} \quad\textrm{ then }\quad
+\Gamma \vdash \forall x : T, U : \C{Type}.$$
+The term $ \forall x : T, U : \C{Type}$ is the type of functions, as
+described by the rule:
+$$\textrm{if } \ \Gamma \vdash \forall x : T, U : \C{Type}
+\ \textrm{ and }\
+\Gamma, x : T \vdash t : U
+\ \textrm{ then }\
+\Gamma \vdash \C{fun x => t} : \forall x : T, U
+$$
+and the application of a function to an argument is well-typed only if
+their types agree:
+$$\textrm{if } \ \Gamma \vdash u : \forall x : T, U
+\ \textrm{ and }\
+\Gamma \vdash t : T
+\ \textrm{ then }\
+\Gamma \vdash u\ t : U[t/x]
+$$
+where $U[t/x]$ denotes the term obtained by substituting
+the variable $x$ by the term $t$ in the term $U$.
+
+We will use the same class of terms to represent both functions and
+proofs of formal statements, themselves represented by the types of
+the functions. Constructing a proof for a given formal statement
+\emph{is} constructing a term of the corresponding type.
+Consider the simple example of formal statement stating
+that a proposition $A$ implies itself, namely $A \rightarrow A$.
+Now the implication symbol~$\to$ can be understood as the symbol we used
+to represent the type of functions, in the non-dependent case. There
+is a simple program having
+the type $A \rightarrow A$: it is the identity function for terms of
+type $A$ and the term representing this function is
+\C{(fun x : A => x)}. If we consider that $A$ is a
+proposition, this program takes in input a term $x$ of type $A$, seen
+as a proof of $A$, and produces a proof of $A$ by outputing its
+argument.
+
+More generally, the logical rules of implicative and universal
+statements can be decorated with terms, so that proofs of implications
+can be seen as functions transforming an arbitrary proof of the
+premisse into a proof of the conclusion. The introduction rules
+respectively for the implication and the universal quantification can
+be written:
 
 \begin{center}
 \AxiomC{$A$}
@@ -111,11 +193,10 @@ connectives are:
 \UnaryInfC{$\forall x, B$}
 \DisplayProof
 \end{center}
-
-The former reads: to prove $A \to B$ one can prove $B$ under the
-assumption $A$.  The latter: to prove $\forall x,B$ one can prove $B$
-assuming that $x$ is fresh.  We annotate such rules with the terms
-corresponding to these proof rules.
+To prove $A \to B$ one can prove $B$ under the
+assumption $A$ and to prove $\forall x,B$ one can prove $B$
+for a fresh variable $x$. Let us now annotate these rules with terms
+whose typing rules coincide with these proof rules:
 
 \begin{center}
 \AxiomC{\C{x : }$~A$}
@@ -133,16 +214,14 @@ corresponding to these proof rules.
 \DisplayProof
 \end{center}
 
-The anonymous function constructor \C{(fun .. => ..)} serves as a proof
-for both rules: the term \C{b} is in both cases a proof of $B$.  The only
-difference is that $x$ is only allowed to occur in $B$ in the second rule.
-Said otherwise in type theory $\to$ is a special case of $\forall$ where
-the bound variable does not occur in the quantified formula.
-For example
-there is no semantic difference between \C{(nat -> bool)} and
-\C{(forall x : nat, bool)}.
+Actually, the term \C{(fun .. => ..)} serves as a proof
+for both rules and in both cases the term \C{b} is a proof of $B$.
+The only difference is that $x$ is allowed to occur in $B$ only in the
+second rule.
 
-Logical connectives come with elimination rules, in particular
+
+We now play the same game with the corresponding elimination rules:
+
 
 \begin{center}
 \AxiomC{$A \to B$}
@@ -157,7 +236,7 @@ Logical connectives come with elimination rules, in particular
 \DisplayProof
 \end{center}
 
-Function application serves as a proof for both rules.
+This time function application serves as a proof in both cases:
 
 \begin{center}
 \AxiomC{\C{f : }$~A \to B$}
@@ -173,9 +252,45 @@ Function application serves as a proof for both rules.
 \DisplayProof
 \end{center}
 
-The programs as proofs correspondence has a visible impact in the proofs
+Universal quantification is not only useful to form types that
+play the role of propositions.  It can come handy to form data types
+too.  In the second part of this book (section~\ref{sec:matrix})
+we see how the matrix data type
+and the type of its multiplication function benefit from it.
+
+\begin{coq}{}{}
+matrix : Type -> nat -> nat -> Type.
+mulmx : forall R : Type, forall m n p : nat,
+  matrix R m n -> matrix R n p -> matrix R m p.
+\end{coq}
+
+This time the data type of matrices exposes the size, and matrix multiplication
+can be given a type that rules out incompatible matrices and also describes
+the dimension of the resulting matrix in terms of the size of the input
+ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
+add and multiply elements of \C{R}.  Such detail plays no role in the current
+discussion.}
+This is in fact a classic example of what is called a \emph{dependent type}: a
+data type depending on data, two natural numbers here.
+\index[concept]{dependent type}
+
+Note that in this formalism, quantification can range on the proofs of
+a given statement, just like it can range on numbers. Statement may
+express this
+way a property shared by the proofs of a given statement. Such capability
+finds a rare, but
+crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}:
+all the proofs of a given equality statement between two booleans are
+indistinguishable.
+
+\begin{coq}{name=hedberg}{}
+Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
+\end{coq}
+
+
+The proofs as programs correspondence has a visible impact in the proofs
 part of the \mcbMC{} library.  In particular quantified lemmas, being programs,
-can be instantiated by simply passing arguments to them.  Exactly as one can
+they can be instantiated by simply passing arguments to them.  Exactly as one can
 pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
 can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
 \C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
@@ -191,12 +306,44 @@ For example
 \C{(prime_gt0 p_pr)} is a proof that \C{(0 < p)} whenever
 \C{(p_pr : prime p)}.}
 
-Finally note that the $\forall$ quantification specifies the type of the bound
-variable, and that the $\forall_E$ checks the term $t$ has the ``right type'',
-otherwise we get a type error.  What is particularly relevant to the \mcbMC{}
-library is the notion of right type, or how types are compared.  Indeed
-the $\to_E$ rule (and also the $\forall_E$) should be written as follows.
+We refer the reader
+to the reference manual of \Coq{}~\cite{Coq:manual} for the other
+rules of the system, which are variants of the ones we presented or
+which express subtelties of the type system that are out of the scope of
+the present book, like the difference between the sorts \C{Prop} and
+\C{Type}.
 
+
+We conclude this section by commenting a last rule of CIC, called the
+\emph{conversion rule}, which describes the status of computation in this
+framework. Computation is modeled by rewrite rules explaining how to
+apply functions to their argument. For instance, the so-called
+$\beta$-reduction rewrites an application of the form
+$(\C{fun x => t}) u$ into $t[u/x]$: the formal argument
+$x$ is substituted by the actual argument $u$ in the body $t$ of the
+function. A similar reduction rule models the computation of a term of
+the shape \C{(let x := u in t)} into $t[u/x]$. Two terms
+$t_1$ and $t_2$ that are equal modulo computation rules are said to be
+\emph{convertible} and these terms are indistinguishable to the type
+\index[concept]{convertibility}
+system: if $T_1$ and $T_2$ are two convertible types and if a term $t$
+has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
+in the context $\Gamma$. This is the feature of the formalism that we
+have used in section~\ref{ssec:proofcomp}: the proofs of the
+statements \C{2 + 1 = 3} and \C{3 = 3} are the same, because the terms
+\C{2 + 1 = 3} and \C{3 = 3} are convertible. As illustrated in
+section~\ref{sec:symcomp}, computation is not limited to terms without
+variables: the term \C{(isT : true)} is a valid proof of
+\C{(0 < n.+1)}, as well as a proof of \C{(odd 7)} or \C{(prime 27)}.
+\index[coq]{\C{isT}}
+One can also benefit from this feature when applying a lemma,
+otherwise said when calling the $\to_E$  and $\forall_E$
+rules. These rules specify respectively the type of the premisse and
+of the  bound variable: rule $\forall_E$ checks the term $t$ has the ``right type'',
+and output a type error otherwise. But remember types are compared
+modulo computation, and we could have stated variant of these rules
+featuring this congruence. For instance the  $\to_E$ rule becomes in
+this case:
 \begin{center}
 \AxiomC{\C{f : }$~A \to B$}
 \AxiomC{\C{a : }$~A'$}
@@ -205,17 +352,14 @@ the $\to_E$ rule (and also the $\forall_E$) should be written as follows.
 \TrinaryInfC{\C{(f a) :}$~B$}
 \DisplayProof
 \end{center}
+where $A \equiv A'$ denotes that $A$ and $A'$ are convertible.
 
-We say that $A$ and $A'$ are checked for \emph{convertibility} ($\equiv$),
-i.e. if they are equal up to computation.  As a consequence
-the term \C{(isT : true)} is a perfectly valid proof of
-\C{(0 < n.+1)}, as well as \C{(odd 7)} or \C{(prime 27)}
-and can be passed to a lemma expecting any of these.
-\index[coq]{\C{isT}}
-\index[concept]{convertibility}
+
+
 
 \subsection{Inductive types}\label{ssec:indtypes}
 
+\subsection{More connectives}
 In the previous chapters we used many data types already.  For example we have
 seen the type \C{nat} and its constructors \C{O} and \C{S}.  Through the looking
 glasses of the Curry-Howard correspondence \C{O}, being a term of type \C{nat}
@@ -1057,37 +1201,6 @@ the constructor \C{(cons : forall A, A -> seq A -> seq A)} needs no dependent
 quantification on the head element, while here \C{a} needs to occur in
 the type of the argument that follows it, since it must be a proof of
 \C{(P a)}.
-
-The \C{ forall } quantification is not only useful to form types that
-play the role of propositions.  It can come handy to form data types
-too.  In the second part of this book (section~\ref{sec:matrix})
-we see how the matrix data type
-and the type of its multiplication function benefit from it.
-
-\begin{coq}{}{}
-matrix : Type -> nat -> nat -> Type.
-mulmx : forall R : Type, forall m n p : nat,
-  matrix R m n -> matrix R n p -> matrix R m p.
-\end{coq}
-
-This time the data type of matrices exposes the size, and matrix multiplication
-can be given a type that rules out incompatible matrices and also describes
-the dimension of the resulting matrix in terms of the size of the input
-ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
-add and multiply elements of \C{R}.  Such detail plays no role in the current
-discussion.}
-This last use of of the \C{ forall } quantifier is a classic example
-of what is called a \emph{dependent type}: a data type depending on
-data, two natural numbers here.
-\index[concept]{dependent type}
-
-Last, a quantification can also range on the proofs of a statement
-so that one can talk about proofs.  Such capability finds a rare, but
-crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}.
-
-\begin{coq}{name=hedberg}{}
-Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
-\end{coq}
 
 %
 %           nat -> nat a function, like pred
