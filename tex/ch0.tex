@@ -53,7 +53,7 @@ division algorithm, in a few lines of proof text.
 % the Euclidean's division algorithm, in a few lines of proof text.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Structure of the book}
+\section*{Structure of the book}
 
 % The book is divided into three parts.
 % The first two parts of the book are conceived to be read linearly,
@@ -61,7 +61,7 @@ division algorithm, in a few lines of proof text.
 
 In its current state, the book has two parts.
 
-\subsection{Part 1: Definitions and proofs}
+\subsection*{Part 1: Definitions and proofs}
 
 This part introduces two languages and a formalization approach.
 
@@ -93,7 +93,7 @@ It also provides a platform for the Ssreflect proof language and
 many other facilities that are crucial for the \mcbMC{} library like
 type inference.
 
-\subsection{Part 2: Formalization techniques}
+\subsection*{Part 2: Formalization techniques}
 
 This part provides the tools to build a large library of formalized
 mathematics.  In particular it presents a powerful form of automation
@@ -122,7 +122,7 @@ a proof of some extra property.  Type inference is programmed
 to transport all the theory available on
 the original concept to the derived one.
 
-% \subsection{Part 3: Mathematics in Mathematical Components}
+% \subsection*{Part 3: Mathematics in Mathematical Components}
 
 % This part provides a, unfinished by design, panoramic view of the
 % \mcbMC{} library.  It interleaves a catalog of formalized theories with
@@ -130,9 +130,9 @@ the original concept to the derived one.
 % definition of the formal object.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{How to use the book}
+\section*{How to use the book}
 
-\subsection{Conventions}
+\subsection*{Conventions}
 Sections that are labeled with one $(\star)$ are of medium complexity and are
 of interest to the reader willing to extend the \mcbMC{} library.  Sections
 that are label-led with two $(\star\star)$ are of high complexity and are of
@@ -171,7 +171,7 @@ IHn : \sum_(0 <= i < n.+1) i = (n * n.+1) %/ 2
 Names of components one can \C{Require} in \Coq{} are written
 like \lib{ssreflect} or \lib{fintype}.
 
-\subsection{Running examples in the \Coq{} system}
+\subsection*{Running examples in the \Coq{} system}
 The contents of this book is mostly about interacting with a computer
 program consisting of the \Coq{} system and the \mcbMC{} library.  Many
 examples are given, and we advise readers to experiment with this program,
@@ -211,188 +211,3 @@ and \lib{all\_character}.  While the first chapters of this book
 rely mainly on the first
 level, later chapters will rely on the other levels.  This will be clearly
 stated as the topics evolve.
-
-% The Mathematical Components library was originally developed to
-% support the formalization of the Odd Order theorem, a result that
-% requires a wide selection of mathematical theories.
-%
-% \section{challenges}
-%
-% This introduction explains the motivation of the book, which is to
-% present the methodologies we propose to build libraries of formalized
-% mathematics \emph{that scale and can be reused}. Ideally, the content
-% of the section is organized as a drawn-out comparison with the way
-% mathematics on paper/blackboards are developed and written. Then the
-% message is that in order to fulfill the technical needs, computer
-% science techniques can be used and have worked well.
-%
-% For instance, trying to formalize mathematical results from scratch in
-% an empty context, without libraries and only with the tools proposed
-% by the logic and the proof assistant is like trying to learn/invent
-% mathematics without the help of the way mathematical concepts and
-% notations have been shaped, structured, and denoted during the course
-% of their (centuries long) study.
-% In particular, this might lead the user to let the
-% proof assistant impose a certain, usually more pedestrian proof, which
-% we want to prevent as much as possible.
-% (Another way to explain this could be to imagine how to explain some math
-% to a kid that received no education, or trying to imagine that kid
-% inventing new math... the cultural background is important to be up to
-% speed. Maybe the aim of mathcomp is to implement that background at the
-% quality of today's math).
-%
-% There are several important issues that have to be solved in order to
-% come up with a library that has a chance to be reusable. The most
-% pervasive one is the line drawn between what is trivial and what is
-% logged in the proofs (for humans). Some are obvious (reflexivity of
-% relations, ...) but in general this should be analyzed by
-% \marginnote{Lost in the ...}
-% ... learning the maths and reading the literature in the domain of
-% interest. This appreciation might also be depending on the knowledge
-% the reader has: in 1st year texts you make dozen of proofs that
-% certain sets are equipped with a structure of group, vector space or
-% whatever, but very soon you're supposed to \emph{see} that it is
-% obviously the case. Emphasizing this point and providing a methodology to
-% implement this in a systematic way might be one of the original points
-% of this document.
-%
-% One of the great achievements attributed to Bourbaki is the
-% generalization of the so-called axiomatic method, that promotes the
-% design and use of abstract mathematical structures that factor theory
-% and notations. This not only makes maths more readable, but also more
-% understandable and you need to play with the concepts for some times
-% to come up with the right abstractions. Incidentally, notations are
-% not only overloading of symbols, but also carry inference of
-% properties. We should be able to do this and find a way to capture this
-% inference, which is in fact a (Prolog like) program run by the trained
-% reader. And in general we would like the user to provide as much, but
-% no more information in his statement/proof as he would in a proof,
-% avoiding redundant information (where redundant covers inferable).
-%
-% Another kind of implicit information is behind reasoning patterns that
-% should also be modeled in a convenient way for the user. For instance,
-% \emph{mutatis mutandis}, wlog, etc. These rely on the fact that the
-% reader is able both to infer the mathematical statement involved in a
-% cut formula \marginnote{LR: is it reasonable to talk about cut formula here?}
-%  and to run rather easily the simple piece of proof that
-% justifies it. This is modeled by techniques based on formula generation
-% by subterm selection. This also overcomes an unwanted behavior that
-% accessing to a subterm depends on the depth at which it occurs in the
-% formula (usual bureaucracy in naive formalization).
-%
-% The techniques that make this possible are adapted from standard
-% methods in computer science and programming language research. We stand on the
-% shoulders of a foundational system based on a type theory, which
-% promotes functions as the initial concept of the formalism (as opposed
-% to sets). In particular computations plays a privileged role there,
-% allowing to model a notion of ``similar'' up to (implicit)
-% computations. Things that are equal up to computations can be
-% substituted one by the other in a transparent way. This is central to
-% the way things are modeled and at the heart of (small) scale
-% reflection. Computer science engineering techniques are also useful
-% to organize the infrastructure content that make it possible to work with
-% some comfort in upper layers of the library, in order to configure
-% the content so that the machine can use it (order of arguments,
-% implicit status, naming policy...).
-%
-%
-% \section{challenges faced and tools adopted}
-% (tools in a broad sense, the logic is a tool, coq is a tool, the plugin
-% is a tool, the ssr style is a tool,...)
-%
-% Challenges:
-% \begin{itemize}
-% \item large body (scale up), make proofs small and robust.
-% 	We need to say that we do use "deterministic automation".
-% 	Use Laurent's data on de bruijn factor.
-% \item model the use of math notations, their role in proofs, model proofs (also
-% 	it is about reasoning, not just computations). Another way to say that
-% 	is: model Bourbaki (rationalization of Math via structure/interfaces)
-% 	but not the first book (set theory) that is replaced by CIC (link with
-% 	section computational thinking).
-% \end{itemize}
-%
-% We build on \Coq{} and an extension.  The main tools follow (in random order):
-%
-% \section{Computational Thinking}\label{ch:compthink}
-%
-% This section should motivate the activity of formalizing mathematics
-% with the {\bf \Coq{}} proof assistant, emphasizing its computing skills,
-% and as opposed to other foundations like HOL. However the challenge is
-% to keep mathematicians as the privileged target, while motivating the
-% ssr approach to a CS oriented reader.
-%
-% See \verb+../coq/ch0.v+.
-%
-% Aim of the chapter:
-% \begin{itemize}
-% \item should sound natural and easy to a CS person (but with the ssr twist)
-% \item should sound different but well motivated to a \Coq{} user (do show, maybe in
-%   the exercises, that leqn is 100 times better than "Inductive le").  Try to
-%   reproduce the shock we had the first time we used Boolean predicates.  It may
-%   help to compare, in the *advanced* section, the approach with the standard
-%   one, so that one sees two proof scripts in the same page.
-% \end{itemize}
-%
-% \section{logic programming ... type inference}
-% to model proof search, give a meaning to notations, teach coq the
-% work an informed reader does (contextualizing otherwise ambiguous
-% notations, knowledge of interface/instance of algebraic structures).
-%
-% relation with proof search: no "blind" proof search (easy, ad-hoc, pervasive
-% v.s. advanced, generalistic, potentially expensive and unstable).
-%
-% \section{automation in tactics}
-% the main points:
-% \begin{itemize}
-% \item 1/3 is rewrite, term selection/search (one does not need to reach a sub
-% 	formula as a goal in order to make progress for example, no monkey
-% 	puzzle as in GG terminology).
-% \item Create a formula without writing it: some advanced forms of forward
-% 	reasoning tactics to deal with symmetries, generalizations (boils down
-% 	to synthesize the cut formula out of the minimum possible user input, as
-% 	in a text where one says "similarly to that, we can also prove that".
-% 	(this is not very pervasive, dunno if it is worth putting it here in
-% 	this chapter).  Also elim does that. (technically also rewrite, but we
-% 	may want to separate things)
-% \end{itemize}
-% This section is were one talks about the plugin, and some of the main design
-% points of tactics: compositional (a language, not a list of commands),
-% predictable (documented!!!), finally compact (symbols for uninteresting steps).
-%
-% \section{discipline}
-% MAKE an howto out of that.
-% Maybe one should also add a few notes on the style in scripts? like:
-% \begin{itemize}
-% \item you must be able to model (at least) 1 proof step in a sentence (line),
-%   e.g. "rewrite preparegoal dostep ?cleanup."
-% \item uninteresting/recurrent lemmas/steps should be small (short names, easy to
-%   gray out)
-% \item lemma statements are designed, not just written, having in mind their use
-%       (forward, backward, implicit argumets, arguments order)
-%       and the class of trivial hypotheses since an extra hyp that is proable
-%       triviality (via //, hint resolve, canonical) is for free. E.g.
-%       "x \\is a toto", "0 <= n", ...
-% \item also not every possible lemma, but a few that combine well
-% \item proofs/definitions are reworked many times, why (understand recurrent
-%   proof schemas, compact, factor, make more stable/robust) and what is needed
-%   (like meaningful names, clear structure)
-% \end{itemize}
-%
-% \section{trivial=implicit (for a trained mathematician)}
-% The idea is to try to identify what is trivial (mathematically speaking)
-% and be sure you can model it as such:
-% \begin{itemize}
-% \item (level basic) make explicit the trivialities of each theory (what one
-% 	expects to be proved by //).
-% \item (level advanced) when you do new stuff, you must decide what is
-% 	trivial/implicitly proved.
-% \item (hard) which technique to make \Coq{} prove it automatically (hint resolve,
-% 	canon, comput... in the type)
-% \end{itemize}
-%
-% % This may also be another way present the whole chapter
-%
-% \mantra{(basic) if you see toto=false you should perform the case analysis via
-% fooP
-% }
