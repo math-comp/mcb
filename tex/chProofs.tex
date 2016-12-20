@@ -78,7 +78,7 @@ statement, but $(a + b)^2 = a^2 + 2ab + b^2$ has two parameters $a$
 and $b$: it is not ground.
 
 The \C{Check} command can not only be used to verify the type
-of some expression, but also check whether a formal statement 
+of some expression, but also check whether a formal statement
 is well formed or not:
 
 \begin{coq}{name=check-eq}{width=6cm}
@@ -525,7 +525,7 @@ also \C{(2 + n = n.+2)}, which requires several steps of computation.
 Last, the \C{by} tactical turns its argument into a \emph{terminating
 tactic} --- and thus  \C{by []} is such a terminating tactic. A tactic
 is terminating if as soon as it does not solve the goal completely, it
-fails and stops \Coq{} from processing the proof script. 
+fails and stops \Coq{} from processing the proof script.
 A terminating tactic is colored in red so that
 the eye can immediately spot that a
 proof, or more commonly a subproof, ends there.
@@ -678,7 +678,7 @@ n : nat
 Both comparison operations \C{<=} and \C{==} are defined by case
 analysis on their \emph{first} argument, independently of the shape of
 the second. The proof of \C{leq0n} thus goes by case analysis on
- term \C{(n : nat)}, as it appears as a first argument to 
+ term \C{(n : nat)}, as it appears as a first argument to
 both these comparison operators.  Remember that the inductive type \C{nat} is
 defined as:
 
@@ -2002,7 +2002,7 @@ Here is the general principles ruling the names of the in the \mcbMC{} library:
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
-\mcbsection{Rewrite, a swiss army knife}\label{sec:rewrite2}
+\mcbsection{Rewrite, a swiss army knife}\label{sec:rewrite}
 
 Approximately one third of the proof script in the \mcbMC{} library is made of
 invocations of the \C{rewrite} tactic. This proof command provides many
