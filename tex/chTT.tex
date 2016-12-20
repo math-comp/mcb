@@ -155,22 +155,14 @@ $$
 where $U[t/x]$ denotes the term obtained by substituting
 the variable $x$ by the term $t$ in the term $U$.
 
-We will use the same class of terms to represent both functions and
-proofs of formal statements, themselves represented by the types of
-the functions. Constructing a proof for a given formal statement
-\emph{is} constructing a term of the corresponding type.
-Consider the simple example of formal statement stating
-that a proposition $A$ implies itself, namely $A \rightarrow A$.
-Now the implication symbol~$\to$ can be understood as the symbol we used
-to represent the type of functions, in the non-dependent case. There
-is a simple program having
-the type $A \rightarrow A$: it is the identity function for terms of
-type $A$ and the term representing this function is
-\C{(fun x : A => x)}. If we consider that $A$ is a
-proposition, this program takes in input a term $x$ of type $A$, seen
-as a proof of $A$, and produces a proof of $A$ by outputing its
-argument.
-
+Consider the simple tautology $A \rightarrow A$.
+The implication symbol~$\to$ can be understood as the logical symbol
+of implication but also as the symbol we used
+to represent the type of functions, in the non-dependent case. The
+term \C{(fun x : A => x)} represents the identity function for terms
+of type $A$ and is a program of type $A \rightarrow A$. If we consider
+that $A$ is a proposition, and that terms of type $A$ are proofs of
+$A$, this function is the identity function on proofs of $A$.
 More generally, the logical rules of implicative and universal
 statements can be decorated with terms, so that proofs of implications
 can be seen as functions transforming an arbitrary proof of the
