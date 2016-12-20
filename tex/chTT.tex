@@ -545,14 +545,18 @@ inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
 is automatically replaced by \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Proof commands}
+\section{A script language for interactive proving}
+
 
 Since proofs are just terms one could,
 in principle, use no proof language and input directly proof terms.
 Indeed this was the modus operandi in the pioneering work of
 De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
 Of course a dedicated proof language can relief the user from
-many tedious details.  The proof commands we have seen so far can all be
+many tedious details.
+
+\subsection{Proof commands}
+  The proof commands we have seen so far can all be
 explained in terms of the proof terms they produce behind the scenes.
 For example \C{case: n} provides a much more compact syntax
 for \C{(match .. with .. end)} and it produces a
@@ -577,7 +581,7 @@ the witness \C{t} and, later, a proof that \C{t} validates the predicate.
 Finally \C{reflexivity} proves an equality by applying \C{erefl}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Managing the proof context}
+%\section{Managing the proof context}
 The only primitive constructor that remains without an associated proof command
 is \C{(fun .. => ..)}.  Operationally what the $\to_I$ and
 $\forall_I$ logical rule do is to introduce into the proof context a
@@ -587,7 +591,7 @@ just after a \C{case:} or \C{elim:} proof command.  The current section
 expands on this subject covering the full management of the proof context.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{The stack model}
+\subsection{Goals as stacks}
 \index[concept]{goal stack model}
 
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
@@ -960,9 +964,9 @@ the additional assumption \C{(7 <= 7)}.  This
 will come handy in section~\ref{sec:strongind}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Inductive reasoning}\label{sec:indreason}
+\subsection{Inductive reasoning}\label{ssec:indreason}
 
-In chapter 1 we have seen how to build and use (call or destruct)
+In chapter~\ref{ch:prog} we have seen how to build and use (call or destruct)
 anonymous functions and data types.  All these
 constructions have found a correspondence in the Curry-Howard correspondence.
 The only missing piece is recursive programs.  For example
@@ -1031,7 +1035,7 @@ refer to~\cite{Coq:manual}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
-\mcbsubsection{Strong induction}
+\mcbsubsection{Application: strengthening induction}
 \index[concept]{induction!strong}
 \index[concept]{induction!curse of values}
 \label{sec:strongind}

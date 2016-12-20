@@ -949,7 +949,7 @@ computations.
 When writing recursive functions, the \Coq{} system imposes the
 constraint that the described computation must be \emph{guaranteed to
 terminate}.  The reason for this requirement is sketched in
-section~\ref{sec:indreason}.
+section~\ref{ssec:indreason}.
 This guarantee relies on an analysis of the function's
 description, to make sure that recursive calls always happen with a
 given argument that decreases.  The most frequent technique to
@@ -1662,9 +1662,9 @@ The \C{Section} and \C{End} keywords delimit a scope in which
 the types \C{T} and \C{A} and the function \C{f} are given as
 parameters: \C{T}, \C{A} and \C{f} are called \emph{section
   variables}.  These variables
-are used in the definition of \C{iter} and \C{foldr}. 
+are used in the definition of \C{iter} and \C{foldr}.
 
-The \C{Implicit Type} annotation 
+The \C{Implicit Type} annotation
 tells \Coq{} that, whenever we name
 an input \C{x} (or \C{x'}, or \C{x1}, \ldots) its type is supposed to be
 \C{T}.  Concretely it lets us omit an explicit type annotation
@@ -1676,20 +1676,20 @@ for a more detailed documentation of it.
 When
 the section is closed, these variables appear as arguments to
 the various functions that use them in the very same
-% Variables are abstracted in their 
-order in which they are declared.  
+% Variables are abstracted in their
+order in which they are declared.
 %In our example,
 %\C{T} and \C{A} appear in the same order in the type of {\tt foldr} as
-%in the variables declarations for the section.  
+%in the variables declarations for the section.
 Variables that are actually
 not used in a given definition are omitted. For example \C{f} plays no
 role in the definition of \C{iter}.
 This process %, where a function appears to have more arguments outside
-%the section where it was defined than inside the section 
+%the section where it was defined than inside the section
 is called
 an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}
 
-Concretely, the definitions written inside the section are 
+Concretely, the definitions written inside the section are
 elaborated to the following ones.
 
 \begin{coq}{}{}
@@ -1716,8 +1716,8 @@ Arguments T, A are implicit ...
 % the type of a defined object.  In this case, the type \C{T} is a section
 % variable that is used in the type of \C{iter}, so it needs to be
 % abstracted for \C{iter} when the section is closed.
-% 
-% 
+%
+%
 % The definition of \C{iter} in the Section has three explicit
 % arguments. The first one, \C{n}, is used in
 % a pattern-matching if-then-else statement and matched with a pattern of the
@@ -1829,7 +1829,7 @@ $~$
 The symbols \C{f}, \C{x1}, \C{x2} and \C{init} are inert,
 they represent unknown values, hence computation cannot
 proceed any further.  Still
-\Coq{} has developed the expression symbolically. 
+\Coq{} has developed the expression symbolically.
 To convince
 ourselves that such expression is meaningful
 we can try to substitute \C{f}, \C{x1}, \C{x2} and \C{init} with the
