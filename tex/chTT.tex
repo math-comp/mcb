@@ -5,12 +5,12 @@ The authors made the deliberate choice to postpone the presentation of
 the mathematical foundations of the \Coq{} system and the formal
 definition of its language. Instead, the previous chapters have
 insisted on the definition of (typed) programs and on the way these
-programs can be used to decribe computable functions and decidable
+programs can be used to describe computable functions and decidable
 predicates. This take on calculations is indeed both at the core of
 the type theory underlying \Coq{} and one of the crucial ingredients
 to the methodology basing the \mcbMC{} library. The present chapter is
 devoted to a more in-depth presentation of these mathematical
-presentation, alhough an exhaustive description shall remain out of
+presentation, although an exhaustive description shall remain out of
 the scope of the present book. For more comprehensive presentations of
 type theory for formalized mathematics, the reader shall refer to more
 specialized references like~\cite{ttfp}, or the
@@ -35,8 +35,7 @@ homotopy type theory~\cite{hottbook} describes a very close formalism.
 There exists several flavors of \emph{type theory} that can be used
 as a foundational language for mathematics, alternative to the
 flavors of set theory usually cited as the formal language of
-reference.
-\marginnote{Cite Bourbaki}
+reference~\cite{MR2102219}.
 The main difference between a type-theoretic framework and
 a set-theoretic one is the status of the deductive system used to
 represent reasoning in a formal way. Informally speaking, a
@@ -51,7 +50,7 @@ are identified with some \emph{types} and their \emph{proofs} with
 \emph{terms}, or programs, having this type. Thus proving a statement
 consists in fact in constructing a term of the corresponding type. In a
 set theoretic statement, the rules which govern the construction of
-gramatically correct statements are rather loose and the goal of the
+grammatically correct statements are rather loose and the goal of the
 game is to construct a proof for a given proposition, using the rules
 of first-order logic. The analogue of the meta-statement that a given
 proposition has a proof is the meta-statement that a given term has a
@@ -66,12 +65,12 @@ Before being more precise about what are contexts, terms and types,
 let us emphasize a couple of important differences with set theory
 here: first, the typing judgment features explicit expressions for
 the term and the type, whereas the proof of a statement in first-order
-logic is seldom mentionned. Second, the term $t$ shall represent an
+logic is seldom mentioned. Second, the term $t$ shall represent an
 arbitrary object of the mathematical discourse, like a number or a
 group, and not only a proof.
 
 
-\subsection{First types, terms and computations}
+\subsection{First types, terms and computations}\label{ssec:terms}
 
 So every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
@@ -102,7 +101,7 @@ with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
 \C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
 if \C{t, u} are terms and \C{x} is a variable.
 
-A typing judgement $\Gamma \vdash t : T$ relates a
+A typing judgment $\Gamma \vdash t : T$ relates a
 context $\Gamma$ and two terms $t$ and $T$. As it name suggests,
 the context logs all the facts assumed at the moment when the term
 occurs. It can be empty but otherwise contains pairs of a name and a
@@ -110,7 +109,7 @@ type: after executing the command \C{Variable n : nat}, the context
 contains the pair (\C{n} : \C{nat}). We have not yet defined what a
 type is, because it is a special case of term, defined using typing
 judgments. Actually, well-formed contexts and typing judgments are
-defined inductively and simlutaneously.
+defined inductively and simultaneously.
 
 Typing judgments with an empty context express the
 axiom rules of the formalism, like for instance the types of sorts:
@@ -301,7 +300,7 @@ For example
 We refer the reader
 to the reference manual of \Coq{}~\cite{Coq:manual} for the other
 rules of the system, which are variants of the ones we presented or
-which express subtelties of the type system that are out of the scope of
+which express subtleties of the type system that are out of the scope of
 the present book, like the difference between the sorts \C{Prop} and
 \C{Type}.
 
@@ -346,20 +345,71 @@ this case:
 \end{center}
 where $A \equiv A'$ denotes that $A$ and $A'$ are convertible.
 
-
-
-
 \subsection{Inductive types}\label{ssec:indtypes}
 
-\subsection{More connectives}
-In the previous chapters we used many data types already.  For example we have
-seen the type \C{nat} and its constructors \C{O} and \C{S}.  Through the looking
-glasses of the Curry-Howard correspondence \C{O}, being a term of type \C{nat}
-can represent a ``proof'' of \C{nat}.  For data types we prefer to say
-\emph{inhabited} rather than \emph{proved}, but there is no real difference.
+The formalism described in section~\ref{ssec:terms} is extended with
+the possibility of introducing
+\emph{inductive definitions}~\cite{CoPa89, Moh93}. We only provide a
+very brief overview of this subtle feature and refer again the reader
+to the reference manual for a precise definition.
+In chapter~\ref{ch:prog} we have used several examples of inductive
+data types like \C{nat} and its constructors \C{O} and \C{S},
+\C{option},\ldots An inductive definition introduces simultaneously
+several new objects in the context: a new type, in a given sort, and
+new terms for the constructors, with their types. For instance, the
+command:
 
-Inductive ``data'' types can be used to represent logical connectives, in
-particular the ones we miss so far, like the existential quantifier.
+\begin{coq}{}{}
+Inductive nat : Type := O : nat | S (n : nat).
+\end{coq}
+introduces a new type \C{nat : Type} and two new terms \C{O : nat} and
+\C{S : nat -> nat}. Constructors are functions, possibly of zero
+argument like \C{O}, and the codomain of a constructor of the
+inductive type \C{T} is always \C{T}. An inductive type may occur as
+the type of certain arguments of its constructors, like in the case of
+\C{S}. The only way to construct an inhabitant of an
+inductive type is to apply a constructor to sufficiently many
+arguments and two distinct constructors construct distinct
+terms. Thus a function with an argument of an inductive type can be
+described by pattern matching on this argument. For instance in
+chapter~\ref{ch:prog} we have defined the predecessor function by:
+
+\begin{coq}{name=pred}{}
+Definition pred n := if n is p.+1 then p else n.
+\end{coq}
+where \C{if ... then ... else ...} is a notation for the special case of
+pattern matching with only two branches and one pattern. The definition of
+the terms of the formalism is in fact extended with the
+\C{match  ... with ... end} construction described in
+section~\ref{ssec:nat}. A special reduction rule expresses that
+pattern matching a term which features a certain constructor in head
+position reduces to the term in the corresponding branch of the case
+analysis.
+
+The definition of the terms of CIC also includes so-called
+\emph{guarded fixpoints}, which represent functions with a recursive
+definition. We have used these fixpoints in chapter~\ref{ch:prog}, for
+instance when defining the addition of two natural numbers as:
+
+\begin{coq}{name=add_redef}{}
+Fixpoint addn n m :=
+  match n with
+  | 0 => m
+  | p.+1 => (addn p m).+1
+  end.
+\end{coq}
+Note that guarded fixpoints always terminate, as a non-terminating
+term would allow proofs of absurdity (see section~\ref{ssec:indreason}).
+
+\subsection{More connectives}
+With inductive definitions it is possible to describe more data
+structures than the mere functions of the formalism described in
+section~\ref{ssec:terms}. These data structures and their typing rules
+are used to model logical connectives, like functions were used to
+model the proofs of implications and universal quantifications.
+
+For instance, the introduction and elimination rule of the conjunction
+connective are:
 
 \begin{center}
 \AxiomC{$A$} \AxiomC{$B$}
@@ -372,13 +422,12 @@ particular the ones we miss so far, like the existential quantifier.
 \UnaryInfC{$A$}
 \DisplayProof
 \end{center}
-
 The first rule reads: to prove $A \wedge B$ one needs to prove both
-$A$ and $B$.  The latter lets one prove $A$ whenever one can prove
-the stronger statement $A \wedge B$.
+$A$ and $B$.  The second states that one proves $A$ whenever one is
+able to prove the stronger statement $A \wedge B$.
 
-In \Coq{} such connective can be characterized by the following
-inductive definition.
+In \Coq{} this connective is modeled by the following
+inductive definition:
 
 \begin{coq}{name=And}{}
 Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B).
@@ -388,19 +437,20 @@ Notation "A /\ B" := (and A B).
 
 Remark that the ``data'' type \C{and} is tagged as \C{Prop}, i.e.  we declare
 the intention to use it as a logical connective rather than a data type.  The
-only constructor \C{conj} that can be used to inhabit \C{and} takes two
-arguments, a proof of \C{A} and a proof of \C{B}, faithfully modelling the
-logical rule \C{$\wedge_I$}.  Note that \C{A} and \C{B} are parameters of the
-inductive definition, similarly to the definition of polymorphic lists
-or pairs.
+single constructor \C{conj} takes two
+arguments: a proof of \C{A} and a proof of \C{B}. This way, it
+models faithfully the logical rule \C{$\wedge_I$}.  Note that \C{A}
+and \C{B} are parameters of the inductive definition, similarly to the
+definition of polymorphic lists or pairs.
 
-It is worth to note that the definition of the pair data type,
-Exercise~\ref{ex:pair}, is almost identical to the one of \C{and}.
+Note that the definition of the pair data type,
+in section~\ref{sec:othercontainers}, is almost identical to the one
+of \C{and}:
 
 \begin{coq}{}{}
 Inductive prod (A B : Type) := pair (a : A) (b : B).
 \end{coq}
-The striking similarity witnesses how programs (and data) are used in \Coq{}
+The striking similarity illustrates how programs (and data) are used in \Coq{}
 to represent proofs.
 
 Pattern matching provides a way to express the elimination rule for
@@ -413,8 +463,8 @@ Definition proj1 A B (p : A /\ B) : A :=
 \index[coq]{\C{conj}}
 
 Now recall the similarity between $\to$ and $\forall$, where the former is the
-simple, non dependent, case of the latter.  If we check the type of
-the \C{conj} constructor
+simple, non dependent case of the latter.  If we ask for the type of
+the \C{conj} constructor:
 
 \begin{coq}{name=Ande1}{width=4cm}
 About conj.
@@ -422,9 +472,9 @@ About conj.
 \begin{coqout}{}{width=8cm}
 conj: forall A B : Prop, A -> B -> A /\ B
 \end{coqout}
-we may wonder what happens if the type of the second argument (i.e. \C{B}) is
-made dependent on the value of the first argument (of type \C{A}).
-What we obtain is the inductive definition corresponding to the
+we may wonder what happens if the type of the second argument (i.e. \C{B})
+becomes dependent on the value of the first argument (of type \C{A}).
+What we obtain is actually the inductive definition corresponding to the
 existential quantification.
 
 \begin{coq}{name=Ande1}{}
@@ -434,18 +484,27 @@ Notation "'exists' x : A , p" := (ex A (fun x : A => p)).
 \end{coq}
 \index[coq]{\C{ex_intro}}
 
-The \C{ex\_intro} constructor is the only mean to prove a statement like
-\C{(exists n, prime n)}.  In such case the first argument would be a number
+As  \C{ex\_intro} is the only constructor of the \C{ex} inductive
+type, it is the only mean to prove a statement like
+\C{(exists n, prime n)}.  In such a --constructive-- proof, the first
+argument would be a number
 \C{n} of type \C{nat} while the second argument would be a proof \C{p} of type
-\C{(prime n)}.  The \C{ex} inductive definition is again pretty similar to the
-pair, but note that the type of the second component depends on the value of
-the first one.  Last note the parameter \C{P} that is a function
+\C{(prime n)}.  The parameter \C{P} causes the dependency of the
+second component of the pair on the first component. It is a function
 representing an arbitrary predicate over a term of
-type \C{A}.  Hence \C{(P a)} is the instance of the predicate to \C{a}.  E.g.
-the predicate of being an even prime number is expressed as
-\C{(fun x : nat => ~~ (odd x) && prime x)}, and the statement expressing the
-existence of such number is
-\C{(ex nat (fun x : nat => ~~ (odd x) && prime x))}.
+type \C{A}.  Hence \C{(P a)} is the instance of the predicate, for \C{a}.  E.g.
+the predicate of being an odd prime number is expressed as
+\C{(fun x : nat => (odd x) && (prime x))}, and the statement expressing the
+existence of such a number is
+\C{(ex nat (fun x : nat => (odd x) && (prime x)))}. Note like just
+like type \C{seq} is polymorphic, with one type parameter, the type
+of \C{ex} and \C{ex_intro} are also polymorphic and they have two
+parameters \C{A} and \C{P}:
+
+\begin{coq}{}{}
+ex : forall A : Type, (A -> Prop) -> Prop.
+ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
+\end{coq}
 
 We quickly see the inductive definition of the disjunction \C{or}
 and its two constructors \C{or\_introl} and \C{or\_intror}.
@@ -552,11 +611,12 @@ Since proofs are just terms one could,
 in principle, use no proof language and input directly proof terms.
 Indeed this was the modus operandi in the pioneering work of
 De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
-Of course a dedicated proof language can relief the user from
-many tedious details.
+The use of a dedicated proof language enables a higher level
+description of the formal proof being constructed and provides support
+for taming the bookkeeping part of the proof.
 
 \subsection{Proof commands}
-  The proof commands we have seen so far can all be
+  The proof commands we have mentioned in chapter~\ref{ch:proofs} can all be
 explained in terms of the proof terms they produce behind the scenes.
 For example \C{case: n} provides a much more compact syntax
 for \C{(match .. with .. end)} and it produces a
@@ -586,7 +646,7 @@ The only primitive constructor that remains without an associated proof command
 is \C{(fun .. => ..)}.  Operationally what the $\to_I$ and
 $\forall_I$ logical rule do is to introduce into the proof context a
 new entry.  So far we either expressed this step at the beginning of proofs
-by putting such items just after the name of the lemma being prover, or
+by putting such items just after the name of the lemma being proved, or
 just after a \C{case:} or \C{elim:} proof command.  The current section
 expands on this subject covering the full management of the proof context.
 
@@ -1162,41 +1222,41 @@ field~\cite{DBLP:conf/itp/Cohen12}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsection{Terms, types, proofs: all in the same pot}
+% \mcbLEVEL{1}
+% \mcbsection{Terms, types, proofs: all in the same pot}
 
-For a newcomer
-a quite confusing feature of the \mcbCIC{} is that the same syntax
-is shared among term, proofs, statements and data types.  In other words terms
-can occur in types and types can occur in terms.  And of course terms and
-types play the double role of proofs and statements respectively.
-This is strictly related to the range the quantifications are allowed on,
-and to the fact that they can be used to form types.
-We have seen quantification on terms, like ``\C{ forall n : nat}'' and on types
-like ``\C{ forall P : Prop}'' or ``\C{ forall T : Type}''.  The subtle difference
-between the label \C{Prop} for propositions and \C{Type} for data types
-is out of scope here, we consider them synonyms.
+% For a newcomer
+% a quite confusing feature of the \mcbCIC{} is that the same syntax
+% is shared among term, proofs, statements and data types.  In other words terms
+% can occur in types and types can occur in terms.  And of course terms and
+% types play the double role of proofs and statements respectively.
+% This is strictly related to the range the quantifications are allowed on,
+% and to the fact that they can be used to form types.
+% We have seen quantification on terms, like ``\C{ forall n : nat}'' and on types
+% like ``\C{ forall P : Prop}'' or ``\C{ forall T : Type}''.  The subtle difference
+% between the label \C{Prop} for propositions and \C{Type} for data types
+% is out of scope here, we consider them synonyms.
 
-An excellent example of these quantification is the inductive type
-modelling the existential quantification:
+% An excellent example of these quantification is the inductive type
+% modelling the existential quantification:
 
-\begin{coq}{}{}
-ex : forall A : Type, (A -> Prop) -> Prop.
-ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
-\end{coq}
+% \begin{coq}{}{}
+% ex : forall A : Type, (A -> Prop) -> Prop.
+% ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
+% \end{coq}
 
-The \C{ex} type constructor is polymorphic in a type \C{A} and a predicate
-on \C{A}.  Remark that also \C{seq} is polymorphic, but only in one argument
-so the quantification can be non dependent: \C{(seq : Type -> Type)}.
+% The \C{ex} type constructor is polymorphic in a type \C{A} and a predicate
+% on \C{A}.  Remark that also \C{seq} is polymorphic, but only in one argument
+% so the quantification can be non dependent: \C{(seq : Type -> Type)}.
 
-In the constructor \C{ex_intro} the quantification on \C{P} also needs to be
-dependent: first because it must build a term of type \C{(ex A P)} (that
-mentions \C{P}); second because the last argument needs to be of a proof of
-\C{P}, so its type must mention the predicate.  Again in the case of \C{seq}
-the constructor \C{(cons : forall A, A -> seq A -> seq A)} needs no dependent
-quantification on the head element, while here \C{a} needs to occur in
-the type of the argument that follows it, since it must be a proof of
-\C{(P a)}.
+% In the constructor \C{ex_intro} the quantification on \C{P} also needs to be
+% dependent: first because it must build a term of type \C{(ex A P)} (that
+% mentions \C{P}); second because the last argument needs to be of a proof of
+% \C{P}, so its type must mention the predicate.  Again in the case of \C{seq}
+% the constructor \C{(cons : forall A, A -> seq A -> seq A)} needs no dependent
+% quantification on the head element, while here \C{a} needs to occur in
+% the type of the argument that follows it, since it must be a proof of
+% \C{(P a)}.
 
 %
 %           nat -> nat a function, like pred
