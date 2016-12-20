@@ -6,7 +6,7 @@ is the name of a library of formalized mathematics for the
 \Coq{} system.  It covers a variety of
 topics, from the theory of basic data structures (e.g., numbers, lists, finite
 sets) to advanced results in various flavors of algebra. This library
-constitutes the infrastructure for the machine checked proofs of the
+constitutes the infrastructure for the machine-checked proofs of the
 Four Color Theorem~\cite{Gonthier08} and of the
 Odd Order Theorem~\cite{gonthier:hal-00816699}.
 
@@ -16,12 +16,13 @@ While there are several books around covering the usage of the
 and the theory it is based
 on~\cite[chapter 4]{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook},
 the \mcbMC{} library is built
-in an unconventional way.  As a consequence this book provides a non
-standard presentation of \Coq{}, putting upfront the formalization choices
-and the proof style that are the pillars of the library.
+in an unconventional way.  As a consequence, this book provides a
+non-standard presentation of \Coq{}, putting upfront the formalization
+choices and the proof style that are the pillars of the library.
 
-This books targets two classes of public.  On one hand newcomers, even the
-more mathematical inclined ones, may find a soft introduction to the programming
+This books targets two classes of public.  On one hand, newcomers,
+even the more mathematically inclined ones, may find a soft
+introduction to the programming
 language of \Coq{}, Gallina, and the Ssreflect proof language.
 On the other hand accustomed \Coq{} users will hopefully find a
 substantial account of the formalization style that made the \mcbMC{}
@@ -58,12 +59,12 @@ In its current state, the book has two parts.
 This part introduces two languages and a formalization approach.
 
 The first language is \emph{Gallina}, the mathematical foundation of the \Coq{}
-system.  For the expert reader: the type theory called \mcbCIC{}.  Such
+system:  For the expert reader, the type theory called \mcbCIC{}.  Such
 language is both a programming and a specification language: it is used to
 declare data, define programs, specify their behavior and represent their
 correctness proofs.  Its most intriguing features are two: a rich system of
 types, that can depend on other types or even values, and the notion of
-computation, that is considered a first class citizen, i.e. a true form of
+computation, that is considered a first-class citizen, i.e., a true form of
 proof.
 
 The second language, \mcbSSR{} (\emph{Ssreflect} for short), is used to write
@@ -82,7 +83,7 @@ capabilities provided by Gallina.
 The \Coq{} system provides a rich platform in which all this is
 put together.  \Coq{} implements the Gallina language, and a checker for it.
 It also provides a platform for the Ssreflect proof language and
-many other facilities that are crucial for the \mcbMC{} library like
+many other facilities that are crucial for the \mcbMC{} library, like
 type inference.
 
 \subsection*{Part 2: Formalization techniques}

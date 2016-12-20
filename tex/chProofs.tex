@@ -289,7 +289,7 @@ Lemma implybE a b : (a ==> b) = ~~ a || b.
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 \end{coq}
 Proving these identities is left as an exercise (see
-Exercise~\ref{ex:boolid}).
+exercise~\ref{ex:boolid}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1222,7 +1222,7 @@ muln_eq0 : forall m n : nat,
 Quantifiers may also occur elsewhere in a statement, and not only in
 prenex position.  In the following example, we use the function
 \C{nth}, extracting the element of a sequence at a position, which was
-the object of Exercise~\ref{ex:nth}. This statement expresses that two
+the object of exercise~\ref{ex:nth}. This statement expresses that two
 sequences with the same size and whose $n$-th elements coincide for any
 $n$ are the same. The second hypothesis, about the elements, is
 itself a quantified formula:
@@ -1688,7 +1688,7 @@ of \C{nat_ind} becomes
 odd 0 && prime 0 = true
 \end{coqout}
 \index[concept]{general term}
-\index[concept]{higher order}
+\index[concept]{higher-order}
 Remark the similarity between the function argument to \C{foldr}
 that is used describe the general term of an iterated sum in
 section~\ref{sec:bigopnat} and the predicate \C{P} here used

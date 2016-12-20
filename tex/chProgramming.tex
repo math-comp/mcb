@@ -128,7 +128,7 @@ In \Coq{}, the user can also associate a name with the operation
 Definition f := fun n => n + 1.
 \end{coq}
 \index[vernac]{\C{Definition}}
-An alternative syntax for exactly the same definition is as follows,
+An alternative syntax for exactly the same definition is as follows
 and this alternative syntax is actually preferred.
 
 \begin{coq}{name=exdef-pref}{}
@@ -207,7 +207,7 @@ an expression is \emph{well typed}.
 \index[concept]{well typed}
 
 For example the function \C{f} we just defined can \emph{only be
-  applied to a natural number}, i.e. a term of type \C{nat}. Therefore
+  applied to a natural number}, i.e., a term of type \C{nat}. Therefore
 this first query succeeds, as \C{3} is a natural number:
 
 \begin{coq}{name=print_f}{width=5.1cm,title=Check well-typedness}
@@ -402,12 +402,12 @@ the value \C{3}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\subsection{Higher order functions}
+\subsection{Higher-order functions}
 
 Earlier in this section we defined functions like \C{f}, \C{g} and \C{h}
 which operate on natural numbers. Functions whose arguments are
-themselves functions are called \emph{higher order functions}.
-\index[concept]{higher order}
+themselves functions are called \emph{higher-order functions}.
+\index[concept]{higher-order}
 For instance, the following definition introduces a function that
 takes a function from \C{nat} to \C{nat} and produces a new function
 from \C{nat} to \C{nat}, by iterating its argument.
@@ -494,7 +494,7 @@ the type of which is, again, the right hand side of the main arrow,
 here \C{nat}.
 Remark that each function has an arrow type and that the type of its
 argument matches the left hand side of this arrow (as depicted with
-different underline styles). When this is not the case \Coq{} issues a
+different underline styles). When this is not the case, \Coq{} issues a
 type error.
 
 \begin{coq}{name=fail_check_repeat_twice_f}{width=5.5cm,title=Ill-formed
@@ -654,7 +654,7 @@ Definition twoVthree b := if b then 2 else 3.
 \end{coq}
 \coqrun{name=definetwoVthree_run}{definetwoVthree}
 
-As one expects, when \C{b} is \C{true} the expression
+As one expects, when \C{b} is \C{true}, the expression
 \C{(twoVthree b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
 
 \begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating twoVthree}
@@ -768,7 +768,7 @@ Definition pred n := if n is p.+1 then p else n.
 The function \C{pred} returns the predecessor of a natural number
 when it exists, and 0 otherwise. In this definition \C{p.+1} is a
 pattern. The value bound to the name \C{p} mentioned in this pattern is not
-known in advance, it is actually computed at the moment the \C{n} is matched
+known in advance; it is actually computed at the moment the \C{n} is matched
 against the pattern. For instance:
 
 \begin{coq}{name=compute-match}{}
@@ -840,7 +840,7 @@ For instance with the function \C{three_patterns}, if the input is
 \C{2}, in other words \C{0.+1.+1}, the first
 rule cannot match, because this would require that \C{0} matches
 \C{u.+1.+1.+1} and we know that \(0\) is not the successor of any
-natural number, when it comes to the second rule \C{0.+1.+1} matches
+natural number; when it comes to the second rule \C{0.+1.+1} matches
 \C{v.+1}, because the rightmost \C{.+1} in the value of \C{2} matches
 the rightmost \C{.+1} part in the pattern and \C{0.+1} matches the \C{v} part
 in the pattern.
@@ -964,10 +964,10 @@ construct.
 \index[concept]{termination}
 
 For instance, in the case of \C{addn}, the recursive call happens
-with \C{p} as the first argument, \C{p} was introduced by the pattern \C{p.+1}
-in the corresponding pattern-matching rule, the pattern-matching
-construct was observing \C{n}, and \C{n} is the first argument of the
-function \C{addn}.  An erroneous, in the sense of non terminating,
+with \C{p} as the first argument; \C{p} was introduced by the pattern \C{p.+1}
+in the corresponding pattern-matching rule; the pattern-matching
+construct was observing \C{n}; and \C{n} is the first argument of the
+function \C{addn}.  An erroneous, in the sense of non-terminating,
 definition is rejected by \Coq{}.
 
 \begin{coq}{name=loop}{width=6cm,title=Non-terminating program}
@@ -1015,7 +1015,7 @@ the second argument of the subtraction is 0, then the result is
 the first argument.  This rule actually also covers the case where the
 second argument is non-zero while the first argument is 0: in that
 case, the result of the function is zero. This oddity is imposed by
-the fact that any function defined in \Coq{} has to be total, i.e. has
+the fact that any function defined in \Coq{} has to be total, i.e., has
 to assign a value to any element in the type of its arguments. Since
 \C{pred} has type \C{nat -> nat}, an element \emph{in type} \C{nat} has to be
 output by the function even in the case when  the second argument is
@@ -1082,7 +1082,7 @@ notations are already provided by the \mcbMC{} library.  In particular
 it provides addition (named \C{addn}, infix notation \C{+}),
 multiplication
 (\C{muln}, \C{*}), subtraction (\C{subn}, \C{-}), division (\C{divn},
-\C{\%/}),  modulo (\C{modn}, \C{\%\%}), exponentiation (\C{expn}, \C{\^})
+\C{\%/}),  modulo (\C{modn}, \C{\%\%}), exponentiation (\C{expn}, \C{\^}),
 equality comparison (\C{eqn}, \C{==}), order
 comparison (\C{leq}, \C{<=}) on natural numbers.  The trailing \C{n} in
 the names is chosen to signal that these operations are on the \C{nat} data
@@ -1118,7 +1118,7 @@ files describe what is formalized, under which name and notation.
 \mantra{Each file in the \mcbMC{} library
 starts with a banner describing all the concepts and associated
 notations introduced by the library.
-There is not better way to browse the library than reading these banners.}
+There is no better way to browse the library than reading these banners.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1168,7 +1168,7 @@ really use the objects held in the list.
 A concrete example is the function that computes the size of the list,
 and in the current setting such function has to be written twice.
 Worse, starting from the next chapter we will prove properties of programs,
-and given the two size functions are ``different'' we are going to prove
+and given the two size functions are ``different'', we are going to prove
 properties twice.
 
 However it is clear that the two data types we just defined follow
@@ -1182,18 +1182,18 @@ Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 \end{coq}
 
 \noindent Even if this may look familiar jargon to some readers, we really want
-this $\alpha$ to be a first class citizen, as well as the type of lists carrying
-any type of values and not appeal to some notion of schema that would be
-intuitively added on top of the \Coq{} language. %  We want to
+this $\alpha$ to be a first-class citizen, as well as the type of lists carrying
+any type of values, and not appeal to some notion of schema that would be
+somehow added on top of the \Coq{} language. %  We want to
 % reason and
 % prove theorems about such data types and related programs inside the formal
 % language \Coq{} provides and we want the proofs of these theorems
 % theorems to be first
 % class citizen too (see for example chapter~\ref{ch:sigmabool}).
 %
-\Coq{}'s language is powerful enough to fully characterize the generic
-list data type without appealing to an intuitive but external notion of
-schema.
+% This language is powerful enough to fully characterize the generic
+% list data type without appealing to an intuitive but external notion of
+% schema.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The (polymorphic) sequence data type}
@@ -1401,7 +1401,7 @@ explicitly only one argument, \C{tl}. Remember that
 %\Coq{} session with, among other commands, the command ``\C{Set Implicit
 %  Arguments}''.  According to this directive,
 the \Coq{} system makes
-arguments of functions that can be guessed from the type of following
+arguments of functions that can be guessed from the type of the following
 arguments automatically implicit, and \C{A} is implicit here. This
 feature is already active in the expression defining \C{size}.
 
@@ -1541,7 +1541,7 @@ first one: it can thus be obtained as \C{(3,true,4).1.2}. This may be
 a drawback, consequence of representing tuples as nested pairs. If
 tuples of a certain fixed length are pervasive to a development, one
 may consider defining another specific container type for this
-purpose. See for instance Exercise~\ref{ex:triple} for the definition
+purpose. See for instance exercise~\ref{ex:triple} for the definition
 of triples.
 
 We conclude this example with a remark on notations. After declaring
@@ -1564,7 +1564,7 @@ constructor. The \C{\%N} and \C{\%type} labels are said to be
 
 Inductive types with a single constructor, like the type \C{pair} in
 section~\ref{sec:othercontainers} or the type \C{triple} of
-Exercise~\ref{ex:triple} provide a general pattern to define a type
+exercise~\ref{ex:triple} provide a general pattern to define a type
 which aggregates existing objects into a single packaged one. This
 need is so frequent that \Coq{} provides a specialized command
 to declare this class of data type, called \C{Record}.
@@ -1919,7 +1919,7 @@ section~\ref{proof:mulneq0}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Iterators and mathematical notations}
-\index[concept]{general term|seealso {higher order}}
+\index[concept]{general term|seealso {higher-order}}
 \label{sec:bigopnat}
 
 Numbers and sequences of objects are so pervasive in the mathematical
@@ -1990,7 +1990,7 @@ Behind the scene, iteration happens following the order of the list,
 as we observed in section~\ref{sec:symcomp}.
 In the present case the operation we iterate, addition, is
 commutative, so this order does not impact the final result. But it
-may not be the case for example if the iterated operation
+may not be the case, for example if the iterated operation
 is the product of matrices.
 
 Defining the meaning of this family of notations using a generic
@@ -2046,7 +2046,7 @@ where the rightmost annotations, between parentheses, indicate a
 precedence level and an associativity rule so as to avoid parsing
 ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes behind the scope of this
-book, the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
+book; the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
 
 The definition behind a notations can involve more than one symbol,
 as in the example of the strict order relation:
@@ -2249,7 +2249,7 @@ Eval compute in
 \begin{Exercise}[label=ex:allwords,difficulty=2,title={All words of size n}]
 Define the \C{all\_words} program that takes in input a
 length \C{n} and sequence of symbols \C{alphabet}.
-Such program has to generate a list of all words (i.e. list
+Such program has to generate a list of all words (i.e., list
 of symbols) of size \C{n}.
 
 \begin{coq}{}{width=5.5cm}
@@ -2463,7 +2463,7 @@ Definition all_words n T (alphabet : seq T) :=
 %         2 + 2
 %         4
 % \end{verbatim}
-% \item programs are really first class data (HO programming, not reasonably popular even outside
+% \item programs are really first-class data (HO programming, not reasonably popular even outside
 % 	the functional world). E.g.
 %     This program takes in input a function f and uses it twice
 % \begin{verbatim}

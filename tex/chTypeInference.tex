@@ -92,7 +92,7 @@ technical details, especially in sections labelled with two stars.
 \mcbREQUIRE{}
 \mcbPROVIDE{terminology}
 \mcbLEVEL{1}
-\mcbsection{Type inference and Higher Order unification}\label{sec:hounif}
+\mcbsection{Type inference and Higher-Order unification}\label{sec:hounif}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The type inference algorithm is quite similar to the type checking
@@ -104,7 +104,7 @@ Termination of reduction and uniqueness of normal forms provide
 guidance for implementing the convertibility test, for which a
 complete and sound algorithm exists.  Unfortunately type
 inference works on open terms, and this fact turns convertibility into
-a much harder problem called \emph{higher order unification}.  The
+a much harder problem called \emph{higher-order unification}.  The
 special placeholder ``\lstinline/_/'', usually called \emph{implicit
 argument}, may occur inside types and stands for one, and only one,
 term that is not explicitly given.  Type inference does not check if
@@ -121,7 +121,7 @@ the two types become syntactically equal and hence convertible.
 Unfortunately it is not hard to come up with classes of examples where
 guessing appropriate values for implicit arguments is, in general, not
 possible. In fact such guessing has been shown to be as hard as proof
-search in presence of higher order constructs.
+search in presence of higher-order constructs.
 For example to unify \lstinline/(prime _)/ with
 \lstinline/true/ one has to guess a prime number. Remember that
 \lstinline/prime/ is a boolean function that fed with a natural
@@ -137,7 +137,7 @@ Take for example the unification problem \lstinline/(_ 17)/ versus
 \lstinline/[:: 17]/.  Is the function we are looking for the list
 constructor? Or maybe, is it a factorization algorithm?
 
-Given that there is no silver bullet for higher order unification
+Given that there is no silver bullet for higher-order unification
 \Coq{} makes a sensible design choice: provide an (almost)
 heuristic-free algorithm and let the user extend it via an extension
 language.  We refer to such language as the language of
@@ -313,7 +313,7 @@ encountered would have been solved by a first order unification
 algorithm and we did not need to compute or synthesize
 \emph{functions}. In the next section we illustrate how the
 unification algorithm used in type inference can be extended in order
-to deal with higher order problem. This extension is based on the use
+to deal with higher-order problem. This extension is based on the use
 of declarative programs, and we present the encoding of the relations
 which describe these programs.
 As of today however there is no precise, published, documentation of the type
@@ -453,7 +453,7 @@ the values it is applied to, or better their type
 	inference appropriately we model this practice
 in~\ref{rec:itf}.}.
 Using records lets us model these practices.
-Note that, thanks to its higher order nature, the term \lstinline/eq_op/
+Note that, thanks to its higher-order nature, the term \lstinline/eq_op/
 can always be the head symbol denoting a comparison.  This makes
 it possible to recognize, hence print, comparisons in a uniform way
 as well as to input them.  On the contrary, in the simpler expression
@@ -613,10 +613,10 @@ consistently uses the synonym keyword \lstinline/Structure/ in place of
 \lstinline/Record/ in order to make record types playing the role
 of interfaces easily recognizable.
 
-Records are first class values in the \mcbCIC{}.  As we have seen
+Records are first-class values in the \mcbCIC{}.  As we have seen
 projections are no special, they are simple functions that pattern
 match on an inductive data type to access the record fields.  Being
-first class citizens means that one can write a term that combines
+first-class citizens means that one can write a term that combines
 the fields of two records and builds a new record.  Thanks to this
 fact the language of canonical structures is able to forge
 new record instances by combining the existing ones via a set
@@ -628,7 +628,7 @@ section.
 \mcbREQUIRE{Canonical}
 \mcbPROVIDE{RecCanonical}
 \mcbLEVEL{1}
-\mcbsection{Records as first class relations}\label{sec:receqtype}
+\mcbsection{Records as first-class relations}\label{sec:receqtype}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 So far we have used the \lstinline/==/ symbol for terms whose type is
@@ -744,7 +744,7 @@ The term synthesized by \Coq{} is the following one:
 \mcbREQUIRE{records + CS}
 \mcbPROVIDE{eqType}
 \mcbLEARN{interface to a theory}
-\mcbsection{Records as (first class) interfaces}\label{rec:itf}
+\mcbsection{Records as (first-class) interfaces}\label{rec:itf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 When we define an overloaded notation we convey
