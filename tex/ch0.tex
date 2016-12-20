@@ -2,45 +2,55 @@
 \chapter{Introduction}
 
 \emph{Mathematical Components}
-is the name of a library of formalized mathematics for the 
+is the name of a library of formalized mathematics for the
 \Coq{} system.  It covers a variety of
 topics, from the theory of basic data structures (e.g., numbers, lists, finite
 sets) to advanced results in various flavors of algebra. This library
 constitutes the infrastructure for the machine checked proofs of the
-Four Color Theorem~\cite{Gonthier08} and of the 
+Four Color Theorem~\cite{Gonthier08} and of the
 Odd Order Theorem~\cite{gonthier:hal-00816699}.
 
 The reason of existence of this book is to break down the barriers to entry.
-While there are several books around covering the usage of the 
+While there are several books around covering the usage of the
 \Coq{} system~\cite{BC04,SF,CPDT}
-and the theory it is based 
-on~\cite[chapter 4]{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook}, 
+and the theory it is based
+on~\cite[chapter 4]{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook},
 the \mcbMC{} library is built
 in an unconventional way.  As a consequence this book provides a non
 standard presentation of \Coq{}, putting upfront the formalization choices
 and the proof style that are the pillars of the library.
 
-This books targets two classes of public.  On one hand newcomers, even the 
-more mathematical inclined ones, find a soft introduction to the programming
+This books targets two classes of public.  On one hand newcomers, even the
+more mathematical inclined ones, may find a soft introduction to the programming
 language of \Coq{}, Gallina, and the Ssreflect proof language.
-On the other hand accustomed \Coq{} users find a substantial account
-of the formalization style that made the \mcbMC{} library possible.
+On the other hand accustomed \Coq{} users will hopefully find a
+substantial account of the formalization style that made the \mcbMC{}
+library possible.
 
-By no means this book pretends to be a complete description of \Coq{} or
-Ssreflect: both tools already come with a comprehensive user 
+
+By no means does this book pretend to be a complete description of \Coq{} or
+Ssreflect: both tools already come with a comprehensive user
 manual~\cite{Coq:manual,ssrman}.
+In the course of the book, the reader is nevertheless invited to
+experiment with  a large library of formalized concepts and she is
+given as soon as possible sufficient tools to prove non-trivial
+mathematical results by reusing parts of the library. By the end of
+the first part, the reader has learnt how prove formally the
+infinitude of prime numbers, or the correctness of the Euclidean's
+division algorithm, in a few lines of proof text.
+
 %% YB: I am puzzled by the next sentence.  I don't know whether
 %% the author wishes the reader to be quickly put in the middle of a
 %% large library of formalized concepts (in the book), or whether the
 %% the author complains that the reader is put in the middle of large library
 %% in the other documents.  If it is the latter, then I suggest adding
-%% ``in reference manuals'' after ``However''. 
-However, the reader is quickly put in the middle of a large library
-of formalized concepts and given sufficient tools to prove non-trivial
-mathematical results by reusing parts of the library.  
-For example around page one-hundred the reader learns
-how to show, formally, the infinitude of prime numbers, or the correctness of
-the Euclidean's division algorithm, in a few lines of proof text.
+%% ``in reference manuals'' after ``However''.
+% However, the reader is quickly put in the middle of a large library
+% of formalized concepts and given sufficient tools to prove non-trivial
+% mathematical results by reusing parts of the library.
+% For example around page one-hundred the reader learns
+% how to show, formally, the infinitude of prime numbers, or the correctness of
+% the Euclidean's division algorithm, in a few lines of proof text.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Structure of the book}
@@ -141,7 +151,7 @@ numbers like the following one:
 Example Gauss n : \sum_(0 <= i < n.+1) i = (n * n.+1) %/ 2.
 Proof.
 elim: n =>[|n IHn]; first by apply: big_nat1.
-rewrite big_nat_recr //= IHn addnC -divnMDl //. 
+rewrite big_nat_recr //= IHn addnC -divnMDl //.
 by rewrite mulnS muln1 -addnA -mulSn -mulnS.
 Qed.
 \end{coq}
@@ -203,9 +213,9 @@ stated as the topics evolve.
 % The Mathematical Components library was originally developed to
 % support the formalization of the Odd Order theorem, a result that
 % requires a wide selection of mathematical theories.
-% 
+%
 % \section{challenges}
-% 
+%
 % This introduction explains the motivation of the book, which is to
 % present the methodologies we propose to build libraries of formalized
 % mathematics \emph{that scale and can be reused}. Ideally, the content
@@ -213,7 +223,7 @@ stated as the topics evolve.
 % mathematics on paper/blackboards are developed and written. Then the
 % message is that in order to fulfill the technical needs, computer
 % science techniques can be used and have worked well.
-% 
+%
 % For instance, trying to formalize mathematical results from scratch in
 % an empty context, without libraries and only with the tools proposed
 % by the logic and the proof assistant is like trying to learn/invent
@@ -228,7 +238,7 @@ stated as the topics evolve.
 % inventing new math... the cultural background is important to be up to
 % speed. Maybe the aim of mathcomp is to implement that background at the
 % quality of today's math).
-% 
+%
 % There are several important issues that have to be solved in order to
 % come up with a library that has a chance to be reusable. The most
 % pervasive one is the line drawn between what is trivial and what is
@@ -242,8 +252,8 @@ stated as the topics evolve.
 % whatever, but very soon you're supposed to \emph{see} that it is
 % obviously the case. Emphasizing this point and providing a methodology to
 % implement this in a systematic way might be one of the original points
-% of this document. 
-% 
+% of this document.
+%
 % One of the great achievements attributed to Bourbaki is the
 % generalization of the so-called axiomatic method, that promotes the
 % design and use of abstract mathematical structures that factor theory
@@ -256,7 +266,7 @@ stated as the topics evolve.
 % reader. And in general we would like the user to provide as much, but
 % no more information in his statement/proof as he would in a proof,
 % avoiding redundant information (where redundant covers inferable).
-% 
+%
 % Another kind of implicit information is behind reasoning patterns that
 % should also be modeled in a convenient way for the user. For instance,
 % \emph{mutatis mutandis}, wlog, etc. These rely on the fact that the
@@ -267,7 +277,7 @@ stated as the topics evolve.
 % by subterm selection. This also overcomes an unwanted behavior that
 % accessing to a subterm depends on the depth at which it occurs in the
 % formula (usual bureaucracy in naive formalization).
-% 
+%
 % The techniques that make this possible are adapted from standard
 % methods in computer science and programming language research. We stand on the
 % shoulders of a foundational system based on a type theory, which
@@ -282,12 +292,12 @@ stated as the topics evolve.
 % some comfort in upper layers of the library, in order to configure
 % the content so that the machine can use it (order of arguments,
 % implicit status, naming policy...).
-% 
-% 
+%
+%
 % \section{challenges faced and tools adopted}
 % (tools in a broad sense, the logic is a tool, coq is a tool, the plugin
 % is a tool, the ssr style is a tool,...)
-% 
+%
 % Challenges:
 % \begin{itemize}
 % \item large body (scale up), make proofs small and robust.
@@ -299,19 +309,19 @@ stated as the topics evolve.
 % 	but not the first book (set theory) that is replaced by CIC (link with
 % 	section computational thinking).
 % \end{itemize}
-% 
+%
 % We build on \Coq{} and an extension.  The main tools follow (in random order):
-% 
+%
 % \section{Computational Thinking}\label{ch:compthink}
-% 
+%
 % This section should motivate the activity of formalizing mathematics
 % with the {\bf \Coq{}} proof assistant, emphasizing its computing skills,
 % and as opposed to other foundations like HOL. However the challenge is
 % to keep mathematicians as the privileged target, while motivating the
 % ssr approach to a CS oriented reader.
-% 
+%
 % See \verb+../coq/ch0.v+.
-% 
+%
 % Aim of the chapter:
 % \begin{itemize}
 % \item should sound natural and easy to a CS person (but with the ssr twist)
@@ -321,15 +331,15 @@ stated as the topics evolve.
 %   help to compare, in the *advanced* section, the approach with the standard
 %   one, so that one sees two proof scripts in the same page.
 % \end{itemize}
-% 
+%
 % \section{logic programming ... type inference}
 % to model proof search, give a meaning to notations, teach coq the
 % work an informed reader does (contextualizing otherwise ambiguous
 % notations, knowledge of interface/instance of algebraic structures).
-% 
+%
 % relation with proof search: no "blind" proof search (easy, ad-hoc, pervasive
 % v.s. advanced, generalistic, potentially expensive and unstable).
-% 
+%
 % \section{automation in tactics}
 % the main points:
 % \begin{itemize}
@@ -347,7 +357,7 @@ stated as the topics evolve.
 % This section is were one talks about the plugin, and some of the main design
 % points of tactics: compositional (a language, not a list of commands),
 % predictable (documented!!!), finally compact (symbols for uninteresting steps).
-% 
+%
 % \section{discipline}
 % MAKE an howto out of that.
 % Maybe one should also add a few notes on the style in scripts? like:
@@ -366,23 +376,21 @@ stated as the topics evolve.
 %   proof schemas, compact, factor, make more stable/robust) and what is needed
 %   (like meaningful names, clear structure)
 % \end{itemize}
-% 
+%
 % \section{trivial=implicit (for a trained mathematician)}
 % The idea is to try to identify what is trivial (mathematically speaking)
 % and be sure you can model it as such:
 % \begin{itemize}
 % \item (level basic) make explicit the trivialities of each theory (what one
-% 	expects to be proved by //). 
+% 	expects to be proved by //).
 % \item (level advanced) when you do new stuff, you must decide what is
 % 	trivial/implicitly proved.
 % \item (hard) which technique to make \Coq{} prove it automatically (hint resolve,
 % 	canon, comput... in the type)
 % \end{itemize}
-% 
+%
 % % This may also be another way present the whole chapter
-% 
+%
 % \mantra{(basic) if you see toto=false you should perform the case analysis via
 % fooP
 % }
-
-
