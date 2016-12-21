@@ -673,7 +673,7 @@ just after a \C{case:} or \C{elim:} proof command.  The current section
 expands on this subject covering the full management of the proof context.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Goals as stacks}
+\subsection{Goals as stacks}\label{ssec:stack}
 \index[concept]{goal stack model}
 
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
@@ -759,11 +759,15 @@ move=> [x y] /= pr_x odd_y
  2 < y + x
 \end{coqout}
 
-One can also process an assumption through a lemma; this lemma is
-hence called a \emph{view}.  For example,
+One can also process an assumption through a lemma; when a lemma is
+used in this way, it is called a \emph{view}. This feature is of
+general interest but it is specially useful in the context of boolean
+reflection, as described in section~\ref{sec:views}. For example,
 \C{prime\_gt1} states \C{(prime p -> 1 < p)} for any \C{p}, and we can
 use it as a function to obtain a proof of \C{(1 < x)}  from a proof
 of \C{(prime x)}.
+\index[concept]{view}
+
 
 \begin{coq}{}{width=7cm}
 move=> [x y] /= /prime_gt1-x_gt1 odd_y
