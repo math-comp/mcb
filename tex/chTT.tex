@@ -43,17 +43,17 @@ set-theoretic framework has two stages. First order logic provides
 the former layer: it describes the language of logical sentences and how
 these statements can be combined and proved. This language is then
 used in the second layer, to formulate the axioms of the particular
-theory of interest. 
+theory of interest.
 On the contrary a type-theoretic framework is monolithic and the
 same language of types is used in a uniform way to describe
 mathematical objects, statements and proofs. \emph{Logical statements}
 are identified with some \emph{types} and their \emph{proofs} with
 \emph{terms}, or programs, having this type. Thus proving a statement
-consists in fact in constructing a term of the corresponding type. In 
+consists in fact in constructing a term of the corresponding type. In
 set theory the rules which govern the construction of
 grammatically correct statements are rather loose and the goal of the
 game is to construct a proof for a given proposition, using
-first-order logic to combine the axions of the theory. 
+first-order logic to combine the axions of the theory.
 The analogue of the meta-statement that a given
 proposition has a proof is the meta-statement that a given term has a
 given type. Such a meta-statement is called a \emph{typing
@@ -91,12 +91,15 @@ variables are represented using the pre-existing set of names. If \C{x} is a
 variable, and \C{T} and \C{U} are two terms, then \C{forall x : T, U} is
 also a term. In fact this term will be used as a type, and it
 represents a family of types \C{U} indexed by elements of type \C{T}.
-Importantly, if \C{x} does not occur in term \C{U} as a
+Importantly, if \C{x} does not occur in the term \C{U} as a
 free variable, then this term is usually denoted \C{T -> U}: it is
 used for the type of functions having their argument of type \C{T} and
-their results of type \C{U}. There is thus no difference
-between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, except the
-notation. If \C{x} is a variable and \C{T}, \C{u}
+their results of type \C{U}. For instance, there is no difference
+between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, but the
+notation. In the case where \C{x} does occur in term \C{U}, the term
+\C{forall x : T, U} is called a \emph{dependent type}.
+\index[concept]{dependent type}
+If \C{x} is a variable and \C{T}, \C{u}a
 are terms then \C{(fun x:T =>  u)} is a term, which represents a function
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
 \C{(u t)} is also a term, which represents the application of (function)
@@ -106,9 +109,13 @@ if \C{t, u} are terms and \C{x} is a variable.
 A typing judgment $\Gamma \vdash t : T$ relates a
 context $\Gamma$ and two terms $t$ and $T$. As it name suggests,
 the context logs all the facts assumed at the moment when the term
-occurs. It can be empty but otherwise contains pairs of a name and a
-type: after executing the command \C{Variable n : nat}, the context
-contains the pair (\C{n} : \C{nat}). We have not yet defined what a
+occurs. It can be empty but otherwise contains typed variables and
+typed definitions. A typed variable is a pair of a name and a
+type: for instance, after executing the command \C{Variable n : nat},
+the context contains the pair (\C{n} : \C{nat}). A typed definition is
+a triple of a name, a term, and a type: for instance, after executing
+the command \C{Definition a : T := t.}, the context contains the
+triple (\C{a : T := t}). We have not yet defined what a
 type is, because it is a special case of term, defined using typing
 judgments. Actually, well-formed contexts and typing judgments are
 defined inductively and simultaneously.
@@ -119,9 +126,10 @@ $$\vdash \C{Prop} : \C{Type}_1 \quad \vdash \C{Type}_i : \C{Type}_{i+1}.$$
 From now on and as the default display mode of Coq does, we will leave
 the index of the sorts \C{Type}$_i$ implicit and just write \C{Type},
 as these indices do not play a significant role in what is presented
-in this book. A \emph{type} is a term which can be typed by a sort:
-$$\vdash \C{T} : \C{Prop} \quad \textrm{ or}
-\quad \vdash \C{T} : \C{Type}.$$
+in this book. A \emph{type} is a term which can be typed by a sort in
+a given context:
+$$\Gamma \vdash \C{T} : \C{Prop} \quad \textrm{ or}
+\quad \Gamma \vdash \C{T} : \C{Type}.$$
 Sorts are thus particular types and they are types of types.
 A \emph{well-formed context} is either an empty context, or the
 extension of an existing context with a pair \C{(x : T)}, where \C{x}
@@ -311,10 +319,10 @@ We conclude this section by commenting a last rule of CIC, called the
 \emph{conversion rule}, which describes the status of computation in this
 framework. Computation is modeled by rewrite rules explaining how to
 apply functions to their argument. For instance, the so-called
-$\beta$-reduction rewrites an application of the form
+$\beta$-reduction rule rewrites an application of the form
 $(\C{fun x => t}) u$ into $t[u/x]$: the formal argument
 $x$ is substituted by the actual argument $u$ in the body $t$ of the
-function. A similar reduction rule models the computation of a term of
+function. A similar computation rule models the computation of a term of
 the shape \C{(let x := u in t)} into $t[u/x]$. Two terms
 $t_1$ and $t_2$ that are equal modulo computation rules are said to be
 \emph{convertible} and these terms are indistinguishable to the type
@@ -341,7 +349,7 @@ These rules check that the argument has
 the ``right type'', i.e. the type of
 the premise or of the  bound variable respectively.
 At the cost of being more verbose we could have made explicit
-in, say, the typing for $\to_E$ 
+in, say, the typing for $\to_E$
 that
 types are compared modulo computation as follows:
 \begin{center}
@@ -448,10 +456,10 @@ Notation "A /\ B" := (and A B).
 Remark that the ``data'' type \C{and} is tagged as \C{Prop}, i.e.,  we declare
 the intention to use it as a logical connective rather than a data type.  The
 single constructor \C{conj} takes two
-arguments: a proof of \C{A} and a proof of \C{B}. 
+arguments: a proof of \C{A} and a proof of \C{B}.
 Moreover \C{and} is polymorphic:
 \C{A} and \C{B} are parameters standing for arbitrary propositions.
-As a consequence it can model faithfully the logical rule \C{$\wedge_I$}. 
+As a consequence it can model faithfully the logical rule \C{$\wedge_I$}.
 
 Note that the definition of the pair data type,
 in section~\ref{sec:othercontainers}, is almost identical to the one
@@ -522,7 +530,7 @@ The first quantification on \C{A} is the first one we encountered in this
 book, and expresses polymorphism.  Then we find an higher order quantification
 of a predicate \C{P} that makes the \C{ex} inductive declaration work
 for any formula describing a property of the witness.  Finally
-the dependent quantification \C{forall a : A} binds a term variable 
+the dependent quantification \C{forall a : A} binds a term variable
 \C{a} in the type that follows to express that the property \C{P} must hold
 on the witness \C{a}.\\
 
@@ -586,7 +594,7 @@ Hence such notion of equality needs to be somewhat primitive, as
 with a substitutivity property: replacing equals by equals must be licit.
 
 The way this internal notion is exposed is via the concept of index
-on which an inductive family may vary.
+on which an inductive type may vary.
 
 \begin{coq}{name=Eq}{}
 Inductive eq (A:Type) (x:A) : A -> Prop := erefl : eq A x x.
@@ -618,7 +626,7 @@ Definition eq_ind A (P : A -> Prop) x (px : P x) y (e : x = y) : P y :=
 The notion of equality is one of the most intricate aspects of type
 theory and an in-depth study of it is out of the scope of this book.  The interested reader
 finds an extensive study of this subject in~\cite{hottbook}.  Later in this
-chapter we define and use other inductive families to take advantage
+chapter we define and use other inductive types to take advantage
 of the ``automatic'' substitution of the implicit equations we see here:
 while \C{px} has type \C{(P x)}, it is accepted as an
 inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
