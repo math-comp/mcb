@@ -128,7 +128,7 @@ eq : forall A : Type, A -> A -> Prop
 Argument A is implicit ...
 \end{coqout}
 
-The constant \C{eq} is a \emph{predicate}, i.e. a function letting
+The constant \C{eq} is a \emph{predicate}, i.e., a function letting
 build a proposition. The equality
 predicate is polymorphic: exactly as we have seen in the previous
 chapter the \C{forall} quantifier is used to make the (implicit)
@@ -244,7 +244,7 @@ order to discuss their formulation.
 
 Ground equalities are just a very special case of mathematical
 statements called \emph{identities}. An \emph{identity} is an equality
-relation $A = B$, which holds regardless of the values that are
+relation $A = B$, that holds regardless of the values that are
 substituted for the variables in $A$ and $B$.
 Let us state for instance the identity expressing the associativity of
 the addition operation on natural numbers:
@@ -333,13 +333,13 @@ Lemma leq0n (n : nat) : 0 <= n.
 As a general fact, boolean identities express that two boolean
 statements are equivalent. We already encountered special cases of
 such equivalence with propositional tautologies in
-section~\ref{ssec:id}. Here is a few more examples involving
+section~\ref{ssec:id}. Here are a few more examples involving
 boolean predicates on natural numbers, that we have defined in
 chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
 divisibility predicate \L+%|+, with \L+(a %| b)+
 meaning \C{a} \emph{divides} \C{b}.
-Note that we omit the type of the parameters: they are all of type
+Note that we omit the type of the parameters; they are all of type
 \C{nat}, as enforced by the type of the operators involved in the
 statements:
 
@@ -355,8 +355,8 @@ Lemma odd_mul m n : odd (m * n) = odd m && odd n.
 \subsection{Conditional statements}
 
 In the previous sections, we have seen statements of unconditional
-identities, either equalities between ground terms or identities which
-hold for \emph{any} value of their parameters. A property which holds
+identities, either equalities between ground terms or identities that
+hold for \emph{any} value of their parameters. A property that holds
 only when some condition is verified by its parameters is stated using an
   \emph{implication} and the \Coq{} syntax for this connective
   is ``\C{->}''.  For instance:
@@ -507,7 +507,7 @@ is performed. In a similar way, we can prove the statement
 \C{true}.
 
 As we have seen in chapter~\ref{ch:prog}, computation is not limited
-to ground terms: it is really about using the rules of the pattern
+to ground terms; it is really about using the rules of the pattern
 matching describing the code of the function. For instance the proof
 of the \C{addSn} identity:
 
@@ -690,7 +690,7 @@ one (recursive) argument. A case analysis on term \C{(n : nat)} thus
 has two branches: one in which \C{n} is \C{0} and one in which \C{n} is
 \C{(S k)}, denoted \C{k.+1}, for some \C{(k : nat)}. We hence need a
 variant of the \C{case} tactic, in order to \emph{name} the parameter
-\C{k} which pops up in the second branch as the argument of the \C{S}
+\C{k} that pops up in the second branch as the argument of the \C{S}
 constructor of type \C{nat}:
 
 \begin{coq}{def=leqn01,done}{width=7cm,title=case with naming}
@@ -727,7 +727,7 @@ As hinted in the first chapter, the term \C{(k.+1 <= 0)}
 is displayed as \C{(k < 0)}.
 
 The first goal
-can be easily solved by computation, as both hand sides of the equality
+can be easily solved by computation, as both sides of the equality
 evaluate to \C{true}.
 
 \begin{coq}{def=leqn02,done}{width=7cm}
@@ -746,7 +746,7 @@ The second and now only remaining goal corresponds to the case when
 \C{n} is the successor of \C{k}. Note that \C{(k < 0)} is a
 superseding notation for \C{(k.+1 <= 0)}, as mentioned in section
 \ref{sec:notabrev}. This goal can also be  solved by computation, as
-both hand sides of the equality evaluates to \C{false}.  The final
+both sides of the equality evaluates to \C{false}.  The final
 proof script is hence:
 
 \begin{coq}{def=leqn04,done}{}
@@ -825,8 +825,8 @@ Indeed it is a good practice to get rid of the easiest subgoals as
 early as possible. And here the successor case is such an easy
 subgoal: when \C{n} is of the form \C{k.+1}, it is easy to see that the
 right hand side of the equality evaluates to \C{false}, as both
-arguments of the boolean disjunction do. Now the left hand side also
-evaluates to \C{false}: by the definition of \C{muln} the term
+arguments of the boolean disjunction do. Now the left hand side
+evaluates to \C{false} too: by the definition of \C{muln}, the term
 \C{(m.+1 * k.+1)} evaluates to \C{(k.+1 + (m * k.+1))} and by
 definition of the addition \C{addn}, this in turn reduces to
 \C{(k + (m * k.+1)).+1}. The left hand side term hence is of the form
@@ -1088,7 +1088,7 @@ m, n1, n2 : nat
 \index[ssr]{\C{rewrite}! "! (iteration)}
 
 Now the definition of \C{<=} has been exposed
-\emph{everywhere} in the goal, i.e. at both its occurrences in the
+\emph{everywhere} in the goal, i.e., at both its occurrences in the
 initial goal. We can now factor \C{m} on the left, according to the
 appropriate distributivity property:
 
@@ -1243,7 +1243,7 @@ Observe that in the above statement of \C{size_map}, we have used a
 compact notation for successive universal quantifications:
 ``\C{forall (f : T1 -> T2) (s : seq T1), ...}'' is syntactic sugar for
 ``\C{forall f : T1 -> T2, forall s : seq T1, ...}''. However in this case
-of prenex quantification we would rather write:
+of prenex quantification, we would rather write:
 
 \begin{coq}{}{}
 Lemma size_map (T1 T2 : Type) (f : T1 -> T2) (s : seq T1) :
@@ -1600,8 +1600,8 @@ rewrite dvdn_addr.
   by apply: prime_gt1.  (* 1 < p *)
 \end{coq}
 \index[ssr]{\C{rewrite}!\C{//} (close trivial goals)}
-If one carefully compares the conclusion of \C{gtnNdvd} and
-\C{prime_gt1} he can spot they are both rewriting rules.  While
+A careful comparison of the conclusions of \C{gtnNdvd}
+and \C{prime_gt1} reveals that they are both rewriting rules.  While
 the former features an explicit ``\C{.. = false}'', in the
 latter one the ``\C{.. = true}'' part is hidden, but is there.
 This means
@@ -1612,7 +1612,7 @@ were regular identities.  The result is that the matched
 term is replaced with \C{true}.}
 
 Rewriting with
-\C{prime_gt1} leaves open the trivial goal \C{true} (i.e. \C{(true = true)}),
+\C{prime_gt1} leaves open the trivial goal \C{true} (i.e., \C{(true = true)}),
 and the side condition \C{(prime p)}.  Both are trivial, hence
 solved prefixing the line with \C{by}.
 
@@ -1645,11 +1645,11 @@ section~\ref{sec:rewrite2}.
 \subsection{Proofs by induction}\label{ssec:ind}
 \index[concept]{induction}
 
-Lets take the well known induction principle for Peano's natural numbers
-and lets formalize it in the language of \Coq{}.  It reads:
+Let us take the well known induction principle for Peano's natural numbers
+and let us formalize it in the language of \Coq{}.  It reads:
 let $\mathcal{P}$ be a property of natural numbers, if
-$\mathcal{P}$ holds on $0$ and if for all natural number $n$
-if $\mathcal{P}$ hold on $n$ then it also hold on $n+1$, then $\mathcal{P}$
+$\mathcal{P}$ holds on $0$ and, if for all natural number $n$
+$\mathcal{P}$ hold on $n + 1$ as soon as it holds on $n$, then $\mathcal{P}$
 holds for any $n$.  Induction is typically regarded as a schema, where
 the variable $\mathcal{P}$ stands for any property we could think about.
 
@@ -1668,17 +1668,17 @@ nat_ind : forall P : nat -> Prop,
 \end{coqout}
 Here \C{P} is quantified exactly as \C{n} is, but its type is a bit more
 complex and deserves an explanation.  As we have seen in the first
-chapter the \C{->} denotes the type of functions, hence \C{P} is a
+chapter, the \C{->} denotes the type of functions; hence \C{P} is a
 function from \C{nat} to \C{Prop}.  Recall that \C{Prop} is the type
-of \emph{propositions}, i.e. something we may want to prove.  At the
-light of that \C{P} is a function producing a proposition out of a natural
+of \emph{propositions}, i.e., something we may want to prove.  At the
+light of that, \C{P} is a function producing a proposition out of a natural
 number.  For example the property of being an odd prime can be written as
 follows:
 
 \begin{coq}{}{}
 (fun n : nat => (odd n && prime n) = true)
 \end{coq}
-Indeed if we take such function as the value for \C{P}, the first premise
+Indeed, if we take such function as the value for \C{P}, the first premise
 of \C{nat_ind} becomes
 
 \begin{coqout}{}{width=6.5cm,title=P 0}
@@ -1737,8 +1737,8 @@ to the one we used for \C{case:}. It has two slots, because of the
 two constructors of type \C{nat}, and in the second branch we give a
 name not only to the argument \C{n} of the successor, but also to the
 induction hypothesis. We also used the \C{//} switch to rule out the
-base case, since if
-\C{m} is \C{0} both sides evaluate to zero. The value of the parameter
+base case because if
+\C{m} is \C{0}, both sides evaluate to zero. The value of the parameter
 \C{P} synthesized by \C{elim:} for us is
 \C{(fun n : nat => n + 0 = n)}. It has been obtained by
 \emph{abstracting} the term \C{m} in the goal (see
@@ -1750,7 +1750,7 @@ Unfortunately proofs by induction do not always run so smooth.
 To our aid the \C{elim:} tactic provides two additional services.
 The first one is to let one \emph{generalize}
 the goal.  It is typically needed when the goal mentions a recursive function
-that uses an accumulator: its value is going to change during recursive calls,
+that uses an accumulator: its value is going to change during recursive calls;
 hence the induction hypothesis must be general.
 
 Another service provided by \C{elim:} is specifying an alternative
@@ -1811,7 +1811,7 @@ Thanks to the generalization, \C{IHs} states:
 IHs : forall z : T, foldl f z (rev s) = foldr (fun x z => f z x) z s
 \end{coq}
 The quantification on \C{z} is crucial since the goal in the induction step,
-just before we use \C{IHs} is the following one:
+just before we use \C{IHs}, is the following one:
 
 \begin{coqout}{}{}
 foldl f z (rev (s ++ [:: x])) =
@@ -1820,7 +1820,7 @@ foldl f z (rev (s ++ [:: x])) =
 
 The instance of the induction hypothesis that we need is
 one where \C{z} takes \C{(foldr (fun y w => f w y) z [:: x])},
-i.e. the value of the accumulator to \C{foldr} for a list
+i.e., the value of the accumulator, to \C{foldr} for a list
 whose last element is \C{x}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1862,8 +1862,8 @@ Indeed the conclusion matches the pattern.  Note that one is not forced to
 use wild cards, \C{odd} alone is a perfectly valid pattern.  Many more
 lemmas are found by leaving the conclusion unspecified as in ``\C{Search _ odd}''.
 
-If we require the lemma to be an equation, as in ``\C{Search eq odd}'' we find,
-among many other things, the following two lemmas:
+If we require the lemma to be an equation, as in ``\C{Search eq odd}'', we find
+the following two lemmas (among many other things):
 
 \begin{coqout}{}{}
 dvdn2  forall n : nat, (2 %| n) = ~~ odd n
@@ -1897,7 +1897,7 @@ strings can be specified, for example \C{Search "1" "muln"}.  This time
 we find \C{muln1} but also \C{muln_eq1}, the equation saying that
 the product of two natural numbers is $1$ if and only if they are both $1$.
 
-Here is the general principles ruling the names of the in the \mcbMC{} library:
+Here are the general principles ruling the names of the in the \mcbMC{} library:
 \begin{itemize}
 \item{\bf Generalities}
   \begin{itemize}
@@ -2004,10 +2004,10 @@ Here is the general principles ruling the names of the in the \mcbMC{} library:
 \mcbLEVEL{1}
 \mcbsection{Rewrite, a swiss army knife}\label{sec:rewrite}
 
-Approximately one third of the proof script in the \mcbMC{} library is made of
+Approximately one third of the proof scripts in the \mcbMC{} library is made of
 invocations of the \C{rewrite} tactic. This proof command provides many
 features we cannot extensively cover here.  We just sketch a very common idiom
-involving conditional rewrite rules and the mention the \C{RHS} pattern for
+involving conditional rewrite rules and we mention the \C{RHS} pattern for
 the casual reader.  The interested reader can find more about the pattern
 language in section~\ref{sec:rewrite2} or in the dedicated chapter of
 the Ssreflect language user manual~\cite{ssrman}.
@@ -2019,7 +2019,7 @@ all goals zero-or-more time.  For example, one could consider the
 second sub goal that follows \C{rewrite dvdn_addr} a side condition
 and solve it on the same line.
 
-Lets us illustrate this on an example of script that we have already used:
+Let us illustrate this on an example of script that we have already used:
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
@@ -2073,7 +2073,7 @@ rewrite /=.
 \end{coqout}
 The \C{/=} flag simply invokes the \Coq{} standard \C{simpl}
 tactic.  Whilst being handy, \C{simpl} tends to oversimplify
-expressions, hence we advice using it with care.
+expressions, hence we advise using it with care.
 In section~\ref{sec:edivn} we propose a less risky alternative.
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 \index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
@@ -2102,14 +2102,14 @@ tactic crucially relies on an appropriate combination of automation
 and control. The user should be able to predict which subterm will be
 substituted and to drive the tactic if needed, with enough control
 options, but not too much verbosity. A key ingredient of the
-\C{rewrite} tactic is hence the \emph{matching} algorithm which
+\C{rewrite} tactic is hence the \emph{matching} algorithm that
 elects this subterm from the arguments provided to the tactic. Let us
 provide some insights on the power and on the limitations of this
 algorithm, as well as on the control primitives that can drive it.
 \index[concept]{matching algorithm}
 
 First, remember that our first attempt, using the simple
-\C{rewrite leqE} command only
+\C{rewrite leqE} command, only
 affected the left hand side of the initial goal because of the
 behavior of this matching algorithm.
 Indeed, the matching algorithm traverses the entire goal
@@ -2171,7 +2171,7 @@ Lemma \C{leqE} in fact does not exist in the library.%  Indeed the
 % typically omitted.
 However if we
 try to omit the first \C{rewrite !leqE} command, then the next one,
-namely \C{rewrite -mulnBr} fails:
+namely \C{rewrite -mulnBr}, fails:
 
 \begin{coq}{def=LeqMul2lproof2}{width=7.7cm}
 Lemma leq_mul2l m n1 n2 :
@@ -2187,7 +2187,7 @@ of the goal.
 \end{coqout}
 \index[concept]{keyed matching}
 
-This indicates in particular that although term \C{(m * n1 <= m * n1)}
+This indicates in particular that, although term \C{(m * n1 <= m * n1)}
 is equal up to computation to term \C{(m * n1 - m * n1 == 0)}, the matching
 algorithm is not able to see it. This is due to the compromise that
 has been chosen, between predictability and cleverness. Indeed the
@@ -2238,7 +2238,7 @@ m, n1, n2 : nat
   (m == 0) || (n1 <= n2)
 \end{coqout}
 
-One can also re-fold a definition, but in such case one has to specify,
+One can also re-fold a definition, but in such a case one has to specify,
 at least partially, its folded form.
 
 \begin{coq}{def=Unfold}{title=Refold,width=7cm}
@@ -2257,7 +2257,8 @@ m, n1, n2 : nat
 \index[ssr]{\C{rewrite}! \C{-/} (folding)}
 
 More generally, the \C{rewrite} tactic can be used to replace a
-certain subterm of the goal by an equal by computation one:
+certain subterm of the goal by another one, which is equal to the
+former modulo computation:
 
 \begin{coq}{def=Unfold}{title=Replacing computationally equal terms,width=7.7cm}
 Lemma leq_mul2l m n1 n2 :
