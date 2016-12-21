@@ -8,9 +8,9 @@ insisted on the definition of (typed) programs and on the way these
 programs can be used to describe computable functions and decidable
 predicates. This take on calculations is indeed both at the core of
 the type theory underlying \Coq{} and one of the crucial ingredients
-to the methodology basing the \mcbMC{} library. The present chapter is
+to the methodology at the base of the \mcbMC{} library. The present chapter is
 devoted to a more in-depth presentation of these mathematical
-presentation, although an exhaustive description shall remain out of
+foundations, although an exhaustive description shall remain out of
 the scope of the present book. For more comprehensive presentations of
 type theory for formalized mathematics, the reader shall refer to more
 specialized references like~\cite{ttfp}, or the
@@ -25,7 +25,7 @@ mathematical statements and proofs, called
 \emph{Calculus of Inductive
   Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}. In this section, we
 provide some hints on the main features of this formalism. The
-Calculus of Inductive Constructions is described formally in Chapter 4
+Calculus of Inductive Constructions is described formally in chapter 4
 of the reference manual of \Coq{}~\cite{Coq:manual}. The reference book on
 homotopy type theory~\cite{hottbook} describes a very close formalism.
 
@@ -39,20 +39,22 @@ reference~\cite{MR2102219}.
 The main difference between a type-theoretic framework and
 a set-theoretic one is the status of the deductive system used to
 represent reasoning in a formal way. Informally speaking, a
-set-theoretic framework has two stages. First order logic provides the
-logical layer: it describes the language of logical sentences and how
+set-theoretic framework has two stages. First order logic provides
+the former layer: it describes the language of logical sentences and how
 these statements can be combined and proved. This language is then
 used in the second layer, to formulate the axioms of the particular
-theory of interest. A type-theoretic framework is monolithic and the
+theory of interest. 
+On the contrary a type-theoretic framework is monolithic and the
 same language of types is used in a uniform way to describe
 mathematical objects, statements and proofs. \emph{Logical statements}
 are identified with some \emph{types} and their \emph{proofs} with
 \emph{terms}, or programs, having this type. Thus proving a statement
-consists in fact in constructing a term of the corresponding type. In a
-set theoretic statement, the rules which govern the construction of
+consists in fact in constructing a term of the corresponding type. In 
+set theory the rules which govern the construction of
 grammatically correct statements are rather loose and the goal of the
-game is to construct a proof for a given proposition, using the rules
-of first-order logic. The analogue of the meta-statement that a given
+game is to construct a proof for a given proposition, using
+first-order logic to combine the axions of the theory. 
+The analogue of the meta-statement that a given
 proposition has a proof is the meta-statement that a given term has a
 given type. Such a meta-statement is called a \emph{typing
   judgment}. It is written:
@@ -95,9 +97,9 @@ used for the type of functions having their argument of type \C{T} and
 their results of type \C{U}. There is thus no difference
 between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, except the
 notation. If \C{x} is a variable and \C{T}, \C{u}
-are terms then \C{fun x:T =>  u} is a term, which represents a function
+are terms then \C{(fun x:T =>  u)} is a term, which represents a function
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
-\C{u t} is also a term, which represents the application of (function)
+\C{(u t)} is also a term, which represents the application of (function)
 \C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
 if \C{t, u} are terms and \C{x} is a variable.
 
@@ -322,19 +324,26 @@ has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
 in the context $\Gamma$. This is the feature of the formalism that we
 have used in section~\ref{ssec:proofcomp}: the proofs of the
 statements \C{2 + 1 = 3} and \C{3 = 3} are the same, because the terms
-\C{2 + 1 = 3} and \C{3 = 3} are convertible. As illustrated in
+\C{2 + 1 = 3} and \C{3 = 3} are convertible.  In chapter~\ref{ch:prog} and~\ref{ch:proofs}
+we used boolean programs to express predicates and connectives exactly
+to take advantage of convertibility: also the compound
+statement
+\C{(2 != 7 && prime 7)} is convertible to \C{true}.
+Finally, as illustrated in
 section~\ref{sec:symcomp}, computation is not limited to terms without
 variables: the term \C{(isT : true)} is a valid proof of
-\C{(0 < n.+1)}, as well as a proof of \C{(odd 7)} or \C{(prime 27)}.
+\C{(0 < n.+1)}, as well as a proof of \C{(0 != p.+1)}.
 \index[coq]{\C{isT}}
-One can also benefit from this feature when applying a lemma;
-otherwise said, when calling the $\to_E$  and $\forall_E$
-rules. These rules specify respectively the type of the premisse and
-of the  bound variable: rule $\forall_E$ checks the term $t$ has the ``right type'',
-and output a type error otherwise. But remember types are compared
-modulo computation, and we could have stated variant of these rules
-featuring this congruence. For instance the  $\to_E$ rule becomes in
-this case:
+
+One can also benefit from convertibility whenever he applies a lemma;
+otherwise said, whenever the $\to_E$ and $\forall_E$ rules apply.
+These rules check that the argument has
+the ``right type'', i.e. the type of
+the premise or of the  bound variable respectively.
+At the cost of being more verbose we could have made explicit
+in, say, the typing for $\to_E$ 
+that
+types are compared modulo computation as follows:
 \begin{center}
 \AxiomC{\C{f : }$~A \to B$}
 \AxiomC{\C{a : }$~A'$}
@@ -362,8 +371,8 @@ command:
 \begin{coq}{}{}
 Inductive nat : Type := O : nat | S (n : nat).
 \end{coq}
-introduces a new type \C{nat : Type} and two new terms \C{O : nat} and
-\C{S : nat -> nat}. Constructors are functions, possibly of zero
+introduces a new type \C{nat : Type} and two new terms \C{(O : nat)} and
+\C{(S : nat -> nat)}. Constructors are functions, possibly of zero
 argument like \C{O}, and the codomain of a constructor of the
 inductive type \C{T} is always \C{T}. An inductive type may occur as
 the type of certain arguments of its constructors, like in the case of
@@ -403,7 +412,8 @@ term would allow proofs of absurdity (see section~\ref{ssec:indreason}).
 
 \subsection{More connectives}
 With inductive definitions it is possible to describe more data
-structures than the mere functions of the formalism described in
+structures than the mere functions %of the formalism
+described in
 section~\ref{ssec:terms}. These data structures and their typing rules
 are used to model logical connectives, like functions were used to
 model the proofs of implications and universal quantifications.
@@ -438,10 +448,10 @@ Notation "A /\ B" := (and A B).
 Remark that the ``data'' type \C{and} is tagged as \C{Prop}, i.e.,  we declare
 the intention to use it as a logical connective rather than a data type.  The
 single constructor \C{conj} takes two
-arguments: a proof of \C{A} and a proof of \C{B}. This way, it
-models faithfully the logical rule \C{$\wedge_I$}.  Note that \C{A}
-and \C{B} are parameters of the inductive definition, similarly to the
-definition of polymorphic lists or pairs.
+arguments: a proof of \C{A} and a proof of \C{B}. 
+Moreover \C{and} is polymorphic:
+\C{A} and \C{B} are parameters standing for arbitrary propositions.
+As a consequence it can model faithfully the logical rule \C{$\wedge_I$}. 
 
 Note that the definition of the pair data type,
 in section~\ref{sec:othercontainers}, is almost identical to the one
@@ -496,15 +506,25 @@ type \C{A}.  Hence \C{(P a)} is the instance of the predicate, for \C{a}.  E.g.,
 the predicate of being an odd prime number is expressed as
 \C{(fun x : nat => (odd x) && (prime x))}, and the statement expressing the
 existence of such a number is
-\C{(ex nat (fun x : nat => (odd x) && (prime x)))}. Note like just
-like type \C{seq} is polymorphic, with one type parameter, the type
-of \C{ex} and \C{ex_intro} are also polymorphic and they have two
-parameters \C{A} and \C{P}:
+\C{(ex nat (fun x : nat => (odd x) && (prime x)))} that thanks
+to the \C{Notation} machanism of \Coq{} is parsed and
+printed as the more familiar \C{(exists x : nat, odd x && prime x)}.
+
+It is worth summing up the many features of type theory that
+interveen in the type of \C{ex} and \C{ex\_intro}:
 
 \begin{coq}{}{}
 ex : forall A : Type, (A -> Prop) -> Prop.
 ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
 \end{coq}
+
+The first quantification on \C{A} is the first one we encountered in this
+book, and expresses polymorphism.  Then we find an higher order quantification
+of a predicate \C{P} that makes the \C{ex} inductive declaration work
+for any formula describing a property of the witness.  Finally
+the dependent quantification \C{forall a : A} binds a term variable 
+\C{a} in the type that follows to express that the property \C{P} must hold
+on the witness \C{a}.\\
 
 We quickly see the inductive definition of the disjunction \C{or}
 and its two constructors \C{or\_introl} and \C{or\_intror}.
@@ -584,7 +604,8 @@ have the same type.
 The \C{erefl} constructor takes no arguments, as \C{I}, but its type
 annotation says it can be used to inhabit only the type \C{(x = x)}.
 Hence one is able to prove \C{(a = b)} only when \C{a} and \C{b} are
-equal up to computation (as in indistinguishable from a logical standpoint).
+convertible
+(as in indistinguishable from a logical standpoint).
 Conversely by eliminating a term
 of type \C{(a = b)} one discovers that  \C{a} and \C{b} are
 equal and \C{b} can be freely replaced by \C{a}.
