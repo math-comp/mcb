@@ -32,6 +32,7 @@ Definition repeat_twice (g : nat -> nat) : nat -> nat :=
   fun x => g (g x).
 Eval compute in repeat_twice f 2.
 Check (repeat_twice f).
+Fail Check (repeat_twice f f).
 
 (* data *)
 Check true.
@@ -103,6 +104,12 @@ Eval compute in [seq i.+1 | i <- [:: 2; 3]].
 Check (3, false).
 Eval compute in (true, false).1.
 
+Definition only_odd (n : nat) : option nat :=
+  if odd n then Some n else None.
+
+Definition ohead (A : Type) (s : seq A) :=
+  if s is x :: _ then Some x else None.
+
 (* section *)
 Section iterators.
  Variables (T : Type) (A : Type).
@@ -121,10 +128,10 @@ About iter.
 About foldr.
 Eval compute in iter 5 pred 7.
 Eval compute in foldr addn 0 [:: 1; 2; 3].
-Fixpoint add m n := if m is u.+1 then add u n.+1 else n.
+Fixpoint addn_alt m n := if m is u.+1 then addn_alt u n.+1 else n.
 Section symbolic.
   Variable n : nat.
-  Eval simpl in pred (add n.+1 7).
+  Eval simpl in pred (addn_alt n.+1 7).
   Eval simpl in pred (addn n.+1 7).
 End symbolic.
 
@@ -142,13 +149,11 @@ Eval compute in y (Point 3 0 2).
 
 (** Exercises *************************************** *)
 
+Module exercises.
 (* pair *)
 
-Inductive pair (A B : Type) := mk_pair (a : A) (b : B).
 
-Notation "( A , B )" := (mk_pair A B).
 
-Definition fst A B (p : pair A B) := let: (x, _) := p in x.
 
 Eval compute in fst (4,5).
 
@@ -191,7 +196,7 @@ Definition all_words n T (alphabet : seq T) :=
 
 Eval compute in all_words 2 [:: 1; 2; 3].
 
-
+End exercises.
 </textarea></div>
 <script type='text/javascript'>
 var coqdoc_ids = ['coq'];
