@@ -7,12 +7,60 @@
 \makeindex[name=coq,title=Definitions and Notations,intoc]
 \makeindex[name=vernac,title=Coq Commands,intoc]
 
-\title{Mathematical Components}
-\author{Assia Mahboubi \hspace{1cm} Enrico Tassi\\~\\{\small with contributions by}\\Yves Bertot \hspace{1cm} Georges Gonthier}
-\date{\today\\\small{version: draft 0}}
+% \title{Mathematical Components}
+% \author{Assia Mahboubi \hspace{1cm} Enrico Tassi\\~\\{\small with contributions by}\\Yves Bertot \hspace{1cm} Georges Gonthier}
+% \date{\today\\\small{version: draft 0}}
 
 \begin{document}
-\maketitle
+%\maketitle
+
+
+%----------------------------------------------------------------------------------------
+%	TITLE PAGE
+%----------------------------------------------------------------------------------------
+
+
+% Borrowed from the Orange Book style.
+\begingroup
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+\coordinate [below=12cm] (midpoint) at (current page.north);
+\node at (current page.north west)
+{\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=north west,inner sep=0pt] at (0,0) {\includegraphics[width=\paperwidth,height=\paperheight]{../artwork/HannaKlaudel/HIRES/coq0}}; % Background image
+\draw[anchor=north] (midpoint) node [fill=ocre!30!white,fill
+opacity=0.6,text opacity=1,inner
+sep=1cm]{\Huge\centering\bfseries\sffamily\parbox[c][][t]{\paperwidth}{\centering
+    Mathematical Components\\[15pt] % Book title
+%{\Large A Profound Subtitle}\\[20pt] % Subtitle
+{\Large Assia Mahboubi, Enrico Tassi}\\
+{\large with contributions by Yves Bertot and Georges Gonthier}
+}}; % Author name
+\end{tikzpicture}};
+\end{tikzpicture}
+\vfill
+\endgroup
+
+
+%----------------------------------------------------------------------------------------
+%	COPYRIGHT PAGE
+%----------------------------------------------------------------------------------------
+
+\newpage
+~\vfill
+\thispagestyle{empty}
+
+\noindent Copyright \copyright\ 2016 Yves Bertot, Georges Gonthier, Assia Mahboubi, Enrico Tassi\\ % Copyright notice
+
+%\noindent \textsc{Published by Publisher}\\ % Publisher
+
+\noindent \url{http://math-comp.github.io/math-comp/}\\ % URL
+
+\noindent Licensed under the Creative Commons Attribution-NonCommercial 3.0 Unported License (the ``License''). You may not use this file except in compliance with the License. You may obtain a copy of the License at \url{http://creativecommons.org/licenses/by-nc/3.0}. Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an \textsc{``as is'' basis, without warranties or conditions of any kind}, either express or implied. See the License for the specific language governing permissions and limitations under the License.\\ % License information
+
+\noindent \textit{Draft version, December 2016} % Printing/edition date
+
+
 
 \input{ch0}
 
