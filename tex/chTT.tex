@@ -387,8 +387,9 @@ inductive type \C{T} is always \C{T}. An inductive type may occur as
 the type of certain arguments of its constructors, like in the case of
 \C{S}. The only way to construct an inhabitant of an
 inductive type is to apply a constructor to sufficiently many
-arguments and two distinct constructors construct distinct
-terms. Thus a function with an argument of an inductive type can be
+arguments and constructors are by definition injective functions.
+Moreover, two distinct constructors construct distinct
+terms, therefore a function with an argument of an inductive type can be
 described by pattern matching on this argument. For instance in
 chapter~\ref{ch:prog} we have defined the predecessor function by:
 

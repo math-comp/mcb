@@ -640,7 +640,6 @@ Of course one wants to access a matrix using integer coordinates, but
 integers are infinite.  Hence the first step is to define the sub-type
 of bounded integers:
 
-\marginnote{is \C{of} explained?}
 \begin{coq}{name=ordinals}{title=Ordinals}
 Inductive ordinal (n : nat) : Type := Ordinal m of m < n.
 Notation "''I_' n" := (ordinal n)
@@ -761,31 +760,37 @@ At the time of writing, only very recent variations of CIC,
 as Cubical Type Theory~\cite{cubicaltt}, include such principle.
 \index[concept]{functional extensionality}
 
-Still there is a class of functions for which such principle is
-provable in \Coq{}.  These are the functions with a finite domain:
-given their graph is a finite set of points we can represent them
-as regular lists, and lists with the same values are equal.
+Still, this principle is provable in \Coq{} for functions with a
+finite domain, provided that they are described with a suitable
+representation. Indeed, the graph of a function with a finite domain
+is just a finite set of points, which can be represented by a finite
+sequence of values. The length of this sequence is the size of the
+domain. Pointwise equal finite functions have the same sequence of
+values, hence their representations are equal.
+The actual definition of the type of finite functions in the \mcbMC{}
+library uses this remark, plus the tricks explained in
+section~\ref{sec:phantom}:
 
-\begin{coq}{name=subtdecl}{}
+\begin{coq}{name=subtdecl2}{}
 Section FinFunDef.
 Variables (aT : finType) (rT : Type).
 
-Inductive finfun : Type := Finfun of #|aT|.-tuple rT.
+Inductive finfun_type : Type := Finfun of #|aT|.-tuple rT.
+Definition finfun_of of phant (aT -> rT) := finfun_type.
 Definition fgraph f := let: Finfun t := f in t.
+
 Canonical finfun_subType := Eval hnf in [newType for fgraph].
 
 End FinFunDef.
-Notation "{ 'ffun' fT }" := (finfun fT).
+
+Notation "{ 'ffun' fT }" := (finfun_of (Phant fT)).
 \end{coq}
-
-The actual definition in the \mcbMC{} library is slightly more complex
-so that it checks that a proof that the domain is finite has been
-recorded before. This is using the tricks
-explained in section~\ref{sec:phantom}. This results in \Coq{}
-rejecting the term \C{\{ffun nat -> nat\}} but accepting
-\C{\{ffun 'I_7 -> nat\}}. In the rest of the chapter, we will use this
-notation
-
+As a result, the final notation provides a way to describe an instance of
+the type of finite function by giving the mere type of the domain and
+co-domain, without mentioning the name of the instance of \C{finType}
+for the domain. One can thus write the term \C{\{ffun 'I_7 -> nat\}}
+but the term \C{\{ffun nat -> nat\}} would raise an error message, and
+their cannot be a registered instance of finite type for \C{nat}.
 
 Other utilities let one apply a finite function as a regular function
 or build a finite function from a regular function.
@@ -1069,7 +1074,7 @@ Definition determinant n (A : 'M_n) : R :=
   \sum_(s : 'S_n) (-1) ^+ s * \prod_i A i (s i).
 \end{coq}
 
-The \C{(-1) ^+ s} denotes signature of the permutation \C{s}:
+The \C{(-1) ^+ s} denotes the signature of a permutation \C{s}:
 \C{s} can be used, thanks to a coercion, as a natural number
 that is \C{0} if \C{s} is an even permutation, \C{1} otherwise,
 and \C{^+} is ring exponentiation.  In other words the \C{(-1)}
@@ -1091,8 +1096,9 @@ Definition mulmx m n p (A : 'M_(m, n)) (B : 'M_(n, p)) : 'M[R]_(m, p) :=
 Notation "A *m B" := (mulmx A B) : ring_scope.
 \end{coq}
 
-First, the type of the inputs makes such operation total, i.e. \Coq{}
-statically rejects multiplication of matrices which sizes don't match.
+First, the type of the inputs makes such operation total, i.e., \Coq{}
+rejects terms which would represent the product of two matrices whose
+sizes are incompatible.
 
 This has to be compared with what was done for integer division, that
 was made total by returning a default value, namely \C{0}, outside
@@ -1136,7 +1142,7 @@ m, n : nat
 A : 'M_(m, n)
 B : 'M_(n, m)
 ============================
-\sum_j \sum_i A i j * B j i = \tr (B *m A)
+\sum_i \sum_j A i j * B j i = \tr (B *m A)
 \end{coqout}
 
 It is worth noticing that the equation we used to expand the left hand
@@ -1166,13 +1172,13 @@ R : comRingType
 m, n : nat
 A : 'M_(m, n)
 B : 'M_(n, m)
-trAB : \tr (A *m B) = \sum_i \sum_j A i j * B j i
 trE : forall m n (A : 'M_(m, n)) B, \tr (A *m B) = \sum_i \sum_j A i j * B j i
+trAB : \tr (A *m B) = \sum_i \sum_j A i j * B j i
 ============================
-\sum_j \sum_i A i j * B j i = \sum_i \sum_j B i j * A j i
+\sum_i \sum_j A i j * B j i = \sum_i \sum_j B i j * A j i
 \end{coqout}
 
-The proof is then concluded by exchanging the summations, i.e.
+The proof is then concluded by exchanging the summations, i.e.,
 summing
 on both sides first on \C{i} then on \C{j}, and then proving their
 equality by showing the identity on the summands.
@@ -1206,7 +1212,7 @@ Definition lsubmx (A : 'M_(m, n1 + n2)) : 'M_(m, n1)
 Definition usubmx (A : 'M_(m1 + m2, n)) : 'M_(m1, n)
 Definition ulsubmx (A : 'M_(m1 + m2, n1 + n2)) : 'M_(m1, n1)
 \end{coq}
-Conversely blocks can be glued together.  This time it is the
+Conversely blocks can be glued together.  This time, it is the
 size of the resulting matrix that shows a trace of the way
 it was built.
 \index[coq]{\C{lsubmx}}
@@ -1262,7 +1268,7 @@ Lemma row_mxA (A1 : 'M_(m, n1)) (A2 : 'M_(m, n2)) (A3 : 'M_(m, n3)) :
 The \C{cast} object provides the proof evidence that \C{(m = m)}, not
 strictly needed, and that \C{(n1 + (n2 + n3) = (n1 + n2) + n3)}.
 
-Lemmas like the following two lets one insert or remove additional
+Lemmas like the following two let one insert or remove additional
 casts.
 
 \begin{coq}{}{}
@@ -1272,7 +1278,7 @@ Lemma castmx_id m n erefl_mn (A : 'M_(m, n)) : castmx erefl_mn A = A.
 \end{coq}
 \index[coq]{\C{castmx_id}}
 \index[coq]{\C{castmxKV}}
-Remark that \C{erefl_mn} must have type \C{((m = m) * (n = n))}, i.e.
+Remark that \C{erefl_mn} must have type \C{((m = m) * (n = n))}, i.e.,
 it is a useless cast.
 
 Another useful tool is \C{conform_mx} that takes a default matrix of
@@ -1316,10 +1322,10 @@ The real declaration indeed puts \C{reflect} in \C{Type} and not in
 
 Recall that \C{reflect} is typically used to state properties about
 decidable predicates. It is quite frequent to reason on such
-class of predicates by excluded middle in \emph{both} proofs and programs.
+a class of predicates by excluded middle in \emph{both} proofs and programs.
 As soon as one needs proofs to cast terms, the proof evidence carried by
 the reflection lemma becomes doubly useful.  Placing the declaration of
-\C{reflect} in \C{Type} is enough to make such proof
+\C{reflect} in \C{Type} is enough to make such a proof
 accessible within programs.
 
 However the precise difference between \C{Prop} and \C{Type} in the

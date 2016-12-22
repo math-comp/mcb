@@ -1,27 +1,5 @@
 \Chapter{Functions and Computation}{}\label{ch:prog}
 
-%\marginnote{May be find a better title}
-% TODO: uniform terminology (a function returns,produces, computes... patter matching,case analysis...program, function, operation...computation, evaluation...data type, inductive type); I mean, we can say we use them interchangeably... but the quotienting must be explicit since the reader may not know it (eg some of it is historical, some justified by curry Howard (fwd reference)).  Also "coq session" is something that I would remove.
-%
-% TODO: in the text I did sneak in some ``principles'' and some were already there.  eg exhaustiveness of pattern matching, totality of functions, injectivity of constructors, uniqueness of constructors/types.  We may want to put them in a more visible format, like a mantra like box.  The mathematician may not see these are the pillars of the logic.
-%
-%\textcolor{blue}{Find a more catchy title? The motivation is: how to define things: objects, operations, (boolean) relations.}
-
-% We will take the point of view that mathematics can be understood as
-% the study of objects, operations on these objects, and
-% abstractions.\marginnote{This might be a bit general/inaccurate (what
-%   about similarities, classifications, etc.}
-% Children start learning mathematics by counting, where the objects are
-% numbers and the operations are enumerating and adding.  In fact
-% numbers are already the result of an abstraction process.
-
-% What are the objects, the operations, and the abstractions in a given
-% mathematical corpus is quite fluctuating.  The objects of group theory
-% may sometimes be viewed as operations in another context.  Nevertheless,
-% in this chapter, we describe how some objects are described with the intent
-% that they are {\em inert}, that is, they are meant to be
-% manipulated by operations.  We also show how operations are described.
-
 In the formalism underlying the \Coq{} system, functions play a
 central role akin to the one of sets in set theory. In this chapter,
 we give a flavor of how to define functions in \Coq{}, how to perform
@@ -718,9 +696,6 @@ numbers obtained using the successor function at least once: therefore
 \C{O} has type \C{nat}, \C{(S O)} has type \C{nat}, \C{(S (S O))}, and
 so on, and any natural number has this shape. The constant \C{O} and
 the function \C{S} are the constructors of type \C{nat}.
-\marginnote{As such, they have some properties, like injectivity of S
-  and the fact that they build distinct terms. Shall we mention it
-  here? With a fwd ref? to be put in the TT chapter}
 
 When interacting with
 \Coq{}, we will often see decimal
@@ -1445,7 +1420,7 @@ that is used to concatenate two sequences together.
 \index[coq]{\C{(_ ++ _)}}
 \index[coq]{\C{[seq .. <- .. "| ..]}}
 
-\marginnote{assia: Missing exercises here?}
+%\marginnote{assia: Missing exercises here?}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Option and pair data types}\label{sec:othercontainers}
 
@@ -1482,7 +1457,7 @@ Definition ohead (A : Type) (s : seq A) :=
 
 See also the sub-type kit presented in chapter~\ref{ch:sigmabool},
 which makes use of the option type to describe a partial injection.
-\marginnote{assia: mention also odflt, omap and friends, in exercise?}
+%\marginnote{assia: mention also odflt, omap and friends, in exercise?}
 
 Another typical polymorphic data type is the one of pairs, that
 lets one put together any two values:
@@ -1766,9 +1741,6 @@ Eval compute in foldr addn 0 [:: 1; 2].
  = 2 : nat
  = 3 : nat
 \end{coqout}
-
-% The \C{Section} mechanism lets one reuse variable declarations and type
-% annotations among multiple definitions.
 
 %\marginnote{assia: what about a good practice box here? for naming policy
 %  for bound variables}
