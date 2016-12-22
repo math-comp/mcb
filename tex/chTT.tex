@@ -35,7 +35,7 @@ homotopy type theory~\cite{hottbook} describes a very close formalism.
 There exists several flavors of \emph{type theory} that can be used
 as a foundational language for mathematics, alternative to the
 flavors of set theory usually cited as the formal language of
-reference~\cite{MR2102219}.
+reference~\cite{bourbaki-sets}.
 The main difference between a type-theoretic framework and
 a set-theoretic one is the status of the deductive system used to
 represent reasoning in a formal way. Informally speaking, a
@@ -53,7 +53,7 @@ consists in fact in constructing a term of the corresponding type. In
 set theory the rules which govern the construction of
 grammatically correct statements are rather loose and the goal of the
 game is to construct a proof for a given proposition, using
-first-order logic to combine the axions of the theory.
+first-order logic to combine the axioms of the theory.
 The analogue of the meta-statement that a given
 proposition has a proof is the meta-statement that a given term has a
 given type. Such a meta-statement is called a \emph{typing
@@ -194,7 +194,8 @@ be written:
 \UnaryInfC{$\forall x, B$}
 \DisplayProof
 \end{center}
-To prove $A \to B$ one can prove $B$ under the
+This presentation, in the style of natural deduction, means that to
+prove $A \to B$ one can prove $B$ under the
 assumption $A$ and to prove $\forall x,B$ one can prove $B$
 for a fresh variable $x$. Let us now annotate these rules with terms
 whose typing rules coincide with these proof rules:
@@ -391,8 +392,8 @@ terms. Thus a function with an argument of an inductive type can be
 described by pattern matching on this argument. For instance in
 chapter~\ref{ch:prog} we have defined the predecessor function by:
 
-\begin{coq}{name=pred}{}
-Definition pred n := if n is p.+1 then p else n.
+\begin{coq}{name=predn}{}
+Definition predn n := if n is p.+1 then p else n.
 \end{coq}
 where \C{if ... then ... else ...} is a notation for the special case of
 pattern matching with only two branches and one pattern. The definition of

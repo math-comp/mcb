@@ -46,12 +46,12 @@ The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
 that we have already seen in the previous chapter in their general
 form of records.
 For example, one can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
-< 7$.  Since proofs are terms one can
+< 7$.  Since proofs are terms, one can
 pack together objects and proofs of some properties to
-represent the objects that have those properties.  For example $3$
-when seen as an inhabitant of \C{'I_7} is represented by a dependent
-pair \C{(3, p)} where \C{(p : 3 < 7)}.  Note that by forgetting the
-proof \C{p} one recovers a \C{nat} that can be passed to, say, the
+represent the objects that have those properties.  For example $3$,
+when seen as an inhabitant of \C{'I_7}, is represented by a dependent
+pair \C{(3, p)} where \C{(p : 3 < 7)}.  Note that, by forgetting the
+proof \C{p}, one recovers a \C{nat} that can be passed to, say, the
 program computing the addition of natural numbers, or to theorems
 quantified on any \C{nat}.  Also, an inhabitant of \C{'I_7} can always
 be proved smaller than 7, since such evidence is part of the
@@ -119,7 +119,7 @@ in the form of an equality proof, its length.  As test bench
 we pick this simple example: a tuple is processed using
 functions defined on sequences, namely \lstinline/rev/ and
 \lstinline/map/.  These operations do preserve the invariant of
-tuples, i.e. they don't alter the length of the subjacent list.
+tuples, i.e., they don't alter the length of the subjacent list.
 
 \begin{coq}{name=p1}{}
 Example seq_on_tuple n (t : n.-tuple nat) :
@@ -127,7 +127,7 @@ Example seq_on_tuple n (t : n.-tuple nat) :
 \end{coq}
 
 There are two ways to prove that lemma.  The first one is
-to ignore the fact that \lstinline/t/ is a tuple, consider it
+to ignore the fact that \lstinline/t/ is a tuple; consider it
 as a regular sequence, and use only the theory of sequences.
 
 \begin{coq}{name=p2}{}
@@ -136,7 +136,7 @@ Proof. by rewrite map_rev revK size_map. Qed.
 \coqrun{name=r3}{ssr,tup,sizetup,p1,p2}
 
 Mapping a function over the reverse of a list is equivalent to
-first map the function over the list and then reverse the result
+first mapping the function over the list and then reversing the result
 (\lstinline/map_rev/).  Then, reversing twice a list is a no-op, since
 \lstinline/rev/ is an involution
 (\lstinline/revK/).  Finally, mapping a function over a list does not
@@ -174,17 +174,17 @@ with a tuple \lstinline/t/.  Why is that?  In the left hand side
 \lstinline/t/ is processed using functions on sequences.
 The type of \lstinline/rev/ for example is
 \lstinline/(forall T, seq T -> seq T)/.  The coercion \lstinline/tval/
-from \lstinline/tuple_of/ to \lstinline/seq/ make the
+from \lstinline/tuple_of/ to \lstinline/seq/ makes the
 expression \lstinline/(rev (tval t))/ well typed, but the output
 is of type \lstinline/(seq nat)/.
 We would like the functions on sequences to return
-data as rich as the one taken in input, i.e. preserve the invariant
+data as rich as the one taken in input, i.e., preserve the invariant
 expressed by the tuple type.  Or, in alternative, we would like the
 system to recover such information.
 
 Let us examine what happens if we try to unify the left hand side of the
 \lstinline/size_tuple/ equation with the redex
-\lstinline/(rev t)/, using the following toolkit:
+\lstinline/(size (rev t))/, using the following toolkit:
 
 \begin{coq}{name=infrastructure}{title= Unification debugging toolkit}
 Notation "X (*...*)" :=
@@ -276,7 +276,7 @@ projection & value & solution & combines solutions for \\ \hline
 	& \lstinline/T/ $\leftarrow$ (\lstinline/tval N A/, \lstinline/S/) \\
 \end{tcolorbox}
 
-Thanks to the now extended capability of type inference
+Thanks to the now extended capability of type inference,
 we can prove our lemma by just reasoning about tuples.
 
 \begin{coq}{name=t3}{}
@@ -347,8 +347,8 @@ Qed.
 
 The first direction is trivial by rewriting.
 The converse direction makes an essential use of
-the \lstinline/eq_irrelevance/ lemma, that is briefly discussed
-in~\ref{hedberg}.
+the \lstinline/eq_irrelevance/ lemma, which is briefly discussed
+in section~\ref{hedberg}.
 
 \begin{coqout}{run=tupcmpP;out=g1}{title=Response after line 3,width=6cm}
 2 subgoals
@@ -395,10 +395,10 @@ Check forall t : 3.-tuple (7.-tuple nat), undup_uniq [:: t; t].
 \coqrun{name=tupc}{ssr,require-tuple,testtup}
 
 Although all these proofs and definitions are specific to \C{tuple},
-it seems obvious that we are following a schema here, and that the
-parameters are three: the original type \C{(seq T)}, the sub type
+we are following a general schema here, involving
+three parameters: the original type \C{(seq T)}, the sub-type
 \C{(n.-tuple T)} and the projection \C{tval}.
-The \mcbMC{} library provides a \emph{sub-type kit} to let one
+The \mcbMC{} library provides a \emph{sub-type kit} to lext one
 write just the following text:
 
 \begin{coq}{name=subt}{}
@@ -439,10 +439,10 @@ a generic notation \C{val} for the projector of a sub-type (i.e.,
 \lstinline/val_inj/ saying that two objects equal in ST are also equal
 in T.
 
-In addition to the generic projection we get a generic static
-constructor \C{Sub}, which takes a value in T and a proof.
+In addition to the generic projection, we get a generic static
+constructor \C{Sub}, which takes a value in the type \C{T} and a proof.
 
-More interestingly the sub-type kit provides the dynamic constructors
+More interestingly, the sub-type kit provides the dynamic constructors
 \C{insub} and \C{insubd} that do not need a proof as they dynamically
 test the property, and offer
 an attractive encapsulation of the difficult \emph{convoy
@@ -476,7 +476,6 @@ formula) in terms of
 its projector, constructor, and elimination rule:
 
 \begin{coq}{name=subtdef}{}
-Definition pred T := T -> bool.
 Section SubTypeKit.
 Variables (T : Type) (P : pred T).
 
@@ -489,8 +488,6 @@ Structure subType : Type := SubType {
   _ : forall x Px, val (@Sub x Px) = x
 }.
 \end{coq}
-\index[coq]{\C{pred} (predicate)}
-\index[coq]{\C{[pred .. | ..]}|seealso {\C{pred} (predicate)}}
 
 Instances can provide unification hints for any of the three named fields,
 not just for \lstinline/sub_sort/. Hence, \lstinline/val $?_u$/
@@ -514,7 +511,7 @@ help of the ``\C{as u return K u}'' annotation, see~\cite[section
 1.2.13]{Coq:manual}.
 
 A useful variant of \C{[subType for tval]} is \C{[newType for Sval]}.
-Such specialized constructors forces the predicate defining the
+Such specialized constructors force the predicate defining the
 sub-type to be the trivial one: the sub-type ST adds no property to
 the type T, but the resulting type ST is different from T and
 inhabitants of ST cannot be mistaken for inhabitants of T.  Of course
@@ -565,7 +562,7 @@ ones, since they inherit all the theory.}
 \mcbNOTES{}
 \mcbsection{Finite types and their theory}
 
-Before describing other sub-types we introduce the interface of
+Before describing other sub-types, we introduce the interface of
 types equipped with a finite enumeration.
 
 \begin{coq}{name=fintype}{title=Interface for finite types}
@@ -586,8 +583,8 @@ in the enumeration \C{e}.  We omit here the full definition of the
 interface, as it will be discussed in detail in the next chapter.
 What is relevant for the current section is that \C{finType} is the
 structure of types equipped with such enumeration, that any \C{finType}
-is also an \C{eqType} (see the parameter of the mixin), and that
-to declare a \C{finType} instance one can write:
+is also an \C{eqType} (see the parameter of the mixin), and that,
+to declare a \C{finType} instance, one can write:
 
 \begin{coq}{name=fintype}{title=Declare a finType}
 Definition mytype_finMixin := Finite.Mixin mytype_enum mytype_enumP.
@@ -613,7 +610,7 @@ Lemma cardT (T : finType) : #|T| = size (enum T).
 Lemma forallP (T : finType) (P : pred T) : reflect (forall x, P x) [forall x, P x].
 \end{coq}
 
-Given that \C{[forall x, P x]} is a boolean expression
+Given that \C{[forall x, P x]} is a boolean expression,
 it enables reasoning by excluded middle and also combines well with
 other boolean connectives.
 
@@ -635,13 +632,13 @@ inhabitants of the finite type \C{T}.
 Apart from the aforementioned theory, finite types can serve as a
 powerful notational device for ranges.  For example one may want
 to state that a matrix of size $m \times n$ is only accessed inside
-its bounds, i.e. that one cannot get the $m+1$ row.  The way this will
+its bounds, i.e., that one cannot get the $m+1$ row.  The way this will
 be formulated in the \mcbMC{} library is by saying that its row
 accessors accept only inhabitants of a finite type of size $m$.
 Accessing a matrix out of its bounds becomes a type error.
 Of course one wants to access a matrix using integer coordinates, but
 integers are infinite.  Hence the first step is to define the sub-type
-of bounded integers.
+of bounded integers:
 
 \marginnote{is \C{of} explained?}
 \begin{coq}{name=ordinals}{title=Ordinals}
@@ -654,9 +651,16 @@ Canonical ordinal_subType := [subType for nat_of_ord].
 Definition ordinal_eqMixin := Eval hnf in [eqMixin of ordinal by <:].
 Canonical ordinal_eqType := Eval hnf in EqType ordinal ordinal_eqMixin.
 \end{coq}
+The constructor \C{Ordinal} has two arguments: a natural number \C{m}
+and a proof that this number is smaller than the parameter \C{n}. We
+use the \C{of} notation for arguments of constructors that do not need
+to be named; thus \C{Ordinal m of m < n} stands for
+\C{Ordinal m (_ : m < n)}
+\index[coq]{\C{of}}
+
 
 We start by making ordinals a subtype of natural numbers, and hence
-inherit the theory of \C{eqType}.  To show they form a \C{finType}
+inherit the theory of \C{eqType}.  To show they form a \C{finType},
 we need to provide a good enumeration.
 
 \begin{coq}{name=ordinals}{}
@@ -664,15 +668,15 @@ Definition ord_enum n : seq (ordinal n) := pmap insub (iota 0 n).
 \end{coq}
 
 The \C{iota} function produces the sequence \C{[:: 0, 1, ... n.-1]}.
-Such sequence is mapped via \C{insub} that tests if an element \C{x}
+Such a sequence is mapped via \C{insub} that tests if an element \C{x}
 is smaller than \C{n}.  If it is the case it produces \C{(Some x)},
 where \C{x} is an ordinal, else \C{None}.  \C{pmap} drops all \C{None}
 items, and removes the \C{Some} constructor from the others.
 
-What \C{ord\_enum} produces is hence a sequence of ordinals, i.e.
+What \C{ord\_enum} produces is hence a sequence of ordinals, i.e.,
 a sequence of terms like \C{(@Ordinal m p)} where \C{m} is a natural
 number (as produced by \C{iota}) and \C{p} is a proof that \C{(m <=
-n)}.  What we are left to show is that such enumeration is complete
+n)}.  What we are left to show is that such an enumeration is complete
 and non redundant.
 
 \begin{coq}{}{}
@@ -708,7 +712,7 @@ subgoal 2 is:
 The view \C{all\_filterP} shows that
 \C{reflect ([seq x <- s | a x] = s) (all a s)} for any
 sequence \C{s} and predicate \C{a}.  After applying
-that view one has to prove that if \C{(i \\in iota 0 n)} then \C{(i <
+that view, one has to prove that if \C{(i \\in iota 0 n)} then \C{(i <
 n)}, that is trivialized by \C{mem\_iota}.
 
 We can now declare the type of ordinals as a instance of \C{finType}.
@@ -775,9 +779,13 @@ Notation "{ 'ffun' fT }" := (finfun fT).
 \end{coq}
 
 The actual definition in the \mcbMC{} library is slightly more complex
-to statically check that the domain is finite using the tricks
-explained in section~\ref{sec:phantom}.  I.e. \Coq{} rejects
-\C{\{ffun nat -> nat\}} but accepts \C{\{ffun 'I_7 -> nat\}}.
+so that it checks that a proof that the domain is finite has been
+recorded before. This is using the tricks
+explained in section~\ref{sec:phantom}. This results in \Coq{}
+rejecting the term \C{\{ffun nat -> nat\}} but accepting
+\C{\{ffun 'I_7 -> nat\}}. In the rest of the chapter, we will use this
+notation
+
 
 Other utilities let one apply a finite function as a regular function
 or build a finite function from a regular function.
@@ -959,7 +967,7 @@ Notation "{ 'perm' T }" := (perm_of T).
 This time we add the property of being injective, that in conjunction
 with finiteness characterizes permutations as bijections.
 
-Similarly to finite functions we can declare a coercion to let
+Similarly to fniite functions we can declare a coercion to let
 one write \C{(s x)} for \C{(s : \{perm T\})} to denote
 the result of applying the permutation \C{s} to \C{x}.
 
@@ -1278,11 +1286,10 @@ Definition conform_mx (B : 'M_(m1, n1)) (A : 'M_(m, n)) :=
   | _, _ => B
   end.
 \end{coq}
-\index[coq]{\C{(_ =P _)}}
-\index[coq]{\C{(_ =P _)}|seealso {\C{eqP}}}
-The \C{(m =P m1)} notation simply hides \C{(@eqP nat_eqType m m1)},
-a proof of the \C{reflect} inductive spec.  Recall that the
-\C{ReflectT} constructor carries a proof of the equality.
+Remember that the notation \C{(m =P m1)} stands for
+\C{(@eqP nat_eqType m m1)}, a proof of the \C{reflect} inductive spec.
+Remember also that the \C{ReflectT} constructor carries a proof of the
+equality.
 
 The following helper lemmas describe the behavior of \C{conform_mx}
 and how it interacts with casts.

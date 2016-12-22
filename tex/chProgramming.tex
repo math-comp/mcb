@@ -534,7 +534,7 @@ Variants of this syntax make it possible to state the
 type ascribed to the variable \C{x}, which may come handy when the
 code has to be very explicit about the nature of the values being
 abbreviated.
-\index[Concepts]{binder}
+\index[concept]{binder}
 Here is an example of usage of this syntax:
 
 \begin{coq}{name=eval_let_expr}{width=6cm,title=Evaluating local definitions,label=lst:eval_let_expr}
@@ -760,19 +760,19 @@ the patterns, then the computation proceeds with the expression in the
 corresponding branch.  Such a case analysis is therefore also called
 \emph{pattern matching}. Here is an example:
 
-\begin{coq}{name=pred}{}
-Definition pred n := if n is p.+1 then p else n.
+\begin{coq}{name=predn}{}
+Definition predn n := if n is p.+1 then p else n.
 \end{coq}
-\index[coq]{\C{pred} (predecessor)|seealso {\C{.-1}}}
+\index[coq]{\C{predn} |seealso {\C{.-1}}}
 
-The function \C{pred} returns the predecessor of a natural number
+The function \C{predn} returns the predecessor of a natural number
 when it exists, and 0 otherwise. In this definition \C{p.+1} is a
 pattern. The value bound to the name \C{p} mentioned in this pattern is not
 known in advance; it is actually computed at the moment the \C{n} is matched
 against the pattern. For instance:
 
 \begin{coq}{name=compute-match}{}
-Eval compute in pred 5
+Eval compute in predn 5
 \end{coq}
 \begin{coqout}{}{}
 = 4 : nat
@@ -1017,7 +1017,7 @@ second argument is non-zero while the first argument is 0: in that
 case, the result of the function is zero. This oddity is imposed by
 the fact that any function defined in \Coq{} has to be total, i.e., has
 to assign a value to any element in the type of its arguments. Since
-\C{pred} has type \C{nat -> nat}, an element \emph{in type} \C{nat} has to be
+\C{predn} has type \C{nat -> nat}, an element \emph{in type} \C{nat} has to be
 output by the function even in the case when  the second argument is
 non-zero and the first argument is zero. This problem disappears with
 the introduction of another type of numbers, with negative integers.
@@ -1687,7 +1687,7 @@ role in the definition of \C{iter}.
 This process %, where a function appears to have more arguments outside
 %the section where it was defined than inside the section
 is called
-an {\em abstraction mechanism}.\index[Concepts]{Abstracting variables}
+an {\em abstraction mechanism}.\index[concept]{Abstracting variables}
 
 Concretely, the definitions written inside the section are
 elaborated to the following ones.
@@ -1759,7 +1759,7 @@ to compute the
 addition of all numbers in \C{[:: 1; 2]}:
 
 \begin{coq}{}{width=8cm}
-Eval compute in iter 5 pred 7.
+Eval compute in iter 5 predn 7.
 Eval compute in foldr addn 0 [:: 1; 2].
 \end{coq}
 \begin{coqout}{}{width=4cm}
@@ -1885,11 +1885,11 @@ more details.
 
 \begin{coq}{}{width=7cm}
 Variable n : nat.
-Eval simpl in pred (add  n.+1 7).
-Eval simpl in pred (addn n.+1 7).
+Eval simpl in predn (add  n.+1 7).
+Eval simpl in predn (addn n.+1 7).
 \end{coq}
 \begin{coqout}{}{width=5cm}
-= pred (add n 8)
+= predn (add n 8)
 = addn n 7
 \end{coqout}
 
@@ -1901,11 +1901,11 @@ before resorting to its base case, whereas in the \C{addn} variant,
 the resulting pile of pebbles is constructed top down. An intermediate
 expression in the computation of \C{(addn n m)} exposes as many
 successors as recursive calls have been performed so far. Since bits
-of the final result are exposed early, the \C{pred} function can
+of the final result are exposed early, the \C{predn} function can
 eventually compute, and it cancels the \C{.+1} coming out of the sum.
 On the other hand,
 \C{add} does not expose a successor when a recursive call is
-performed hence symbolic computation in \C{pred} is stuck.
+performed hence symbolic computation in \C{predn} is stuck.
 
 As chapter~\ref{ch:proofs} illustrates, symbolic computation plays an
 important roles in formal proofs and this kind of differences

@@ -1582,7 +1582,7 @@ Coercion is_true : bool >-> Sortclass. (* Prop *)
 \end{coq}
 
 Another coercion that is widely used injects booleans into naturals.
-Two examples follow.
+Two examples follow:
 
 \begin{coq}{name=natofbool}{}
 Fixpoint count (a : pred nat) (s : seq nat) :=
@@ -1591,8 +1591,13 @@ Lemma count_uniq_mem (s : seq nat) x :
   uniq s -> count (pred1 x) s = has (pred1 x) s.
 \end{coq}
 \coqrun{name=ex}{ssr,istruedef,natofbool,abort}
+where \C{pred T} is a notation for the type  \C{T -> bool} of boolean
+predicates.
+\index[coq]{\C{pred} (predicate)}
+\index[coq]{\C{[pred .. | ..]}|seealso {\C{pred} (predicate)}}
 
-In line number 2 the term \lstinline/(a x)/ is a boolean.  The
+
+At line number 2 the term \lstinline/(a x)/ is a boolean.  The
 \lstinline/nat_of_bool/ function is automatically inserted to turn
 \lstinline/true/ into \C{1} and \lstinline/false/ into \lstinline/0/.
 This notational trick is reminiscent of Kronecker's $\delta$ notation.
