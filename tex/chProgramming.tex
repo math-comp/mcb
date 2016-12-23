@@ -1840,7 +1840,7 @@ Fixpoint addn n m := if n is p.+1 then (addn p m).+1 else m.
 Now let us consider the following alternative definition:
 
 \begin{coq}{}{}
-Fixpoint add n m := if n is p.+1 then add n m.+1 else m.
+Fixpoint add n m := if n is p.+1 then add p m.+1 else m.
 \end{coq}
 \index[coq]{\C{add}}
 
