@@ -999,7 +999,7 @@ automatically  finds  where in the goal the replacement should take
 place, by searching for a subterm matching the pattern \C{(_ * 0)}.
 In the present case, there is only one such subterm,
 \C{(m.+1 * 0)}, for which the parameter (or the wild-card) takes the
-value \C{m.+1}. This subterm is hence the replaced by \C{0}, the right
+value \C{m.+1}. This subterm is hence replaced by \C{0}, the right
 hand side of \C{muln0}, which does not depend on the value of the
 pattern. We can now conclude the proof script, using the
 prenex \C{by} tactical:
