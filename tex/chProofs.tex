@@ -1464,7 +1464,7 @@ Lemma contraLR (c b : bool) :  (~~ c -> ~~ b) -> (b -> c).
 which describes the shape of the contrapositive of statements and thus
 describes a family of
 instances of the contraposition law. The \C{apply: contraLR} tactic
-finds the appropriate values of the premisse and conclusion and
+finds the appropriate values of the premise and conclusion and
 instantiate the scheme, leaving us to prove that \C{p} is not a
 divisor of \D{(m `! + 1)} under the assumption that \C{p} is not
 greater than \C{m}:
@@ -1488,7 +1488,7 @@ More precisely, the values chosen by the tactic for the two parameters
 \D{(p \%| m `! + 1)}. They have been found by comparing the statement to be
 proved with the conclusion \C{(b -> c)} of the statement of the lemma.
 The new statement of the goal is the corresponding instance of the
-premisse \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
+premise \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
 
 The next step in our formal proof is to improve the shape of the
 hypothesis \C{\~\~ (m < p)} and to give it name.
