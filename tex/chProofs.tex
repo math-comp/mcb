@@ -2372,8 +2372,7 @@ Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 Proof.
 elim: n => // n IHn.
-rewrite expnS odd_mul {}IHn orbC.
-by case: odd.
+by rewrite expnS odd_mul {}IHn orKb.
 Qed.
 \end{coq}
 \end{Answer}
