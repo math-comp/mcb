@@ -219,7 +219,7 @@ section~\ref{ssec:specs}.
 
 We start our collection of links between boolean and \C{Prop}
 statements with the lemmas relating boolean connectives with their
-\C{Prop} version:
+\C{Prop} versions:
 
 \begin{coq}{}{}
 Lemma andP b1 b2 : reflect (b1 /\ b2) (b1 && b2).
@@ -258,7 +258,7 @@ expression and a \C{Prop} statement is called a
 \emph{reflection view}, since it is used to view an assumption from a
 different perspective.
 
-\mantra{The name of a reflection view always end with a capital \C{P}.}
+\mantra{The name of a reflection view always ends with a capital \C{P}.}
 
 The next section is devoted to the proof and usage of more involved views.
 
@@ -582,7 +582,7 @@ The \C{case} tactic also combines well with the view mechanism, which
 eases reasoning by cases along a disjunction expressed with a boolean
 statement, like the just proved \C{leq_total}.  For example we
 may want to start the proof of the following lemma by distinguishing
-two cases: \C{n1 <= n2} and \C{m2 <= n1}.
+two cases: \C{n1 <= n2} and \C{n2 <= n1}.
 
 \begin{coq}{}{}
 Lemma leq_max m n1 n2 :
@@ -962,7 +962,7 @@ Saying that primes are infinite can be phrased as: for any natural number
 $m$, there exists a prime greater than $m$.  The proof of this claim goes like
 that: every natural number greater than 1 has at least one prime divisor.  If
 we take $m! + 1$, then such prime divisor $p$ can be shown to be greater than $m$ as
-follows.  By contraxposition we assume $p \leq m$ and we show that $p$
+follows.  By contraposition we assume $p \leq m$ and we show that $p$
 does not divide $m!+1$.
 Being smaller than $m$, $p$ divides $m!$, hence to divide $m!+1$, $p$ should divide
 $1$; that is not possible since $p$ is prime, hence greater than 1.
@@ -1542,7 +1542,7 @@ is to provide a functional term \lstinline/c/ of type
 \lstinline/(ity -> ety)/ that is inserted around \lstinline/t/.
 In other words, whenever the user writes \lstinline/t/ in a context
 that expects a term of type \lstinline/ety/, the system instead of
-raising an errors replaces \lstinline/t/ by \lstinline/(c t)/.
+raising an error replaces \lstinline/t/ by \lstinline/(c t)/.
 
 A function automatically inserted by \Coq{} to prevent a type
 error is called \emph{coercion}.
@@ -1674,7 +1674,7 @@ Coercions are usually presented as a device to model
 subtyping in a theory that, like the \mcbCIC{}, does not
 feature subtyping.  As we will see in chapter~\ref{ch:hierarchy}
 the role played by coercions in the modelling of the hierarchy
-of algebraic structure is minor.  The job of
+of algebraic structures is minor.  The job of
 coercions in that context is limited to
 forgeting some fields of a structure to obtain a simpler one, and
 that is easy.  What
