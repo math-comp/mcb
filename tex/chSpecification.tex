@@ -169,7 +169,7 @@ the conjunction's single constructor:
 \begin{coq}{}{label=lst:reflect1}
 Inductive reflect (P : Prop) (b : bool) : Prop :=
 | ReflectT (p : P)    (e : b = true)
-| ReflectF (np : ~ P) (e : b = false)
+| ReflectF (np : ~ P) (e : b = false).
 \end{coq}
 \index[coq]{\C{reflect}}
 
@@ -819,7 +819,7 @@ that states \C{(forall a b, reflect (a /\\ b) (a && b))}.
 
 \begin{coq}{}{width=6cm}
 Lemma example a b :
-  a && b ==> (a == b)
+  a && b ==> (a == b).
 Proof.
 case: andP => [ab|nab].
 \end{coq}
@@ -839,7 +839,7 @@ both \C{a} and \C{b} by their truth values, once \C{ab}
 is destructed.  Hence the full proof script is:
 
 \begin{coq}{}{}
-Lemma example a b : a && b ==> (a == b)
+Lemma example a b : a && b ==> (a == b).
 Proof. by case: andP => [[-> ->] |]. Qed.
 \end{coq}
 
@@ -867,7 +867,7 @@ If one needs to override the pattern inferred for the index
 of \C{andP}, he can provide one by hand as follows:
 
 \begin{coq}{}{}
-Lemma example a b : (a || ~ a) && (a && b ==> (a == b))
+Lemma example a b : (a || ~ a) && (a && b ==> (a == b)).
 Proof. by case: (a && _) / andP => [[-> ->] |] //; rewrite orbN. Qed.
 \end{coq}
 A more detailed explanation of this syntax can be found
