@@ -1673,11 +1673,23 @@ as soon as possible.  Here, the first two side conditions are indeed
 trivial, and, just as with the introduction patterns of the \C{case} tactic,
 we can use a simplification switch \C{//} to prove them.
 We also combine on the same line the first three steps, using
-the semicolon. The proof script (up to the end of the proof of the first
+the semicolon\footnote{From this example, one might take away the
+wrong impression that a semicolon is synonymous to a dot. In general,
+it is not. The semicolon is actually a tactical (like \C{by}) that
+allows chaining tactics. A tactic of the form \C{t1; t2} (where
+\C{t1} and \C{t2} are two tactics) amounts to first applying
+\C{t1}, and then applying \C{t2} to \emph{each} of the subgoals
+spawned by the application of \C{t1}. When \C{t1} spawns exactly
+one subgoal, this is indeed equivalent to \C{t1. t2}. (Note that the
+tactic \C{t2} has to work in each of these subgoals in order for
+the notation to compile!)
+A slight
+variation of this syntax is \C{t0; [t1 | t2 | ... | tn]} for any
+tactics \C{t0}, \C{t1}, \ldots, \C{tn}; this amounts to applying
+tactic \C{t0}, and then applying tactic \C{t1} to the first subgoal
+spawned, \C{t2} to the second, and so on.}.
+The proof script (up to the end of the proof of the first
 goal) then looks like this:
-% [DG] The preceding paragraph creates the impression that the
-% semicolon is just a synonym for a period. Not true, and probably
-% worth explaining.
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
@@ -1855,9 +1867,11 @@ m.+1 + 0 = m.+1
 \end{coqout}
 The \C{elim:} tactic is used here with an introduction pattern similar
 to the one we used for \C{case:}. It has two slots, because of the
-two constructors of type \C{nat}, and in the second branch we give a
-name not only to the argument \C{n} of the successor, but also to the
-induction hypothesis. We also used the \C{//} switch to rule out the
+two constructors of type \C{nat} (corresponding naturally to what is
+commonly called the ``induction base'' and the ``induction step''),
+and in the second branch we give a
+name not only to the argument \C{m} of the successor, but also to the
+induction hypothesis. We also used the \C{//} switch to deal with the
 base case because if
 \C{m} is \C{0}, both sides evaluate to zero. The value of the parameter
 \C{P} synthesized by \C{elim:} for us is
@@ -1865,7 +1879,9 @@ base case because if
 \emph{abstracting} the term \C{m} in the goal (see
 section~\ref{ssec:deffun}). The proof concludes by using lemma \C{addSn}
 to  pull the \C{.+1} out of the sum, so that the induction hypothesis
-\C{IHm} can be rewritten.
+\C{IHm} can be used for rewriting.
+% [DG] If you want to use the slang "rewrite [something]" for
+% "rewrite the goal using [something]", then it should be explained.
 
 Unfortunately proofs by induction do not always run so smooth.
 To our aid the \C{elim:} tactic provides two additional services.
@@ -1873,16 +1889,18 @@ The first one is to let one \emph{generalize}
 the goal.  It is typically needed when the goal mentions a recursive function
 that uses an accumulator: its value is going to change during recursive calls;
 hence the induction hypothesis must be general.
+% [DG] I didn't understand this. What is an accumultor? And how can I
+% generalize the goal?
 
 Another service provided by \C{elim:} is specifying an alternative
-induction principle, for example one may reason by induction on
-a list starting from its end.
+induction principle. For example, one may reason by induction on
+a list starting from its end, using the following induction principle:
 
 \begin{coq}{}{}
 Lemma last_ind A (P : list A -> Prop) :
   P [::] -> (forall s x, P s -> P (rcons x s)) -> forall s, P s.
 \end{coq}
-where \C{rcons} is a name for the operation of concatenating
+where \C{rcons} is the operation of concatenating
 a sequence with an element, as in \C{(s ++ [::x])}.
 
 For example \C{last_ind} can be used to relate the
@@ -1900,7 +1918,7 @@ The proof uses the following lemmas:
 
 \begin{coq}{}{title=Tools}
 Lemma cats1 T s (z : T) : s ++ [:: z] = rcons s z.
-Lemma foldr_cat T f (s1 s2 : seq T) :
+Lemma foldr_cat T f (s1 s2 : seq T) z0 :
   foldr f z0 (s1 ++ s2) = foldr f (foldr f z0 s2) s1.
 Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
 \end{coq}
