@@ -1665,7 +1665,11 @@ as soon as possible.  Here, the first two side conditions are indeed
 trivial, and, just as with the introduction patterns of the \C{case} tactic,
 we can use a simplification switch \C{//} to prove them.
 We also combine on the same line the first three steps, using
-the semicolon.
+the semicolon. The proof script (up to the end of the proof of the first
+goal) then looks like this:
+% [DG] The preceding paragraph creates the impression that the
+% semicolon is just a synonym for a period. Not true, and probably
+% worth explaining.
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
@@ -1712,7 +1716,7 @@ Qed.
 \end{coq}
 
 To sum up, both \C{apply:} and \C{rewrite} are able to find the right
-instance of a quantified lemma and to generate sub goals
+instance of a quantified lemma and to generate subgoals
 for its eventual premises.  Hypotheses can be named using \C{move=>}.
 The proof script can be further reduced in size, as we describe in
 section~\ref{sec:rewrite2}.
@@ -1723,14 +1727,15 @@ section~\ref{sec:rewrite2}.
 
 Let us take the well known induction principle for Peano's natural numbers
 and let us formalize it in the language of \Coq{}.  It reads:
-let $\mathcal{P}$ be a property of natural numbers, if
-$\mathcal{P}$ holds on $0$ and, if for all natural number $n$
-$\mathcal{P}$ hold on $n + 1$ as soon as it holds on $n$, then $\mathcal{P}$
+let $\mathcal{P}$ be a property of natural numbers; if
+$\mathcal{P}$ holds on $0$ and if, for each natural number $n$, the
+property
+$\mathcal{P}$ holds on $n + 1$ as soon as it holds on $n$, then $\mathcal{P}$
 holds for any $n$.  Induction is typically regarded as a schema, where
 the variable $\mathcal{P}$ stands for any property we could think about.
 
 In the language of \Coq{}, it is possible to use a quantification to
-bind the parameter  $\mathcal{P}$ in the scheme, akin to the universal
+bind the parameter  $\mathcal{P}$ in the schema, akin to the universal
 quantification of polymorphic parameters in data types like
 \C{seq}. Induction principles, instead of being ``schemas'', are
 regular lemmas with a prenex quantification on predicates:
@@ -1746,9 +1751,9 @@ Here \C{P} is quantified exactly as \C{n} is, but its type is a bit more
 complex and deserves an explanation.  As we have seen in the first
 chapter, the \C{->} denotes the type of functions; hence \C{P} is a
 function from \C{nat} to \C{Prop}.  Recall that \C{Prop} is the type
-of \emph{propositions}, i.e., something we may want to prove.  At the
+of \emph{propositions}, i.e., something we may want to prove.  In the
 light of that, \C{P} is a function producing a proposition out of a natural
-number.  For example the property of being an odd prime can be written as
+number.  For example, the property of being an odd prime can be written as
 follows:
 
 \begin{coq}{}{}
@@ -1766,9 +1771,10 @@ odd 0 && prime 0 = true
 \index[concept]{general term}
 \index[concept]{higher-order}
 Remark the similarity between the function argument to \C{foldr}
-that is used describe the general term of an iterated sum in
+that is used to describe the general term of an iterated sum in
 section~\ref{sec:bigopnat} and the predicate \C{P} here used
 to describe a general property.
+% [DG] Is there really much of a similarity?
 
 \Coq{} defines an induction principle for every inductive type the
 user defines, with standard names formed by adding a suffix \C{_ind}
@@ -1778,6 +1784,8 @@ by the structure of the definition of the inductive type. Here is for
 instance the induction principle for sequences, which has some
 similarities with the one for natural numbers:
 
+% [DG] Looks weird to summon the list type, after having worked with
+% seq all the time.
 \begin{coq}{}{width=3.3cm}
 About list_ind.
 \end{coq}
@@ -1915,7 +1923,7 @@ So far we have solved side conditions using the simplification item \C{//}.
 When this does not suffice, one can invoke another rewrite rule using
 the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
 all goals zero-or-more time.  For example, one could consider the
-second sub goal that follows \C{rewrite dvdn_addr} a side condition
+second subgoal that follows \C{rewrite dvdn_addr} a side condition
 and solve it on the same line.
 
 Let us illustrate this on an example of script that we have already used:
