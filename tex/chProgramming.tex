@@ -2217,9 +2217,9 @@ applies.  Also define the projections.
 
 \begin{coq}{}{width=8cm}
 Notation "( A , B , C )" := (triple A B C).
-Notation "p .1" := (fst p) (at level 5).
-Notation "p .2" := (snd p) (at level 5).
-Notation "p .3" := (thrd p) (at level 5).
+Notation "p .1" := (fst p) (at level 2).
+Notation "p .2" := (snd p) (at level 2).
+Notation "p .3" := (thrd p) (at level 2).
 Eval compute in (4, 5, 8).1.
 Eval compute in (true, false, 1).2.
 Eval compute in (2, true, false).3.
