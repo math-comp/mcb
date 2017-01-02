@@ -2186,22 +2186,19 @@ adopted throughout the \mcbMC{} library.
 \item Postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
 	to let one write \C{(p.-group G)}. There is one exception for
         the postfix notation of the factorial, which starts with
-        \C{`}, as in \C{m`}\C{!}.
-        % [DG] Workaround using two \C environments, since a single
-        % \C{m`!} compiles to an "m" followed by an inverted
-        % exclamation mark.
+        \C{`}, as in \D{m`!}.
 \item Taking inspiration from \LaTeX{} some symbols begin with \C{\\},
 	like \C{\\in}, \C{\\matrix}, \C{\\sum}, \ldots
 \item Arguments typically written as subscripts appear after a symbol
 	which ends with an underscore like \C{'N\_} in \C{'N\_G(H)}.
 \item N-ary notations begin with \C{[} followed by the symbol of the
 	operation being repeated, as in \C{[&& true, false & false]}.
-\item Bracket notations are also used  for operations building data as in
+\item Bracket notations are also used  for operations building data, as in
 	\C{[seq .. | .. ]}.
 \item Curly braces notations like \C{\{poly R\}} are used for data types
 	with parameters.
 \item Curly braces are also used to write localized statements
-	as \C{\{in A, injective f\}}
+	such as \C{\{in A, injective f\}},
 	which means that the restriction of \C{f} to \C{A} is injective.
 \end{itemize}
 
@@ -2220,9 +2217,9 @@ applies.  Also define the projections.
 
 \begin{coq}{}{width=8cm}
 Notation "( A , B , C )" := (triple A B C).
-Notation "p .1" := (fst p).
-Notation "p .2" := (snd p).
-Notation "p .3" := (thrd p).
+Notation "p .1" := (fst p) (at level 5).
+Notation "p .2" := (snd p) (at level 5).
+Notation "p .3" := (thrd p) (at level 5).
 Eval compute in (4, 5, 8).1.
 Eval compute in (true, false, 1).2.
 Eval compute in (2, true, false).3.
@@ -2233,10 +2230,6 @@ $~$
      = false : bool
      = false : bool
 \end{coqout}
-% [DG] I get the "Error: A left-recursive notation must have an explicit level."
-% error when I define the "p .3" notation. I need to suffix it by
-% "(at level 5)". Probably the other two analogous notations already
-% have a level assigned courtesy of the mathcomp library?
 Remark that the triple data type has to be polymorphic in order to
 be applicable to each of these combinations of natural numbers and
 booleans.
