@@ -637,7 +637,15 @@ We shall thus provide two distinct pieces of
 script, one per each subproof to be constructed,
 starting with the branch associated with the \C{true} value. In order
 to signal that we are starting a piece of script for a sub-proof, it
-is a good practice to indent the corresponding script.
+is a good practice to indent the corresponding script.\footnote{A
+``sub-proof'' means a proof of a sub-goal; i.e., a proof whose
+completion does not immediately conclude the proof of the lemma. Thus,
+for example, if the \C{case:} tactic splits a proof into two goals,
+then only the first case (i.e., the proof of the first of these goals)
+counts as a sub-proof. The second case is not a sub-proof (as it
+concludes the proof of the lemma), and thus is not indented.}
+% [DG] Added this boring technical footnote, as this is guaranteed to
+% confuse mathematicians.
 
 Once the case analysis has substituted a concrete value for the
 parameter \C{b}, the proof becomes trivial, in both cases: We are in a
@@ -1583,7 +1591,7 @@ Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 \end{coq}
 This is a conditional equivalence, expressed as a conditional identity.
 We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting
-using (the
+it using (the
 appropriate instance of) this identity.  This operation will open an
 extra goal requiring a proof of (the corresponding instance of) the side
 condition \D{p \%| m`!}.
@@ -1784,12 +1792,32 @@ to describe a general property.
 user defines, with standard names formed by adding a suffix \C{_ind}
 to the name of the type. The statement of a generated induction principle
 is shaped
-by the structure of the definition of the inductive type. Here is for
-instance the induction principle for sequences, which has some
+by the structure of the definition of the inductive type. For example,
+if we define an inductive type \C{bintree} (representing unlabeled planar
+binary trees) as follows:
+\begin{coq}{}{}
+Inductive bintree := leaf | graft (u v : bintree).
+\end{coq}
+then we automatically are granted an induction principle called
+\C{bintree_ind}:
+\begin{coq}{}{width=3.8cm}
+About bintree_ind.
+\end{coq}
+\begin{coqout}{}{width=8.1cm}
+bintree_ind :
+forall P : bintree -> Prop,
+P leaf ->
+(forall u : bintree, P u -> forall v : bintree, P v -> P (graft u v)) ->
+forall b : bintree, P b
+
+Argument P is implicit
+\end{coqout}
+
+For another example, here is the induction principle for sequences
+(although denoted by \C{list_ind} rather than \C{seq_ind}, as
+\C{seq} is defined merely as a synonym for \C{list}), which has some
 similarities with the one for natural numbers:
 
-% [DG] Looks weird to summon the list type, after having worked with
-% seq all the time.
 \begin{coq}{}{width=3.3cm}
 About list_ind.
 \end{coq}
@@ -1805,7 +1833,7 @@ the right predicate \C{P}.  The \C{elim:} tactic has these two
 functionalities, while \C{apply:} does not. Thus, while both \C{elim:}
 and \C{apply:} can be used to formalize a proof by induction, the
 user would have to explicitly specify both \C{t} and \C{P} in order to
-make use of the \cite{apply:} tactic, whereas the \C{elim:} tactic
+make use of the \C{apply:} tactic, whereas the \C{elim:} tactic
 does the job of determining these parameters itself:
 The induction principle
 to be used is guessed from the type of the argument of the tactic. Let
