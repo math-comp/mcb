@@ -951,7 +951,7 @@ To conclude the proof we need one more proof command, the
 \subsection{Rewriting}\label{ssec:rw}
 
 This section explains how to locally replace certain
-subterms of a goal by other terms during the course of a formal
+subterms of a goal with other terms during the course of a formal
 proof. In other words, we explain how to perform a
 \emph{rewrite} proof step, thanks to the eponymous \C{rewrite} tactic.
 Such a replacement is licit when the original subterm is equal
@@ -1609,11 +1609,11 @@ rewrite dvdn_addr.
 subgoal 2 is:
  p %| m`!
 \end{coqout}
-Observe the second goal at the bottom of the buffer which displays the
+Observe the second goal at the bottom of the buffer, which displays the
 statement of the side condition to be proved later. The context of
 this subgoal is omitted but we do not really need to see it:
-we know that statement \D{p \%| m`!} holds because \C{p <= m} and
-because we can combine  the following lemmas:
+We know that statement \D{p \%| m`!} holds because \C{p <= m} and
+because we can combine the following lemmas:
 
 \begin{coq}{}{}
 Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
@@ -1625,6 +1625,7 @@ The first goal is also easy to solve, using the following basic facts:
 \begin{coq}{}{}
 Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
 Lemma prime_gt0 p : prime p -> 0 < p.
+Lemma prime_gt1 p : prime p -> 1 < p.
 \end{coq}
 Finally, the resulting script would be:
 
@@ -1641,21 +1642,29 @@ rewrite dvdn_addr.
     by [].  (* 0 < 1 *)
   by apply: prime_gt1.  (* 1 < p *)
 apply: dvdn_fact.
-  by apply: prime_gt0. (* 0 < p *)
-by []. (* p <= m *)
+  rewrite prime_gt0.  (* 0 < p *)
+  rewrite leqNgt.
+  by [].  (* true && ~~ (m < p) *)
+by [].   (* prime p *)
 Qed.
 \end{coq}
 For brevity, we record the goal solved by a tactic in a comment after
-this tactic.
+this tactic.\footnote{Some comments might still be helpful.
+After \C{apply: dvdn_fact.}, our goal became
+\C{0 < p <= m}, which is really an abbreviation for
+\C{(0 < p) && (p <= m)}. The two subsequent \C{rewrite} commands
+rewrote \C{(0 < p)} as a \C{true} and rewrote \C{(p <= m)} as
+\C{\~\~ (m < p)} (which is an assumption); after that, the goal fell
+prey to the \C{by []} tactic.}
 
-We improve such script in two steps.  First, we take advantage of
+We shall improve this script in two steps.  First, we take advantage of
 \C{rewrite} simplification flags.  It is quite common
 for an equation to be conditional, hence for \C{rewrite} to generate side
 conditions.  We have already suggested that a good practice consists
-in solving the easy side conditions
-as soon as possible.  Here the first two side conditions are indeed
-trivial, and, as for the introduction patterns of the \C{case} tactic,
-we can use a simplification switch \C{//} to solve them.
+in proving the easy side conditions
+as soon as possible.  Here, the first two side conditions are indeed
+trivial, and, just as with the introduction patterns of the \C{case} tactic,
+we can use a simplification switch \C{//} to prove them.
 We also combine on the same line the first three steps, using
 the semicolon.
 
