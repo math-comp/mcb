@@ -1934,7 +1934,7 @@ Qed.
 Another functionality offered by \C{rewrite} is the possibility
 to focus the search for the term to be replaced by providing a
 context.  For example the most frequent context is \C{RHS} (for Right
-Hand Side) and is used to force rewrite to operate only on the right
+Hand Side) and is used to force \C{rewrite} to operate only on the right
 hand side of an equational goal.
 
 \begin{coq}{}{}
@@ -2397,7 +2397,7 @@ Lemma size_all_words n T (alphabet : seq T) :
 \end{coq}
 
 It requires two inductions: first on the length of words,
-then on the alphabet.  In this last case, a non trivial
+then on the alphabet.  In this last case, a nontrivial
 sub expression has to be generalized just before starting
 the induction.
 
@@ -2965,7 +2965,7 @@ Qed.
 % \subsection{proof term for rewrite (CH)}
 %
 % There are also proof terms for equality proofs (show \C{refl})
-% The work rewrite does is non trivial (infer P)
+% The work rewrite does is nontrivial (infer P)
 %
 % \begin{coq}{}
 % Check eq_rect (* : forall P : nat -> Prop, .... forall n, P n *)

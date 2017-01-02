@@ -58,9 +58,9 @@ explicit application of this function to one argument can be
 described as follows: select the sub-expression that is considered as
 the argument of the function, here \C{2}, and replace it with a
 symbolic name, here \C{n}. Then encapsulate the resulting expression
-\C{(n + 1)} with the prefix ``\C{fun n =>}. We commonly
+\C{(n + 1)} with the prefix ``\C{fun n =>}''. We commonly
 say that the prefix ``\C{fun n =>}'' \emph{binds} the variable \C{n} in the
-expression \C{n + 1}, where ``\C{fun}'' stands for
+expression \C{n + 1}. The keyword ``\C{fun}'' stands for
 \emph{function}.
 \index[concept]{binder}
 
@@ -139,7 +139,7 @@ type \C{nat}. The second occurrence \C{ ... : nat := ...} of type
 \C{nat} annotates the output of the function with type \C{nat} --
 that is, the type of the application of \C{f} to any argument will be
 \C{nat}.
-% Not sure if I correctly understood this sentence.
+% [DG] Not sure if I correctly understood this sentence.
 \index[concept]{type}
 
 \Coq{} provides a command to retrieve relevant information about the
@@ -2186,7 +2186,7 @@ adopted throughout the \mcbMC{} library.
 \item Postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
 	to let one write \C{(p.-group G)}. There is one exception for
         the postfix notation of the factorial, which starts with
-        \C{`}, as in \D{m`!}.
+        \D{`}, as in \D{m`!}.
 \item Taking inspiration from \LaTeX{} some symbols begin with \C{\\},
 	like \C{\\in}, \C{\\matrix}, \C{\\sum}, \ldots
 \item Arguments typically written as subscripts appear after a symbol
