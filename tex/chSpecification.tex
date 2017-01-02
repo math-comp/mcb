@@ -15,9 +15,10 @@
 
 At this stage, we are in the presence of one of the main issues in the
 representation of mathematics in a formal language: very often,
-several datastructures can be used to represent a same mathematical
+several datastructures can be used to represent one and the same
+mathematical
 definition or statement. But this choice may have a significant impact
-on the upcoming layers of formalized theories. We have seen so far two
+on the upcoming layers of formalized theories. So far, we have seen two
 ways of expressing logical statements: using boolean predicates and
 truth values on one hand, and using logical connectives and the
 \C{Prop} sort on the other. For instance, in order to define the
@@ -47,7 +48,7 @@ case: (has a s).
 As we already noted, computation provides some automation for free.
 For example
 in order to establish that \C{(has odd [:: 3; 2; 7]) =
-  true}, we only need to observe that the left hand-side \emph{computes} to
+  true}, we only need to observe that the left hand side \emph{computes} to
 \C{true}.
 
 It is not possible to perform a similar case analysis in a proof
@@ -81,7 +82,7 @@ are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
 statements), subformulae (of conjunctions),... They are proved by
 deduction, building proof trees made with the rules of the
-logic. Formalizing a predicate by the means of a boolean specification
+logic. Formalizing a predicate by means of a boolean specification
 requires implementing a form of decision
 procedure and possibly proving a specification lemma if
 the code of the procedure is not a self-explanatory description of the
@@ -122,7 +123,7 @@ More on this mechanism will be told in section~\ref{sec:coercions}.
 
 How to best formalize the equivalence between a boolean value \C{b}
 and a statement \C{P : Prop}? The most direct way would be to use the
-conjunction of the two converse applications:
+conjunction of the two converse implications:
 
 \begin{coq}{}{}
 Definition bool_Prop_equiv (P : Prop) (b : bool) := b = true <-> P.
@@ -158,7 +159,7 @@ We could try
 alternative formulations based on the connectives seen in
 section~\ref{ch:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
-would be non negligible.
+would be non-negligible.
 
 A better solution is
 to use an ad-hoc inductive definition that resembles a
@@ -174,7 +175,7 @@ Inductive reflect (P : Prop) (b : bool) : Prop :=
 \index[coq]{\C{reflect}}
 
 We can prove that the statement \C{reflect P b} is actually equivalent
-to the double implication, see exercise~\ref{ex:iffp}.
+to the double implication \C{bool_Prop_equiv}; see exercise~\ref{ex:iffp}.
 
 Let us illustrate the benefits of this alternate specialized double
 implication:
@@ -321,8 +322,8 @@ iffP : forall (P Q : Prop) (b : bool),
 \end{coqout}
 \index[coq]{\C{iffP}}
 Lemma \C{iffP} relates two equivalences \C{(reflect P b)}
-and \C{(reflect Q b)} involving a same boolean \C{b} but different
-\C{Prop} statements \C{P} and \C{Q}, as soon as one
+and \C{(reflect Q b)} involving one and the same boolean \C{b}
+but different \C{Prop} statements \C{P} and \C{Q}, as soon as one
 provides a proof of the usual double implication between \C{P} and
 \C{Q}.
 %\marginnote{Prove it as an exercise?}
@@ -776,7 +777,7 @@ involving such notion.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Inductive specs with indices}\label{ssec:specs}
-What we did for reflect, an ad hoc connective, to model a line of reasoning is
+What we did for \C{reflect}, an ad hoc connective, to model a line of reasoning, is
 a recurrent pattern in the \mcbMC{} library.  Such class of inductive
 predicates is called ``spec'', for \emph{specification}.
 
@@ -786,7 +787,7 @@ In particular their elimination rule encapsulates the notion
 of substitution, and that operation is performed automatically by
 the logic.
 
-If we look at reflect, and its use, one is very likely to substitute \C{b}
+If we look at \C{reflect}, and its use, one is very likely to substitute \C{b}
 for its value in each branch of the case.
 
 \begin{coq}{}{}

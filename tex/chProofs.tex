@@ -41,7 +41,8 @@ In this chapter, we explain how to use the \Coq{} system to state and
 to prove theorems, focusing on simple statements and basic proof
 commands. In the course of this book, we will see that choosing the
 right way to state a proposition formally can be a rather delicate
-matter. For equivalent wordings of a same proposition, some can be
+matter. For equivalent wordings of one and the same
+proposition, some can be
 much simpler to prove, and some can be more convenient to invoke
 inside the proof of another theorem. This chapter emphasizes
 the use of computable definitions and equational reasoning
@@ -1608,7 +1609,7 @@ subgoal 2 is:
 Observe the second goal at the bottom of the buffer which displays the
 statement of the side condition to be proved later. The context of
 this subgoal is omitted but we do not really need to see it:
-we know that statement \C{p \%| m!} holds because \C{p <= m} and
+we know that statement \D{p \%| m`!} holds because \C{p <= m} and
 because we can combine  the following lemmas:
 
 \begin{coq}{}{}
@@ -1641,7 +1642,8 @@ apply: dvdn_fact.
 by []. (* p <= m *)
 Qed.
 \end{coq}
-For brevity we report in comments the goals solved by tactics.
+For brevity, we record the goal solved by a tactic in a comment after
+this tactic.
 
 We improve such script in two steps.  First, we take advantage of
 \C{rewrite} simplification flags.  It is quite common
