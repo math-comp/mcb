@@ -1617,14 +1617,13 @@ because we can combine the following lemmas:
 
 \begin{coq}{}{}
 Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
-Lemma prime_gt1 p : prime p -> 1 < p.
+Lemma prime_gt0 p : prime p -> 0 < p.
 \end{coq}
 
 The first goal is also easy to solve, using the following basic facts:
 
 \begin{coq}{}{}
 Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
-Lemma prime_gt0 p : prime p -> 0 < p.
 Lemma prime_gt1 p : prime p -> 1 < p.
 \end{coq}
 Finally, the resulting script would be:
