@@ -1488,7 +1488,7 @@ In order to illustrate more proof techniques related to the use of
 lemmas inside proofs, let us scrutinize a formal proof that a prime
 number which divides $m! + 1$ for a certain integer $m$ has to be
 greater than $m$. This lemma is a key step in a proof that there are
-infinitely many primes, which will studied in
+infinitely many primes, which will be studied in
 section~\ref{sec:infprimes}. The proof of the lemma goes by
 contraposition: If $p$ is a prime number smaller than $m$, then it
 divides $m!$ and thus it cannot divide $m! + 1$ as it does not divide
@@ -1721,6 +1721,10 @@ for its eventual premises.  Hypotheses can be named using \C{move=>}.
 The proof script can be further reduced in size, as we describe in
 section~\ref{sec:rewrite2}.
 
+% [DG] I'd also mention how to use \C{apply:} when Coq isn't
+% able to automatically guess how the parameters are to be filled in.
+% So, apply: (lemma u v w).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Proofs by induction}\label{ssec:ind}
 \index[concept]{induction}
@@ -1794,11 +1798,16 @@ list_ind : forall A : Type, forall P : list A -> Prop,
   P [::] -> (forall x s, P s -> P (x :: s)) -> forall s, P s.
 \end{coqout}
 
-To sum up reasoning by induction on a term \C{t} means
+To sum up: reasoning by induction on a term \C{t} means
 finding the induction lemma associated to the type of \C{t}
 \emph{and} synthesizing
 the right predicate \C{P}.  The \C{elim:} tactic has these two
-functionalities --while \C{apply:} does not. The induction principle
+functionalities, while \C{apply:} does not. Thus, while both \C{elim:}
+and \C{apply:} can be used to formalize a proof by induction, the
+user would have to explicitly specify both \C{t} and \C{P} in order to
+make use of the \cite{apply:} tactic, whereas the \C{elim:} tactic
+does the job of determining these parameters itself:
+The induction principle
 to be used is guessed from the type of the argument of the tactic. Let
 us illustrate on an example how the value of the parameter \C{P} is
 guessed by the \C{elim:} tactic and let us prove by induction on \C{m}
@@ -2200,8 +2209,8 @@ nature, formal libraries are not so easy to browse and the state
 of the art of search tools for formal libraries is far from being as
 advanced as what exists for instance for the world wide web.
 
-In order to help the users finding their needle in the haystack,
-the \mcbMC{} library follows uniform naming policies and the Ssreflect
+In order to help the users find their needle in the haystack,
+the \mcbMC{} library follows uniform naming policies, and the Ssreflect
 proof language provides a \C{Search} command which displays lists of
 items filtered using patterns, like \C{(_ * _ + _)}
 or \C{(addn _ _)}, and substrings of the names, like \C{"rev" "cons"}.
@@ -2223,8 +2232,9 @@ For example ``\C{Search (odd _)}'' only prints one lemma:
 dvdn_odd  forall m n : nat, m %| n -> odd n -> odd m
 \end{coq}
 Indeed the conclusion matches the pattern.  Note that one is not forced to
-use wild cards, \C{odd} alone is a perfectly valid pattern.  Many more
-lemmas are found by leaving the conclusion unspecified as in ``\C{Search _ odd}''.
+use wildcards; \C{odd} alone is a perfectly valid pattern.  Many more
+lemmas are found by leaving the conclusion unspecified,
+as in ``\C{Search _ odd}''.
 
 If we require the lemma to be an equation, as in ``\C{Search eq odd}'', we find
 the following two lemmas (among many other things):
@@ -2243,8 +2253,8 @@ search by writing ``\C{Search eq odd -coprime}''.
 Being acquainted to the naming policy followed by the \mcbMC{} library
 provides one of the more effective ways of finding lemmas in the
 loaded libraries. The name  \C{my_first_lemma} we chose in
-section~\ref{ssec:groundeq} is actually a very bad name, as it gives no
-insight about what the lemma says. Most of the time, we actually
+section~\ref{ssec:groundeq} is a very bad name, as it gives no
+insight about what the lemma says. Most of the time, we
 refrain  from naming lemmas with numbers, as is typically done in
 standard mathematical texts. Finding an appropriate name for a
 lemma can be a delicate task. It should convey as much information as
@@ -2261,7 +2271,8 @@ strings can be specified, for example \C{Search "1" "muln"}.  This time
 we find \C{muln1} but also \C{muln_eq1}, the equation saying that
 the product of two natural numbers is $1$ if and only if they are both $1$.
 
-Here are the general principles ruling the names of the in the \mcbMC{} library:
+Here are the general principles governing the names of lemmas
+in the \mcbMC{} library:
 \begin{itemize}
 \item{\bf Generalities}
   \begin{itemize}
