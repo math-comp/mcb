@@ -396,7 +396,7 @@ This arrow \C{->} is the
 same as the one we have used in chapter~\ref{ch:prog} in order to
 represent function types. This is no accident, but we postpone further
 comments on the meaning of this arrow to section~\ref{sec:chi}. For
-now let us only stress that \C{->} associates on the right, and
+now let us only stress that \C{->} is right-associative, and
 therefore
 a succession of arrows expresses a conjunction of conditions:
 
@@ -1535,7 +1535,7 @@ greater than \C{m}:
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+  p %| m `! + 1 -> m < p.
 Proof.
 move=> prime_p.
 apply: contraLR.
@@ -1550,17 +1550,19 @@ prime_p : prime p
 More precisely, the values chosen by the tactic for the two parameters
 \C{c, b} of lemma \C{contraLR} are \C{(m < p)} and
 \D{(p \%| m `! + 1)}. They have been found by comparing the statement to be
-proved with the conclusion \C{(b -> c)} of the statement of the lemma.
+proved with the conclusion \C{(b -> c)} of the statement of the lemma
+\C{contraLR}.
 The new statement of the goal is the corresponding instance of the
-premisse \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
+premise \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
 
-The next step in our formal proof is to improve the shape of the
-hypothesis \C{\~\~ (m < p)} and to give it name.
+The next steps in our formal proof are to improve the shape of the
+hypothesis \C{\~\~ (m < p)} (using \C{rewrite -leqNgt})
+and to give it a name (using \C{move=> leq_p_m}):
 
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+  p %| m `! + 1 -> m < p.
 Proof.
 move=> prime_p.
 apply: contraLR.
@@ -1580,14 +1582,15 @@ And the next step uses the following lemma:
 Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 \end{coq}
 This is a conditional equivalence, expressed as a conditional identity.
-We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting (the
+We can replace our current goal with \C{\~\~ (p \%| 1)} by rewriting
+using (the
 appropriate instance of) this identity.  This operation will open an
 extra goal requiring a proof of (the corresponding instance of) the side
-condition.
+condition \D{p \%| m`!}.
 
 \begin{coq}{}{width=6cm}
 Lemma example m p : prime p ->
-  p %| m `! + 1 -> ~~ (p <= m).
+  p %| m `! + 1 -> m < p.
 Proof.
 move=> prime_p.
 apply: contraLR.
@@ -1626,7 +1629,7 @@ Lemma prime_gt0 p : prime p -> 0 < p.
 Finally, the resulting script would be:
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 Proof.
 move=> prime_p.
 apply: contraLR.
@@ -1653,7 +1656,7 @@ in solving the easy side conditions
 as soon as possible.  Here the first two side conditions are indeed
 trivial, and, as for the introduction patterns of the \C{case} tactic,
 we can use a simplification switch \C{//} to solve them.
-We also combine on the same line the first three step, using
+We also combine on the same line the first three steps, using
 the semicolon.
 
 \begin{coq}{}{}
@@ -1679,7 +1682,7 @@ term is replaced with \C{true}.}
 Rewriting with
 \C{prime_gt1} leaves open the trivial goal \C{true} (i.e., \C{(true = true)}),
 and the side condition \C{(prime p)}.  Both are trivial, hence
-solved prefixing the line with \C{by}.
+solved by prefixing the line with \C{by}.
 
 \begin{coq}{}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
