@@ -1918,7 +1918,7 @@ The proof uses the following lemmas:
 
 \begin{coq}{}{title=Tools}
 Lemma cats1 T s (z : T) : s ++ [:: z] = rcons s z.
-Lemma foldr_cat T f (s1 s2 : seq T) z0 :
+Lemma foldr_cat T R (f : T -> R -> R) (s1 s2 : seq T) z0 :
   foldr f z0 (s1 ++ s2) = foldr f (foldr f z0 s2) s1.
 Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
 \end{coq}
