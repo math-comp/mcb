@@ -652,12 +652,12 @@ Definition twoVthree b := if b then 2 else 3.
 As one expects, when \C{b} is \C{true}, the expression
 \C{(twoVthree b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
 
-\begin{coq}{name=eval_repeat_twice_f_two}{width=7cm,title=Evaluating twoVthree}
+\begin{coq}{name=eval_twoVthree}{width=7cm,title=Evaluating twoVthree}
 Eval compute in twoVthree true.
 Eval compute in twoVthree false.
 \end{coq}
-\coqrun{name=eval_run}{eval_repeat_twice_f_two}
-\begin{coqout}{run=eval_f_run}{title=Response,width=5cm}
+\coqrun{name=eval_run}{eval_twoVthree}
+\begin{coqout}{run=eval_twoVthree_run}{title=Response,width=5cm}
   = 2 : nat
   = 3 : nat
 \end{coqout}
@@ -739,7 +739,7 @@ Check fun n => f n.+1.
 \end{coq}
 \coqrun{name=f_plus_one_run}{f_plus_one}
 \begin{coqout}{f_plus_one_run}{width=7cm,title=Response}
-fun x => f x.+1 : nat -> nat
+fun n => f n.+1 : nat -> nat
 \end{coqout}
 \index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
 
@@ -765,7 +765,7 @@ pattern. The value bound to the name \C{p} mentioned in this pattern is not
 known in advance; it is actually computed at the moment the \C{n} is matched
 against the pattern. For instance:
 
-\begin{coq}{name=compute-match}{width=7cm,title=Queries}
+\begin{coq}{name=compute-match}{width=7cm,title=Evaluating predn}
 Eval compute in predn 5
 \end{coq}
 \begin{coqout}{}{width=5cm,title=Response}
@@ -1633,7 +1633,7 @@ Using the \C{Record} version of this definition instead of its
 equivalent \C{Inductive} allows us to declare names for the projections
 at the time of the definition. In our example, the record \C{point}
 defines three projections, named \C{x}, \C{y} and \C{z}
-respectively. In the case when they come from a record definition,
+respectively. In the case where they come from a record definition,
 these projections are also called \emph{fields} of the record.
 One can thus write:
 
