@@ -100,7 +100,7 @@ theorems. Indeed, formal statements in \Coq{} are themselves
 obey type constraints. An
 equality statement in particular is obtained by applying the constant
 \C{eq} to two arguments, \emph{of the same type}. This application
-results in a swell-formed term of type \C{Prop}, for \emph{proposition}.
+results in a well-formed term of type \C{Prop}, for \emph{proposition}.
 
 Throughout this book, we will
 use the word \emph{proposition} for a term of type \C{Prop}, typically
@@ -284,7 +284,7 @@ propositional tautology. We provide below some other examples of such
 propositional equivalences stated as boolean identities.
 
 \begin{coq}{name=orbA}{}
-Lemma orbA b1 b2 b4 : b1 || (b2 || b3) = b1 || b2 || b3.
+Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
 Lemma implybE a b : (a ==> b) = ~~ a || b.
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 \end{coq}
@@ -758,7 +758,7 @@ Proof.  by case: n => [| k].  Qed.
 We will use a last example of boolean equivalence to introduce more
 advanced proof techniques, leading to less verbose proof
 scripts. Remember from chapter~\ref{ch:prog} that the product of two
-natural numbers is be defined as a function
+natural numbers is defined as a function
 \C{(muln : nat -> nat -> nat)}. From this definition, we prove that
 the product of two (natural) numbers is zero if and only if one of the
 numbers is zero:
@@ -832,7 +832,7 @@ definition of the addition \C{addn}, this in turn reduces to
 \C{(k + (m * k.+1)).+1}. The left hand side term hence is of the form
 \C{t.+1 == 0}, where \C{t} stands for \C{(k + (m * k.+1))}, and this
 reduces to false.\label{proof:mulneq0}
-By consequence, the successor branch of the case analysis is trivial
+In consequence, the successor branch of the case analysis is trivial
 by computation.
 
 
@@ -970,7 +970,7 @@ As a side remark, being able to find the ``right'' lemma is of
 paramount importance for writing modular libraries of formal
 proofs. See section~\ref{sec:search} which is dedicated to this topic.
 
-Back yo our example, we use the \C{rewrite} tactic with lemma
+Back to our example, we use the \C{rewrite} tactic with lemma
 \C{muln0}, in order to perform the desired replacement.
 
 \begin{coq}{def=almostMulnEq4}{title=First rewrite,width=7cm}
@@ -999,7 +999,7 @@ automatically  finds  where in the goal the replacement should take
 place, by searching for a subterm matching the pattern \C{(_ * 0)}.
 In the present case, there is only one such subterm,
 \C{(m.+1 * 0)}, for which the parameter (or the wild-card) takes the
-value \C{m.+1}. This subterm is hence the replaced by \C{0}, the right
+value \C{m.+1}. This subterm is hence replaced by \C{0}, the right
 hand side of \C{muln0}, which does not depend on the value of the
 pattern. We can now conclude the proof script, using the
 prenex \C{by} tactical:
@@ -1166,7 +1166,7 @@ description of the features of this tactic is in the manual~\cite{ssrman}.
 
 \subsection{Universal quantification, first examples}
 
-Let put side by side an example of function we defined in
+Let us put side by side an example of function we defined in
 chapter~\ref{ch:prog}:
 
 \begin{coq}{def=LeqDef}{}
@@ -1343,7 +1343,7 @@ commutative addn : Prop
 The \C{Section} mechanism presented in Section~\ref{sec:section} can
 be used to factor not only the parameters but also the hypotheses of a
 corpus of definitions and properties. For instance, the proof of the
-chinese remainder theorem is stated within such a section. It uses a
+Chinese remainder theorem is stated within such a section. It uses a
 self-explanatory notation for congruences:
 
 \begin{coq}{}{}
@@ -1425,7 +1425,7 @@ In order to illustrate more proof techniques related to the use of
 lemmas inside proofs, let us scrutinize a formal proof that a prime
 number which divides $m! + 1$ for a certain integer $m$ has to be
 greater than $m$. This lemma is a key step in a proof that there are
-infinitely many primes which will studied in
+infinitely many primes which will be studied in
 section~\ref{sec:infprimes}. The proof of the lemma goes by
 contraposition: if $p$ is a prime number smaller that $m$, then it
 divides $m!$ and thus it cannot divide $m! + 1$ as it does not divide
@@ -1462,9 +1462,9 @@ Lemma contraLR (c b : bool) :  (~~ c -> ~~ b) -> (b -> c).
 \index[coq]{\C{contraLR}}
 
 which describes the shape of the contrapositive of statements and thus
-describe a family of
+describes a family of
 instances of the contraposition law. The \C{apply: contraLR} tactic
-finds the appropriate values of the premisse and conclusion and
+finds the appropriate values of the premise and conclusion and
 instantiate the scheme, leaving us to prove that \C{p} is not a
 divisor of \D{(m `! + 1)} under the assumption that \C{p} is not
 greater than \C{m}:
@@ -1488,10 +1488,10 @@ More precisely, the values chosen by the tactic for the two parameters
 \D{(p \%| m `! + 1)}. They have been found by comparing the statement to be
 proved with the conclusion \C{(b -> c)} of the statement of the lemma.
 The new statement of the goal is the corresponding instance of the
-premisse \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
+premise \C{(~~ c -> ~~ b)} of lemma \C{contraLR}.
 
 The next step in our formal proof is to improve the shape of the
-hypothesis \C{\~\~ (m < p)} and to give it name.
+hypothesis \C{\~\~ (m < p)} and to give it a name.
 
 
 \begin{coq}{}{width=6cm}
@@ -2190,7 +2190,7 @@ Here are the general principles ruling the names of the in the \mcbMC{} library:
     addition, respectively. This policy does not necessarily apply to
     constants that should always be hidden behind a generic notation,
     and handled by a more generic theory.
-  \item Finally, a handful of theorems have a historical name,
+  \item Finally, a handful of theorems have historical names,
     e.g, \L+Cayley_Hamilton+ or \L+factor_theorem+.
   \end{itemize}
 \item{\bf Structures and Records}
@@ -2216,7 +2216,7 @@ Here are the general principles ruling the names of the in the \mcbMC{} library:
     the property should be
     indicated by a suffix (like \L+ _char+, \L+_normal+, etc), so
     the lemma name
-    should start by a description of the argument of the property, such as
+    should start with a description of the argument of the property, such as
     its key property, or its head constant.
     Thus we have \L+quotient_normal+, not \L+normal_quotient+, etc. This
     convention does not apply to monotony rules, for which we either
@@ -2372,8 +2372,7 @@ Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 Proof.
 elim: n => // n IHn.
-rewrite expnS odd_mul {}IHn orbC.
-by case: odd.
+by rewrite expnS odd_mul {}IHn orKb.
 Qed.
 \end{coq}
 \end{Answer}
