@@ -17,4 +17,4 @@ clean:
 	rm book.pdf ch*.html cover-front-web.png
 
 spell:
-	for f in ../tex/*.tex; do cat $$f | aspell -t list; done | sort | uniq | comm -2 -3 - ../tex/sorted_words_to_ignore.txt
+	for f in ../tex/*.tex; do cat $$f | aspell --master=en_US -t list; done | sort | uniq | comm -2 -3 - ../tex/sorted_words_to_ignore.txt
