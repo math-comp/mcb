@@ -158,7 +158,7 @@ We could try
 alternative formulations based on the connectives seen in
 section~\ref{ch:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
-would be non negligible.
+would be non-negligible.
 
 A better solution is
 to use an ad-hoc inductive definition that resembles a
@@ -512,7 +512,7 @@ in \C{Prop} with the ease to reason by equivalence via rewriting
 of boolean identities leads to concise proofs.
 }
 
-Let us now move to a non artificial example to see how the Ssreflect
+Let us now move to a non-artificial example to see how the Ssreflect
 tactic language supports the combination of views with the \C{apply},
 \C{case} and \C{rewrite} tactics.
 
@@ -1095,7 +1095,7 @@ The proof goes like that: without loss of generality we can assume that
 $n_2$ is greater or equal to $n_1$, hence $n_2$ is the maximum between
 $n_1$ and $n_2$.  Under this assumption it is sufficient to check
 that $m \le n_2$ holds iff either $m \le n_2$ or $m \le n_1$.
-The only non trivial case is when we suppose $m \le n_1$ and
+The only non-trivial case is when we suppose $m \le n_1$ and
 we need to prove $m \le n_2$ which holds by transitivity.\hfill$\square$
 
 As usual we model double implication as an equality between two
@@ -1429,7 +1429,7 @@ Lemma subn_if_gt T m n F (E : T) :
     (if n <= m then F (m - n) else E).
 \end{coq}
 
-The else branch corresponds to the non recursive case of
+The else branch corresponds to the non-recursive case of
 the division algorithm and is trivially solved in line 6.
 The recursive call is done on \C{(m-d)}, hence the need for a strong
 induction.  In order to satisfy the premise of the induction hypothesis,
