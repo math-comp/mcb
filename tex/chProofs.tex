@@ -1922,6 +1922,38 @@ Lemma foldr_cat T R (f : T -> R -> R) (s1 s2 : seq T) z0 :
   foldr f z0 (s1 ++ s2) = foldr f (foldr f z0 s2) s1.
 Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
 \end{coq}
+% Lemma cats1 T s (z : T) : s ++ [:: z] = rcons s z.
+% Proof.
+%  elim: s => [| t ts IH] //=.
+%   by rewrite IH.
+% Qed.
+% 
+% Lemma cats0 T (s : seq T) : s ++ nil = s.
+% Proof.
+%   elim: s => [| t ts IH] //=.
+%   by rewrite IH.
+% Qed.
+%
+% Lemma foldr_cat T R (f : T -> R -> R) (s1 s2 : seq T) z0 :
+%   foldr f z0 (s1 ++ s2) = foldr f (foldr f z0 s2) s1.
+% Proof.
+%   move: s2 z0.
+%   elim: s1 => [| p t1 IH] //=.
+%   move=> s1 z0.
+%   by rewrite IH.
+% Qed.
+%
+% Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
+% Proof.
+%   rewrite /rev.
+%   move: s x.
+%   have: forall (s w : seq T) (x : T), catrev (rcons s x) w = x :: catrev s w.
+%     move=> s.
+%     elim: s => [| t ts IH] //=.
+%   move=> generalization.
+%   move=> s x.
+%   by apply generalization.
+% Qed.
 
 The complete proof script follows:
 
@@ -1937,18 +1969,41 @@ Qed.
 
 Here ``\C{elim/last_ind: s z}'' performs the induction using the
 \C{last_ind} lemma on \C{s} after having generalized the initial value of
-the accumulator \C{z}.  The resulting value for \C{P} hence
-features a quantification on \C{z}.
+the accumulator \C{z}. The resulting value for \C{P} hence
+features a quantification on \C{z}:
 
 \begin{coq}{}{}
 (fun s => forall z, foldl f z (rev s) = foldr (fun x z => f z x) z s)
 \end{coq}
 
-Thanks to the generalization, \C{IHs} states:
+The ``\C{z}'' that comes \emph{after}
+``\C{elim/last_ind: s z => [|s x IHs]}'' deserves further explanation.
+Had we stopped at ``\C{elim/last_ind: s z => [|s x IHs] //}'', our goal
+would look like this:
+
+\begin{coqout}{}{}
+forall z : A,
+  foldl f z (rev (rcons s x)) = foldr (fun x0 : T => f^~ x0) z (rcons s x)
+\end{coqout}
+(ignore the ``\C{f^~}'', which is coming out of the blue here, but
+is merely the standard abbreviation for \C{fun x z => f z x} in the
+\mcbMC{} library).
+The additional ``\C{z}'' after the ``\C{=> [|s x IHs]}''
+is responsible for pulling the
+``\C{forall z : A}'' out of the goal again, back into the heap of
+variables and assumptions. (See subsection~\ref{ssec:stack} for more
+detail about this kind of operations.)
+
+We have thus generalized \C{z} only to pull it out of the goal again
+soon after. It might appear as if this was a useless detour.
+However, it was not. Thanks to the generalization, the induction
+hypothesis \C{IHs} states:
 
 \begin{coq}{}{}
-IHs : forall z : T, foldl f z (rev s) = foldr (fun x z => f z x) z s
+IHs : forall z : A, foldl f z (rev s) = foldr (fun x z => f z x) z s
 \end{coq}
+which is more general than what we had obtained if we had not
+generalized \C{z} beforehand.
 The quantification on \C{z} is crucial since the goal in the induction step,
 just before we use \C{IHs}, is the following one:
 
@@ -1958,9 +2013,9 @@ foldl f z (rev (s ++ [:: x])) =
 \end{coqout}
 
 The instance of the induction hypothesis that we need is
-one where \C{z} takes \C{(foldr (fun y w => f w y) z [:: x])},
-i.e., the value of the accumulator, to \C{foldr} for a list
-whose last element is \C{x}.
+one where \C{z} takes the value \C{(foldr (fun y w => f w y) z [:: x])}.
+The generalization of \C{z} gave us the freedom to substitute a
+different value for \C{z}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
