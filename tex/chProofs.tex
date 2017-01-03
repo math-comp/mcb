@@ -796,7 +796,7 @@ Proof.  by case: n => [| k].  Qed.
 We will use a last example of boolean equivalence to introduce more
 advanced proof techniques, leading to less verbose proof
 scripts. Remember from chapter~\ref{ch:prog} that the product of two
-natural numbers is be defined as a function
+natural numbers is defined as a function
 \C{(muln : nat -> nat -> nat)}. From this definition, we prove that
 the product of two (natural) numbers is zero if and only if one of the
 numbers is zero:
@@ -870,7 +870,7 @@ definition of the addition \C{addn}, this in turn reduces to
 \C{(k + (m * k.+1)).+1}. The left hand side term hence is of the form
 \C{t.+1 == 0}, where \C{t} stands for \C{(k + (m * k.+1))}, and this
 reduces to \C{false}.\label{proof:mulneq0}
-By consequence, the successor branch of the case analysis is trivial
+In consequence, the successor branch of the case analysis is trivial
 by computation.
 
 
@@ -1037,7 +1037,7 @@ valid for any value of its parameter \C{n}. The tactic
 automatically  finds  where in the goal the replacement should take
 place, by searching for a subterm matching the pattern \C{(_ * 0)}.
 In the present case, there is only one such subterm,
-\C{(m.+1 * 0)}, for which the parameter (or the wildcard) takes the
+\C{(m.+1 * 0)}, for which the parameter (or the wild-card) takes the
 value \C{m.+1}. This subterm is hence replaced by \C{0}, the right
 hand side of \C{muln0}, which does not depend on the value of the
 pattern. We can now conclude the proof script, using the
@@ -2331,7 +2331,7 @@ in the \mcbMC{} library:
     addition, respectively. This policy does not necessarily apply to
     constants that should always be hidden behind a generic notation,
     and handled by a more generic theory.
-  \item Finally, a handful of theorems have a historical name,
+  \item Finally, a handful of theorems have historical names,
     e.g, \L+Cayley_Hamilton+ or \L+factor_theorem+.
   \end{itemize}
 \item{\bf Structures and Records}
@@ -2357,7 +2357,7 @@ in the \mcbMC{} library:
     the property should be
     indicated by a suffix (like \L+ _char+, \L+_normal+, etc), so
     the lemma name
-    should start by a description of the argument of the property, such as
+    should start with a description of the argument of the property, such as
     its key property, or its head constant.
     Thus we have \L+quotient_normal+, not \L+normal_quotient+, etc. This
     convention does not apply to monotony rules, for which we either
@@ -2513,8 +2513,7 @@ Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 Proof.
 elim: n => // n IHn.
-rewrite expnS odd_mul {}IHn orbC.
-by case: odd.
+by rewrite expnS odd_mul {}IHn orKb.
 Qed.
 \end{coq}
 \end{Answer}
