@@ -1886,13 +1886,13 @@ flag.  It performs computations in the goal to obtain a ``simpler'' form.
 \index[ssr]{\C{rewrite}!\C{/=} (simplification)}
 
 \begin{coq}{def=UserRwPat}{width=7cm}
-Lemma simplify_me : size [::] = 0.
+Lemma simplify_me : size [:: true] = 1.
 Proof.
 rewrite /=.
 \end{coq}
 \begin{coqout}{def=UserRwPat}{width=5cm}
 ==========================
-0 = 0
+1 = 1
 \end{coqout}
 The \C{/=} flag simply invokes the \Coq{} standard \C{simpl}
 tactic.  Whilst being handy, \C{simpl} tends to oversimplify
