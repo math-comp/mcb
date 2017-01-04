@@ -2112,16 +2112,29 @@ In section~\ref{sec:edivn} we propose a less risky alternative.
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 \index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
 
-Yet in fact the unfolding equation \C{leqE} that we used in
-the proof of \C{leq_mul2l} in section~\ref{sec:multirew}
-does not exist in the library and there is no name associated to this
-equation. We actually do not need to state a lemma in order to relate
+Another version of the \C{rewrite} tactic allows
+\emph{unfolding} a definition
+-- i.e., replacing an object by its definition or (when combined with
+the \C{-} prefix into a \C{-/}) vice versa.
+For example, the lemma \C{leqE} that we used in
+the proof of \C{leq_mul2l} back in section~\ref{sec:multirew}
+does not exist in the library, and there is no name associated to this
+equation. It is simply the definition of \C{leq}, and we actually do
+not need to state a lemma in order to relate
 the name of a definition, like \C{leq}, to its body
-\C{fun n m => n - m == 0}. This \emph{unfolding} operation can be
+\C{fun n m => n - m == 0}. This unfolding operation can be
 performed by calling the \C{rewrite} tactic, prefixing the name of the
 constant with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
 indeed not a deductive operation but an instance of computation, as
-made more precise in chapter~\ref{ch:ttch}.
+made more precise in chapter~\ref{ch:ttch}. Our proof of
+\C{leq_mul2l} thus takes the form
+\begin{coq}{}{width=6.7cm}
+Lemma leq_mul2l m n1 n2 :
+ (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+Proof.
+by rewrite /leq -mulnBr muln_eq0.
+\end{coq}
+
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
