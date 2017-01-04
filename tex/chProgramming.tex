@@ -135,7 +135,7 @@ uniform way. A type annotation has the shape \C{(t : T)}, where a colon
 left from the type \C{T} itself on the right. For instance in
 \C{(n : nat)}, the argument \C{n} of the function \C{f} is annotated with
 type \C{nat}. The second occurrence \C{ ... : nat := ...} of type
-\C{nat} annotates the output of the function with type \C{nat} --that is any
+\C{nat} annotates the output of the function with type \C{nat} --- that is any
 expression made of the application of \C{f} to an argument.
 \index[concept]{type}
 
@@ -825,14 +825,14 @@ A fundamental principle is enforced by \Coq{} on case analysis:
 the inductive type.  For example, the following definition is
 rejected by \Coq{}.
 
-\begin{coq}{name=f_plus_one}{width=6cm,title=Non exhaustive case analysis}
+\begin{coq}{name=f_plus_one}{width=6cm,title=Non-exhaustive case analysis}
 Definition wrong (n : nat) :=
   match n with 0 => true end.
 $~$
 \end{coq}
 \coqrun{name=f_plus_one_run}{f_plus_one}
 \begin{coqout}{f_plus_one_run}{width=6cm,title=Response}
-Error: Non exhaustive pattern
+Error: Non-exhaustive pattern
 matching: no clause found for
 pattern S _
 \end{coqout}
@@ -2074,8 +2074,8 @@ Notation                                       Scope
 
 The only difficulty in using \C{Locate} comes from the fact
 that one has to provide a complete \emph{symbol}.  A symbol
-is composed by one or more non blank characters and its first
-character is necessarily a non alphanumerical one.
+is composed by one or more non-blank characters and its first
+character is necessarily a non-alphanumerical one.
 The converse is not true: a sequence of characters is recognized as
 a symbol only if it is used in a previously declared notation.
 For example \C{3.+1.+1 } is parsed as a number followed by two
@@ -2386,7 +2386,7 @@ Definition all_words n T (alphabet : seq T) :=
 %
 % Examples and exercises can be executed in an empty context, or
 % libraries can be required for the purpose of (re)using and combine existing
-% programs (non proofs here).
+% programs (non-proofs here).
 %
 % The current contents are organized like the tutorial at ITP15 I gave (Enrico).
 % It was on standard \Coq{} and was intended not to be difficult class ;-)
@@ -2646,7 +2646,7 @@ Definition all_words n T (alphabet : seq T) :=
 % Check true :: false :: nil.
 % Fail Check 1 :: false :: nil.
 %
-% (* A non recursive function on lists *)
+% (* A non-recursive function on lists *)
 % Definition tl A (l : list A) : list A :=
 %   match l with
 %   | nil => nil
