@@ -190,7 +190,7 @@ then by the statement itself. Command \C{Lemma} and its siblings are in fact
 a variant of the \C{Definition} syntax we used in
 chapter~\ref{ch:prog}: everything we mentioned about it also applies
 here. The \C{Proof} command marks the beginning of the proof text,
-which ends either with \C{Qed} and \C{Admitted}. After command
+which ends either with \C{Qed} or \C{Admitted}. After the command
 \C{Proof} is executed, the system displays the current state of the
 formal proof in a dedicated window.
 \index[vernac]{\C{Lemma}}
@@ -214,7 +214,7 @@ $~$
    3 = 3
 \end{coqout}
 
-Indeed, \Coq{} is now in so-called \emph{proof mode}: we can execute
+Indeed, \Coq{} is now in its so-called \emph{proof mode}: we can execute
 new commands to construct a proof and inspect the current state of a
 proof in progress, but some other commands, like opening sections, are
 no longer available. At any stage of the proof construction, \Coq{}
@@ -2114,7 +2114,7 @@ The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 
 Yet in fact the unfolding equation \C{leqE} that we used in
 the proof of \C{leq_mul2l} in section~\ref{sec:multirew}
-does not exist in the library and there is no name associate to this
+does not exist in the library and there is no name associated to this
 equation. We actually do not need to state a lemma in order to relate
 the name of a definition, like \C{leq}, to its body
 \C{fun n m => n - m == 0}. This \emph{unfolding} operation can be
@@ -2148,15 +2148,15 @@ affected the left hand side of the initial goal because of the
 behavior of this matching algorithm.
 Indeed, the matching algorithm traverses the entire goal
 left-to-right, looking for the first subterm matching pattern
-\C{(_ <= _)},  and hence picks subterm \C{(m * n1 <= m * n2)}.
+\C{(_ <= _)},  and hence picks the subterm \C{(m * n1 <= m * n2)}.
 Now suppose we want to pick
-the other instance of subterm matching this pattern in the goal. We
+the other instance of a subterm matching this pattern in the goal. We
 can use the command \C{rewrite [n1 <= _]leqE}: the
 pattern given by the user overrides the one inferred from the rewrite
 rule and is used to select the subterm to be rewritten. In this case,
 term \C{(m * n1 <= m * n2)} is ruled out because the first argument of
 \C{<=}, namely \C{(m * n1)}, does not match the first argument \C{n1}
-required in the user-given pattern. Therefore, \C{rewrite} picks term
+required in the user-given pattern. Therefore, \C{rewrite} picks the term
 \C{(n1 <= n2)}, in the right hand side.
 
 \begin{coq}{def=UserRwPat}{title=User provided pattern,width=7.7cm}
@@ -2199,7 +2199,7 @@ reference manual~\cite[section 8]{ssrman} for more variants of patterns and for 
 more precise description of the different phases in the matching
 algorithm used by this tactic.
 
-Lemma \C{leqE} in fact does not exist in the library.%  Indeed the
+The lemma \C{leqE} does not in fact exist in the library. %  Indeed the
 % identity it states holds by symbolic computation, and we have seen in
 % section~\ref{ssec:proofcomp} that such class of proof steps can be
 % typically omitted.
@@ -2221,8 +2221,8 @@ of the goal.
 \end{coqout}
 \index[concept]{keyed matching}
 
-This indicates in particular that, although term \C{(m * n1 <= m * n1)}
-is equal up to computation to term \C{(m * n1 - m * n1 == 0)}, the matching
+This indicates in particular that, although the term \C{(m * n1 <= m * n1)}
+is equal up to computation to the term \C{(m * n1 - m * n1 == 0)}, the matching
 algorithm is not able to see it. This is due to the compromise that
 has been chosen, between predictability and cleverness. Indeed the
 algorithm looks for a verbatim occurrence of the head symbol of the
@@ -2247,8 +2247,8 @@ m, n1, n2 : nat
 \end{coqout}
 
 Indeed, the \C{[_ || _]} pattern identifies term \C{(m == 0) || (n1 <= n2)}, as
-their head symbols coincide. Now that we have elected a subterm, the
-\C{rewrite} tactic is able to identify it with term
+their head symbols coincide. Now that we have selected a subterm, the
+\C{rewrite} tactic is able to identify it with the term
 \C{(m == 0) || (n1 - n2 == 0)}, itself an instance of the right hand side
 of \C{muln_eq0}. Note that the \C{[_ || _]} pattern is redundant here:
 while matching only sees syntactic occurrences of the
@@ -2309,10 +2309,10 @@ m, n1, n2 : nat
 \index[ssr]{\C{rewrite}! \C{-[term]/(term)} (changing)}
 
 Last, an equation local to the proof context, like an
-induction hypothesis, can be disposed after using it by
-prefixing is name with \C{\{\}}.  For example
-``\C{rewrite -\{\}IHn}'' rewrites with \C{IHn} right to
-left and drops such context item.
+induction hypothesis, can be disposed of after using it by
+prefixing its name with \C{\{\}}.  For example
+\C{rewrite -\{\}IHn} rewrites with \C{IHn} right to
+left and drops \C{IHn} from the context.
 \index[ssr]{\C{rewrite}! \C{\{name\}} (clear)}
 
 
@@ -2530,7 +2530,7 @@ Prove the following lemma by induction:
 \begin{coq}{}{}
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 \end{coq}
-Recall that a local equation can be disposed (after use)
+Recall that a local equation can be disposed of (after use)
 by prefixing its name with \C{\{\}}.
 
 \end{Exercise}
