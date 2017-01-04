@@ -158,8 +158,8 @@ canonical instance. After line 2 all the additive algebra provided in
 \lib{ssralg} becomes applicable to \lstinline/'I_p/; for example \C{0}
 denotes the zero element, and \C{i + 1} denotes the successor of \C{i} mod $p$.
 
-The \C{ZmodMixin} constructor infers the operations \C{Zp_add}, ...,
-from the identities \C{Zp_add0z}, ... Providing an explicit definition
+The \C{ZmodMixin} constructor infers the operations \C{Zp_add}, etc.,
+from the identities \C{Zp_add0z}, etc.. Providing an explicit definition
 for the mixin, rather than inlining it in line 2, is important as it
 speeds up type checking, which never need to open the mixin bundle.
 
