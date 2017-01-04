@@ -2145,13 +2145,6 @@ purposes. One option is to
 tell \Coq{} what instances of the object are to be unfolded. For
 example, had we used \C{rewrite /(leq n1 n2)} instead of
 \C{rewrite /leq}, we would only have gotten \C{(n1 <= n2)} unfolded.
-The same result could have been obtained using \C{rewrite \{2\}/leq},
-because \C{(n1 <= n2)} is the \emph{second} appearance of the \C{leq}
-constant in the goal. The \C{\{k\}} prefix (for a positive integer \C{k})
-generally has the effect that the tactic is being applied in the
-\(k\)-th of the possible positions where it is applicable; for
-instance, in the proof of \C{silly_example}, we could have used
-\C{rewrite \{2\}addn0} instead of \C{rewrite [in RHS]addn0}.
 
 A less frequently used variant of the \C{rewrite} tactic is the \C{-/}
 prefix; it allows \emph{folding} a definition, i.e., the reverse of
@@ -2207,6 +2200,36 @@ m, n1, n2 : nat
 (m * n1 <= m * n2) =
 (m == 0) || (n1 - n2 == 0)
 \end{coqout}
+
+The same result could have been achieved by explicitly specifying
+the parameters in the matching subterm to be rewritten: viz., by
+using \C{rewrite (leqE n1 n2)} instead of
+\C{rewrite leqE}.\footnote{Sometimes, an even more precise
+specification is needed. Namely, it can happen that the term
+\C{(n1 <= n2)} appears twice in the goal: for example, when the goal
+is \C{(n1 <= n2) || (n1 <= n2)}. In this case, we would need
+\C{rewrite \{1\}(leqE n1 n2)} to rewrite only the first appearance of
+the term, and
+\C{rewrite \{2\}(leqE n1 n2)} to rewrite only the second. In general,
+the \C{\{k\}} prefix (for a positive integer \C{k})
+has the effect that the tactic is being applied in the
+\(k\)-th of the possible positions where it is applicable; for
+instance, in the proof of \C{silly_example}, we could have used
+\C{rewrite \{2\}(addn0 n)} instead of \C{rewrite [in RHS]addn0}.
+Care must be taken when the \C{\{k\}} prefix is applied without fully
+specifying the parameters, e.g., in the form \C{rewrite \{1\}leqE}; the
+behavior of \Coq{} in this situation is counterintuitive (it starts by
+finds one subterm of the goal matching \C{leqE}, infers its parameters,
+and then rewrites the \(k\)-th among the appearances of the subterm
+with these parameters, rather than the \(k\)-th of all appearances).}
+% [DG] This footnote is probably less than optimal. I think it is
+% important to know how to specify a precise point of rewriting if all
+% the tricks and heuristics fail. Probably the use of {k} together
+% with fully specified parameters is the gold standard here. But if I
+% explain this, I need to warn against using {k} with non-fully
+% specified parameters, since people would otherwise consider it the
+% logical middle ground. I'm not sure if I've done this warning well,
+% and if I got the confusing behavior right.
 
 Another way of driving the matching algorithm is by providing a
 \emph{context}, restricting the part of the goal to be explored. For
