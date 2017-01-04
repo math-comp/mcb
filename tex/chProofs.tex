@@ -2114,8 +2114,7 @@ The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 
 Another version of the \C{rewrite} tactic allows
 \emph{unfolding} a definition
--- i.e., replacing an object by its definition or (when combined with
-the \C{-} prefix into a \C{-/}) vice versa.
+-- i.e., replacing an object by its definition.
 For example, the lemma \C{leqE} that we used in
 the proof of \C{leq_mul2l} back in section~\ref{sec:multirew}
 does not exist in the library, and there is no name associated to this
@@ -2124,16 +2123,40 @@ not need to state a lemma in order to relate
 the name of a definition, like \C{leq}, to its body
 \C{fun n m => n - m == 0}. This unfolding operation can be
 performed by calling the \C{rewrite} tactic, prefixing the name of the
-constant with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
+object with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
 indeed not a deductive operation but an instance of computation, as
 made more precise in chapter~\ref{ch:ttch}. Our proof of
 \C{leq_mul2l} thus takes the form
-\begin{coq}{}{width=6.7cm}
+
+\begin{coq}{}{width=9.7cm}
 Lemma leq_mul2l m n1 n2 :
  (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
 Proof.
 by rewrite /leq -mulnBr muln_eq0.
+Qed.
 \end{coq}
+
+Notice that \C{rewrite /leq} unfolded the definition of \C{leq}
+both in the expression \C{(m * n1 <= m * n2)} and in the expression
+\C{(n1 <= n2)}. In general, each appearance of the object is being
+unfolded. Sometimes it is desirable to unfold only some of them; see
+\cite[\S 7.1]{ssrman} for various ways to fine-tune the tactic for such
+purposes. One option is to
+tell \Coq{} what instances of the object are to be unfolded. For
+example, had we used \C{rewrite /(leq n1 n2)} instead of
+\C{rewrite /leq}, we would only have gotten \C{(n1 <= n2)} unfolded.
+The same result could have been obtained using \C{rewrite \{2\}/leq},
+because \C{(n1 <= n2)} is the \emph{second} appearance of the \C{leq}
+constant in the goal. The \C{\{k\}} prefix (for a positive integer \C{k})
+generally has the effect that the tactic is being applied in the
+\(k\)-th of the possible positions where it is applicable; for
+instance, in the proof of \C{silly_example}, we could have used
+\C{rewrite \{2\}addn0} instead of \C{rewrite [in RHS]addn0}.
+
+A less frequently used variant of the \C{rewrite} tactic is the \C{-/}
+prefix; it allows \emph{folding} a definition, i.e., the reverse of
+unfolding. (For instance, \C{rewrite /(leq n1 n2)} could be undone by
+\C{rewrite -/(leq n1 n2)}.)
 
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
