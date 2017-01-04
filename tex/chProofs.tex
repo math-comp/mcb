@@ -2049,33 +2049,30 @@ One way to do this (which we have already seen in action) is using the
 simplification item \C{//}.
 When this does not suffice, one can invoke another rewrite rule using
 the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
-all goals zero-or-more times.  For example, the side condition
-\D{p \%| m`!} spawned by \C{rewrite dvdn_addr} in our proof of
-\C{example m p} can be solved right away with an application of this
-prefix.
-
-Let us illustrate this on a slight variation of the above example
-\C{Lemma example m p} (the difference being that the conclusion
-\C{m < p} has now been rewritten as \C{\~\~ (p <= m)}):
+all goals zero-or-more times.  For example, recall our proof of
+\C{example m p}:
 
 \begin{coq}{}{}
-Lemma example2 m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 Proof.
-move=> prime_p; apply: contraL; move=> leq_p_m.
+move=> prime_p; apply: contraLR; rewrite -leqNgt; move=> leq_p_m.
 rewrite dvdn_addr.
   by rewrite gtnNdvd // prime_gt1. (* ~~ (p %| 1) *)
 by rewrite dvdn_fact // prime_gt0. (* p %| m`! *)
 Qed.
 \end{coq}
 
-Optionally rewriting with \C{dvdn_fact} on all goals affects only
+The side condition \D{p \%| m`!} spawned by \C{rewrite dvdn_addr} was
+proven in the last line of the script. Instead, we could have solved
+it right away by rewriting using \C{?dvdn_fact ?prime_gt0}.
+In fact, optionally rewriting with \C{dvdn_fact} on all goals affects only
 the side condition, since the main goal mentions no ``divides'' predicate.
-The same holds for \C{prime_gt0}.
+The same holds for \C{prime_gt0}. The resulting proof script is:
 
 \begin{coq}{}{}
-Lemma example2 m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 Proof.
-move=> prime_p; apply: contraL; move=> leq_p_m.
+move=> prime_p; apply: contraLR; rewrite -leqNgt; move=> leq_p_m.
 rewrite dvdn_addr ?dvdn_fact ?prime_gt0 //.
 by rewrite gtnNdvd // prime_gt1.
 Qed.
@@ -2084,7 +2081,7 @@ Qed.
 
 Another functionality offered by \C{rewrite} is the possibility
 to focus the search for the term to be replaced by providing a
-context.  For example the most frequent context is \C{RHS} (for Right
+context.  For example, the most frequent context is \C{RHS} (for Right
 Hand Side) and is used to force \C{rewrite} to operate only on the right
 hand side of an equational goal.
 
