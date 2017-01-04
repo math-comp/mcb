@@ -7,6 +7,10 @@
 *.toc
 *.aux
 *.glob
+*.idx
+*.ilg
+*.ind
+*.listing
 **/.*/*.v
 **/.*/*.txt
 **/.*/rt
