@@ -2029,17 +2029,37 @@ the casual reader.  The interested reader can find more about the pattern
 language in section~\ref{sec:rewrite2} or in the dedicated chapter of
 the Ssreflect language user manual~\cite{ssrman}.
 
-So far we have solved side conditions using the simplification item \C{//}.
+% One feature of the \C{rewrite} tactic is the optional iterator \C{?}.
+% A rewrite rule prefixed by \C{?}
+% (as in ``\C{rewrite dvdn_addr ?dvdn_fact}'') is applied
+% zero-or-more times on each of the 
+
+We have seen before that applying the \C{rewrite} tactic can
+create side conditions which themselves need to be proven (i.e., they
+are sub-goals). (For example, we obtained the side condition
+\D{p \%| m`!} when we used the \C{rewrite dvdn_addr} tactic in proving
+\C{example m p}, since the lemma \C{dvdn_addr} had a
+\D{d \%| m} condition.)
+These side conditions (by default) become the second, third and higher
+sub-goals in a proof script, so their proofs are usually postponed to
+after the first sub-goal (the main one) is proven. This is not always
+desirable; therefore, it is helpful to have a way to prove
+side conditions right away, on the same line where they arise.
+One way to do this (which we have already seen in action) is using the
+simplification item \C{//}.
 When this does not suffice, one can invoke another rewrite rule using
 the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
-all goals zero-or-more time.  For example, one could consider the
-second subgoal that follows \C{rewrite dvdn_addr} a side condition
-and solve it on the same line.
+all goals zero-or-more times.  For example, the side condition
+\D{p \%| m`!} spawned by \C{rewrite dvdn_addr} in our proof of
+\C{example m p} can be solved right away with an application of this
+prefix.
 
-Let us illustrate this on an example of script that we have already used:
+Let us illustrate this on a slight variation of the above example
+\C{Lemma example m p} (the difference being that the conclusion
+\C{m < p} has now been rewritten as \C{\~\~ (p <= m)}):
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example2 m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr.
@@ -2049,11 +2069,11 @@ Qed.
 \end{coq}
 
 Optionally rewriting with \C{dvdn_fact} on all goals affects only
-the side condition, since the main goal mentions no divides predicate.
+the side condition, since the main goal mentions no ``divides'' predicate.
 The same holds for \C{prime_gt0}.
 
 \begin{coq}{}{}
-Lemma example m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
+Lemma example2 m p : prime p -> p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p; apply: contraL; move=> leq_p_m.
 rewrite dvdn_addr ?dvdn_fact ?prime_gt0 //.
