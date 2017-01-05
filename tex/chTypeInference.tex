@@ -614,22 +614,26 @@ consistently uses the synonym keyword \lstinline/Structure/ in place of
 of interfaces easily recognizable.
 \index[vernac]{\C{Structure}}
 
-Records are first-class values in the \mcbCIC{}.  As we have seen
-projections are nothing special: they are simple functions that pattern
-match on an inductive data type to access the record fields.  Being
-first-class citizens means that one can write a term that combines
-the fields of two records and builds a new record.  Thanks to this
-fact the language of canonical structures is able to forge
-new record instances by combining the existing ones via a set
-of user definable combinators.  This is the subject of the next
-section.
+The computer-science inclined reader shall see records as first-class
+values in the  \mcbCIC{} programming language. Otherwise said,
+the projections of a record are just ordinary functions, defined by
+pattern-matching on an inductive type, and which access the fields
+of the record. Exercise~\ref{ex:triple} proposed to implement the
+projections of a triple onto its components, and these functions are
+the exact analogues of the projections of a record with three fields.
+In particular,  the fields of two given instances of records can be
+combined and used to build a new instance of another record. Canonical
+structures provide a language to describe how new instances of
+records, also called structures in this case, can
+be built from existing ones, via a set of combinators defined by the
+user. %This is the subject of the next section.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{derived instances}
-\mcbREQUIRE{Canonical}
-\mcbPROVIDE{RecCanonical}
-\mcbLEVEL{1}
-\mcbsection{Records as first-class relations}\label{sec:receqtype}
+% \mcbLEARN{derived instances}
+% \mcbREQUIRE{Canonical}
+% \mcbPROVIDE{RecCanonical}
+% \mcbLEVEL{1}
+% \mcbsection{Records as first-class relations}\label{sec:receqtype}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 So far we have used the \lstinline/==/ symbol for terms whose type is
