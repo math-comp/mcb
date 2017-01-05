@@ -2079,6 +2079,12 @@ Qed.
 \end{coq}
 \index[ssr]{\C{rewrite}! \C{?} (optional iteration)}
 
+The prefix \C{!} works similarly to \C{?}, but instead of applying
+the rewrite rule zero-or-more times, it applies it one-or-more times.
+% [DG] Not sure if this is relevant here, but you use a ! prefix
+% a few pages further down, so I figured it should be explained
+% somewhere.
+
 Another functionality offered by \C{rewrite} is the possibility
 to focus the search for the term to be replaced by providing a
 context.  For example, the most frequent context is \C{RHS} (for Right
@@ -2219,7 +2225,8 @@ instance, in the proof of \C{silly_example}, we could have used
 Care must be taken when the \C{\{k\}} prefix is applied without fully
 specifying the parameters, e.g., in the form \C{rewrite \{1\}leqE}; the
 behavior of \Coq{} in this situation is counterintuitive (it starts by
-finds one subterm of the goal matching \C{leqE}, infers its parameters,
+finding one subterm of the goal matching \C{leqE}, then infers its
+parameters,
 and then rewrites the \(k\)-th among the appearances of the subterm
 with these parameters, rather than the \(k\)-th of all appearances).}
 % [DG] This footnote is probably less than optimal. I think it is
@@ -2258,12 +2265,14 @@ reference manual~\cite[section 8]{ssrman} for more variants of patterns and for 
 more precise description of the different phases in the matching
 algorithm used by this tactic.
 
-The lemma \C{leqE} does not in fact exist in the library. %  Indeed the
+As we have said, the lemma \C{leqE} does not in fact exist in the
+library, and instead is just the definition of \C{leq}. %  Indeed the
 % identity it states holds by symbolic computation, and we have seen in
 % section~\ref{ssec:proofcomp} that such class of proof steps can be
 % typically omitted.
 However if we
 try to omit the first \C{rewrite !leqE} command, then the next one,
+% [DG] Why the exclamation mark in "!leqE"?
 namely \C{rewrite -mulnBr}, fails:
 
 \begin{coq}{def=LeqMul2lproof2}{width=7.7cm}
@@ -2280,11 +2289,14 @@ of the goal.
 \end{coqout}
 \index[concept]{keyed matching}
 
-This indicates in particular that, although the term \C{(m * n1 <= m * n1)}
-is equal up to computation to the term \C{(m * n1 - m * n1 == 0)}, the matching
+This indicates in particular that, although the term \C{(m * n1 <= m * n2)}
+is equal up to computation to the term \C{(m * n1 - m * n2 == 0)}, the matching
 algorithm is not able to see it. This is due to the compromise that
 has been chosen, between predictability and cleverness. Indeed the
 algorithm looks for a verbatim occurrence of the head symbol of the
+% [DG] "Head symbol" should probably be defined. I guess I know what
+% it means (the root of the syntax tree), but I don't believe I could
+% explain it well.
 pattern: in this case it hence looks for an occurrence of \C{(_ - _)},
 which is not found. As a consequence, we need an explicit step in the
 proof script in order to expose the subtraction before being able to
@@ -2309,14 +2321,21 @@ Indeed, the \C{[_ || _]} pattern identifies term \C{(m == 0) || (n1 <= n2)}, as
 their head symbols coincide. Now that we have selected a subterm, the
 \C{rewrite} tactic is able to identify it with the term
 \C{(m == 0) || (n1 - n2 == 0)}, itself an instance of the right hand side
-of \C{muln_eq0}. Note that the \C{[_ || _]} pattern is redundant here:
+of \C{muln_eq0}. Indeed,
 while matching only sees syntactic occurrences of the
 head symbols of patterns, it is able to compare the other parts of the
 pattern up to symbolic computation.
+Note that the \C{[_ || _]} pattern is redundant here; there is no
+other location in the goal where the right hand side of \C{muln_eq0}
+could appear.
+% [DG] I have switched the last two sentences since I think the
+% "able to compare the other parts up to symbolic computation"
+% explains not why the pattern [_ || _] is redundant, but why the
+% rewrite works to begin with.
 
 Patterns can not only be used in combination with a rewriting rule,
 but also with a simplification step \C{/=} or an unfolding step
-like \C{/leq}.
+like \C{/leq}. For example:
 
 \begin{coq}{def=Unfold}{title=Focused unfold,width=7.7cm}
 Lemma leq_mul2l m n1 n2 :
@@ -2335,7 +2354,7 @@ One can also re-fold a definition, but in such a case one has to specify,
 at least partially, its folded form.
 
 \begin{coq}{def=Unfold}{title=Refold,width=7cm}
-Lemma leq_mul2l m n1 n2 :
+Lemma leq_mul2l_modified m n1 n2 :
   (m * n1 - m * n2 == 0) =
     (m == 0) || (n1 <= n2).
 Proof.
@@ -2458,10 +2477,11 @@ in the \mcbMC{} library:
     \L+(fee .. (fie ..(foe ..) ..) ..)+, e.g. lemma \L+size_cat+ in
     {\tt seq.v}.
   \item We often use a one-letter suffix to resolve overloaded
-    notation, e.g., addn, addb, addr denote nat, boolean, ring
+    notation, e.g., \C{addn}, \C{addb}, \C{addr} denote nat, boolean, ring
     addition, respectively. This policy does not necessarily apply to
     constants that should always be hidden behind a generic notation,
     and handled by a more generic theory.
+    % [DG] What does the preceding sentence mean?
   \item Finally, a handful of theorems have historical names,
     e.g, \L+Cayley_Hamilton+ or \L+factor_theorem+.
   \end{itemize}
@@ -2470,6 +2490,7 @@ in the \mcbMC{} library:
   \item Each structure type starts with a
     lower case letter, and its constructor has the same name but with a
     capital first letter.
+    % [DG] What is a structure type?
   \item Each instance of a structure type has a name formed with the
     name of the carrier type, followed by an underscore and the one of
     the structure type like in \L+seq_sub_subType+, the structure of
@@ -2479,10 +2500,10 @@ in the \mcbMC{} library:
   \end{itemize}
 \item {\bf Suffixes}
   \begin{itemize}
-  \item Lemma whose conclusion is a predicate, or an equality
-    for a predicate: that predicate is a suffix of the lemma name,
+  \item If the conclusion of a lemma is a predicate or an equality for
+    a predicate, then that predicate is a suffix of the lemma name,
     like in \L+addn_eq0+ or \L+rev_uniq+.
-  \item Lemmas whose conclusion is a standard property such as
+  \item If the conclusion of a lemma is a standard property such as
     \L+\char+, \L+<|+, etc.\footnote{These examples are taken from
       libraries in the Mathematical Component distribution.}:
     the property should be
@@ -2605,7 +2626,9 @@ Lemma size_all_words n T (alphabet : seq T) :
   size (all_words n alphabet) = size alphabet ^ n.
 \end{coq}
 
-It requires two inductions: first on the length of words,
+(where \C{all_words} is as defined in the solution of
+exercise~\ref{ex:allwords}).
+This requires two inductions: first on the length of words,
 then on the alphabet.  In this last case, a non-trivial
 sub expression has to be generalized just before starting
 the induction.
