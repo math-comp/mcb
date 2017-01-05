@@ -1156,10 +1156,14 @@ like the following, where $\alpha$ is a schematic variable.
 Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 \end{coq}
 
-\noindent Even if this may look familiar jargon to some readers, we really want
-this $\alpha$ to be a first-class citizen, as well as the type of lists carrying
-any type of values, and not appeal to some notion of schema that would be
-somehow added on top of the \Coq{} language. %  We want to
+\noindent This may look familiar jargon to some readers. In the
+present context however, we would rather like to avoid appealing to
+any notion of schema, that would be somehow added on top of the
+\Coq{} language. This way, we will make possible the writing of
+formal sentences with arbitrary quantifications on this parameter
+$\alpha$.
+
+%  We want to
 % reason and
 % prove theorems about such data types and related programs inside the formal
 % language \Coq{} provides and we want the proofs of these theorems
