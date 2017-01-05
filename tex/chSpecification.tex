@@ -14,10 +14,10 @@
 %\section{Motivations}
 
 At this stage, we are in the presence of one of the main issues in the
-representation of mathematics in a formal language: very often,
+representation of mathematics in a formal language: Very often,
 several datastructures can be used to represent one and the same
-mathematical
-definition or statement. But this choice may have a significant impact
+mathematical definition or statement. The choice between them
+may have a significant impact
 on the upcoming layers of formalized theories. So far, we have seen two
 ways of expressing logical statements: using boolean predicates and
 truth values on one hand, and using logical connectives and the
@@ -36,6 +36,10 @@ or we can use an alternate formula, like for instance:
 Definition has_prop  T (a : T -> bool) (x0 : T) (s : seq T) :=
    exists i, i < size s /\ a (nth x0 s i)
 \end{coq}
+
+(where we are assuming that \C{x0} is a given element of \C{T};
+otherwise, we can, e.g., quantify the whole statement by
+\C{exists (x0 : T)}).
 
 Term \C{(has a s)} is a boolean value.  It is hence
 easy to use it in a proof to perform a case
@@ -98,9 +102,9 @@ principle holds on the corresponding predicate.
 The boolean reflection methodology proposes to avoid
 committing to one or the other of these options, and provides enough
 infrastructure to ease the bureaucracy of navigating between the two.
-The \C{is_true} coercion, which we have been using since the early
-pages of chapter~\ref{ch:proofs}, is in fact one ingredient of this
-infrastructure.
+The \C{is_true} coercion, which was being used silently in the
+background since the early pages of chapter~\ref{ch:proofs}, is in
+fact one piece of this infrastructure.
 
 \begin{coq}{}{title=The is\_true coercion}
 Definition is_true (b : bool) : Prop := b = true.
@@ -259,7 +263,7 @@ expression and a \C{Prop} statement is called a
 \emph{reflection view}, since it is used to view an assumption from a
 different perspective.
 
-\mantra{The name of a reflection view always end with a capital \C{P}.}
+\mantra{The name of a reflection view always ends with a capital \C{P}.}
 
 The next section is devoted to the proof and usage of more involved views.
 
@@ -1085,19 +1089,18 @@ is to use the worst invention of computer science: copy-paste.  The language of
 \Coq{} is sufficiently expressive to model symmetries, and the
 Ssreflect proof language provides facilities to write symmetric arguments.
 
-We prove the following characterization of the max of two natural numbers.
-
-$$
-\forall n_1, n_2, m, \quad m \le max(n_1,n_2)
+We prove the following characterization of the max of two natural numbers:
+\[
+\forall n_1, n_2, m, \quad m \le \max(n_1,n_2)
 \Leftrightarrow m \le n_1 \textrm{ or } m \le n_2
-$$
+\]
 
-The proof goes like that: without loss of generality we can assume that
+The proof goes as follows: Without loss of generality we can assume that
 $n_2$ is greater or equal to $n_1$, hence $n_2$ is the maximum between
 $n_1$ and $n_2$.  Under this assumption it is sufficient to check
 that $m \le n_2$ holds iff either $m \le n_2$ or $m \le n_1$.
 The only non-trivial case is when we suppose $m \le n_1$ and
-we need to prove $m \le n_2$ which holds by transitivity.\hfill$\square$
+we need to prove $m \le n_2$, which holds by transitivity.\hfill$\square$
 
 As usual we model double implication as an equality between two
 boolean expressions:
@@ -1107,7 +1110,7 @@ Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 \end{coq}
 
 The proof uses the following lemmas.  Pay attention to the premise of
-\C{orb_idr} that is an implication.
+\C{orb_idr}, which is an implication.
 
 \begin{coq}{}{title=Tools}
 Lemma orb_idr (a b : bool) : (b -> a) -> a || b = a.
@@ -1290,10 +1293,10 @@ the \C{max} is \C{n1} due to the extra assumption.
 \mcbLEVEL{1}
 \mcbsubsubsection{Partially applied views}
 
-A less important, but very widespread feature, of the Ssreflect
-proof language can be used to shrink even further the proof.
+A less important, but very widespread, feature of the Ssreflect
+proof language can be used to shrink the proof even further.
 In this proof script, we have named the fact \C{le_mn2} only for the
-purpose of refering to this fact in the transitivity step.
+purpose of referring to this fact in the transitivity step.
 
 
 \begin{coq}{}{}
@@ -1311,7 +1314,7 @@ we have used it to transform the top assumption \C{(m <= n2)}.  Note that
 the \C{leq_trans} expects a second proof argument, and that its type
 would fix \C{b}, that is otherwise unspecified.  If one puts a
 full stop just before the terminating \C{->}, to see the output of
-the view application, he sees the following stack:
+the view application, one sees the following stack:
 
 \begin{coq}{}{}
 (forall b, n2 <= b -> m <= b) -> m <= n1.
@@ -1369,7 +1372,7 @@ Lemma edivnP m d (ed := edivn m d) :
 Proof.
 \end{coq}
 
-As one expects, being \C{edivn} a recursive program, its specification
+As one expects, \C{edivn} being a recursive program, its specification
 needs to be proved by induction.  Given that the recursive call is on
 the subtraction of the input, we need to perform a strong induction,
 as we did for the postage example in section~\ref{sec:strongind}.
