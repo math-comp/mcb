@@ -851,7 +851,7 @@ $~$
 \end{coq}
 \coqrun{name=f_plus_one_run}{f_plus_one}
 \begin{coqout}{f_plus_one_run}{width=6cm,title=Response}
-Error: Non-exhaustive pattern
+Error: Non exhaustive pattern
 matching: no clause found for
 pattern S _
 \end{coqout}
@@ -1205,11 +1205,13 @@ like the following, where $\alpha$ is a schematic variable:
 Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 \end{coq}
 
-\noindent Even if this may look like familiar jargon to some readers,
-we really want this definition to be a first-class citizen of the
-\Coq{} language, rather than a ``macro'' that would have to be
-converted into a valid definition for each specific choice of \(\alpha\)
-before it can be used.
+\noindent This may look familiar jargon to some readers. In the
+present context however, we would rather like to avoid appealing to
+any notion of schema, that would be somehow added on top of the
+\Coq{} language. This way, we will make possible the writing of
+formal sentences with arbitrary quantifications on this parameter
+$\alpha$.
+
 %  We want to
 % reason and
 % prove theorems about such data types and related programs inside the formal
@@ -1528,7 +1530,7 @@ which makes use of the option type to describe a partial injection.
 
 Another typical polymorphic data type is the one of pairs, that
 lets one put together any two values:
-\index[coq]{\C{(_ * _)} (triple)}
+\index[coq]{\C{(_ * _)} (pair)}
 \index[coq]{\C{(_ , _)}}
 
 \begin{coq}{}{}

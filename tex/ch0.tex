@@ -46,9 +46,9 @@ division algorithm, in a few lines of proof text.
 Reynald Affeldt, Guillaume Allais, Sophie Ber\-nard, Alain Giorgetti,
 Laurence Rideau, Damien Rouhling, Michael Soegtrop for their comments
 on earlier versions of this text. They are specially grateful to
-Pierre Jouvelot, Darij Grinberg and Anton Trunov for their careful
-proofreading and for their suggestions. Many thanks to Hanna for the
-illustrations.
+Pierre Jouvelot, Darij Grinberg, Michael Nahas and Anton Trunov for
+their careful proofreading and for their suggestions. Many thanks to
+Hanna for the illustrations.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section*{Structure of the book}
@@ -65,33 +65,39 @@ with more stars for more advanced topics.
 
 This part introduces two languages and a formalization approach.
 
-The first language is \emph{Gallina}, the mathematical foundation of the \Coq{}
-system:  For the expert reader, the type theory called \mcbCIC{}.  Such
-language is both a programming and a specification language: it is used to
-declare data, define programs, specify their behavior and represent their
-correctness proofs.  Its most intriguing features are two: a rich system of
-types, that can depend on other types or even values, and the notion of
-computation, that is considered a first-class citizen, i.e., a true form of
-proof.
+The first one is the formal language used to represent mathematics in
+the \Coq{} proof assistant. It is called \emph{Gallina} and, as expert
+reader may know, it is based on a variant of type theory named the
+\mcbCIC{}. As this part of the book explains, the very same language is
+used to define mathematical objects, to describe their properties and
+to spell out the proofs of these properties. Another distinguishing
+feature of this foundational framework is the status it awards to
+computation, and the prominent role computations shall play in proofs.
 
-The second language, \mcbSSR{} (\emph{Ssreflect} for short), is used to write
-proofs.  Its most characterizing features are two: it lets one write
-concise and stable proof scripts enabling the development of large
-libraries over a long time frame, and provides good support for the
-formalization approach the \mcbMC{} library is based on, from which
-its name is also taken.
+The second one is called \mcbSSR{}, \emph{Ssreflect} for
+short. Most often, a user of the \Coq{} proof assistant writes formal
+proofs gradually, and takes benefit from frequent interactions with
+the system. SSreflect is a programming language designed to
+ease this activity of writing formal proofs. It has been designed to
+provide some support for the authors of large formal
+libraries, developed over a long time frame. The maintenance of large
+formal libraries require a solid writing discipline to be tractable,
+as it is the case for any large corpus of code. The \emph{Ssreflect}
+language helps writing scripts that are robust to the ancillary
+changes triggered by refactoring the libraries or changing the formal
+definitions. Actually, small scale reflection is firstly the name of a
+formalization methodology. Initially conceived for  the formal proof
+of the Four Colors Theorem, it became a pillar of the \mcbMC{}
+library and of the formal proof of the Odd Order
+Theorem. The Ssreflect language was named after this methodology
+because of the support it provides for its implementation.
 
-The \emph{\mcbSSR{}} approach was initially conceived for the formal proof
-of the Four Colors Theorem, and it later served as the pillar for
-the \mcbMC{} library and the formal proof of the Odd Order Theorem.
-Such approach takes major advantage from the symbolic computation
-capabilities provided by Gallina.
-
-The \Coq{} system provides a rich platform in which all this is
-put together.  \Coq{} implements the Gallina language, and a checker for it.
-It also provides a platform for the Ssreflect proof language and
-many other facilities that are crucial for the \mcbMC{} library, like
-type inference.
+% The \Coq{} system provides a rich platform in which all this is
+% put together.  \Coq{} implements both the Gallina language, and a
+% checker for it.
+% It also provides a platform for the Ssreflect proof language and
+% for many other facilities that are crucial to the \mcbMC{} library, like
+% type inference.
 
 \subsection*{Part 2: Formalization techniques}
 
