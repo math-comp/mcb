@@ -5,6 +5,7 @@ The authors made the deliberate choice to postpone the presentation of
 the mathematical foundations of the \Coq{} system and the formal
 definition of its language. Instead, the previous chapters have
 insisted on the definition of (typed) programs and on the way these
+% [DG] What does "insist" mean here?
 programs can be used to describe computable functions and decidable
 predicates. This take on calculations is indeed both at the core of
 the type theory underlying \Coq{} and one of the crucial ingredients
@@ -32,7 +33,7 @@ homotopy type theory~\cite{hottbook} describes a very close formalism.
 
 
 \subsection{Propositions as types, proofs as programs}
-There exists several flavors of \emph{type theory} that can be used
+There exist several flavors of \emph{type theory} that can be used
 as a foundational language for mathematics, alternative to the
 flavors of set theory usually cited as the formal language of
 reference~\cite{bourbaki-sets}.
@@ -50,8 +51,8 @@ mathematical objects, statements and proofs. \emph{Logical statements}
 are identified with some \emph{types} and their \emph{proofs} with
 \emph{terms}, or programs, having this type. Thus proving a statement
 consists in fact in constructing a term of the corresponding type. In
-set theory the rules which govern the construction of
-grammatically correct statements are rather loose and the goal of the
+set theory, the rules which govern the construction of
+grammatically correct statements are rather loose, and the goal of the
 game is to construct a proof for a given proposition, using
 first-order logic to combine the axioms of the theory.
 The analogue of the meta-statement that a given
@@ -63,7 +64,7 @@ which means:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}.
 Typing judgments are justified from typing rules, and these
 justifications form trees similar to the proof trees of natural deduction.
-Before being more precise about what are contexts, terms and types,
+Before getting more precise about what contexts, terms and types are,
 let us emphasize a couple of important differences with set theory
 here: first, the typing judgment features explicit expressions for
 the term and the type, whereas the proof of a statement in first-order
@@ -78,8 +79,8 @@ So every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
 has a type in the context in which it occurs.
 
-We put aside inductive types until section~\ref{ssec:ind} and define
-inductively what are the terms of the formalism. We suppose that we
+We put aside inductive types until section~\ref{ssec:ind}, and define
+inductively what the terms of the formalism are. We suppose that we
 have a countable infinite set of symbols available for names, so that it is
 always possible to exhibit a name distinct from a given arbitrary
 finite collection of names. The simplest, atomic, terms are the
@@ -93,25 +94,30 @@ also a term. In fact this term will be used as a type, and it
 represents a family of types \C{U} indexed by elements of type \C{T}.
 Importantly, if \C{x} does not occur in the term \C{U} as a
 free variable, then this term is usually denoted \C{T -> U}: it is
+% [DG] Annoying technicality: If you denote \C{forall x : T, U} by
+% \C{T -> U}, then you are implicitly identifying the terms
+% \C{forall x : T, U} for all choices of the letter \C{x}. So it's
+% probably not terms you want to speak of, but alpha-equivalence
+% classes of terms.
 used for the type of functions having their argument of type \C{T} and
 their results of type \C{U}. For instance, there is no difference
 between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, but the
 notation. In the case where \C{x} does occur in term \C{U}, the term
 \C{forall x : T, U} is called a \emph{dependent type}.
 \index[concept]{dependent type}
-If \C{x} is a variable and \C{T}, \C{u}a
-are terms then \C{(fun x:T =>  u)} is a term, which represents a function
+If \C{x} is a variable and \C{T}, \C{u}
+are terms, then \C{(fun x:T => u)} is a term, which represents a function
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
-\C{(u t)} is also a term, which represents the application of (function)
+\C{(t u)} is also a term, which represents the application of (function)
 \C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
 if \C{t, u} are terms and \C{x} is a variable.
 
 A typing judgment $\Gamma \vdash t : T$ relates a
-context $\Gamma$ and two terms $t$ and $T$. As it name suggests,
+context $\Gamma$ and two terms $t$ and $T$. As its name suggests,
 the context logs all the facts assumed at the moment when the term
 occurs. It can be empty but otherwise contains typed variables and
 typed definitions. A typed variable is a pair of a name and a
-type: for instance, after executing the command \C{Variable n : nat},
+type: for instance, after executing the command \C{Variable n : nat.},
 the context contains the pair (\C{n} : \C{nat}). A typed definition is
 a triple of a name, a term, and a type: for instance, after executing
 the command \C{Definition a : T := t.}, the context contains the
@@ -123,7 +129,7 @@ defined inductively and simultaneously.
 Typing judgments with an empty context express the
 axiom rules of the formalism, like for instance the types of sorts:
 $$\vdash \C{Prop} : \C{Type}_1 \quad \vdash \C{Type}_i : \C{Type}_{i+1}.$$
-From now on and as the default display mode of Coq does, we will leave
+From now on and as the default display mode of \Coq{} does, we will leave
 the index of the sorts \C{Type}$_i$ implicit and just write \C{Type},
 as these indices do not play a significant role in what is presented
 in this book. A \emph{type} is a term which can be typed by a sort in
@@ -194,6 +200,8 @@ be written:
 \UnaryInfC{$\forall x, B$}
 \DisplayProof
 \end{center}
+% [DG] What do you mean by "fresh" here? $x$ can definitely appear
+% in $B$. And shouldn't $x$ be typed in the context?
 This presentation, in the style of natural deduction, means that to
 prove $A \to B$ one can prove $B$ under the
 assumption $A$ and to prove $\forall x,B$ one can prove $B$
@@ -290,9 +298,9 @@ Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
 \end{coq}
 
 
-The proofs as programs correspondence has a visible impact in the proofs
-part of the \mcbMC{} library.  In particular quantified lemmas, being programs,
-they can be instantiated by simply passing arguments to them.  Exactly as one can
+The proofs-as-programs correspondence has a visible impact in the proofs
+part of the \mcbMC{} library.  In particular, quantified lemmas, being programs,
+can be instantiated by simply passing arguments to them.  Exactly as one can
 pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
 can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
 \C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
@@ -302,9 +310,10 @@ difference between the \emph{dependent function space} ($\forall$)
 and the standard function space ($\to$).
 \index[concept]{dependent function space}
 
-\mantra{Lemma names can be used as functions and you can pass to them arguments.
-For example
-\C{(addnC 3)} is a proof that \C{(forall y, 3 + y = y + 3)} and
+\mantra{Lemma names can be used as functions, and you can pass
+arguments to them.
+For example,
+\C{(addnC 3)} is a proof that \C{(forall y, 3 + y = y + 3)}, and
 \C{(prime_gt0 p_pr)} is a proof that \C{(0 < p)} whenever
 \C{(p_pr : prime p)}.}
 
@@ -858,7 +867,8 @@ finding the right balance only comes with experience.
 
 \gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
-on the subgoals.%\footnote{not the status quo, but I prefer this exception to the current one}
+on the subgoals.
+%\footnote{not the status quo, but I prefer this exception to the current one}
 Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 
 
@@ -866,14 +876,14 @@ Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 \mcbLEVEL{1}
 \mcbsubsubsection{Working on the stack}
 
-The stack can also be used as a work place.  Indeed there is
+The stack can also be used as a workplace.  Indeed there is
 no need to pull from the stack all items.  If we take the previous example
 
 \begin{coqout}{name=Stack}{}
 ========================
 forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
-and we stop just after applying the view, we end up is a valid state.
+and we stop just after applying the view, we end up in a valid state:
 
 \begin{coq}{}{width=6cm}
 move=> [x y] /= /prime_gt1.
@@ -1065,8 +1075,8 @@ will come handy in section~\ref{sec:strongind}.
 
 In chapter~\ref{ch:prog} we have seen how to build and use (call or destruct)
 anonymous functions and data types.  All these
-constructions have found a correspondence in the Curry-Howard correspondence.
-The only missing piece is recursive programs.  For example
+constructions have found counterparts in the Curry-Howard correspondence.
+The only missing piece is recursive programs.  For example,
 \C{addn} was written by recursion on its first argument, and is a
 function taking as input two numbers and producing a third one.
 We can write programs by recursion that take as input, among regular  data,
@@ -1099,13 +1109,13 @@ Fixpoint nat_ind (P : nat -> Prop)
 The \Coq{} system generates this program automatically, as soon as
  the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
-through the lenses of the proofs as programs correspondence, this means
+Through the lenses of the proofs-as-programs correspondence, this means
 that the induction principle just coded is sound, i.e., based on a
 well-founded order relation.
 \index[concept]{termination}
 \index[concept]{consistency}
 
-If non-terminating functions are not ruled out, it easy to inhabit
+If non-terminating functions are not ruled out, it is easy to inhabit
 the \C{False} type, even if it lacks a proper constructor.
 
 \begin{coq}{}{}
