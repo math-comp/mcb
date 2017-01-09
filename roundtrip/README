@@ -52,6 +52,7 @@ Commands:
 
 Comparison between actual and expected output/snippet is up to spaces
 and '...' that is a wild card to be used in the expected output/snippet.
+Add ';dots' after 'run' in order to have '...' appended to the expected output.
 
 Example:
 --------

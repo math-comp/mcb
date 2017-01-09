@@ -31,6 +31,7 @@ function def(opts,code)
 	  "Snippet named "..opts.name.." already defined at "..
 		  (snippets[name] or { line ="" }).line)
 	--print('snippet '..name,code)
+	code = code:gsub('%$~%$','')
 	snippets[name]={ code = code..'\n', line = opts.line }
 end
 
@@ -39,10 +40,11 @@ runs = {}
 function run(opts,snips)
 	local name = assert(opts.name,"A run must have a name")
 	local fail = opts.fail
+	local line = opts.line or ""
 	local opts = opts.opts or ""
 
 	assert(not(runs[name]),"Two runs named "..name)
-	runs[#runs+1]= { name = name, opts = opts, snips = snips, fail = fail }
+	runs[#runs+1]= { name = name, opts = opts, snips = snips, fail = fail, line = line }
 	runs[name]=true
 end
 
@@ -74,23 +76,23 @@ function exec(run)
 	end
 	tmp:close()
 
-	print("Executing run " .. name..' ('..snips..')')
+	print("Executing " .. run.line .. "run " .. name..' ('..snips..')')
 	io.flush(io.stdout)
 	local _,_,rc = os.execute(cmdline)
 	if rc ~= 0 and not fails then
-		print('Execution of run '..name..' ('..snips..') failed:')
+		print('Execution failed:')
 		os.execute('tail ' .. runoname)
 		print()
 	end
 	if rc == 0 and fails then
-		print('Execution of run '..name..' ('..snips..') succeeded:')
+		print('Execution succeeded:')
 		os.execute('tail ' .. runoname)
 		print()
 	end
 end
 
 function strip_space(s)
-  return s:gsub('%s%s*',' '):gsub('^%s*',''):gsub('%$~%$',''):gsub('%s*$','')
+  return s:gsub('%$~%$',''):gsub('%s%s*',' '):gsub('^%s*',''):gsub('%s*$','')
 end
 
 function eq_up_to(a,b,i,j)
@@ -136,6 +138,7 @@ end
 outs = {}
 
 function out(opts, expected)
+  if opts.dots then expected = expected .. '...' end
   outs[#outs+1] = { opts = opts, expected = expected, line=opts.line }
 end
 
@@ -157,7 +160,7 @@ function check_out(r)
 	   "Unable to open "..outname.." (part of run "..run..")")
 	local data = handle:read('*a')
 
-	compare(opts,data,expected,'in output of run '..run..' (file '..outname..')')
+	compare(opts,data,expected,'in output of '..line..'run '..run..' (file '..outname..')')
 end
 
 prts = {}
@@ -174,7 +177,7 @@ function check_prt(r)
 	local opts = r.opts
 	local expected = r.expected
 	local data = ""
-	for s in assert(opts.def,"prt needs a def"):gmatch('[^,][^,]*') do
+	for s in assert(opts.def,"snippet needs a def or a name at " .. opts.line):gmatch('[^,][^,]*') do
 		assert(snippets[s],r.line.."no snippet called "..s)
 	  data = data .. snippets[s].code
 	end
@@ -234,13 +237,24 @@ function parse_env(env,data)
 end
 
 function parse_line(env,data)
+	function line(i)
+		local _, n = data:sub(1,i):gsub('\n','')
+		return fname..':'..(n+1)..': '
+	end
   local envname = options[env]
 	local extra = "(%b{})"
 	if env == "def" or env == "run" then extra = "()" end -- no extra arg
-  data:gsub('\n([^\n]*)\\'..envname..'(%b{})'..extra..'(%b{})',
-		function(comment, arg, _, data)
-			if not(is_comment(comment)) then parse(env, arg, data, "?") end
-		end)
+	local i = 0
+	while true do
+    local _, start, comment, arg, _, snips =
+	    data:find('\n([^\n]*)\\'..envname..'(%b{})'..extra..'(%b{})',i)
+	  if start ~= nil then
+			i = start
+		  if not(is_comment(comment)) then parse(env, arg, snips, line(start)) end
+		else
+		  break
+		end
+  end
 end
 
 function main()
@@ -277,7 +291,15 @@ function main()
   	parse_env('def',data)
   	parse_env('out',data)
   	parse_env('prt',data)
-  	
+
+		print("")
+
+		table.sort(runs,function(r1,r2)
+			local l1 = r1.line:match("^[^:]*:([0-9]*):")
+			local l2 = r2.line:match("^[^:]*:([0-9]*):")
+			return (tonumber(l2) or 0) < (tonumber(l1) or 0)
+		end)
+
   	for i = #runs,1,-1 do exec(runs[i]) end
   	for _,r in ipairs(outs) do check_out(r) end
   	for _,r in ipairs(prts) do check_prt(r) end
