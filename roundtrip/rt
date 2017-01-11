@@ -71,7 +71,7 @@ function exec(run)
   tmp:write('(* '..cmdline..' *)')
 	for s in snips:gmatch('[^,][^,]*') do
 		tmp:write('(* '..s..' *)')
-	  tmp:write(redirect(assert(snippets[s],"No snippet named "..s).code,prefix..'_'))
+	  tmp:write(redirect(assert(snippets[s],run.line.."No snippet named "..s).code,prefix..'_'))
 		snippets[s].used=true
 	end
 	tmp:close()
@@ -92,7 +92,7 @@ function exec(run)
 end
 
 function strip_space(s)
-  return s:gsub('%$~%$',''):gsub('%s%s*',' '):gsub('^%s*',''):gsub('%s*$','')
+  return s:gsub('%$~%$',''):gsub('%s%s*',' '):gsub('^%s*',''):gsub('%s*$',''):gsub('========*','=====')
 end
 
 function eq_up_to(a,b,i,j)
@@ -139,6 +139,7 @@ outs = {}
 
 function out(opts, expected)
   if opts.dots then expected = expected .. '...' end
+  if opts.stod then expected = '...' .. expected end
   outs[#outs+1] = { opts = opts, expected = expected, line=opts.line }
 end
 
