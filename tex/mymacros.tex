@@ -1,4 +1,5 @@
 % vim:set errorformat="":
+\usepackage[pass]{geometry}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -15,6 +16,10 @@
 \usepackage{exercise}
 \usepackage{imakeidx}
 \usepackage[normalem]{ulem}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{needspace}
+\usepackage{lscape}
 %\usepackage{fontspec} % xelatex only
 \usepackage{hyperref} % must be the last one
 \hypersetup{
@@ -222,3 +227,13 @@
 	boxrule=0.2mm,top=1mm,bottom=1mm,
 	#2
 }
+
+\newcommand{\somethingfollows}{\needspace{2\baselineskip}}
+\newcommand{\ssrc}[2]{\somethingfollows\C{#1}
+\setlength{\leftskip}{1.5em}
+
+#2
+
+\setlength{\leftskip}{0cm}\vspace{0.4em}}
+%\newcommand{\ssrc}[2]{\needspace{2\baselineskip}\C{#1}\vspace{0.4em}\\\hspace*{1.5em}\begin{minipage}{0.28\textwidth}#2 \hspace*{\fill}\end{minipage}\vspace{0.4em}}
+\newcommand{\caveat}[1]{\fbox{caveat}: #1}
