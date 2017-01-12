@@ -1,11 +1,14 @@
-quick:
+quick: gitrev
 	pdflatex main && cp main.pdf book.pdf
-all:
+all: gitrev
 	pdflatex main
 	bibtex main
 	pdflatex main
 	pdflatex main
 	pdflatex main && cp main.pdf book.pdf
+.PHONY: gitrev
+gitrev:
+	git describe --tags > gitrev
 
 clean:
 	rm -rf .*/rt *.aux
