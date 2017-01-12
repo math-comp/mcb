@@ -305,7 +305,7 @@ function main()
   	for _,r in ipairs(outs) do check_out(r) end
   	for _,r in ipairs(prts) do check_prt(r) end
 		for n,s in pairs(snippets) do
-		  if not s.used then print("Warning: untested snippet "..n) end
+		  if not s.used then print("Warning: untested snippet "..s.line..n) end
 	  end
   end
 end
