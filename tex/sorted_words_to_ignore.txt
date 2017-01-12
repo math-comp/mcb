@@ -133,7 +133,6 @@ UnitRing
 Unported
 UserRHSPat
 UserRwPat
-Whwn
 Zmn
 ZmodMixin
 ZmodType
@@ -161,7 +160,6 @@ addnn
 addoid
 addr
 addv
-adfasdfasdfafafafafafaf
 adjoint
 algC
 allP
