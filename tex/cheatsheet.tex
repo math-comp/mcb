@@ -1,0 +1,717 @@
+\pagestyle{empty}
+\newgeometry{left=1cm,right=1cm,top=1cm,bottom=1.5cm}
+\begin{landscape}
+\begin{small}
+\begin{multicols*}{3}[\begin{center}\section*{\underbar{Cheat Sheet}}\end{center}]
+
+\subsection*{Terminology}
+
+$$
+\begin{array}{rl}
+	Context &
+\left\{\begin{minipage}{0.14\textwidth}
+\begin{lstlisting}
+x : T
+S : {set T}
+xS : x \in S
+\end{lstlisting}
+\end{minipage}
+\right.
+\\
+The~bar & \mathrm{~~\C{===============}}
+\\
+Goal &
+\left\{
+\begin{minipage}{0.20\textwidth}
+\begin{lstlisting}
+forall y, y == x -> y \in S
+\end{lstlisting}
+\end{minipage}
+\right.
+\\
+& \raisebox{0.8em}[0em][0em]{$
+~~\underbrace{~~~~~~~~~~~~~~~~~~~~~~~~~~~}_{}~~~\underbrace{~~~~~~~~~~~}_{}$}
+\\
+& ~~~~~~~~Assumptions~~~~~~Conclusion
+\end{array}
+$$
+
+\begin{description}
+\item[Top] is the first assumption, \C{y} here
+\item[Stack] alternative name for the list of $Assumptions$
+\end{description}
+
+\subsection*{Popping from the stack}
+Note: in the following example we assume $cmd$ does nothing, exactly like
+\C{move}, to focus on the effect of the intro pattern.
+\ssrc{$cmd$=> x px}{
+  Run $cmd$, then pop Top, put it in the context naming it \C{x} then
+  pop the new Top and names it \C{px} in the context}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   forall x,
+    P x -> Q x -> G
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : T
+   px : P x
+  =========
+   Q x -> G
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{$cmd$=> [|x xs] //}{
+  Run $cmd$, then reason by cases on Top. In the first
+  breanch do nothing, in the second one pop two
+  assumptions naming then \C{x} nd \C{xs}. Then get rid of
+  trivial goals. Note that, since only the first branch is
+  trivial, one can write \C{=> [// | x xs]} too.\caveat{
+  Immediately after
+  \C{case} and \C{elim} it does not perform any case analysis, but
+  can still introduce different names in different branches}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   forall s : seq nat,
+    0 < size s -> P s
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+   xs : seq nat
+  =========
+   0 < size (x :: xs) -> P (x :: xs)
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{$cmd$=> /andP[pa pb]}{
+  Run $cmd$, then apply the view \C{andP} to Top, then destruct the
+  conjuction and introduce in the context the two
+  parts naming the \C{pa} and \C{pb}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   A && B -> C -> D
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   pa : A
+   pb : B
+  =========
+   C -> D
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{$cmd$=> /= \{px\}}{
+  Run $cmd$ then simplify the goal then discard \C{px} from
+  then context}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+   px : P x
+  =========
+   true && Q x -> R x
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+  =========
+   Q x -> R x
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{$cmd$=> [y -> \{x\}]}{
+  Run $cmd$ then destruct the existential, then introduce y, 
+  then rewrite with Top left to right and
+  discard the equation, then clear x}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.20\textwidth}\begin{lstlisting}
+   x : nat
+  =========
+   (exists2 y, x = y & Q y)
+     -> P x
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   y : nat
+  =========
+   Q y -> P y
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{$cmd$=> /(_ x)$\;$ h}{Introduce \C{h} specialized to \C{x}}
+
+  \begin{tabular}{c@{$\to$}c}
+  \begin{minipage}{0.17\textwidth}\begin{lstlisting}
+   P : nat -> Prop
+   x : nat
+  ======================
+   (forall n, P n) -> G
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.20\textwidth}\begin{lstlisting}
+   P : nat -> Prop
+   x : nat
+   h : P x
+  =================
+   G
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\subsection*{Pushing to the stack}
+Note: in the following $cmd$ is not 
+\C{apply} or \C{exact}. Moreover we display the
+goal just before $cmd$ is run.
+
+\ssrc{$cmd$: (x)$\;\;$y}{
+  Push \C{y} then push \C{x} on the stack. \C{y} is also cleared}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x, y : nat
+   px : P x
+  =========
+   Q x y
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+   px : P x
+  =========
+   forall x0 y, Q x0 y
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{$cmd$: \{-2\}x (erefl x)}{
+  Push the type of \C{(erefl x)}, then push \C{x} on the stack
+  binding all but the second occurrence}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+  =========
+   P x
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+  =========
+   forall x0,
+    x0 = x -> P x0
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{$cmd$: \_.+1 \{px\}}{
+  Clear \C{px} and generalize the goal with
+  respect to the first match of the pattern \C{\_.+1}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+   px : P x
+  =========
+   x < x.+1
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+  =========
+   forall x0, x < x0
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\subsection*{Proof commands}
+\ssrc{rewrite Eab (Exc b).}{
+  Rewrite with \C{Eab} left to right, then with \C{Exc} by
+  instantiating the first argument with \C{b}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+   Exc : forall x, x = c
+  =========
+   P a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+   Exc : forall x, x = c
+  =========
+   P c
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{rewrite -Eab \{\}Eac.}{
+Rewrite with \C{Eab} right to left then with \C{Eac}
+left to right, finally clear \C{Eac}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+   Eac : a = c
+  =========
+   P b
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+  =========
+   P c
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{rewrite /(_ && _).}{
+  Unfold the definition of \C{&&}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   a : bool
+  =========
+   a && a = a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   a : bool
+  =========
+   if a then a else false = a
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{rewrite /= -[a]/(0+a)$\;$ -/c.}{
+  Simplify the goal, then change \C{a} into \C{0+a}, finally fold back
+  the local definition \C{c}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   a, b : nat
+   c := b + 3 : nat
+  =========
+  true && (a == b + 3)
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   a, b : nat
+   c := b + 3 : nat
+  =========
+  0 + a == c
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{apply: H.}{
+  Apply \C{H} to the current goal}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   H : A -> B
+  =========
+   B
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   A
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{case: ab.}{
+  Eliminate the conjunction or disjunction}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   ab : A /\ B
+  =========
+   G
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   A -> B -> G
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{case: (leqP a b).}{
+Reason by cases using the \C{leqP} spec lemma}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a, b : nat
+  =========
+   a <= b && b > a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a, b : nat
+  =========
+   true && false
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a, b : nat
+  =========
+   false && true
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{elim: s.}{Perform an induction on {\tt s}}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   s : seq nat
+  =========
+   P s 
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.08\textwidth}\begin{lstlisting}
+  =========
+   P [::]
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   forall n s, 
+    P s -> P (n :: s)
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{elim/last\_ind: s}{
+  Start an induction on \C{s} using the induction
+  principle \C{last\_ind}}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   s : seq nat
+  =========
+   P s
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.08\textwidth}\begin{lstlisting}
+  =========
+   P [::]
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.12\textwidth}\begin{lstlisting}
+  =========
+   forall s x,
+    P s -> 
+     P (rcons s x)
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{have pa : P a.}{
+  Open a new goal for \C{P a}. Once resolved
+  introduce a new entry in the context for it named \C{pa}}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a : T
+  =========
+   G
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a : T
+  =========
+   P a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a : T
+   pa : P a
+  =========
+   G
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{by [].}{
+  Prove the goal by trivial means, or fail}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   0 <= n
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{exact: H.}{
+  Apply \C{H} to the current goal and then assert all
+  remaining goals, if any, are trivial. Equivalent to
+  \C{by apply: H.}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   H : B
+  =========
+   B
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+%\columnbreak
+
+\subsection*{Reflect and views}
+\ssrc{reflect P b}{States that \C{P} is logically equivalent to \C{b}}
+
+\ssrc{apply: (iffP V)}{Proves a reflection goal, applying the view
+  lemma \C{V} to the propositional part of \C{reflect}. E.g. \C{apply:
+    (iffP idP)}}
+
+  \begin{tabular}{c@{$\to$}cc}
+  \begin{minipage}{0.12\textwidth}\begin{lstlisting}
+   P : Prop
+   b : bool
+  =============
+   reflect P b
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   P : Prop
+   b : bool
+  =========
+   b -> P
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   P : Prop
+   b : bool
+  =========
+   P -> b
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{apply/V1/V2}{Prove boolean equalities by considering them as
+  logical double implications. The term \C{V1} (resp. \C{V2}) is the
+  view lemma applied to the left (resp. right) hand
+  side. E.g. \C{apply/idP/negP}}
+
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   b1 : bool
+   b2 : bool
+  =========
+   b1 = ~~ b2
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   b1 : bool
+   b2 : bool
+  =========
+   b1 -> ~ b2
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   b1 : bool
+   b2 : bool
+  =========
+   ~ b2 -> b1
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{rewrite: (eqP Eab)}{rewrite with the boolean equality \C{Eab}}
+
+  \begin{tabular}{c@{$\to$}cc}
+  \begin{minipage}{0.12\textwidth}\begin{lstlisting}
+   Eab : a == b
+  =============
+   P a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.12\textwidth}\begin{lstlisting}
+   Eab : a == b
+  =========
+   P b
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\subsection*{Idioms}
+
+\ssrc{case: b => [h1| h2 h3]}{
+  Push \C{b}, reason by cases, then pop
+  \C{h1} in the first branch and \C{h2} and \C{h3} in the second}
+
+\ssrc{have /andP[x /eqP->] : P a && b == c}{
+  Open a subgoal for \C{P a && b == c}. When proved
+  apply to it the \C{andP} view, destruct the conjunction,
+  introduce \C{x}, apply the view \C{eqP} to turn
+  \C{b == c} into \C{b = c}, then rewrite with it and discard the
+  equation}
+
+\ssrc{elim: n.+1 \{-2\}n (ltnSn n) => \{n\}// n}{
+  General induction over \C{n}, note that the first goal
+  has a false assumption \C{forall n, n < 0 -> ...} and is
+  thus solved by \C{//}}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   n : nat
+  =========
+   P n
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.22\textwidth}\begin{lstlisting}
+   n : nat
+  =========
+   (forall m, m < n -> P m) -> 
+    forall m, m < n.+1 -> P m
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{rewrite lem1 ?lem2 //}{
+  Use the equation with premises \C{lem1}, then
+  get rid of the side conditions with \C{lem2}}
+
+\subsection*{Searching}
+
+\ssrc{Search _ addn (_ * _)$\;$ "C"$\;$ in ssrnat}{
+  Search for all theorems with no constraints on
+  the main conclusion (conclusion head symbol is the wildcard \C{_}),
+  that talk about the \C{addn} constant, matching anywhere the pattern
+  \C{(_ * _)} and having a name containing the string \C{"C"} in the
+  module \C{ssrnat}
+}
+
+\subsection*{Misc notations}
+\begin{lstlisting}
+"f1 \o f2" := (comp f1 f2)
+"x \in A" := (in_mem x (mem A))
+"x \notin A" := (~~ (x \in A))
+"[ /\ P1 , P2 & P3 ]" := (and3 P1 P2 P3)
+"[ \/ P1 , P2 | P3 ]" := (or3 P1 P2 P3)
+"[ && b1 , b2 , .. , bn & c ]" :=
+  (b1 && (b2 && .. (bn && c) .. ))
+"[ || b1 , b2 , .. , bn | c ]" :=
+  (b1 || (b2 || .. (bn || c) .. ))
+"#| A |" := (card (mem A))
+"n .-tuple" := (tuple_of n)
+"'I_ n" := (ordinal n)
+"f1 =1 f2" := (eqfun f1 f2)
+"b1 (+) b2" := (addb b1 b2)
+\end{lstlisting}
+
+\subsection*{Notations for natural numbers: \C{nat}}
+\begin{lstlisting}
+"n .+1" := (succn n)
+"n .-1" := (predn n)
+"m + n" := (addn m n)
+"m - n" := (subn m n)
+"m <= n" := (leq m n)
+"m < n"  := (m.+1 <= n)
+"m <= n <= p" := ((m <= n) && (n <= p))
+"m * n" := (muln m n)
+"n .*2" := (double n)
+"m ^ n" := (expn m n)
+"n `!" := (factorial n)
+"m %/ d" := (divn m d)
+"m %% d" := (modn m d)
+"m == n %[mod d ]" := (m %% d == n %% d)
+"m %| d" := (dvdn m d)
+"pi .-nat" := (pnat pi)
+\end{lstlisting}
+
+\subsection*{Notations for lists: \C{seq T}}
+\begin{lstlisting}
+"x :: s" := (cons _ x s)
+"[ :: ]" := nil
+"[ :: x1 ]" := (x1 :: [::])
+"[ :: x & s ]" := (x :: s)
+"[ :: x1 , x2 , .. , xn & s ]" :=
+  (x1 :: x2 :: .. (xn :: s) ..)
+"[ :: x1 ; x2 ; .. ; xn ]" :=
+  (x1 :: x2 :: .. [:: xn] ..)
+"s1 ++ s2" := (cat s1 s2)
+\end{lstlisting}
+
+
+\subsection*{Notations for iterated operations}
+\begin{lstlisting}
+"\big [ op / idx ]_ i F" :=
+"\big [ op / idx ]_ ( i | P ) F" :=
+"\big [ op / idx ]_ ( i <- r | P ) F" :=
+"\big [ op / idx ]_ ( m <= i < n | P ) F" :=
+"\big [ op / idx ]_ ( i < n | P ) F" :=
+"\big [ op / idx ]_ ( i \in A | P ) F" :=
+"\sum_ i F" :=
+"\prod_ i F" :=
+"\max_ i F" :=
+"\bigcap_ i F" :=
+"\bigcup_ i F" :=
+\end{lstlisting}
+
+\caveat{in the general form, the iterated operation \C{op}
+is displayed in prefix form (not in infix form)}
+\caveat{the string \C{"big"} occurs in every lemma concerning
+iterated operations}
+
+\subsection*{Rewrite patterns}
+
+\ssrc{rewrite [pat]lem [in pat2]lem2 [X in pat3]lem3}{
+  Rewrite the subterms selected by the pattern \C{pat} with \C{lem}.
+  Then in the subterms selected by the pattern \C{pat2}
+  match the pattern inferred from the left hand side of \C{lem2} and
+  rewrite the terms selected by it. Last, in the sub terms selected by
+  \C{pat3} rewrite with \C{lem3} the sub terms identified by \C{X} exactly}
+
+\ssrc{rewrite \{3\}[in X in pat1]lem1}{
+  Like in \C{rewrite [X in pat1]lem1} but use the pattern
+  inferred from \C{lem1} to identify the sub terms of \C{X} to be 
+  rewritten. Of these terms, rewrite only the third one. Example:
+  \C{rewrite \{3\}[in X in f \_ X]E.}}
+  \begin{tabular}{cc} 
+  \begin{minipage}{0.24\textwidth}\begin{lstlisting}
+  E : a = c 
+  =========
+  a + f a (a + a) = f a (a + a) + a
+  \end{lstlisting}\end{minipage}
+  $\to$\\
+  \begin{minipage}{0.28\textwidth}\begin{lstlisting}
+      E : a = c 
+      =========
+      a + f a (a + a) = f a (c + a) + a
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+
+\ssrc{rewrite [e in X in pat1]lem1}{
+  Like before, but override the pattern inferred from \C{lem1} with
+  \C{e}}
+
+\ssrc{rewrite [e as X in pat1]lem1}{
+  Like \C{rewrite [X in pat1]lem1} but match
+  \C{pat1}[\C{X} := \C{e}] insted of just \C{pat1}}
+
+\ssrc{rewrite /def1 -[pat]/term /=}{
+  Unfold all occurrences of \C{def1}. Then match the goal against \C{pat}
+  and change all its occurrences into \C{term} (pure computation). Last
+  simplify the goal}
+
+\ssrc{rewrite \3?lem2 // \{hyp\} => x px}{
+  Rewrite from 0 to 3 times with lem2, then
+  try to solve with \C{by []} all the goals. Finally clear \C{hyp}
+  and introduce \C{x} and \C{px}}
+
+\subsection*{Pattern matching detailed rules}
+
+\begin{description}
+\item[pattern] a term, possibly containing \C{\_}
+\item[key] The head symbol of a pattern
+\end{description}
+
+The sub terms selected by a pattern:
+\begin{enumerate}
+\item the goal is traversed outside in, left to right, looking for
+      verbatim occurrences of the key
+\item the sub terms whose key matches verbatim are higher order
+      matched (i.e. up to definition unfolding and recursive function
+      computation) against the pattern
+\item if the matching fails, the next sub term whose key matches is tried
+\item if the matching succeeds, the sub term is considered to be the
+      (only) instance of the pattern
+\item the sub terms selected by the pattern are then all the copies of the
+      instance of the pattern
+\item these copies are searched looking again at the key, and higher order 
+      comparing the arguments pairwise
+\end{enumerate}
+
+Note: occurrence numbers can be combined with patterns. They refer 
+to the list of of sub terms selected by the (last) pattern (i.e. they
+are processed at the very end).
+
+\ssrc{set n := \{2 4\}(\_ + b)}{
+  Put in the context a local definition named \C{n} for the 
+  second and fourth occurrences of the sub terms selected by the 
+  pattern \C{(\_ + b)}}
+  \begin{tabular}{cc} 
+  \begin{minipage}{0.22\textwidth}\begin{lstlisting}
+  =========
+  a + c + (a + b) + (a + b) = 
+   a + (a + b) + (0 + a + b) + c
+  \end{lstlisting}\end{minipage}
+  & $\to$\\
+  \begin{minipage}{0.22\textwidth}\begin{lstlisting}
+      n := a + b
+     =========
+      a + c + (a + b) + n = 
+       a + (a + b) + n + c
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\end{multicols*}
+
+\end{small}
+\end{landscape}
+\restoregeometry
