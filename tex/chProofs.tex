@@ -1813,8 +1813,16 @@ Qed.
 To sum up, both \C{apply:} and \C{rewrite} are able to find the right
 instance of a quantified lemma and to generate subgoals
 for its eventual premises.  Hypotheses can be named using \C{move=>}.
-The proof script can be further reduced in size, as we describe in
-section~\ref{sec:rewrite2}.
+
+The proof script given above for \C{example m p} can be further
+reduced in size. One simple improvement is to replace the chained
+tactic \C{rewrite -leqNgt; move=> leq_p_m} by the equivalent
+\C{rewrite -leqNgt => leq_p_m}. Indeed, as we will see later (in
+subsection~\ref{ssec:stack}), the \C{move} tactic does nothing; it
+is the \C{=>} that is responsible for the naming of the hypothesis.
+
+In section~\ref{sec:rewrite2}, we shall describe some further
+ways to shrink the proof script.
 
 % [DG] I'd also mention how to use \C{apply:} when Coq isn't
 % able to automatically guess how the parameters are to be filled in.
