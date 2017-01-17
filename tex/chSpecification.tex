@@ -335,7 +335,7 @@ The trivial reflection view is called \C{idP} and is seldom used
 in conjunction with \C{iffP}.
 
 \begin{coq}{}{}
-Lemma idP (b : bool) : reflect b b.
+Lemma idP {b : bool} : reflect b b.
 \end{coq}
 \index[coq]{\C{idP}}
 % \marginnote{The tuning of implicits is crucial for the \C{apply: (iffP idP)} to behave correctly.}
@@ -343,7 +343,7 @@ We can now come back to the proof of lemma \C{eqnP}, and start its
 proof script by applying \C{iffP}.
 
 \begin{coq}{}{width=7cm}
-Lemma eqnP (n m : nat) :
+Lemma eqnP {n m : nat} :
   reflect (n = m) (eqn n m).
 Proof.
 apply: (iffP idP).
