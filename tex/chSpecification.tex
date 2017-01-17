@@ -222,16 +222,16 @@ statements with the lemmas relating boolean connectives with their
 \C{Prop} versions:
 
 \begin{coq}{}{}
-Lemma andP b1 b2 : reflect (b1 /\ b2) (b1 && b2).
+Lemma andP (b1 b2 : bool) : reflect (b1 /\ b2) (b1 && b2).
 Proof.  by case: b1; case: b2; [ left | right => //= [[l r]] ..]. Qed.
 
-Lemma orP b1 b2 : reflect (b1 \/ b2) (b1 || b2).
+Lemma orP (b1 b2 : bool) : reflect (b1 \/ b2) (b1 || b2).
 Proof.
 case: b1; case: b2; [ left; by [ move | left | right ] .. |].
 by right=> // [[l|r]].
 Qed.
 
-Lemma implyP b1 b2 : reflect (b1 -> b2) (b1 ==> b2).
+Lemma implyP (b1 b2 : bool) : reflect (b1 -> b2) (b1 ==> b2).
 Proof.
 by case: b1; case: b2; [ left | right | left ..] => //= /(_ isT).
 Qed.
