@@ -99,7 +99,7 @@ between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, but the
 notation. In the case where \C{x} does occur in term \C{U}, the term
 \C{forall x : T, U} is called a \emph{dependent type}.
 \index[concept]{dependent type}
-If \C{x} is a variable and \C{T}, \C{u}a
+If \C{x} is a variable and \C{T}, \C{u}
 are terms then \C{(fun x:T =>  u)} is a term, which represents a function
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
 \C{(u t)} is also a term, which represents the application of (function)
@@ -517,7 +517,7 @@ the predicate of being an odd prime number is expressed as
 \C{(fun x : nat => (odd x) && (prime x))}, and the statement expressing the
 existence of such a number is
 \C{(ex nat (fun x : nat => (odd x) && (prime x)))} that thanks
-to the \C{Notation} machanism of \Coq{} is parsed and
+to the \C{Notation} mechanism of \Coq{} is parsed and
 printed as the more familiar \C{(exists x : nat, odd x && prime x)}.
 
 It is worth summing up the many features of type theory that
