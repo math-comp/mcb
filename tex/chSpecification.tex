@@ -1376,7 +1376,7 @@ as we did for the postage example in section~\ref{sec:strongind}.
 Bet let's start by dealing with the trivial case of a null divisor.
 
 \begin{coq}{}{}
-case: d => [|d /=] in ed *; first by rewrite eqxx.
+case: d => [//=|d /=] in ed *.
 rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
 rewrite -[m]/(0 * d.+1 + m).
 elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
