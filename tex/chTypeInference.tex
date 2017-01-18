@@ -250,7 +250,7 @@ In the first line the syntax (\lstinline/fun x => ...)/ is sugar for
 when it reaches the last argument of the identity function.
 It unifies the type of \lstinline/x/ with the value of the first
 argument given to \lstinline/id/ that in this case is \lstinline/nat/.
-This last example is emblematic: most of the times the type of
+This last example is emblematic: most of the time the type of
 abstracted variables can be inferred by looking at how they are used.
 This is very common in lemma statements.  For example, the third line
 states a theorem on \lstinline/p/ without explicitly giving its type.
@@ -778,7 +778,7 @@ Module Equality.
 Structure type : Type := Pack {
   sort : Type;
   op : sort -> sort -> bool;
-  axiom : forall x y, reflect (x = y) (eq_op x y)
+  axiom : forall x y, reflect (x = y) (op x y)
 }.
 
 End Equality.
@@ -1151,7 +1151,7 @@ operation being iterated and the neutral element for such operator.
 For example if $A$ is empty, then the union of all $g(a)$ is $\emptyset$,
 while if $n=0$, then the sum of all $f(i)$ is $0$.
 Then the range is an expression identifying a finite set of elements,
-some times expressing an order (relevant when the iterated operation is not
+sometimes expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
 items being combined by the iterated operation.
 
@@ -1235,7 +1235,7 @@ Using the \C{bigop} constant to express our statement leads to
 
 \begin{coq}{name=bigop2}{}
 Lemma sum_odd n :
-  bigop 0 addn (index_iota 0 n.*2) odd (fun i => i) = n^2
+  bigop 0 addn (index_iota 0 n.*2) odd (fun i => i) = n^2.
 \end{coq}
 
 Note that \C{odd} is already a predicate on \C{nat}, the general
