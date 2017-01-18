@@ -1185,8 +1185,8 @@ here, before the \C{:} symbol.
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 have th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
-  move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
-  by apply: leq_trans le_mn2 le_n21.
+  move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+  by apply: leq_trans le_my le_yx.
 by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
 Qed.
 \end{coq}
@@ -1224,8 +1224,8 @@ Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 suff th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
   by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
-move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
-by apply: leq_trans le_mn2 le_n21.
+move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+by apply: leq_trans le_my le_yx.
 Qed.
 \end{coq}
 \index[ssr]{\C{suff} also \C{suffices}}
