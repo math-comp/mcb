@@ -1313,10 +1313,10 @@ full stop just before the terminating \C{->}, to see the output of
 the view application, he sees the following stack:
 
 \begin{coq}{}{}
-(forall b, n2 <= b -> m <= b) -> m <= n1.
+(forall n, n1 <= n -> m <= n) -> m <= n1.
 \end{coq}
 
-Rewriting the top assumption fixes \C{b} to \C{n1}, trivializes
+Rewriting the top assumption fixes \C{n} to \C{n1}, trivializes
 the goal \C{(m <= n1)} to \C{true} and opens a trivial side
 condition \C{(n2 <= n1)}.
 
