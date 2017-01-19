@@ -41,8 +41,8 @@ syntax, we casually use \C{nat} to refer to the collection of natural
 numbers and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
 (resp. product) operation on natural numbers,  before providing their
 actual formal definition in section~\ref{ssec:nat}. We will also
-assume implicitly that numerals $1, 2, \dots$ denote natural numbers,
-represented by their analogue \C{1}, \C{2}, \dots in \Coq{} syntax.
+assume implicitly that numerals $0, 1, 2, \dots$ denote natural numbers,
+represented by their analogue \C{0}, \C{1}, \C{2}, \dots in \Coq{} syntax.
 
 
 \subsection{Defining functions, performing computation}\label{ssec:deffun}
@@ -73,9 +73,9 @@ explicit application of this function to one argument can be
 described as follows: select the sub-expression that is considered as
 the argument of the function, here \C{2}, and replace it with a
 symbolic name, here \C{n}. Then encapsulate the resulting expression
-\C{(n + 1)} with the prefix ``\C{fun n =>}. We commonly
+\C{(n + 1)} with the prefix ``\C{fun n =>}''. We commonly
 say that the prefix ``\C{fun n =>}'' \emph{binds} the variable \C{n} in the
-expression \C{n + 1}, where ``\C{fun}'' stands for
+expression \C{n + 1}. The keyword ``\C{fun}'' stands for
 \emph{function}.
 \index[concept]{binder}
 
@@ -87,8 +87,9 @@ Now we still need to \emph{apply} this operation to the argument
 \end{coq}
 \coqrun{name=exapprun}{check,exapp,dot}
 \index[concept]{function application}
-Note that applying a function to an argument is simply by writing the
-function on left of the argument, with a separating space but {\em not
+Note that applying a function to an argument is represented
+simply by writing the function on the left of the argument,
+with a separating space but {\em not
   necessarily with parentheses around the argument}; we will come back to this
 later in the present section. As a first approximation, we can see
 that expressions, also called \emph{terms}, in the syntax of \Coq{}
@@ -131,7 +132,7 @@ Definition f n := n + 1.
 \coqrun{name=exdefp1}{exdef_pref}
 
 In this syntax, the name of the argument \C{n} is provided
-\emph{on the left of} the separating \C{:=}, for further reference
+\emph{on the left of} the separating \C{:=}, to be then referenced
 \emph{on the right of} the separating \C{:=}, in the actual
 definition of the function. The code of the actual definition is
 hence comprised between the \C{:=} symbol and the terminating dot.
@@ -153,9 +154,12 @@ uniform way. A type annotation has the shape \C{(t : T)}, where a colon
 \C{:} surrounded by two spaces separates an expression \C{t} on its
 left from the type \C{T} itself on the right. For instance in
 \C{(n : nat)}, the argument \C{n} of the function \C{f} is annotated with
-type \C{nat}. The second occurrence \C{ ... : nat := ...} of type
-\C{nat} annotates the output of the function with type \C{nat} --- that is any
-expression made of the application of \C{f} to an argument.
+type \C{nat}.
+
+The other occurrence  of \C{nat}, visible in \C{ ... : nat := ...},
+annotates the output of the function and indicates that this output is
+of type \C{nat}. In other words, the type of any expression made of
+\C{f} applied to an argument is \C{nat}.
 \index[concept]{type}
 
 \Coq{} provides a command to retrieve relevant information about the
@@ -198,8 +202,8 @@ The output of this \C{Print} query has some similarities with the
  the definition is printed also features a type annotation of the
  arguments of the function, in the fragment ``\C{fun n : nat =>}''.
 
-Types are used in particular to avoid confusion, and rule out
-ill-formed expressions and \Coq{} provides a command to check whether
+Types are used in particular to avoid confusion and rule out
+ill-formed expressions. \Coq{} provides a command to check whether
 an expression is \emph{well typed}.
 \index[concept]{well typed}
 
@@ -276,19 +280,22 @@ arguments:
 Definition g (n : nat) (m : nat) : nat := n + m * 2.
 \end{coq}
 \coqrun{name=def_g_attempt_run}{def_g_attempt}
-In fact, for the sake of compactness, contiguous arguments of a same
-type can be grouped and share the same type annotation so that the
+In fact, for the sake of compactness, contiguous arguments of one and
+the same
+type can be grouped and share the same type annotation, so that the
 above definition is better written:
 
 \begin{coq}{name=def_g}{}
 Definition g (n m : nat) : nat := n + m * 2.
 \end{coq}
 \coqrun{name=def_g_run}{def_g}
-which asserts firstly that both arguments \C{n} and \C{m} have type
-\C{nat}, by the \C{(n m : nat)} type annotation, and secondly that the
+which asserts firstly
+(by the \C{(n m : nat)} type annotation)
+that both arguments \C{n} and \C{m} have type \C{nat},
+and secondly that the
 output of the function also has type \C{nat}, as prescribed by the
-\C{... : nat := ...} type annotation. The  \C{About} command provides
-here again information on the type of the arguments and values of
+\C{... : nat := ...} type annotation. Again, the  \C{About} command
+provides information on the type of the arguments and values of
 \C{g}:
 
 \begin{coq}{name=about_g}{width=5.5cm,title=Gathering information on g}
@@ -301,13 +308,13 @@ g : nat -> nat -> nat
 
 The two first occurrences of \C{nat} in the response
  \C{nat -> nat -> nat} assert that function \C{g} has two arguments,
- both of type \C{nat}, and the last occurrence refers to the type of
+ both of type \C{nat}; the last occurrence refers to the type of
  the output. This response actually reads \C{nat -> (nat -> nat)},
  as the \C{->} symbol associates to the right. Otherwise said,
  {\em a multiple
  argument function is a single argument function that returns a
  function}.  This idea that multiple argument functions can be
-represented using single argument functions (rather for instance than
+represented using single argument functions (rather, for instance, than
 tuples of arguments) is called {\em currying} and will play a special
 role in chapter~\ref{ch:ttch}. For now, let us just insist on the fact
 that in \Coq{}, functions with several arguments are not represented
@@ -317,7 +324,7 @@ with a tuple of arguments.
 
 Back to our example, here is an alternative definition
  \C{h} which has a single argument \C{n} of type \C{nat} and returns
- a function of one arguments as a result:
+ a function of one argument as a result:
 
 \begin{coq}{name=def_h}{}
 Definition h (n : nat) : nat -> nat := fun m => n + m * 2.
@@ -372,7 +379,7 @@ g 3 : nat -> nat
 
 Now function \C{g} can be applied to the numbers \C{2} and \C{3}, as
 in \C{g 2 3}. This results in a term of type \C{nat}, the type of the
-outputs of \C{g} and we can even compute this value:
+outputs of \C{g}, and we can even compute this value:
 
 \begin{coq}{name=eval_g_2_3}{width=5cm}
 Eval compute in g 2 3.
@@ -383,7 +390,7 @@ Eval compute in g 2 3.
 \coqrun{name=eval_g_2_3_run}{def_g,eval_g_2_3}
 
 Term \C{(g 2 3)} actually reads \C{((g 2) 3)} and features three
-sub-expressions separated by spaces. The symbol \C{g} is the deepest
+nested sub-expressions. The symbol \C{g} is the deepest
 sub-expression and it is applied to \C{2} in \C{(g 2)}. The value of
 this sub-expression is a function, which can be written:
 
@@ -440,15 +447,18 @@ find the ultimate value of this function.  This fragment of text, \C{g
 application of function \C{g} to an expression \C{(g x)}.  In turn,
 the fragment \C{(g x)} describes the application of function \C{g} to
 \C{x}. Remember that the  application of a function to an
-argument is denoted by the juxtaposing the function (on the left) and
+argument is denoted by juxtaposing the function (on the left) and
 the argument (on the right), separated by a space. Moreover,
 application associates to the left: expressions made with
 several sub-expressions side by side should be read as if there were
 parentheses around the subgroups on the left. Parentheses are
-only added when they are needed to resolve ambiguities which could
-lead to ill-formed expressions.  For instance, the inner \C{(g x)} in
+only added when they are needed to resolve ambiguities.
+For instance, the inner \C{(g x)} in
 \C{(g (g x))} needs surrounding parentheses because expression
-\C{(g g x)} reads \C{((g g) x)} and is thus ill-formed.
+\C{(g g x)} reads \C{((g g) x)}.  The latter expression would be
+ill-formed because it contains the sub-expression \C{(g g)} where
+\C{g} receives a function as argument, while it is expected to receive
+an argument of type \C{nat}.
 
 We can play a similar game as in section~\ref{sec:fun-sev-args},
 and scrutinize the expression obtained by applying the
@@ -465,10 +475,10 @@ Eval compute in repeat_twice f 2.
 \coqrun{name=eval_repeat_twice_f_two_run}{exdef,repeat_twice_def,eval_repeat_twice_f_two}
 
 Expression \C{(repeat_twice f 2)} actually reads
-\C{((repeat_twice f) 2)} and features three sub-expressions separated by
+\C{((repeat_twice f) 2)} and features three nested sub-expressions separated by
 spaces. The symbol \C{repeat_twice} is the deepest
 sub-expression and it is applied to \C{f} in \C{(repeat_twice f)}.
-According to the definition of \C{repeat_twice} function, the value of
+According to the definition of the \C{repeat_twice} function, the value of
 this sub-expression is a function, which is then applied to \C{2}.
 % The value of the
 %intermediate function is \C{(fun x => f (f x))}, so
@@ -477,7 +487,7 @@ The resulting expression is \C{(f (f 2))}, and given the
 definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
 
-Function  \C{repeat_twice} is an instance of function with several
+Function  \C{repeat_twice} is an instance of a function with several
 arguments: as illustrated in section~\ref{sec:fun-sev-args}, its
 partial application to a single argument provides a well-formed
 function, from \C{nat} to \C{nat}:
@@ -573,8 +583,9 @@ thus also be used to organize intermediate computations.
 
 \section{Data types, first examples}
 
-A well-formed mathematical expression is just the juxtaposition of the
-symbols of a given language, which respects the prescribed arities of
+A well-formed mathematical expression is just a juxtaposition of
+symbols of a given language (and variables)
+that respects the prescribed arities of
 the operations. For instance, the expression:
 \[(\top \vee \bot) \wedge b\]
 is a well formed expression in the language $\{\top, \bot,\vee,\wedge\}$ of
@@ -582,7 +593,7 @@ boolean arithmetic, while expression:
 
 \[ 0 + x \times (S\ 0) \]
 is a well formed expression in the language $\{0,S, +, \times\}$ of
-Peano arithmetic. In these examples however, the usual axioms that
+Peano arithmetic. In these examples, however, the usual axioms that
 formalize the respective arithmetics confer a distinctive status to
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
 $S$ for natural numbers. More precisely, any variable-free boolean expression
@@ -598,7 +609,7 @@ type, the symbols of (constants and) operations that \emph{build}
 elements of this type, plus some rules on how to compute on these
 elements. These data types are introduced by the means of an
 \emph{inductive type definition}.
-One can define explicitly more operations on the elements of
+One can explicitly define more operations on the elements of
 the type by describing how they compute on a given argument in the
 type using a case analaysis (or even a recursive definition) on the
 syntactic shape of this argument.
@@ -625,8 +636,8 @@ Inductive bool := true | false.
 
 It is actually one of the simplest possible inductive definitions,
 with only base cases, and no inductive ones. This
-declaration actually states explicitly that there are exactly two
-elements in type bool: the distinct constants \C{true} and \C{false},
+declaration states explicitly that there are exactly two
+elements in type \C{bool}: the distinct constants \C{true} and \C{false},
 called the \emph{constructors} of type \C{bool}.
 
 
@@ -681,18 +692,16 @@ the \C{compute} command rewrites any term of the shape
 \C{if false then t1 else t2} into \C{t2}.
 
 The \mcbMC{} library provides a collection of boolean operations that
-mirror reasoning steps on truth value.  The functions are called
-\C{negb}, \C{orb}, \C{andb} , and \C{implyb}, respectively with notations
-\C{\~\~},  \C{||}, \C{&&}, and \C{==>} (the last three operators are
-infix, they appear between the arguments as in \C{b1 && b2}).
-  Note that the symbol \C{\~\~} uses two characters \C{\~}, but it should
+mirror reasoning steps on truth values.  The functions are called
+\C{negb}, \C{orb}, \C{andb}, and \C{implyb}, with notations
+\C{\~\~},  \C{||}, \C{&&}, and \C{==>}, respectively
+(the last three operators are
+infix, i.e., they appear between the arguments, as in \C{b1 && b2}).
+Note that the symbol \C{\~\~} uses two characters \C{\~}: it should
 not be confused with two consecutive occurrences of the one-character symbol
-\C{\~} (that has a meaning in \Coq{}, but is almost never used
-in the \mcbMC{} library).
-% assia: I know at least two users who have been seriously annoyed by
-% this so I comment out the sentence...
-%In practice, readers become quickly accustomed to the
-% distinction between the two symbols.
+\C{\~}, which would normally be written with a separating space.
+The latter has a meaning in \Coq{}, but is almost never used
+in the \mcbMC{} library.
 
 For instance, the functions \C{andb} and \C{orb} are defined as follows.
 
@@ -725,7 +734,8 @@ Inductive nat := O | S (n : nat).
 This inductive definition of the expressions of type \C{nat} has one
 base case, the constant \C{O}, and one inductive case, for the natural
 numbers obtained using the successor function at least once: therefore
-\C{O} has type \C{nat}, \C{(S O)} has type \C{nat}, \C{(S (S O))}, and
+\C{O} has type \C{nat}, \C{(S O)} has type \C{nat}, so does
+\C{(S (S O))}, and
 so on, and any natural number has this shape. The constant \C{O} and
 the function \C{S} are the constructors of type \C{nat}.
 
@@ -736,7 +746,7 @@ facility provided to the user for readability: \C{O} is displayed
 $0$, \C{(S O)} is displayed $1$, etc.  Users can also type decimal
 numbers to describe values in type \C{nat}: these are automatically
 translated into terms built (only) with \C{O} and \C{S}. In the rest
-of this chapter, we call \emph{numeral}, such a term.
+of this chapter, we call such a term a \emph{numeral}.
 
 The \mcbMC{} library provides a few notations to make the use of the
 constructor \C{S} more intuitive to read.  In particular, if \C{x}
