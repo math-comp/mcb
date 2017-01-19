@@ -78,7 +78,7 @@ So every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
 has a type in the context in which it occurs.
 
-We put aside inductive types until section~\ref{ssec:ind} and define
+We put aside inductive types until section~\ref{ssec:indtypes} and define
 inductively what are the terms of the formalism. We suppose that we
 have a countable infinite set of symbols available for names, so that it is
 always possible to exhibit a name distinct from a given arbitrary
@@ -233,7 +233,7 @@ We now play the same game with the corresponding elimination rules:
 \DisplayProof
 \hspace{1cm}
 \AxiomC{$\forall x, B$}
-\RightLabel{$\forall_E$ ($t$ a term)}
+\RightLabel{$\forall_E$ ($t$ is a term)}
 \UnaryInfC{$B[t/x]$}
 \DisplayProof
 \end{center}
