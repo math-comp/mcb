@@ -269,9 +269,9 @@ mulmx : forall R : Type, forall m n p : nat,
 This time the data type of matrices exposes the size, and matrix multiplication
 can be given a type that rules out incompatible matrices and also describes
 the dimension of the resulting matrix in terms of the size of the input
-ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
-add and multiply elements of \C{R}.  Such detail plays no role in the current
-discussion.}
+ones.\footnote{To be precise, \C{mulmx} also needs to take in input
+  operations to add and multiply elements of \C{R}.  Such detail plays
+  no role in the current discussion.}
 This is in fact a classic example of what is called a \emph{dependent type}: a
 data type depending on data, two natural numbers here.
 \index[concept]{dependent type}
