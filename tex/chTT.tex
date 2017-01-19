@@ -79,8 +79,10 @@ So every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
 has a type in the context in which it occurs.
 
-We put aside inductive types until section~\ref{ssec:ind}, and define
+
+We put aside inductive types until section~\ref{ssec:indtypes}, and define
 inductively what the terms of the formalism are. We suppose that we
+
 have a countable infinite set of symbols available for names, so that it is
 always possible to exhibit a name distinct from a given arbitrary
 finite collection of names. The simplest, atomic, terms are the
@@ -106,7 +108,9 @@ notation. In the case where \C{x} does occur in term \C{U}, the term
 \C{forall x : T, U} is called a \emph{dependent type}.
 \index[concept]{dependent type}
 If \C{x} is a variable and \C{T}, \C{u}
+
 are terms, then \C{(fun x:T => u)} is a term, which represents a function
+
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
 \C{(t u)} is also a term, which represents the application of (function)
 \C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
@@ -241,7 +245,7 @@ We now play the same game with the corresponding elimination rules:
 \DisplayProof
 \hspace{1cm}
 \AxiomC{$\forall x, B$}
-\RightLabel{$\forall_E$ ($t$ a term)}
+\RightLabel{$\forall_E$ ($t$ is a term)}
 \UnaryInfC{$B[t/x]$}
 \DisplayProof
 \end{center}
@@ -276,10 +280,12 @@ mulmx : forall R : Type, forall m n p : nat,
 
 This time the data type of matrices exposes the size, and matrix multiplication
 can be given a type that rules out incompatible matrices and also describes
+
 the size of the resulting matrix in terms of the size of the input
-ones.\footnote{In veritas, \C{mulmx} also needs to take in input operations to
+ones.\footnote{To be precise, \C{mulmx} also needs to take in input operations to
 add and multiply elements of \C{R}.  Such detail plays no role in the current
 discussion.}
+
 This is in fact a classic example of what is called a \emph{dependent type}: a
 data type depending on data, two natural numbers here.
 \index[concept]{dependent type}
@@ -526,8 +532,10 @@ type \C{A}.  Hence \C{(P x)} is the instance of the predicate, for \C{x}.  E.g.,
 the predicate of being an odd prime number is expressed as
 \C{(fun x : nat => (odd x) && (prime x))}, and the statement expressing the
 existence of such a number is
+
 \C{(ex nat (fun x : nat => (odd x) && (prime x)))}, which (thanks
 to the \C{Notation} machanism of \Coq{}) is parsed and
+
 printed as the more familiar \C{(exists x : nat, odd x && prime x)}.
 
 It is worth summing up the many features of type theory that

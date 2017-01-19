@@ -1568,7 +1568,9 @@ $1$. We first state this lemma as follows:
 Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 \end{coq}
 \coqrun{name=testexp}{ssr,exp,abort}
+
 where \L+p %| m`!+ stands for ``\C{p} divides the factorial of \C{m}''.
+
 The first step of our formal proof will be to give a name to the
 hypothesis \C{(prime p)}, which means that we add it to the
 current context of the goal. The dedicated tactic for this naming step is
@@ -1955,11 +1957,13 @@ m.+1 + 0 = m.+1
 \coqrun{name=addn0prun}{ssr,addn0p,show,abort}
 The \C{elim:} tactic is used here with an introduction pattern similar
 to the one we used for \C{case:}. It has two slots, because of the
+
 two constructors of type \C{nat} (corresponding naturally to what is
 commonly called the ``induction base'' and the ``induction step''),
 and in the second branch we give a
 name not only to the argument \C{m} of the successor, but also to the
 induction hypothesis. We also used the \C{//} switch to deal with the
+
 base case because if
 \C{m} is \C{0}, both sides evaluate to zero. The value of the parameter
 \C{P} synthesized by \C{elim:} for us is

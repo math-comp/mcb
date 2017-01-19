@@ -174,7 +174,7 @@ the conjunction's single constructor:
 \begin{coq}{}{label=lst:reflect1}
 Inductive reflect (P : Prop) (b : bool) : Prop :=
 | ReflectT (p : P)    (e : b = true)
-| ReflectF (np : ~ P) (e : b = false)
+| ReflectF (np : ~ P) (e : b = false).
 \end{coq}
 \index[coq]{\C{reflect}}
 
@@ -224,19 +224,19 @@ section~\ref{ssec:specs}.
 
 We start our collection of links between boolean and \C{Prop}
 statements with the lemmas relating boolean connectives with their
-\C{Prop} version:
+\C{Prop} versions:
 
 \begin{coq}{}{}
-Lemma andP b1 b2 : reflect (b1 /\ b2) (b1 && b2).
+Lemma andP (b1 b2 : bool) : reflect (b1 /\ b2) (b1 && b2).
 Proof.  by case: b1; case: b2; [ left | right => //= [[l r]] ..]. Qed.
 
-Lemma orP b1 b2 : reflect (b1 \/ b2) (b1 || b2).
+Lemma orP (b1 b2 : bool) : reflect (b1 \/ b2) (b1 || b2).
 Proof.
 case: b1; case: b2; [ left; by [ move | left | right ] .. |].
 by right=> // [[l|r]].
 Qed.
 
-Lemma implyP b1 b2 : reflect (b1 -> b2) (b1 ==> b2).
+Lemma implyP (b1 b2 : bool) : reflect (b1 -> b2) (b1 ==> b2).
 Proof.
 by case: b1; case: b2; [ left | right | left ..] => //= /(_ isT).
 Qed.
@@ -340,7 +340,7 @@ The trivial reflection view is called \C{idP} and is seldom used
 in conjunction with \C{iffP}.
 
 \begin{coq}{}{}
-Lemma idP (b : bool) : reflect b b.
+Lemma idP {b : bool} : reflect b b.
 \end{coq}
 \index[coq]{\C{idP}}
 % \marginnote{The tuning of implicits is crucial for the \C{apply: (iffP idP)} to behave correctly.}
@@ -348,7 +348,7 @@ We can now come back to the proof of lemma \C{eqnP}, and start its
 proof script by applying \C{iffP}.
 
 \begin{coq}{}{width=7cm}
-Lemma eqnP (n m : nat) :
+Lemma eqnP {n m : nat} :
   reflect (n = m) (eqn n m).
 Proof.
 apply: (iffP idP).
@@ -587,7 +587,7 @@ The \C{case} tactic also combines well with the view mechanism, which
 eases reasoning by cases along a disjunction expressed with a boolean
 statement, like the just proved \C{leq_total}.  For example we
 may want to start the proof of the following lemma by distinguishing
-two cases: \C{n1 <= n2} and \C{m2 <= n1}.
+two cases: \C{n1 <= n2} and \C{n2 <= n1}.
 
 \begin{coq}{}{}
 Lemma leq_max m n1 n2 :
@@ -824,7 +824,7 @@ that states \C{(forall a b, reflect (a /\\ b) (a && b))}.
 
 \begin{coq}{}{width=6cm}
 Lemma example a b :
-  a && b ==> (a == b)
+  a && b ==> (a == b).
 Proof.
 case: andP => [ab|nab].
 \end{coq}
@@ -844,7 +844,7 @@ both \C{a} and \C{b} by their truth values, once \C{ab}
 is destructed.  Hence the full proof script is:
 
 \begin{coq}{}{}
-Lemma example a b : a && b ==> (a == b)
+Lemma example a b : a && b ==> (a == b).
 Proof. by case: andP => [[-> ->] |]. Qed.
 \end{coq}
 
@@ -872,7 +872,7 @@ If one needs to override the pattern inferred for the index
 of \C{andP}, he can provide one by hand as follows:
 
 \begin{coq}{}{}
-Lemma example a b : (a || ~ a) && (a && b ==> (a == b))
+Lemma example a b : (a || ~ a) && (a && b ==> (a == b)).
 Proof. by case: (a && _) / andP => [[-> ->] |] //; rewrite orbN. Qed.
 \end{coq}
 A more detailed explanation of this syntax can be found
@@ -967,7 +967,7 @@ Saying that primes are infinite can be phrased as: for any natural number
 $m$, there exists a prime greater than $m$.  The proof of this claim goes like
 that: every natural number greater than 1 has at least one prime divisor.  If
 we take $m! + 1$, then such prime divisor $p$ can be shown to be greater than $m$ as
-follows.  By contraxposition we assume $p \leq m$ and we show that $p$
+follows.  By contraposition we assume $p \leq m$ and we show that $p$
 does not divide $m!+1$.
 Being smaller than $m$, $p$ divides $m!$, hence to divide $m!+1$, $p$ should divide
 $1$; that is not possible since $p$ is prime, hence greater than 1.
@@ -1189,8 +1189,8 @@ here, before the \C{:} symbol.
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 have th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
-  move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
-  by apply: leq_trans le_mn2 le_n21.
+  move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+  by apply: leq_trans le_my le_yx.
 by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
 Qed.
 \end{coq}
@@ -1228,8 +1228,8 @@ Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 suff th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
   by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
-move=> le_n21; rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
-by apply: leq_trans le_mn2 le_n21.
+move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+by apply: leq_trans le_my le_yx.
 Qed.
 \end{coq}
 \index[ssr]{\C{suff} also \C{suffices}}
@@ -1317,10 +1317,10 @@ full stop just before the terminating \C{->}, to see the output of
 the view application, one sees the following stack:
 
 \begin{coq}{}{}
-(forall b, n2 <= b -> m <= b) -> m <= n1.
+(forall n, n1 <= n -> m <= n) -> m <= n1.
 \end{coq}
 
-Rewriting the top assumption fixes \C{b} to \C{n1}, trivializes
+Rewriting the top assumption fixes \C{n} to \C{n1}, trivializes
 the goal \C{(m <= n1)} to \C{true} and opens a trivial side
 condition \C{(n2 <= n1)}.
 
@@ -1357,7 +1357,7 @@ Proof. by elim: m. Qed.
 \end{coq}
 \index[concept]{unfolding equation}
 It is often useful to state and prove unfolding equations like this one.
-Whwn the simplification tactic \C{/=} unfolds too aggressively,
+When the simplification tactic \C{/=} unfolds too aggressively,
 rewriting with such equations gives better control on how many
 unfold steps one performs.
 
@@ -1380,7 +1380,7 @@ as we did for the postage example in section~\ref{sec:strongind}.
 Bet let's start by dealing with the trivial case of a null divisor.
 
 \begin{coq}{}{}
-case: d => [|d /=] in ed *; first by rewrite eqxx.
+case: d => [//=|d /=] in ed *.
 rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
 rewrite -[m]/(0 * d.+1 + m).
 elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
@@ -1546,7 +1546,7 @@ is to provide a functional term \lstinline/c/ of type
 \lstinline/(ity -> ety)/ that is inserted around \lstinline/t/.
 In other words, whenever the user writes \lstinline/t/ in a context
 that expects a term of type \lstinline/ety/, the system instead of
-raising an errors replaces \lstinline/t/ by \lstinline/(c t)/.
+raising an error replaces \lstinline/t/ by \lstinline/(c t)/.
 
 A function automatically inserted by \Coq{} to prevent a type
 error is called \emph{coercion}.
@@ -1574,7 +1574,7 @@ is_true (prime 17)
 \end{coqout}
 
 When the statement of the example is processed by \Coq{}
-and it is enforced to be a type, but \lstinline/(prime 27)/ is actually
+and it is enforced to be a type, but \lstinline/(prime 17)/ is actually
 a term of type \lstinline/bool/.  Early in the library the
 function \lstinline/is_true/ is declared as a coercion from
 \lstinline/bool/ to \lstinline/Prop/ and hence is it inserted
@@ -1678,7 +1678,7 @@ Coercions are usually presented as a device to model
 subtyping in a theory that, like the \mcbCIC{}, does not
 feature subtyping.  As we will see in chapter~\ref{ch:hierarchy}
 the role played by coercions in the modelling of the hierarchy
-of algebraic structure is minor.  The job of
+of algebraic structures is minor.  The job of
 coercions in that context is limited to
 forgeting some fields of a structure to obtain a simpler one, and
 that is easy.  What
