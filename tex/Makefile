@@ -32,3 +32,6 @@ coq: $(patsubst %.tex,.%/rt,$(wildcard *.tex))
 
 stats:
 	gitinspector -F htmlembedded -f tex -T -r -H  > stats.html
+
+spell:
+	for f in *.tex; do cat $$f | aspell --master=en_US -t list; done | sort | uniq | comm -2 -3 - sorted_words_to_ignore.txt
