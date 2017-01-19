@@ -133,7 +133,6 @@ UnitRing
 Unported
 UserRHSPat
 UserRwPat
-Whwn
 Zmn
 ZmodMixin
 ZmodType
