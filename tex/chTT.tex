@@ -5,6 +5,7 @@ The authors made the deliberate choice to postpone the presentation of
 the mathematical foundations of the \Coq{} system and the formal
 definition of its language. Instead, the previous chapters have
 insisted on the definition of (typed) programs and on the way these
+% [DG] What does "insist" mean here?
 programs can be used to describe computable functions and decidable
 predicates. This take on calculations is indeed both at the core of
 the type theory underlying \Coq{} and one of the crucial ingredients
@@ -32,7 +33,7 @@ homotopy type theory~\cite{hottbook} describes a very close formalism.
 
 
 \subsection{Propositions as types, proofs as programs}
-There exists several flavors of \emph{type theory} that can be used
+There exist several flavors of \emph{type theory} that can be used
 as a foundational language for mathematics, alternative to the
 flavors of set theory usually cited as the formal language of
 reference~\cite{bourbaki-sets}.
@@ -50,8 +51,8 @@ mathematical objects, statements and proofs. \emph{Logical statements}
 are identified with some \emph{types} and their \emph{proofs} with
 \emph{terms}, or programs, having this type. Thus proving a statement
 consists in fact in constructing a term of the corresponding type. In
-set theory the rules which govern the construction of
-grammatically correct statements are rather loose and the goal of the
+set theory, the rules which govern the construction of
+grammatically correct statements are rather loose, and the goal of the
 game is to construct a proof for a given proposition, using
 first-order logic to combine the axioms of the theory.
 The analogue of the meta-statement that a given
@@ -63,7 +64,7 @@ which means:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}.
 Typing judgments are justified from typing rules, and these
 justifications form trees similar to the proof trees of natural deduction.
-Before being more precise about what are contexts, terms and types,
+Before getting more precise about what contexts, terms and types are,
 let us emphasize a couple of important differences with set theory
 here: first, the typing judgment features explicit expressions for
 the term and the type, whereas the proof of a statement in first-order
@@ -78,8 +79,10 @@ So every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
 has a type in the context in which it occurs.
 
-We put aside inductive types until section~\ref{ssec:indtypes} and define
-inductively what are the terms of the formalism. We suppose that we
+
+We put aside inductive types until section~\ref{ssec:indtypes}, and define
+inductively what the terms of the formalism are. We suppose that we
+
 have a countable infinite set of symbols available for names, so that it is
 always possible to exhibit a name distinct from a given arbitrary
 finite collection of names. The simplest, atomic, terms are the
@@ -93,6 +96,11 @@ also a term. In fact this term will be used as a type, and it
 represents a family of types \C{U} indexed by elements of type \C{T}.
 Importantly, if \C{x} does not occur in the term \C{U} as a
 free variable, then this term is usually denoted \C{T -> U}: it is
+% [DG] Annoying technicality: If you denote \C{forall x : T, U} by
+% \C{T -> U}, then you are implicitly identifying the terms
+% \C{forall x : T, U} for all choices of the letter \C{x}. So it's
+% probably not terms you want to speak of, but alpha-equivalence
+% classes of terms.
 used for the type of functions having their argument of type \C{T} and
 their results of type \C{U}. For instance, there is no difference
 between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, but the
@@ -100,18 +108,20 @@ notation. In the case where \C{x} does occur in term \C{U}, the term
 \C{forall x : T, U} is called a \emph{dependent type}.
 \index[concept]{dependent type}
 If \C{x} is a variable and \C{T}, \C{u}
-are terms then \C{(fun x:T =>  u)} is a term, which represents a function
+
+are terms, then \C{(fun x:T => u)} is a term, which represents a function
+
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
-\C{(u t)} is also a term, which represents the application of (function)
+\C{(t u)} is also a term, which represents the application of (function)
 \C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
 if \C{t, u} are terms and \C{x} is a variable.
 
 A typing judgment $\Gamma \vdash t : T$ relates a
-context $\Gamma$ and two terms $t$ and $T$. As it name suggests,
+context $\Gamma$ and two terms $t$ and $T$. As its name suggests,
 the context logs all the facts assumed at the moment when the term
 occurs. It can be empty but otherwise contains typed variables and
 typed definitions. A typed variable is a pair of a name and a
-type: for instance, after executing the command \C{Variable n : nat},
+type: for instance, after executing the command \C{Variable n : nat.},
 the context contains the pair (\C{n} : \C{nat}). A typed definition is
 a triple of a name, a term, and a type: for instance, after executing
 the command \C{Definition a : T := t.}, the context contains the
@@ -123,7 +133,7 @@ defined inductively and simultaneously.
 Typing judgments with an empty context express the
 axiom rules of the formalism, like for instance the types of sorts:
 $$\vdash \C{Prop} : \C{Type}_1 \quad \vdash \C{Type}_i : \C{Type}_{i+1}.$$
-From now on and as the default display mode of Coq does, we will leave
+From now on and as the default display mode of \Coq{} does, we will leave
 the index of the sorts \C{Type}$_i$ implicit and just write \C{Type},
 as these indices do not play a significant role in what is presented
 in this book. A \emph{type} is a term which can be typed by a sort in
@@ -194,9 +204,11 @@ be written:
 \UnaryInfC{$\forall x, B$}
 \DisplayProof
 \end{center}
-This presentation, in the style of natural deduction, means that to
-prove $A \to B$ one can prove $B$ under the
-assumption $A$ and to prove $\forall x,B$ one can prove $B$
+% [DG] What do you mean by "fresh" here? $x$ can definitely appear
+% in $B$. And shouldn't $x$ be typed in the context?
+This presentation, in the style of natural deduction, means that in
+order to prove $A \to B$ one can prove $B$ under the
+assumption $A$, and in order to prove $\forall x,B$ one can prove $B$
 for a fresh variable $x$. Let us now annotate these rules with terms
 whose typing rules coincide with these proof rules:
 
@@ -257,7 +269,7 @@ This time function application serves as a proof in both cases:
 Universal quantification is not only useful to form types that
 play the role of propositions.  It can come handy to form data types
 too.  In the second part of this book (section~\ref{sec:matrix})
-we see how the matrix data type
+we shall see how the matrix data type
 and the type of its multiplication function benefit from it.
 
 \begin{coq}{}{}
@@ -268,21 +280,23 @@ mulmx : forall R : Type, forall m n p : nat,
 
 This time the data type of matrices exposes the size, and matrix multiplication
 can be given a type that rules out incompatible matrices and also describes
-the dimension of the resulting matrix in terms of the size of the input
-ones.\footnote{To be precise, \C{mulmx} also needs to take in input
-  operations to add and multiply elements of \C{R}.  Such detail plays
-  no role in the current discussion.}
+
+the size of the resulting matrix in terms of the size of the input
+ones.\footnote{To be precise, \C{mulmx} also needs to take in input operations to
+add and multiply elements of \C{R}.  Such detail plays no role in the current
+discussion.}
+
 This is in fact a classic example of what is called a \emph{dependent type}: a
 data type depending on data, two natural numbers here.
 \index[concept]{dependent type}
 
 Note that in this formalism, quantification can range on the proofs of
-a given statement, just like it can range on numbers. Statement may
-express this
-way a property shared by the proofs of a given statement. Such capability
+a given statement, just like it can range on numbers. In this way, a
+statement may express
+a property shared by the proofs of a given statement. Such capability
 finds a rare, but
 crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}:
-all the proofs of a given equality statement between two booleans are
+All the proofs of a given equality statement between two booleans are
 indistinguishable.
 
 \begin{coq}{name=hedberg}{}
@@ -290,21 +304,22 @@ Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
 \end{coq}
 
 
-The proofs as programs correspondence has a visible impact in the proofs
-part of the \mcbMC{} library.  In particular quantified lemmas, being programs,
-they can be instantiated by simply passing arguments to them.  Exactly as one can
+The proofs-as-programs correspondence has a visible impact in the proofs
+part of the \mcbMC{} library.  In particular, quantified lemmas, being programs,
+can be instantiated by simply passing arguments to them.  Exactly as one can
 pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
 can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
 \C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
-shows up in the type of the resulting term \C{(addnC 3)}:  the type of the
+shows up in the type of the resulting term \C{(addnC 3)}:  The type of the
 \C{addnC} program depends on the value the program is applied to.  That is the
 difference between the \emph{dependent function space} ($\forall$)
 and the standard function space ($\to$).
 \index[concept]{dependent function space}
 
-\mantra{Lemma names can be used as functions and you can pass to them arguments.
-For example
-\C{(addnC 3)} is a proof that \C{(forall y, 3 + y = y + 3)} and
+\mantra{Lemma names can be used as functions, and you can pass
+arguments to them.
+For example,
+\C{(addnC 3)} is a proof that \C{(forall y, 3 + y = y + 3)}, and
 \C{(prime_gt0 p_pr)} is a proof that \C{(0 < p)} whenever
 \C{(p_pr : prime p)}.}
 
@@ -316,7 +331,7 @@ the present book, like the difference between the sorts \C{Prop} and
 \C{Type}.
 
 
-We conclude this section by commenting a last rule of CIC, called the
+We conclude this section by explaining a last rule of CIC, called the
 \emph{conversion rule}, which describes the status of computation in this
 framework. Computation is modeled by rewrite rules explaining how to
 apply functions to their argument. For instance, the so-called
@@ -326,25 +341,25 @@ $x$ is substituted by the actual argument $u$ in the body $t$ of the
 function. A similar computation rule models the computation of a term of
 the shape \C{(let x := u in t)} into $t[u/x]$. Two terms
 $t_1$ and $t_2$ that are equal modulo computation rules are said to be
-\emph{convertible} and these terms are indistinguishable to the type
+\emph{convertible}, and these terms are indistinguishable to the type
 \index[concept]{convertibility}
-system: if $T_1$ and $T_2$ are two convertible types and if a term $t$
+system: If $T_1$ and $T_2$ are two convertible types and if a term $t$
 has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
 in the context $\Gamma$. This is the feature of the formalism that we
-have used in section~\ref{ssec:proofcomp}: the proofs of the
+have used in section~\ref{ssec:proofcomp}: The proofs of the
 statements \C{2 + 1 = 3} and \C{3 = 3} are the same, because the terms
 \C{2 + 1 = 3} and \C{3 = 3} are convertible.  In chapter~\ref{ch:prog} and~\ref{ch:proofs}
 we used boolean programs to express predicates and connectives exactly
-to take advantage of convertibility: also the compound
+to take advantage of convertibility: Also the compound
 statement
 \C{(2 != 7 && prime 7)} is convertible to \C{true}.
 Finally, as illustrated in
 section~\ref{sec:symcomp}, computation is not limited to terms without
-variables: the term \C{(isT : true)} is a valid proof of
+variables: The term \C{(isT : true)} is a valid proof of
 \C{(0 < n.+1)}, as well as a proof of \C{(0 != p.+1)}.
 \index[coq]{\C{isT}}
 
-One can also benefit from convertibility whenever he applies a lemma;
+One can also benefit from convertibility whenever one applies a lemma;
 otherwise said, whenever the $\to_E$ and $\forall_E$ rules apply.
 These rules check that the argument has
 the ``right type'', i.e. the type of
@@ -365,15 +380,16 @@ where $A \equiv A'$ denotes that $A$ and $A'$ are convertible.
 
 \subsection{Inductive types}\label{ssec:indtypes}
 
-The formalism described in section~\ref{ssec:terms} is extended with
+The formalism described in section~\ref{ssec:terms} is extended by
 the possibility of introducing
 \emph{inductive definitions}~\cite{CoPa89, Moh93}. We only provide a
-very brief overview of this subtle feature and refer again the reader
+very brief overview of this subtle feature and again refer the reader
 to the reference manual for a precise definition.
 In chapter~\ref{ch:prog} we have used several examples of inductive
-data types like \C{nat} and its constructors \C{O} and \C{S},
-\C{option},\ldots An inductive definition introduces simultaneously
-several new objects in the context: a new type, in a given sort, and
+data types like the data type \C{nat} and its constructors \C{O} and
+\C{S}, or the datatype \C{option}, or various others.
+An inductive definition simultaneously introduces
+several new objects into the context: a new type, in a given sort, and
 new terms for the constructors, with their types. For instance, the
 command:
 
@@ -382,16 +398,16 @@ Inductive nat : Type := O : nat | S (n : nat).
 \end{coq}
 introduces a new type \C{nat : Type} and two new terms \C{(O : nat)} and
 \C{(S : nat -> nat)}. Constructors are functions, possibly of zero
-argument like \C{O}, and the codomain of a constructor of the
+arguments like \C{O}, and the codomain of a constructor of the
 inductive type \C{T} is always \C{T}. An inductive type may occur as
 the type of certain arguments of its constructors, like in the case of
 \C{S}. The only way to construct an inhabitant of an
 inductive type is to apply a constructor to sufficiently many
-arguments and constructors are by definition injective functions.
+arguments. Constructors are by definition injective functions.
 Moreover, two distinct constructors construct distinct
-terms, therefore a function with an argument of an inductive type can be
-described by pattern matching on this argument. For instance in
-chapter~\ref{ch:prog} we have defined the predecessor function by:
+terms; this is why a function with an argument of an inductive type can be
+described by pattern matching on this argument. For instance, in
+chapter~\ref{ch:prog}, we have defined the predecessor function by:
 
 \begin{coq}{name=predn}{}
 Definition predn n := if n is p.+1 then p else n.
@@ -505,23 +521,25 @@ Notation "'exists' x : A , p" := (ex A (fun x : A => p)).
 \index[coq]{\C{ex_intro}}
 
 As  \C{ex\_intro} is the only constructor of the \C{ex} inductive
-type, it is the only mean to prove a statement like
+type, it is the only means to prove a statement like
 \C{(exists n, prime n)}.  In such a --- constructive --- proof, the first
 argument would be a number
 \C{n} of type \C{nat} while the second argument would be a proof \C{p} of type
 \C{(prime n)}.  The parameter \C{P} causes the dependency of the
 second component of the pair on the first component. It is a function
 representing an arbitrary predicate over a term of
-type \C{A}.  Hence \C{(P a)} is the instance of the predicate, for \C{a}.  E.g.,
+type \C{A}.  Hence \C{(P x)} is the instance of the predicate, for \C{x}.  E.g.,
 the predicate of being an odd prime number is expressed as
 \C{(fun x : nat => (odd x) && (prime x))}, and the statement expressing the
 existence of such a number is
-\C{(ex nat (fun x : nat => (odd x) && (prime x)))} that thanks
-to the \C{Notation} mechanism of \Coq{} is parsed and
+
+\C{(ex nat (fun x : nat => (odd x) && (prime x)))}, which (thanks
+to the \C{Notation} machanism of \Coq{}) is parsed and
+
 printed as the more familiar \C{(exists x : nat, odd x && prime x)}.
 
 It is worth summing up the many features of type theory that
-interveen in the type of \C{ex} and \C{ex\_intro}:
+intervene in the type of \C{ex} and \C{ex\_intro}:
 
 \begin{coq}{}{}
 ex : forall A : Type, (A -> Prop) -> Prop.
@@ -535,8 +553,9 @@ for any formula describing a property of the witness.  Finally
 the dependent quantification \C{forall a : A} binds a term variable
 \C{a} in the type that follows to express that the property \C{P} must hold
 on the witness \C{a}.\\
+% [DG] This feels a bit hard to read...
 
-We quickly see the inductive definition of the disjunction \C{or}
+Let us also observe the inductive definition of the disjunction \C{or}
 and its two constructors \C{or\_introl} and \C{or\_intror}.
 
 \begin{coq}{name=Or}{}
@@ -556,11 +575,12 @@ Definition or_ind (A B P : Prop)
 
 The detail worth noting here is that the pattern match construct has two
 branches, and each branch represents a distinct sub proof.  In this
-case to prove \C{P} starting from \C{A \\/ B}, one has to deal with all
-cases: prove \C{P} under the assumption \C{A} and prove \C{P}
+case, in order to prove \C{P} starting from \C{A \\/ B},
+one has to deal with all cases: i.e., to prove \C{P} under the
+assumption \C{A}, and to prove \C{P}
 under the assumption \C{B}.
 
-Usual constants and connectives as $\top$, $\bot$ and $\neg$
+Usual constants and connectives such as $\top$, $\bot$ and $\neg$
 can be defined as follows.
 
 \begin{coq}{name=TrueFalse}{}
@@ -574,20 +594,21 @@ Notation "~ A" := (not A).
 \index[coq]{\C{I}}
 \index[coq]{\C{not}}
 
-Remark that to prove \C{True} one has simply to provide \C{I} that has no
-arguments.  So proving \C{True} is trivial, and as a consequence eliminating it
+Hence, in order to prove \C{True}, one just has to apply the
+constructor \C{I}, which requires no arguments. 
+So proving \C{True} is trivial, and as a consequence eliminating it
 provides little help (i.e., no extra knowledge is obtained by pattern matching
-over \C{I}).  Conversely, it is impossible to prove \C{False}, since it has no
+over \C{I}).  Contrarily, it is impossible to prove \C{False}, since it has no
 constructor, and pattern matching on \C{False} can inhabit any type, since no
-branch has to be provided.
+branch has to be provided:
 
 \begin{coq}{name=exfalso}{}
 Definition exfalso (P : Prop) (f : False) : P :=
   match f with end.  (* no constructors, no branches *)
 \end{coq}
 
-The only base predicate we are left to describe is equality.  The reason we
-left it as the last one is that it has a tricky nature.  In particular
+The only base predicate we still haven't described is equality.  The reason we
+left it as the last one is that it has a tricky nature.  In particular,
 equality, as we have seen in the previous chapters, is an open notion
 in the following sense.  Terms that compute to the same syntactic expression
 are considered as equal, and this is true for any program the user may write.
@@ -615,8 +636,8 @@ The \C{erefl} constructor takes no arguments, as \C{I}, but its type
 annotation says it can be used to inhabit only the type \C{(x = x)}.
 Hence one is able to prove \C{(a = b)} only when \C{a} and \C{b} are
 convertible
-(as in indistinguishable from a logical standpoint).
-Conversely by eliminating a term
+(i.e., indistinguishable from a logical standpoint).
+Conversely, by eliminating a term
 of type \C{(a = b)} one discovers that  \C{a} and \C{b} are
 equal and \C{b} can be freely replaced by \C{a}.
 
@@ -626,11 +647,11 @@ Definition eq_ind A (P : A -> Prop) x (px : P x) y (e : x = y) : P y :=
 \end{coq}
 
 The notion of equality is one of the most intricate aspects of type
-theory and an in-depth study of it is out of the scope of this book.  The interested reader
+theory; an in-depth study of it is out of the scope of this book.  The interested reader
 finds an extensive study of this subject in~\cite{hottbook}.  Later in this
 chapter we define and use other inductive types to take advantage
 of the ``automatic'' substitution of the implicit equations we see here:
-while \C{px} has type \C{(P x)}, it is accepted as an
+While \C{px} has type \C{(P x)}, it is accepted as an
 inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
 is automatically replaced by \C{x}.
 
@@ -639,7 +660,7 @@ is automatically replaced by \C{x}.
 
 
 Since proofs are just terms one could,
-in principle, use no proof language and input directly proof terms.
+in principle, use no proof language and directly input proof terms instead.
 Indeed this was the modus operandi in the pioneering work of
 De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
 The use of a dedicated proof language enables a higher level
@@ -657,7 +678,12 @@ shape by looking at the type of \C{n}.  If \C{n} is a natural number, then there
 are two branches; the one for the \C{S} constructor carries an argument of type
 \C{nat}, the other one is for \C{0} and binds no additional term.
 The \C{case:} tactic is general enough to work with any inductive data type
-and inductive predicate.
+and inductive predicate. Note that this tactic is known as
+\emph{destruction}, since it transforms an object of an inductive type
+back into the arguments that this object was constructed from (using
+the constructors of the type).
+% [DG] I've introduced the word "destruction", since you use it later
+% on.
 
 The \C{apply:} tactic generates an application.  For example, \C{apply: addnC}
 generates the term \C{(addnC t1 t2)} by figuring out the correct values of
@@ -665,20 +691,20 @@ generates the term \C{(addnC t1 t2)} by figuring out the correct values of
 if the lemma takes in input proofs, like \C{contraL}.
 
 There is a list of proof commands that are shorthands for \C{apply:}
-and is only worth mentioning here briefly. \C{split} proves a conjunction
+and are only worth mentioning here briefly. \C{split} proves a conjunction
 by applying the \C{conj} constructor; \C{left} and \C{right} prove a
 disjunction by applying \C{or\_introl} and \C{or\_intror} respectively;
-\C{exist t} proves an existentially quantified formula by providing
+\C{exists t} proves an existentially quantified formula by providing
 the witness \C{t} and, later, a proof that \C{t} validates the predicate.
 Finally \C{reflexivity} proves an equality by applying \C{erefl}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Managing the proof context}
 The only primitive constructor that remains without an associated proof command
-is \C{(fun .. => ..)}.  Operationally what the $\to_I$ and
+is \C{(fun .. => ..)}.  Operationally, what the $\to_I$ and
 $\forall_I$ logical rule do is to introduce into the proof context a
 new entry.  So far we either expressed this step at the beginning of proofs
-by putting such items just after the name of the lemma being proved, or
+by placing such items just after the name of the lemma being proved, or
 just after a \C{case:} or \C{elim:} proof command.  The current section
 expands on this subject covering the full management of the proof context.
 
@@ -689,8 +715,8 @@ expands on this subject covering the full management of the proof context.
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
 is oversimplified.  While \C{case} is indeed the proof command in
 charge of performing case analysis, the ``\C{: n}'' and ``\C{=> [|m]}''
-parts are decorators to prepare the goal and post process the result of
-the proof command.  These decorators deal with what we typically call
+parts are decorators to prepare the goal and post-process the result of
+the proof command.  These decorators perform what we typically call
 \emph{bookkeeping}: actions that are necessary in order to obtain readable and
 robust proof scripts but that are too frequent to benefit from a more verbose
 syntax.  Bookkeeping actions do convey a lot of information, like where
@@ -699,20 +725,24 @@ using a compact, symbolic, language.  Note that all bookkeeping actions
 correspond to regular, named, proof commands.  It is the use one makes of them
 that may be twofold: a case analysis in the middle of a proof may start two
 distinct lines of reasoning, and hence it is worth being noted explicitly with
-the \C{case} word; conversely de-structuring a pair to obtain the two
+the \C{case} word; conversely, de-structuring a pair to obtain the two
 components can hardly be a relevant step in a proof, so one may prefer to
 perform such bookkeeping action with a symbolic, compact, notation
 corresponding to the same \C{case} functionality.
+% [DG] Not sure I understand the part after the semicolon.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsubsection{Pulling from the stack}
 \index[ssr]{\C{tactic => ..}}
 
-Lets start with the post processing phase, called \emph{introduction pattern}.
+Let's start with the post-processing phase, called \emph{introduction pattern}.
 The postfix ``\C{=> ...}'' syntax can be used in conjunction with any proof
-command, and it performs a sequence of actions on the first goal assumption or
-quantified variable.  With these looking glasses, the goal becomes a
+command, and it performs a sequence of actions on the first
+assumption or variable that appears in the goal (i.e., on
+\C{A} if the goal has the form \C{A -> B -> C -> ...}, or on
+\C{x} if the goal has the form \C{forall x, ...}).
+With these looking glasses, the goal becomes a
 \emph{stack}. Take for example this goal:
 
 \begin{coqout}{name=Stack}{}
@@ -720,16 +750,16 @@ quantified variable.  With these looking glasses, the goal becomes a
 forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
 
-Before accessing the assumption \C{(prime xy.1)} one has to name the
+Before accessing the assumption \C{(prime xy.1)}, one has to name the
 bound variable \C{xy}, exactly as one can only access a stack from its top.
 The execution of \C{=> xy pr\_x odd\_y} is just the composition of
 \C{=> xy} with \C{=> pr\_x} and finally \C{=> odd\_y}.  Each action
-pulls out of the stack an item and names it.  The \C{move} proof
-command does nothing,  we use it as a placeholder
-for the postfix \C{=>} bookkeeping action.
+pulls an item out of the stack and names it.  The \C{move} proof
+command does nothing, so we use it as a placeholder
+for the postfix \C{=>} bookkeeping action:
 
 \begin{coq}{}{width=7cm}
-move=> xy pr_x odd_y
+move=> xy pr_x odd_y.
 \end{coq}
 \begin{coqout}{name=Stack1}{width=5cm}
  xy : nat * nat
@@ -739,12 +769,12 @@ move=> xy pr_x odd_y
  2 < xy.2 + xy.1
 \end{coqout}
 
-Now, en passant, one would like to decompose \C{xy} into its first
+Now, en passant, we would like to decompose \C{xy} into its first
 and second component.  Instead of the verbose \C{=> xy; case: xy => x y},
-one can use the symbolic notation \C{[]} to perform such action.
+we can use the symbolic notation \C{[]} to perform such action.
 
 \begin{coq}{}{width=7cm}
-move=> [x y] pr_x odd_y
+move=> [x y] pr_x odd_y.
 \end{coq}
 \begin{coqout}{name=Stack2}{width=5cm}
  x, y : nat
@@ -755,11 +785,11 @@ move=> [x y] pr_x odd_y
 \end{coqout}
 \index[ssr]{\C{tactic => ..}!\C{=> [ .. $\mid$ .. ]} (case)}
 
-One can place the \C{/=} switch to force the system to reduce the formulas on
+We can place the \C{/=} switch to force the system to reduce the formulas on
 the stack, before introducing them in the context, and obtain:
 
 \begin{coq}{}{width=7cm}
-move=> [x y] /= pr_x odd_y
+move=> [x y] /= pr_x odd_y.
 \end{coq}
 \begin{coqout}{name=Stack2}{width=5cm}
  x, y : nat
@@ -769,9 +799,9 @@ move=> [x y] /= pr_x odd_y
  2 < y + x
 \end{coqout}
 
-One can also process an assumption through a lemma; when a lemma is
+We can also process an assumption through a lemma; when a lemma is
 used in this way, it is called a \emph{view}. This feature is of
-general interest but it is specially useful in the context of boolean
+general interest, but it is especially useful in the context of boolean
 reflection, as described in section~\ref{sec:views}. For example,
 \C{prime\_gt1} states \C{(prime p -> 1 < p)} for any \C{p}, and we can
 use it as a function to obtain a proof of \C{(1 < x)}  from a proof
@@ -780,7 +810,7 @@ of \C{(prime x)}.
 
 
 \begin{coq}{}{width=7cm}
-move=> [x y] /= /prime_gt1-x_gt1 odd_y
+move=> [x y] /= /prime_gt1-x_gt1 odd_y.
 \end{coq}
 \begin{coqout}{name=Stack2}{width=5cm}
  x, y : nat
@@ -791,9 +821,9 @@ move=> [x y] /= /prime_gt1-x_gt1 odd_y
 \end{coqout}
 \index[ssr]{\C{tactic => ..}!\C{=> /=} (simplification)}
 
-The leading \C{/} makes \C{prime\_gt1} do as a function instead of
+The leading \C{/} makes \C{prime\_gt1} work as a function instead of
 as a name to be assigned to the top of the stack.  The \C{-} has no effect but
-to visually link the function and name assigned to its output.
+to visually link the function with the name \C{x_gt1} assigned to its output.
 Indeed \C{-} can be omitted.
 
 One could also examine \C{y}: it can't be \C{0}, since it would contradict
@@ -811,40 +841,50 @@ move=> [x [//|y]] /= /prime_gt1-x_gt1.
 \index[ssr]{\C{tactic => ..}!\C{=> /view} (view application)}
 \index[ssr]{\C{tactic => ..}!\C{=> //} (close trivial goals)}
 
-This time, the destruction of \C{y} generates two cases, hence the \C{[ .. | .. ]}
-syntax, for the two branches.  In the first one, when \C{y} is \C{0},
+This time, the destruction of \C{y} generates two cases for the two
+branches; hence the \C{[ .. | .. ]} syntax.  In the first one, when
+\C{y} is \C{0},
 the \C{//} action solves the goal, by the trivial means
 of the \C{by []} terminator.  In the second branch we name \C{y} the
-new variable.
+new variable (which is legitimate, since the old \C{y} has been
+disposed of).
 
-Now, the fact that \C{y} is even is not needed to conclude, so we can discard it using the \C{\_} dummy name.
+Now, the fact that \C{y} is even is not needed to conclude, so we can
+discard it by giving it the \C{\_} dummy name.
 
 \begin{coq}{}{}
 by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 \end{coq}
 
-The way to dispose an already named assumption is to mention
+The way to discard an already named assumption is to mention
 its name in curly braces, as \C{=> \{x_gt1\}}.
 \index[ssr]{\C{tactic => ..}!\C{=> \{name\}} (disposal)}
+% [DG] You probably want "dispose of", not "dispose". But I think
+% "discard" is clearer here.
 
-We finally conclude with the \C{apply:} command that here we use
-with two arguments: a function and its last argument.
+We finally conclude with the \C{apply:} command. In the example just
+shown, we have used it with two arguments: a function and its last
+argument. In fact, the lemma \C{ltn\_addl} looks as follows:
 
 \begin{coq}{}{width=4cm}
 About ltn_addl.
 \end{coq}
 \begin{coqout}{}{width=8cm}
 ltn_addl : forall m n p : nat, m < n -> m < p + n
+
+Arguments m, n are implicit
 \end{coqout}
 
-\C{apply:} will fill in the blanks between the function (the lemma name)
-and the argument provided.  Note that by passing \C{x\_gt1}, the
+\C{apply:} automatically fills in the blanks between the function
+\C{ltn\_addl}
+(the lemma name) and the argument \C{x_gt1} provided.
+Since we are passing \C{x\_gt1}, the
 variable \C{m} picks the value \C{1}.  The conclusion of \C{ltn\_addl}
 hence unifies with \C{(2 < y.+1 + x)} because both \C{+} and \C{<} are
-defined as programs that compute: addition exposes a \C{.+1} by
-reducing to \C{2 < (y+x).+1}, then \C{<}, or better the underlying
-\C{<=}, eats a successor from both sides, leading to \C{1 < y + x}
-that looks like the conclusion of the lemma we apply.
+defined as programs that compute: Namely, addition exposes a \C{.+1},
+thus reducing to \C{2 < (y+x).+1}; then \C{<} (or, better, the underlying
+\C{<=}) eats a successor from both sides, leading to \C{1 < y + x},
+which looks like the conclusion of the lemma we apply.
 
 Here we have shown all possible actions one can perform in an intro
 pattern, squeezing the entire proof into a single line.  This has
@@ -858,22 +898,39 @@ finding the right balance only comes with experience.
 
 \gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
-on the subgoals.%\footnote{not the status quo, but I prefer this exception to the current one}
+on the subgoals.
+%\footnote{not the status quo, but I prefer this exception to the current one}
 Indeed in \C{case: n => [|m]} only one case analysis is performed.}
+
+% [DG] The last two paragraphs (including the gotcha) seem direly in
+% need of expanding. I can at most guess what the gotcha is talking
+% about; it appears to be the double meaning of a
+% [ ... | ... | ... ] that is placed after the => tactical depending
+% on whether it is in the first position ("branching") or not
+% ("destructing"), as in §5.4 in the SSReflect manual. I cannot say
+% the manual completely clears things up for me, but at least it
+% sounds like what the gotcha is warning about. I think we need at
+% least one example of each of the possible meanings, along with an
+% example of how to enforce the destructing meaning in the first
+% position (using the "-" switch?).
+%
+% On a lesser issue, the word "intro pattern" is used but not
+% explained; this holds even for the SSReflect manual! Is an intro
+% pattern just anything that laeds to a new constant in the context?
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
 \mcbsubsubsection{Working on the stack}
 
-The stack can also be used as a work place.  Indeed there is
-no need to pull from the stack all items.  If we take the previous example
+The stack can also be used as a workplace.  Indeed, there is no need
+to pull all items from the stack.  If we take the previous example:
 
 \begin{coqout}{name=Stack}{}
 ========================
 forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
-and we stop just after applying the view, we end up is a valid state.
+and we stop just after applying the view, we end up in a valid state:
 
 \begin{coq}{}{width=6cm}
 move=> [x y] /= /prime_gt1.
@@ -884,7 +941,7 @@ move=> [x y] /= /prime_gt1.
  1 < x -> odd y -> 2 < y + x
 \end{coqout}
 
-One can also chain multiple views on the same stack item.
+One can also chain multiple views on the same stack item:
 
 \begin{coq}{}{width=6cm}
 move=> [x y] /= /prime_gt1/ltnW.
@@ -915,14 +972,21 @@ move=> /(_ 3).
 3 * 2 = 3 + 3 -> 6 = 3 + 3
 \end{coqout}
 \index[ssr]{\C{tactic => ..}!\C{=> /(_ arg)} (specialization)}
-The idea behind the notation is that when we apply a view to the top
-stack item (we name it \C{top} here), as in \C{/v}, we are
-forming the term \C{(v top)}, while
-when we specialize the top assumption as in \C{/(_ x)} we form the
-term \C{(top x)}.  The \C{_} is a place holder for the top item, and is
-omitted in \C{/(view _)}.
+% [DG] Why is there an "=>" after the "move" in the above example?
+% Nothing is getting moved into the context. Without the "=>" it works
+% just as fine. I'm surprised it works with "=>", though!
+The idea behind the syntax here is that when we apply a view \C{v} to
+the top stack item (say, \C{top}), by writing \C{/v}, we are
+forming the term \C{(v top)}, whereas
+when we specialize the top stack item \C{top} to an object \C{x},
+by writing \C{/(_ x)}, we are forming the term \C{(top x)}.  The \C{_}
+is a placeholder for the top item, and is
+omitted in \C{/(v _)}.
+% [DG] Better "omitted in \C{/v}"?
 
-When the top stack item is an equation one can substitute it using \C{<-}
+When the top stack item is an equation, one can substitute it into
+the rest of the goal, using the tactics \C{<-}
+% [DG] Is "tactics" the right word here?
 and \C{->} for right-to-left and left-to-right respectively.
 
 \begin{coq}{}{width=4cm}
@@ -955,7 +1019,7 @@ Ssreflect from the \C{apply} tactic of \Coq{}.
 Indeed the two tactics, while
 playing similar roles, behave very differently.}
 
-Imagine we want to perform case analysis on \C{y} at this stage
+Imagine we want to perform case analysis on \C{y} at this stage:
 
 \begin{coqout}{name=Stack2}{}
  x, y : nat
@@ -966,12 +1030,13 @@ Imagine we want to perform case analysis on \C{y} at this stage
 \end{coqout}
 
 The command \C{case: y} is equivalent to
-\C{move: y; case.} where \C{move} once again is a place holder,
-\C{: y} pushes onto the stack the \C{y} variable and \C{case}
+\C{move: y; case.} where \C{move} once again is a placeholder,
+\C{: y} pushes the \C{y} variable onto the stack, and \C{case}
 operates on the top item of the stack.
-%Pushing items on the stack is called \emph{discharging}.
+Pushing items on the stack is called \emph{discharging}.
+% [DG] Reinstated, since you use the term.
 
-Just before running \C{case} the goal looks like this:
+Just before running \C{case}, the goal would look like this:
 
 \begin{coqout}{name=Stack2}{}
  x : nat
@@ -981,10 +1046,13 @@ Just before running \C{case} the goal looks like this:
  forall y, 2 < y + x
 \end{coqout}
 
-Unfortunately the binding for y is needed by the \C{odd\_y}
-context item, so \C{move: y} fails.  One has to push on the stack
-items in a valid order.  \C{move: y odd\_y} would push \C{odd\_y}
-first, then \C{y}, leading to the valid goal
+However, this is not actually a well-defined state.
+Indeed, the binding for \C{y} is needed by the \C{odd\_y}
+context item, so \C{move: y} fails.  One has to push items onto the
+stack in a valid order: first, all properties of a variable, then the
+variable itself.  The correct invocation,
+\C{move: y odd\_y}, pushes first \C{odd\_y} and only then \C{y} onto
+the stack, leading to the valid goal
 
 \begin{coqout}{name=Stack2}{}
  x : nat
@@ -1010,7 +1078,10 @@ subgoal 2 is:
 
 An alternative to discharging \C{odd\_y} would be to clear it, i.e., purge it
 from the context.  Listing context entry names inside curly braces has this
-effect like in the case of \C{case: y \{odd\_y\}}.
+effect, like in the case of \C{case: y \{odd\_y\}}.
+% [DG] The word "alternative" sounds wrong here -- clearing odd_y
+% leads into a dead end (2 < 0 + x can only be proven by contradiction
+% to odd 0).
 \index[ssr]{\C{tactic : ..}!\C{: \{name\}} (disposal)}
 
 One can combine \C{:} and \C{=>} around a proof command, to first prepare the
@@ -1034,8 +1105,9 @@ subgoal 2 is:
 
 At the left of the \C{:} operator one can also put a name for an
 equation that links the term at the top of the stack before and
-after the tactic execution.  \C{case E: y odd\_y => [|y']} leads to
-the two sub goals:
+after the execution of the tactic. For example,
+ \C{case E: y odd\_y => [|y']} leads to
+the following two subgoals:
 
 \begin{coqout}{name=Stack2}{width=6cm}
  x, y : nat
@@ -1054,10 +1126,12 @@ the two sub goals:
 \end{coqout}
 \index[ssr]{\C{tactic : ..}!\C{name: term} (equation)}
 
-Last, one can discharge the goal with any term, not
-just variables occurring in it.  For example
+Last, one can push any term onto the stack -- whether or not this
+term appears in the context. For example,
 ``\C{move: (leqnn 7)}'' pushes on the stack
-the additional assumption \C{(7 <= 7)}.  This
+the additional assumption \C{(7 <= 7)} (and thus
+``\C{move: (leqnn 7) => A}'' brings this assumption into the context
+under the name \C{A}). This
 will come handy in section~\ref{sec:strongind}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1065,8 +1139,8 @@ will come handy in section~\ref{sec:strongind}.
 
 In chapter~\ref{ch:prog} we have seen how to build and use (call or destruct)
 anonymous functions and data types.  All these
-constructions have found a correspondence in the Curry-Howard correspondence.
-The only missing piece is recursive programs.  For example
+constructions have found counterparts in the Curry-Howard correspondence.
+The only missing piece is recursive programs.  For example,
 \C{addn} was written by recursion on its first argument, and is a
 function taking as input two numbers and producing a third one.
 We can write programs by recursion that take as input, among regular  data,
@@ -1099,13 +1173,13 @@ Fixpoint nat_ind (P : nat -> Prop)
 The \Coq{} system generates this program automatically, as soon as
  the \C{nat} data type
 is defined.  Recall that recursive functions are checked for termination:
-through the lenses of the proofs as programs correspondence, this means
+Through the lenses of the proofs-as-programs correspondence, this means
 that the induction principle just coded is sound, i.e., based on a
 well-founded order relation.
 \index[concept]{termination}
 \index[concept]{consistency}
 
-If non-terminating functions are not ruled out, it easy to inhabit
+If non-terminating functions are not ruled out, it is easy to inhabit
 the \C{False} type, even if it lacks a proper constructor.
 
 \begin{coq}{}{}
@@ -1126,8 +1200,10 @@ Note how \C{oops} calls itself, as in the previous example,
 even if it is not a recursive function.
 Such restriction, called
 \emph{positivity condition}, is out of scope for this book.
-The interested reader shall
-refer to~\cite{Coq:manual}.
+(Roughly speaking, it says that constructors for an inductive data
+type can only depend on maps \emph{to} the data type but not on maps
+\emph{from} it.)
+The interested reader shall refer to~\cite{Coq:manual}.
 \index[concept]{positivity}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1139,7 +1215,10 @@ refer to~\cite{Coq:manual}.
 
 As an exercise we show how the \C{elim} tactic combined with the bookkeeping
 operator \C{:} lets one perform, on the fly, a stronger variant of
-induction called ``course of values''.
+induction called ``course of values'' or ``strong induction''.
+% [DG] I've never seen it called "course of values". Apparently this
+% name is mostly used in computability theory? But "strong induction"
+% appears very often.
 
 Claim: every amount of postage that is at least 12 cents
 can be made from 4-cent and 5-cent stamps.  The proof in the inductive
@@ -1154,7 +1233,8 @@ solution for a stamping amount problem $n$ to one for a problem of
 size $n+4$ (by using a 4-cent stamp).
 The induction hypothesis provided by \C{nat_ind}
 is not strong enough.  However we can use the \C{:} operator
-to load the goal before performing the induction.
+to load the goal before performing the induction.\footnote{See further
+below for explanations.}
 \index[ssr]{\C{set name := term}}
 
 \begin{coq}{}{}
@@ -1173,41 +1253,153 @@ by exists s4.+1, s5; rewrite mulSn -addnA def_m4 subnKC.
 Qed.
 \end{coq}
 
-Just before the induction step the goal is the following one:
+Line 3 requires some explanations. First of all,
+``\C{elim: n \{-2\}n (leqnn n).}'' is shorthand for
+``\C{move: (leqnn n). move: \{-2\}n. move: n. elim.}'' (the terms after the
+colon \C{:} are pushed to the stack, from right to left; and the
+\C{elim} tactic is applied afterwards to the top of the stack, which
+of course is the last term pushed to the stack). Let us see how these
+four steps transform the goal. At the beginning, the context and the
+goal are
+
+\begin{coqout}{}{width=11cm}
+  n : nat
+  ============================
+  11 < n -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n
+\end{coqout}
+
+The first of our
+four steps (``\C{move: (leqnn n)}'') pushes the additional
+assumption \C{n <= n} onto the stack (since \C{(leqnn n)} provides
+its proof); we are thus left with
+
+\begin{coqout}{}{width=11cm}
+1 subgoal
+  
+  n : nat
+  ============================
+  n <= n -> 11 < n -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n
+\end{coqout}
+
+The second step (``\C{move: \{-2\}n}'') is more interesting. Recall
+that \C{move:} usually ``generalizes'' a variable (i.e., takes a
+variable appearing in the context, and binds it by the universal
+quantifier, so that the goal becomes a for-all statement). The prefix
+\C{\{-2\}} means ``all except for the 2nd occurrence in the goal''; so
+the idea is
+to generalize ``all except for the 2nd occurrence of $n$''. Of course,
+this implies that $n$ still has to remain in the context (unlike for
+``\C{move: n}''), so the
+bound variable of the universal quantifier has to be a fresh
+variable, picked automatically by \Coq{}. For example, \Coq{} might
+pick \C{n0} for its name, and so the state after the second step will
+be:
+
+\begin{coqout}{}{width=11cm}
+  n : nat
+  ============================
+  forall n0 : nat,
+  n0 <= n -> 11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
+\end{coqout}
+
+Notice how the \C{n} in ``\C{n0 <= n}'' has remained un-generalized,
+since it was the 2nd occurrence of $n$ before the second step.
+
+The third step (``\C{move: n}'') merely moves the \C{n} from the
+context to the goal. Thus, after the three ``\C{move}'' steps, we are
+left with proving the following claim:
 
 \begin{coq}{}{}
-forall n m : nat,
-  m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
+forall n n0 : nat,
+  n0 <= n -> 11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
 \end{coq}
-The corresponding induction hypothesis \C{IHn} is:
+
+The \C{elim} now applies induction on the top of the stack, which
+is \C{n}. The corresponding induction hypothesis \C{IHn} is:
 
 \begin{coq}{}{}
-IHn : forall m : nat,
-      m <= n ->
-      11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
+IHn : forall n0 : nat,
+      n0 <= n ->
+      11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
 \end{coq}
-Such hypothesis is accessible for each \C{m} that is at least \C{12}
-and smaller than \C{n}.
 
-Loading the goal works as follows: first \C{(leqnn n)} is pushed on
-the stack, then all occurrences of \C{n} but for the second one are
-discharged obtaining
+(Of course, the \C{n} here is not the original \C{n}, but the new
+\C{n} introduced in the \C{=>[|n IHn]} pattern.)
+% Such hypothesis is accessible for each \C{n0} that is at least \C{12}
+% and smaller than \C{n}.
 
-\begin{coq}{}{}
-forall m : nat,
-  m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
-\end{coq}
-Finally the last occurrence of \C{n} is discharged too so that induction is performed
-on such quantified variable.
+% Loading the goal works as follows: first \C{(leqnn n)} is pushed on
+% the stack, then all occurrences of \C{n} but for the second one are
+% discharged obtaining
 
-Lines 4, 9 and 10 deserve a few comments.  Line 4 repeats a tactic
-12 times.  Line 9 uses the \C{set} proof command to name \C{m} a
-term of the form \C{_.+1} where \C{_} is a wildcard. It gives the name
-\C{m} to the term \C{m'.+16}.  Line 10 passes to the induction
-hypothesis \C{(m-4)}, then a placeholder for a missing proof
-of \C{(m-4 < n)}, finally a proof that \C{(11 < m-4)}.  The introduction
-pattern in line 10 names \C{s4} and \C{s5} the quantities of
-4-cent and 5-cent stamps needed to cover the amount of postage \C{(m-4)}.
+% \begin{coq}{}{}
+% forall m : nat,
+  % m <= n -> 11 < m -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
+% \end{coq}
+% Finally the last occurrence of \C{n} is discharged too so that induction is performed
+% on such quantified variable.
+
+Lines 4, 9 and 10 deserve a few comments.
+\begin{itemize}
+\item Line 4 repeats a tactic 12 times using the \C{do 12!} tactical.
+This deals with the 12 cases where \C{n0} is not greater than 11.
+\item Line 9 uses the \C{set} proof command, which is used to define a new
+constant in the context. For example, ``\C{set a := 24 * 11.}'' would
+create a new ``\C{a := 24 * 11 : nat}'' item in the context. The
+command also tries to substitute the newly-defined constant for its
+appearances in the goal; for example, ``\C{set a := 11.}'' would not
+only create a new ``\C{a := 11 : nat}'' in the context, but also
+replace the ``\C{11 < m'.+4.+4.+4.+4}'' in the goal\footnote{Don't be
+surprised by the fact that an addition of 16 is circumscribed by four
+additions of 4. By default, \mcbMC{} has the notations \C{.+1},
+\C{.+2}, \C{.+3} and \C{.+4} pre-defined, but not \C{.+5} and higher.}
+by an ``\C{a < m'.+4.+4.+4.+4}''. In our example above
+(``\C{set m := _.+1}''), we are using the
+\C{set} command with a wildcard; this captures the first term of the
+form \C{_.+1} appearing in the goal and denotes it by \C{m}, replacing
+it by \C{m} on the goal. In our case, this first term is
+\C{m'.+4.+4.+4.+4} (which is just syntactic sugar for
+\C{m'.+1.+1.....} with 16 appearances of \C{.+1})\footnote{This is
+slightly counterintuitive, as you
+might instead believe it to be \C{m'.+3.+4.+4.+4}. But keep in mind
+that \C{m'.+3.+4.+4.+4 < n.+1} is just syntactic sugar for
+\C{m'.+4.+4.+4.+4 <= n.+1}.},
+% [DG] I hope I got these subtleties right. That said, I think it
+% would be better to first introduce the "set" tactic in a less
+% confusing example.
+and so the name \C{m} is given to this term. We could have achieved
+the same goal using ``\C{set m := m'.+4.+4.+4.+4}''.
+\par
+Further details about the \C{set} tactic can be found in
+\cite[\S 4.2]{ssrman}; let us only mention the (by now) habitual
+variant \C{set a := \{k\}(pattern)}, which defines a new constant
+\C{a} to equal the first subterm of the goal that matches the pattern
+\C{pattern}, but then replaces \emph{only the \(k\)-th} appearance
+of this subterm in the goal by \C{a}. As usual, if the
+pattern-matching algorithm keeps finding the wrong subterms, it is
+always possible to completely specify the subterm, leaving no
+wildcards.
+\item Line 10 instantiates the induction hypothesis with the value
+\C{(m-4)}, with a placeholder for a missing proof of \C{(m-4 < n)},
+and with a proof that \C{(11 < m-4)}. The proof given for
+\C{(11 < m-4)} is just a simple application of \C{isT}; this is
+accepted because the term \C{(11 < m-4)} \emph{computes} to
+\C{true} (thanks to the computational definitions of \C{<} and of
+subtraction, and thanks to \C{m := m'.+4.+4.+4.+4}). The missing proof
+of \C{(m-4 < n)} is not automatically inferred; it becomes the first
+subgoal. The induction hypothesis yields
+\C{exists s4 s5 : nat, s4 * 4 + s5 * 5 = m-4}. The introduction
+pattern in line 10 gives names to the values of \C{s4} and \C{s5}
+whose existence is thus guaranteed, and to the statement that
+\C{s4 * 4 + s5 * 5 = m-4}. In other words, it gives names \C{s4} and
+\C{s5} to the quantities of 4-cent and 5-cent stamps needed to cover
+the amount of postage \C{(m-4)}, as well as to the fact that they do
+cover this exact amount of postage.
+% [DG] I find it counterintuitive that the intro pattern is
+% "[|s4 [s5 def_m4]]" and not "[|s4 s5 def_m4]". Is there some neat
+% and short explanation of this? (Not too important, but would
+% complete the picture.)
+\end{itemize}
 \index[ssr]{\C{do n"!} (iteration)}
 
 
@@ -1217,9 +1409,11 @@ pattern in line 10 names \C{s4} and \C{s5} the quantities of
 \label{sec:EM}
 
 Not all valid reasoning principles can be represented by programs.
-For example, excluded middle can be proved by a program only when
-the property is decidable, i.e., when we can write in \Coq{} a program
-to \C{bool} that tests if the property holds or not.
+For example, excluded middle --- i.e., the claim that
+\C{A \\/ ~~ A} for a given logical statement \C{A} ---
+can be proved by a program only when
+\C{A} is decidable, i.e., when we can write in \Coq{} a program
+to \C{bool} that tests if \C{A} holds or not.
 Excluded middle, in its generality, can only be \emph{axiomatized},
 i.e., assumed globally.
 
@@ -1230,7 +1424,7 @@ Calculus of Inductive Constructions. Some formal developments in
 formalized do not require it, to avoid (or postpone) proving the
 decidability of the predicates at play while still being able to
 reason by case analysis on their validity. By contrast, the \mcbMC{}
-provides the decidability proofs when they exist. Moreover, the
+library provides the decidability proofs when they exist. Moreover, the
 boolean reflection methodology, object of chapter~\ref{ch:boolrefl},
 provides tools to manipulate decidable predicates in a convenient way,
 with the same ease as in a formalism based on a classical logic.
@@ -1246,12 +1440,15 @@ axiom of excluded middle:
 \begin{coq}{}{}
 Definition classically P : Prop := forall b : bool, (P -> b) -> b.
 Lemma classic_EM P : classically (decidable P).
+Lemma classicW P : P -> classically P.
 Lemma classic_bind P Q :
   (P -> classically Q) -> classically P -> classically Q.
 \end{coq}
 \index[coq]{\C{classically}}
 \index[coq]{\C{classically_EM}}
+\index[coq]{\C{classicW}}
 \index[coq]{\C{classically_bind}}
+% [DG] If we mention monads, let's include their unit.
 The \C{classically} box can only be opened when the statement to be
 proved in the current goal is a boolean, hence an instance of a
 decidable predicate. Inside such a box the excluded middle is
