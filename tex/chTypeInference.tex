@@ -1052,8 +1052,8 @@ Proof. by []. Qed.
 Lemma mem_undup s : undup s =i s.
 Proof.
 move=> x; elim: s => //= y s IHs.
-case Hy: (y \in s); last by rewrite in_cons IHs.
-by rewrite in_cons IHs; case: eqP => // ->.
+case: ifP; rewrite in_cons IHs //.
+by case: eqP => // ->.
 Qed.
 \end{coq}
 where \C{(A =i B)} is a synonym for \C{(forall x, x \\in A = x \\in B)},
