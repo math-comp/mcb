@@ -797,9 +797,9 @@ Eval compute in predn 5.
 \end{coqout}
 \coqrun{name=compute_match_run}{ssr,compute_match}
 
-The \C{compute} command rewrite any term of the shape
+The \C{compute} command rewrites any term of the shape
 \C{if 0 is p.+1 then t1 else t2} into \C{t2} and any term of the shape
-\C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where occurrences of
+\C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where all occurrences of
 \C{p} have been replaced by \C{k}. In our example, as the value of
 \C{k.+1} is \C{5}, \C{k} and hence \C{t2} is \C{4}.
 
@@ -811,16 +811,16 @@ occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
 re-used in the result part.
-Remark that we did omit the type of the input \C{n}. We can ommit this
+Remark that we did omit the type of the input \C{n}. We can omit this
 type because matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
 \C{nat}, as the \C{S} constructor belongs to \emph{exactly}
-one inductive definition, the one of \C{nat}.
+one inductive definition, namely the one of \C{nat}.
 
 The pattern used in the \C{if} statement can be composed of
 several nested levels of the \C{.+1} pattern.  For instance,
 if we want to write a function
-that returns \C{(n-5)} for every input larger than or equal to 5 and 0
+that returns \(n-5\) for every input \(n\) larger than or equal to 5 and 0
 for every input smaller than 5, we can write the following definition:
 
 \begin{coq}{name=pred5}{}
@@ -848,7 +848,7 @@ This function maps any number \(n\) larger than or equal to 5 to \(n-5\),
 any number \(n \in \{1, \ldots, 4\}\) to \(n-1\), and \(0\) to \(0\).
 
 The pattern matching construct ``\C{match .. with .. end}'' may contain an
-arbitrary large number of {\em pattern matching rules} of the form
+arbitrarily large number of {\em pattern matching rules} of the form
 ``\emph{pattern}\C{ =>$~$}\emph{result}''
 separated by the \C{|} symbol.  Optionally one can
 prefix the first pattern matching rule with \C{|}, in order to make each line
@@ -879,7 +879,7 @@ Definition wrong (n : nat) :=
 $~$
 \end{coq}
 \begin{coqout}{run=f_plus_one_err_run}{width=6cm,title=Response}
-Error: Non exhaustive pattern-matching: 
+Error: Non exhaustive pattern-matching:
 no clause found for
 pattern S _
 \end{coqout}
@@ -899,7 +899,14 @@ Definition same_bool b1 b2 :=
 \end{coq}
 \coqrun{name=awk6_run}{ssr,awkward6}
 
-This is parsed as follows
+Here, the reserved word \C{_} stands for a ``throwaway variable'', i.e.,
+a variable that we choose to give no name because we are not going to
+reference it (for example, the constant function
+\C{fun (n : nat) => 2} can also be written
+\C{fun (_ : nat) => 2}).
+\index[coq]{\C{_}}
+
+The above code defining \C{same_bool} is parsed as follows:
 
 \begin{coq}{name=awkward7}{}
 Definition same_bool b1 b2 :=
@@ -1022,8 +1029,8 @@ instead of a subterm of "n".
 %   if n is p.+1 then add (f n) (sum_f p) else f 0.
 % \end{coq}
 %
-If addition tantamounts to repeating the operation of adding a \C{.+1}
-to one of the arguments, subtraction tantamounts to repeating the
+If addition amounts to repeating the operation of applying \C{.+1}
+to one of the arguments, subtraction amounts to repeating the
 operation of fetching a subterm of the first argument.  This is also
 easily expressed using pattern matching constructs.  Here again,
 subtraction is already defined in the libraries, but we can play the game
@@ -1040,13 +1047,18 @@ Fixpoint subn m n : nat :=
 \index[coq]{\C{subn}}
 From a mathematical point of view, this definition can be quite
 unsettling.  The second pattern matching rule indicates that when
-the second argument of the subtraction is 0, then the result is
-the first argument.  This rule actually also covers the case where the
+any argument of the subtraction is 0, then the result is
+the first argument.  This is exactly what one would expect when the
+second argument is 0; but this rule also covers the case where the
 second argument is non-zero while the first argument is 0: in that
-case, the result of the function is zero. This oddity is imposed by
+case, the result of the function is zero. Thus, mathematically speaking,
+\C{subn} sends two naturals \(m\) and \(n\) to
+\(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
+This oddity is imposed by
 the fact that any function defined in \Coq{} has to be total, i.e., has
 to assign a value to any element in the type of its arguments. Since
-\C{predn} has type \C{nat -> nat}, an element \emph{in type} \C{nat} has to be
+\C{subn} has type \C{nat -> nat -> nat},
+an element \emph{in type} \C{nat} has to be
 output by the function even in the case when  the second argument is
 non-zero and the first argument is zero. This problem disappears with
 the introduction of another type of numbers, with negative integers.
@@ -1117,7 +1129,10 @@ multiplication
 (\C{muln}, \C{*}), subtraction (\C{subn}, \C{-}), division (\C{divn},
 \C{\%/}),  modulo (\C{modn}, \C{\%\%}), exponentiation (\C{expn}, \C{\^}),
 equality comparison (\C{eqn}, \C{==}), order
-comparison (\C{leq}, \C{<=}) on natural numbers.  The trailing \C{n} in
+comparison (\C{leq}, \C{<=}) on natural numbers. All these operations
+output natural numbers: as explained above, subtraction is made to
+return \(0\) when the subtrahend exceeds the minuend; similarly,
+division is integer division.  The trailing \C{n} in
 the names is chosen to signal that these operations are on the \C{nat} data
 type.  Postfix notations such as \C{.-1} and \C{.*2} are provided for
 the predecessor and double functions.
@@ -1137,7 +1152,7 @@ Note that this definition crucially relies on the fact that
 subtraction computes to \C{0} whenever the first argument is less than
 or equal to the second argument.
 
-The \mcbMC{} library also provides concepts that makes sense only
+The \mcbMC{} library also provides concepts that make sense only
 for the \C{nat} data type, like the
 test functions identifying \C{prime} and \C{odd} numbers. In that
 case, the trailing \C{n} is omitted in their name.
@@ -1146,14 +1161,14 @@ We strongly advise the reader wanting to explore the \mcbMC{} library
 to browse their source
 files\footnote{\url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}
 and not to limit herself to queries to the toplevel. The
-information provided by the \C{Print} and \C{About} commands are
+information provided by the \C{Print} and \C{About} commands is
 useful to understand how to use the objects defined in the libraries
 once they are known by their name. By contrast, the source
 files describe what is formalized, under which name and notation.
 
 \mantra{Each file in the \mcbMC{} library
 starts with a banner describing all the concepts and associated
-notations introduced by the library.
+notations introduced by the file.
 There is no better way to browse the library than reading these banners.}
 
 
@@ -1163,16 +1178,21 @@ There is no better way to browse the library than reading these banners.}
 
 
 A \emph{container} is a data type which describes a collection of
-objects grouped together so that it can be manipulated as a single
-object. For instance we might want to compute the sequence of all
-predecessors or all divisors of a number.  We could define such data
-type for this purpose as follows.
+objects grouped together so that they can be manipulated as a single
+object. For instance, we might want to compute the sequence of all
+predecessors or all divisors of a number.  We could define the
+following data type for this purpose:
 
 \begin{coq}{name=listn_def}{}
 Inductive listn := niln | consn (hd : nat) (tl : listn).
 \end{coq}
 
-Elements of this data type can hold zero or more natural numbers, for example
+The elements of this datatype are (one possible implementation of)
+lists of zero or more natural numbers; the first constructor
+\C{niln} builds the empty list, whereas the second constructor
+\C{consn} builds a nonempty list by combining a natural number \C{hd}
+with an already existing list \C{tl}.
+For example:
 
 \begin{coq}{name=cons_mono_err}{width=6.5cm}
 Check consn 1 (consn 2 niln).
@@ -1191,7 +1211,7 @@ expected to have type "nat".
 As expected, \C{listn} %elements of this data type
 cannot hold boolean values.
 So if we need to
-manipulate a list of booleans we have do define a similar data type:
+manipulate a list of booleans we have to define a similar data type:
 \C{listb}.
 
 \begin{coq}{name=listb_def}{}
@@ -1200,20 +1220,21 @@ Inductive listb := nilb | consb (hd : bool) (tl : listb).
 \coqrun{name=listb_run}{listb_def}
 
 This approach is problematic for two reasons.  First, every time we
-write a function that manipulates a list we have to choose a priori
+write a function that manipulates a list, we have to decide a priori
 if the list holds numbers or booleans, even if the program does not
 really use the objects held in the list.
-A concrete example is the function that computes the size of the list,
-and in the current setting such function has to be written twice.
+A concrete example is the function that computes the size of the list;
+in the current setting such a function has to be written twice.
 Worse, starting from the next chapter we will prove properties of programs,
-and given the two size functions are ``different'', we are going to prove
-properties twice.
+and given that the two size functions are ``different'', we would have
+to prove such properties twice.
 
 However it is clear that the two data types we just defined follow
-a similar schema, and so do the two functions for computing the size of lists
-or the theorems we may prove about these functions.  In other words
-one would write something
-like the following, where $\alpha$ is a schematic variable.
+a similar schema, and so do the two functions for computing the size of
+a list
+or the theorems we may prove about these functions.  Hence, one would
+want to be able to write something
+like the following, where $\alpha$ is a schematic variable:
 
 \begin{coq}{name=list_def}{}
 Inductive list := nil | cons (hd : $\alpha$) (tl : list).
@@ -1243,7 +1264,8 @@ $\alpha$.
 \index[concept]{polymorphism}
 
 The \mcbMC{} library provides a generic data type to hold
-several objects of any type under the name \C{seq}.
+several objects of any given type \C{A}. This is the data type \C{seq},
+defined as follows:
 
 \begin{coq}{name=seq_def}{}
 Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
@@ -1255,7 +1277,8 @@ This definition actually describes the type of lists as a {\em
   polymorphic type}.  This means that there is a different type
 \C{(seq A)} for each possible choice of type \C{A}.  For example
 \C{(seq nat)} is the type of sequences of natural numbers, while
-\C{(seq bool)} is the type of sequences of booleans. It has two
+\C{(seq bool)} is the type of sequences of booleans.
+The type \C{(seq A)} has two
 constructors, named \C{nil} and \C{cons}. Constructor \C{nil}
 represents the empty sequence. The type of the
 constructor \C{cons} is devised specifically to describe how to produce a
@@ -1266,20 +1289,21 @@ also means that this data-type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
 
-In the declaration of \C{seq}, \C{Type} is a keyword that denotes the
+In the declaration of \C{seq}, the keyword \C{Type} denotes the
 \emph{type of all data types}.  For example \C{nat} and \C{bool} are of type
 \C{Type}, and can be used in place of \C{A}.
 In other words \C{seq} is a function of type \C{(Type -> Type)}, sometimes
 called a \emph{type constructor}.  The symbol \C{seq} alone does not
 denote a data type,
-but if one passes to it another data type, then it builds one.  Remark
-that this also means that \C{(seq (seq nat))} is a valid data type, and
+but if one passes to it a data type, then it builds one.  Remark
+that this also means that \C{(seq (seq nat))} is a valid data type
+(namely, the type of lists of lists of natural numbers), and
 that the construction can be iterated.
 Types again avoid confusion: it is not licit to form the type \C{(seq 3)},
 since the argument \C{3} has type \C{nat}, while the function
 \C{seq} expects an argument of type \C{Type}.\footnote{For historical
 reasons \Coq{} may display the type of \C{nat} or \C{bool} as \C{Set}
-and not \C{Type}.  We beg the reader to ignore this detail, that
+and not \C{Type}.  We beg the reader to ignore this detail, which
 plays no role in the \mcbMC{} library.}
 
 In principle, the constructors of such a polymorphic data type feature
@@ -1288,7 +1312,7 @@ a type argument:
 an empty list of type \C{(seq A)}. The \emph{type} of the output of
 this function hence depends on the \emph{value of this input}. The
 type of \C{nil} is thus not displayed with the arrow notation
-``\C{.. -> ..}'', that we have used so far for the type of
+``\C{.. -> ..}'' that we have used so far for the type of
 functions. It is rather written as follows:
 
 \begin{coq}{name=type_of_nil}{}
@@ -1296,7 +1320,7 @@ functions. It is rather written as follows:
 \end{coq}
 \index[coq]{\C{forall}}
 so as to \emph{bind} the value \C{A} of the argument in the type of
-the output. The same goes for the other constructor of list, named
+the output. The same goes for the other constructor of \C{seq}, named
 \C{cons}.  This function actually takes three arguments: a type \C{A},
 a value in this type, and a value in the type \C{(seq A)}.  The type
 of \C{cons} is thus written as follows:
@@ -1308,10 +1332,13 @@ of \C{cons} is thus written as follows:
 the output does not depend on the second and third arguments of
 \C{cons}, respectively of type \C{A} and \C{(seq A)}, the type of
 \C{cons} features two arrow separators for these.
-It suggests that the sequence holding a single element \C{2 : nat} is:
+Altogether, we conclude
+that the sequence holding a single element \C{2 : nat} can be
+constructed as
 \C{(cons nat 2 (nil nat))}. Actually, the two
 occurrences of type \C{nat} in this term are redundant: the tail of a
-sequence is a sequence with elements of the same type. Better, this type can be
+sequence is a sequence with elements of the same type. Better yet,
+this type can be
 \emph{inferred} from the type of the given element \C{2}. One can
 actually write the sequence as  \C{(cons _ 2 (nil _))}, using \C{_} to
 denote  a subterm, here a type, to be inferred by \Coq{}. In the case of
@@ -1332,7 +1359,7 @@ Argument A is implicit and maximally inserted
 \index[concept]{implicit argument}
 
 The \Coq{} system provides a mechanism to avoid that
-people need to give the type argument to the \C{cons} function when it
+users need to give the type argument to the \C{cons} function when it
 can be inferred.  This is
 the information meant by the message ``\C{Argument A is implicit and
   ..}''.  Every time users write \C{cons}, the system automatically
@@ -1361,8 +1388,8 @@ that it is used in a place where a list of type \C{(seq
 nat)} is expected.
 
 To locally disable the
-status of implicit arguments one can prefix the name of a
-constant with \C{@} and pass all arguments explicitly as in
+status of implicit arguments, one can prefix the name of a
+constant with \C{@} and pass all arguments explicitly, as in
 \C{(@cons nat 2 nil)} or \C{(@cons nat 2 (@nil nat))} or even
 \C{(@cons _ 2 (@nil _))}.
 
@@ -1385,11 +1412,14 @@ fun l : seq nat => [:: 1, 2, 3 & l]
 
 In particular \Coq{} provides the infix notation \C{::} for
 \C{cons}.  The \mcbMC{} library follows a general pattern for
-n-ary operations obtained by the iteration of a single binary one. In
+n-ary operations obtained by the (right-associative)
+iteration of a single binary one. In
 particular \C{[::} begins the repetition
 of \C{::} and \C{]} ends it.  Elements are separated by \C{,} (comma)
 but for the last one separated by \C{&}.
-For example one
+For example, the above \C{[:: 1; 2; 3 & l]} stands for
+\C{1 :: (2 :: (3 :: l))}.
+For another example, one
 can write  the boolean conjunction
 of three terms as \C{[&& true, false & true]}.\footnote{Some n-ary
   notations use a different, but more evocative, last separator.  For
@@ -1415,7 +1445,7 @@ Definition head T (x0 : T) (s : seq T) := if s is x :: _ then x else x0.
 \subsection{Recursion for sequences}
 
 \index[concept]{recursion}
-Terms of type \C{(seq A)}, for a type \C{A} are finite piles of
+Terms of type \C{(seq A)}, for a type \C{A}, are finite piles of
 \C{cons} constructors, terminated with a \C{nil}. They are similar to
 the terms of type \C{nat}, except that each \C{cons} constructor
 carries a datum of type \C{A}. Here as well, recursion provides a way
@@ -1454,7 +1484,7 @@ arguments automatically implicit, and \C{A} is implicit here. This
 feature is already active in the expression defining \C{size}.
 
 Another example of recursive function on sequences is a function that constructs
-a new sequence where all elements are values of a given function applied to
+a new sequence whose entries are values of a given function applied to
 the elements of an input sequence.  This function can be defined as:
 
 \begin{coq}{name=def_map}{}
@@ -1561,7 +1591,7 @@ denoted by an infix \C{*} symbol, as in \C{(nat * bool)}.
 % is the type of
 %pairs that have a natural number as their first component and a boolean
 %value as the second one.
-This type inductive type has
+This inductive type has
 a \emph{single constructor} \C{mk_pair}. It inherits from the two
 polymorphic parameters, that become its two first, implicit arguments.
 The constructor \C{mk_pair} has two more explicit arguments which are
@@ -1591,8 +1621,7 @@ Eval compute in (true, false).1.
  = true : bool
 \end{coqout}
 \coqrun{name=pairs_run}{ssr,pairs}
-
-As one expects pairs can be nested. \Coq{} provides a slightly more complex
+As one expects, pairs can be nested. \Coq{} provides a slightly more complex
 notation for pairs, which makes possible to write \C{(3,true,4)} for
 \C{((3,true),4)}. In this example, the value \C{true} is the second
 component of this tuple, or more precisely the second component of its
@@ -1623,7 +1652,7 @@ constructor. The \C{\%N} and \C{\%type} labels are said to be
 
 Inductive types with a single constructor, like the type \C{pair} in
 section~\ref{sec:othercontainers} or the type \C{triple} of
-exercise~\ref{ex:triple} provide a general pattern to define a type
+exercise~\ref{ex:triple}, provide a general pattern to define a type
 which aggregates existing objects into a single packaged one. This
 need is so frequent that \Coq{} provides a specialized command
 to declare this class of data type, called \C{Record}.
@@ -1648,7 +1677,7 @@ Inductive point : Type := Point (x : nat) (y : nat) (z : nat).
 \index[concept]{record}
 
 Using the \C{Record} version of this definition instead of its
-equivalent \C{Inductive} allows to declare names for the projections
+equivalent \C{Inductive} allows us to declare names for the projections
 at the time of the definition. In our example, the record \C{point}
 defines three projections, named \C{x}, \C{y} and \C{z}
 respectively. In the case where they come from a record definition,
@@ -1686,7 +1715,7 @@ Definition x (p : point) := let: Point a _ _ := p in a.
 \index[concept]{pattern matching!irrefutable}
 
 Record types are as expressive as inductive types with one
-constructors: they can be polymorphic, package datas with
+constructor: they can be polymorphic, they can package data with
 specifications, etc. In particular, they will be central to the
 formalization techniques presented in Part~\ref{part:form}.
 
@@ -1732,24 +1761,26 @@ are used in the definition of \C{iter} and \C{foldr}.
 
 The \C{Implicit Type} annotation
 tells \Coq{} that, whenever we name
-an input \C{x} (or \C{x'}, or \C{x1}, \ldots) its type is supposed to be
-\C{T}.  Concretely it lets us omit an explicit type annotation
-in the definition of programs using \C{x}, as \C{iter}.
+an input \C{x} (or \C{x'}, or \C{x1}, \ldots), its type is supposed to be
+\C{T}.  Concretely, it lets us omit an explicit type annotation
+in the definition of programs using \C{x}, such as \C{iter}.
 The  \C{Implicit Type} command is used frequently in the
-\mcbMC{} library, the reader can refer to~\cite[section 2.7.18]{Coq:manual}
+\mcbMC{} library; the reader can refer to~\cite[section 2.7.18]{Coq:manual}
 for a more detailed documentation of it.
 
 When
-the section is closed, these variables appear as arguments to
-the various functions that use them in the very same
+the section is closed (using the \C{End} command), these variables
+are abstracted: i.e., from then on, they start appearing as arguments
+to the various functions that use them in the very same
 % Variables are abstracted in their
 order in which they are declared.
 %In our example,
 %\C{T} and \C{A} appear in the same order in the type of {\tt foldr} as
 %in the variables declarations for the section.
-Variables that are actually
-not used in a given definition are omitted. For example \C{f} plays no
-role in the definition of \C{iter}.
+Variables that are not actually used
+in a given definition are omitted. For example, \C{f} plays no
+role in the definition of \C{iter}, and thus does not become an
+argument of \C{iter} outside the section.
 This process %, where a function appears to have more arguments outside
 %the section where it was defined than inside the section
 is called
@@ -1766,9 +1797,8 @@ Fixpoint foldr (T A : Type) (f : T -> A -> A) a s :=
 \end{coq}
 \coqrun{name=iter2_run}{ssr,iter2}
 
-Finally, remark that \C{T} and \C{A} are implicit arguments, hence they
+Finally, remark that \C{T} and \C{A} are implicit arguments; hence they
 are not explicitly passed to \C{iter} and \C{fold} in the recursive calls.
-
 \begin{coq}{name=about_fold}{width=2.9cm}
 About foldr.
 $~$
@@ -1824,7 +1854,7 @@ Arguments T, A are implicit ...
 We can now use \C{iter} to compute, for example,
 the subtraction of \C{5} from \C{7}, or \C{foldr}
 to compute the
-addition of all numbers in \C{[:: 1; 2]}:
+sum of all numbers in \C{[:: 1; 2]}:
 
 \begin{coq}{name=eval_iter}{width=8cm}
 Eval compute in iter 5 predn 7.
@@ -1881,7 +1911,8 @@ foldr : A -> seq T -> A
 \coqrun{name=before_section_run}{ssr,sec,about_fold_sec,enditer}
 
 We hence postulate a term of type \C{A} and two of type \C{T}
-in order to apply \C{foldr} and we ask \Coq{} to compute such
+in order to apply \C{foldr} to a two-element list,
+and we ask \Coq{} to compute this
 expression.
 
 \begin{coq}{name=vars}{width=7cm}
@@ -1896,8 +1927,8 @@ $~$
 \end{coqout}
 \coqrun{name=symbcomp}{ssr,sec,vars,enditer}
 
-The symbols \C{f}, \C{x1}, \C{x2} and \C{init} are inert,
-they represent unknown values, hence computation cannot
+The symbols \C{f}, \C{x1}, \C{x2} and \C{init} are inert:
+They represent unknown values, hence computation cannot
 proceed any further.  Still
 \Coq{} has developed the expression symbolically.
 To convince
@@ -1914,7 +1945,7 @@ Eval compute in addn 1 (addn 2 0).
 \end{coqout}
 \coqrun{name=hyp_subst_run}{ssr,hyp_subst}
 
-The expression, that now contains no inert symbols, computes to the numeral 3,
+The expression, which now contains no inert symbols, computes to the numeral 3,
 the very same result we obtained by computing \C{(foldr addn 0 [:: 1; 2])}
 directly.
 
@@ -1928,7 +1959,7 @@ directly.
 The way functions are described as programs has an impact on the way
 symbolic computations unfold. For example, recall from
 section~\ref{ssec:recnat} the way we defined an addition operation on
-elements of type \C{nat}. We rephrase it using the \C{if .. is
+elements of type \C{nat}. It was defined using the \C{if .. is
   .. then .. else ..} syntax: % presented in section~\ref{}:
 
 \begin{coq}{name=addn_redef}{}
@@ -1950,7 +1981,7 @@ their computational behavior may differ when computing on arbitrary
 symbolic values. In order to highlight this, we will use another
 normalization strategy to perform computation, the \C{simpl}
 evaluation strategy.  One difference between the \C{simpl}
-and \C{compute} strategy is that the \C{simpl} one usually leaves
+and \C{compute} strategies is that the \C{simpl} one usually leaves
 expressions in nicer forms whenever they contain variables. Here again
 we point the interested reader to \cite[section 8.7.1]{Coq:manual} for
 \marginnote{predn has a notation attached to it}
@@ -1979,10 +2010,10 @@ of the final result are exposed early, the \C{predn} function can
 eventually compute, and it cancels the \C{.+1} coming out of the sum.
 On the other hand,
 \C{add} does not expose a successor when a recursive call is
-performed hence symbolic computation in \C{predn} is stuck.
+performed; hence symbolic computation in \C{predn} is stuck.
 
 As chapter~\ref{ch:proofs} illustrates, symbolic computation plays an
-important roles in formal proofs and this kind of differences
+important role in formal proofs, and this kind of difference
 matters. For instance the \C{addn} variant helps
 showing that \C{(addn n.+1 7)} is different from \C{0} because by
 computation \Coq{} would automatically expose  a \C{S} symbol
@@ -1997,7 +2028,7 @@ section~\ref{proof:mulneq0}.
 \label{sec:bigopnat}
 
 Numbers and sequences of objects are so pervasive in the mathematical
-discourse that we could hardly ommit to present them in such an
+discourse that we could hardly omit to present them in such an
 introductory chapter. On the other hand, the reader may wonder what role
 programs like \C{foldr} may play in mathematical sentences.
 
@@ -2007,9 +2038,9 @@ $$
 \sum_{i=1}^n (i * 2 - 1) = n ^ 2 \qquad
 \sum_{i=1}^n i = \frac{n * (n + 1)}{2}
 $$
-and more generally in order to make explicit the meaning of the capital
+and, more generally, in order to make explicit the meaning of the capital
 notations like $\bigcap_{i=1}^nA_i,
-\prod_{i=1}^nu_i, \dots$ we need to decribe an iteration procedure
+\prod_{i=1}^nu_i, \dots$, we need to decribe an iteration procedure
 akin to the \C{foldr} program. We illustrate this on the example of
 the summation symbol (for a finite sum):
 
@@ -2021,29 +2052,36 @@ Notation "\sum_ ( m <= i < n ) F" :=
 \index[coq]{\C{iota}}
 \index[coq]{\C{\\sum}}
 
-The \C{iota} function generates the list of natural numbers
+The \C{iota} function generates the list
+\C{[:: m; m+1; ...; m+n-1]}
+of natural numbers
 corresponding to the range of the summation. Then the notation defines
 expressions with shape \L+\sum_ (m <= i < n) F+, with \C{F} a
 sub-expression featuring variable \C{i}, the one used for the
 index. For instance, once the above notation is granted and for any
 natural number \C{(n : nat)}, one may write
 the \Coq{} expression \L+(\sum_(1 <= i < n) i)+ to represent the
-second example of sum above. The name \C{i} is really used as a
+sum $\sum\limits_{i=1}^{n-1} i$. The name \C{i} is really used as a
 \emph{binder name} here and we may substitute \C{i} with any other
 name we may find more convenient, as in \L+(\sum_(1 <= j < n) j)+,
 without actually changing the expression\footnote{Although this change
 results in two syntactically different expressions, they have the same
 meaning for \Coq{}}.
 
-The notation represent an instance of the \C{foldr} program, iterating
-a function of type \C{nat -> nat -> nat}: the two type parameter of
+The notation represents an instance of the \C{foldr} program, iterating
+a function of type \C{nat -> nat -> nat}: the two type parameters of
 \C{foldr} are set to \C{nat} in this case. The first explicit
 argument given to \C{foldr} is hence a function of
 type \C{nat -> nat -> nat}, which is created by \emph{abstracting} the
 variable \C{i} in the expression \C{F}, as mentionned in
 section~\ref{ssec:deffun}. The name of the second argument of the
 function, called \C{a} here, should not appear in expression \C{F} in
-order for the notation to be meaningful. Crucially, the \C{foldr}
+order for the notation to be meaningful.
+% [DG] Is this true? I cannot use the variable "a" ever when I use this
+% notation? I hope the compiler is smarter than that! (My experiments
+% exhibit no problems: e.g., "Eval compute in \sum_ (2 <= a < 6) a."
+% returns 14, as it should).
+Crucially, the \C{foldr}
 iterator takes as
 input a \emph{functional argument that is able to represent faithfully
   any general term}. As a second explicit argument to \C{foldr}, we
@@ -2061,7 +2099,7 @@ Eval compute in \sum_( 1 <= i < 5 ) i.
 \end{coqout}{}{}
 \coqrun{name=evalsum_run}{ssr,iotasum,evalsum}
 
-Behind the scene, iteration happens following the order of the list,
+Behind the scenes, iteration happens following the order of the list,
 as we observed in section~\ref{sec:symcomp}.
 In the present case the operation we iterate, addition, is
 commutative, so this order does not impact the final result. But it
@@ -2070,7 +2108,7 @@ is the product of matrices.
 
 Defining the meaning of this family of notations using a generic
 program \C{foldr}, which manipulates functions, is not only useful for
-providing notations but it also facilitates the design of the
+providing notations, but it also facilitates the design of the
 corpus of properties of these expressions. This corpus comprises
 lemmas derived from the generic properties of \C{foldr}, which do not
 depend on the function iterated. By assuming further properties
@@ -2087,7 +2125,7 @@ Throughout this chapter, we have used \emph{notations} to display
 formal terms in a more readable form, closer to the usual conventions
 adopted on paper. Without notations, formal terms soon get unreadable for
 humans. For this purpose, the Coq{} system provides a \C{Notation}
-command, and we have mentionned it several times already,  relying on the
+command, and we have mentioned it several times already,  relying on the
 reader's intuition to understand roughly how it works. Its actual
 behavior is quite complex, letting one specify associativity and
 precedence to the parsing engine of \Coq{}, as well as the group to
@@ -2125,7 +2163,7 @@ ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes behind the scope of this
 book; the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
 
-The definition behind a notations can involve more than one symbol,
+The definition behind a notation can involve more than one symbol,
 as in the example of the strict order relation:
 
 
@@ -2185,7 +2223,7 @@ Notation                                       Scope
 
 The only difficulty in using \C{Locate} comes from the fact
 that one has to provide a complete \emph{symbol}.  A symbol
-is composed by one or more non-blank characters and its first
+is composed of one or more non-blank characters and its first
 character is necessarily a non-alphanumerical one.
 The converse is not true: a sequence of characters is recognized as
 a symbol only if it is used in a previously declared notation.
@@ -2206,7 +2244,7 @@ adopted throughout the \mcbMC{} library.
 
 \begin{itemize}
 \item Concepts that are typically denoted with a letter, like $N(G)$ for the
-	normalizer of the group $G$ are represented by symbols beginning
+	normalizer of the group $G$, are represented by symbols beginning
 	with \C{'} as in \C{'N(G)}, where \C{'N} is a symbol.
 \item At the time of writing, notations for numerical constants are specially
 	handled by the system.  The algebraic part of the library overrides
@@ -2221,12 +2259,12 @@ adopted throughout the \mcbMC{} library.
 	which ends with an underscore like \C{'N\_} in \C{'N\_G(H)}.
 \item N-ary notations begin with \C{[} followed by the symbol of the
 	operation being repeated, as in \C{[&& true, false & false]}.
-\item Bracket notations are also used  for operations building data as in
+\item Bracket notations are also used  for operations building data, as in
 	\C{[seq .. | .. ]}.
 \item Curly braces notations like \C{\{poly R\}} are used for data types
 	with parameters.
 \item Curly braces are also used to write localized statements
-	as \C{\{in A, injective f\}}
+	such as \C{\{in A, injective f\}},
 	which means that the restriction of \C{f} to \C{A} is injective.
 \end{itemize}
 
@@ -2244,9 +2282,9 @@ Define the triple data type such that the following notation
 applies.  Also define the projections.
 
 \begin{coq}{name=triple}{width=8cm}
-Notation "( A , B , C )" := (mk_triple A B C).
-Notation "p .1" := (fst p).
-Notation "p .2" := (snd p).
+Notation "( a , b , c )" := (mk_triple a b c).
+Notation "p .1" := (fst p) (at level 2).
+Notation "p .2" := (snd p) (at level 2).
 Notation "p .3" := (thrd p) (at level 2).
 Eval compute in (4, 5, 8).1.
 Eval compute in (true, false, 1).2.
@@ -2279,9 +2317,11 @@ using \C{iter}.
 
 %%%%%%%%
 \begin{Exercise}[label=ex:nth,difficulty=0,title={Find the n-th element}]
-Define a program taking a default value, a list and  a natural number.  Such
-program returns the n-th element of the list if n is smaller than the size of
-the list.  It returns the default value otherwise.
+Define a program taking a default value, a list and  a natural number \(n\).
+The program should return the \(n\)-th element of the list (counting
+from \(0\)) if \(n\)
+is smaller than the size of the list.  It should return
+the default value otherwise.
 
 \begin{coq}{name=nth}{width=7cm}
 Eval compute in
@@ -2336,9 +2376,9 @@ Eval compute in
 %%%%%%%%%
 \begin{Exercise}[label=ex:allwords,difficulty=2,title={All words of size n}]
 Define the \C{all\_words} program that takes in input a
-length \C{n} and sequence of symbols \C{alphabet}.
-Such program has to generate a list of all words (i.e., list
-of symbols) of size \C{n}.
+length \C{n} and a sequence of symbols \C{alphabet}.
+The program has to generate a list of all words (i.e., lists
+of symbols) of size \C{n} using the symbols from \C{alphabet}.
 
 \begin{coq}{name=allwords}{width=5.5cm}
 Eval compute in
@@ -2364,7 +2404,7 @@ $~$
 
 \begin{coq}{name=triple_solution}{}
 Inductive triple (A B C : Type) := mk_triple (a : A) (b : B) (c : C).
-Notation "( A , B , C )" := (mk_triple A B C).
+Notation "( a , b , b )" := (mk_triple a b c).
 Definition fst  A B C (p : triple A B C) := let: (a, _, _) := p in a.
 Definition snd  A B C (p : triple A B C) := let: (_, b, _) := p in b.
 Definition thrd A B C (p : triple A B C) := let: (_, _, c) := p in c.
