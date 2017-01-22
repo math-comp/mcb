@@ -1164,7 +1164,7 @@ as a list; the general term $f(i)$ by a function \C{(fun i =>
 elements of a list and combining the results by the \C{foldr} iterator.
 
 Functional programming can also be used to describe the finite domain.
-For example, the list of natural numbers $m, m+1, \ldots, m + (n - m)$
+For example, the list of natural numbers $m, m+1, \ldots, m + (n - m) - 1$
 corresponding to the range $m \leq i < n$ can be built using the \C{iota}
 function as follows:
 \begin{coq}{name=iota}{}
@@ -1182,7 +1182,7 @@ $$
 An alternative writing for the same summation exploits the general
 terms to rule out even numbers:
 $$
-\sum_{i < n} (i * 2 - 1) = n^2
+\sum_{i < n} (i * 2 + 1) = n^2
 $$
 While this latter writing is elegant, it is harder to support
 generically, since the filtering condition is not explicit.
