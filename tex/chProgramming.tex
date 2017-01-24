@@ -984,25 +984,25 @@ When writing recursive functions, the \Coq{} system imposes the
 constraint that the described computation must be \emph{guaranteed to
 terminate}.  The reason for this requirement is sketched in
 section~\ref{ssec:indreason}.
-This guarantee relies on an analysis of the function's
-description, to make sure that recursive calls always happen with a
-given argument that decreases.  The most frequent technique to
-establish this guarantee is that recursive calls happen on a variable
-and this variable binds a subterm of the input via a pattern maching
-construct.
-%was introduced by a pattern in a pattern-matching
-%construct or in an ``\C{if .. is ..}'' statement, with the additional
-%constraint that the pattern-matching construct observes a variable
-%that was one of the function's inputs.
+This guarantee is obtained by analysing the description of the
+function, making sure that recursive calls always happen on a
+given argument that decreases.
+Termination is obvious when the recursive calls happen
+only on ``syntactically smaller arguments''. For instance, in our
+example \C{addn}, the function is defined by matching its first
+argument \C{n} against the patterns \C{p.+1} and \C{0}; in the branch
+corrsponding to the pattern \C{p.+1}, the recursive call happens on
+\C{p}, a strict subterm of \C{p.+1}. Had we matched the argument \C{n}
+against the pattern \C{p.+1.+1}, then the recursive call would have been
+allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.
+\marginnote{Here and earlier, we do not comment (yet) on the fact that
+\C{.+1.+1} is displayed \C{.+2}}
+\marginnote{Refer to CoqArt for more on termination issues?}
 \index[concept]{recursion!termination}
 \index[concept]{termination}
 
-For instance, in the case of \C{addn}, the recursive call happens
-with \C{p} as the first argument; \C{p} was introduced by the pattern \C{p.+1}
-in the corresponding pattern-matching rule; the pattern-matching
-construct was observing \C{n}; and \C{n} is the first argument of the
-function \C{addn}.  An erroneous, in the sense of non-terminating,
-definition is rejected by \Coq{}.
+  An erroneous, in the sense of non-terminating,
+definition is rejected by \Coq{}:
 
 \begin{coq}{name=loop}{width=6cm,title=Non-terminating program}
 Fixpoint loop n :=
@@ -1046,12 +1046,29 @@ Fixpoint subn m n : nat :=
 \coqrun{name=sub_run}{ssr,sub}
 \index[coq]{\C{subn}}
 From a mathematical point of view, this definition can be quite
-unsettling.  The second pattern matching rule indicates that when
+unsettling. The second pattern matching rule indicates that when
 any argument of the subtraction is 0, then the result is
 the first argument.  This is exactly what one would expect when the
 second argument is 0; but this rule also covers the case where the
 second argument is non-zero while the first argument is 0: in that
-case, the result of the function is zero. Thus, mathematically speaking,
+case, the result of the function is zero.
+
+On paper, the expression \(m - n\), for $m, n \in
+\mathbb{N}$, is usually understood as an integer, which is negative
+when $n > m$. But here the output of \C{subn} is constraint by its
+output type to be a natural number. Moreover, any function defined in
+\Coq{} has to be total, i.e., has to assign a value to any element in
+the type of its arguments.
+
+Since \C{subn} has type \C{nat -> nat -> nat},
+an element \emph{in type} \C{nat} has to be output by the function
+even in the case when the second argument is non-zero and the first
+argument is zero. The default value output in this case is \C{0}, so
+that in the end \C{subn} sends two naturals \(m\) and
+\(n\) to \(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
+
+
+ Thus, mathematically speaking,
 \C{subn} sends two naturals \(m\) and \(n\) to
 \(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
 This oddity is imposed by
@@ -1062,7 +1079,11 @@ an element \emph{in type} \C{nat} has to be
 output by the function even in the case when  the second argument is
 non-zero and the first argument is zero. This problem disappears with
 the introduction of another type of numbers, with negative integers.
-
+(Alternatively, it is possible to implement partial functions by
+extending the output type; see Section~\ref{sec:othercontainers}.)
+\marginnote{The discussion above needs to be improved. And subn is may
+be not the right example, for its main raison d'être is the definition
+of comparison.}
 
 We can also write a recursive function with two arguments of
 type \C{nat}, that returns \C{true} exactly when the two arguments are
@@ -1273,9 +1294,10 @@ Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
 \coqrun{name=seq_run}{seq_def}
 
 
-This definition actually describes the type of lists as a {\em
-  polymorphic type}.  This means that there is a different type
-\C{(seq A)} for each possible choice of type \C{A}.  For example
+The name \C{seq} refers to (finite) ``sequences'', also called
+``lists''. This definition actually describes the type
+of lists as a {\em polymorphic type}. This means that there is a
+different type \C{(seq A)} for each possible choice of type \C{A}.  For example
 \C{(seq nat)} is the type of sequences of natural numbers, while
 \C{(seq bool)} is the type of sequences of booleans.
 The type \C{(seq A)} has two
@@ -1340,9 +1362,11 @@ occurrences of type \C{nat} in this term are redundant: the tail of a
 sequence is a sequence with elements of the same type. Better yet,
 this type can be
 \emph{inferred} from the type of the given element \C{2}. One can
-actually write the sequence as  \C{(cons _ 2 (nil _))}, using \C{_} to
-denote  a subterm, here a type, to be inferred by \Coq{}. In the case of
-\C{cons} however, one can be even more concise. Let us ask for the
+thus write the sequence as  \C{(cons _ 2 (nil _))}, using the
+placeholder \C{_} to
+denote  a subterm, here a type, to be inferred by \Coq{}.
+In the case of \C{cons}, however,
+one can be even more concise. Let us ask for
 information about \C{cons} using the command \C{About}:
 
 \begin{coq}{name=about_cons}{width=3cm,title=Query}
@@ -1367,7 +1391,9 @@ inserts an argument in place of \C{A}, so that this argument does not
 need to be written (the argument is {\em implicit}).  It is then the
 job of the \Coq{} system to guess what this argument is when looking at
 the first explicit argument given to the function.  The same happens
-to the type argument of \C{nil}.  In the end, this makes that users can
+to the type argument of \C{nil} in the built-in version of \C{seq}
+provided by the \mcbMC{} library (although not in the version we
+defined above).  In the end, this ensures that users can
 write the following expression.
 
 \begin{coq}{name=check_list_2}{width=6cm,title=Query}
@@ -1460,8 +1486,9 @@ the arguments of the constructor. This defines the function over the
 entire type since all values of an inductive type are finite piles of
 constructors.
 
-The size function, that counts the number of elements in a sequence,
-implements the correspondence between natural numbers and sequences:
+The size function counts the number of elements in a sequence:
+% implements the correspondence between natural numbers and sequences:
+% [DG] I wouldn't call it a "correspondence".
 
 \begin{coq}{name=def_size}{}
 Fixpoint size A (s : seq A) :=
@@ -1592,7 +1619,7 @@ denoted by an infix \C{*} symbol, as in \C{(nat * bool)}.
 %pairs that have a natural number as their first component and a boolean
 %value as the second one.
 This inductive type has
-a \emph{single constructor} \C{mk_pair}. It inherits from the two
+a \emph{single constructor} \C{mk_pair}. It takes over the two
 polymorphic parameters, that become its two first, implicit arguments.
 The constructor \C{mk_pair} has two more explicit arguments which are
 the data stored in the pair. This constructor is associated with
@@ -1637,7 +1664,7 @@ such a notation for the type of pairs, the expression \C{(a * b)}
 becomes ``ambiguous'',
 in the sense that the same infix \C{*} symbol can be used to multiply two
 natural numbers as in \C{(1 * 2)} but also to write the type of pairs \C{(nat *
-bool)}.  Such ambiguity is somewhat justified by the fact that the pair
+bool)}.  Such an ambiguity is somewhat justified by the fact that the pair
 data type can be seen as the (Cartesian) product of the arguments.  The
 ambiguity can be resolved by annotating the expression with a specific
 label: \C{(a * b)\%N} interprets the infix \C{*} as multiplication of natural numbers,
@@ -2124,14 +2151,18 @@ operations in section~\ref{sec:bigop}.
 Throughout this chapter, we have used \emph{notations} to display
 formal terms in a more readable form, closer to the usual conventions
 adopted on paper. Without notations, formal terms soon get unreadable for
-humans. For this purpose, the Coq{} system provides a \C{Notation}
-command, and we have mentioned it several times already,  relying on the
-reader's intuition to understand roughly how it works. Its actual
-behavior is quite complex, letting one specify associativity and
-precedence to the parsing engine of \Coq{}, as well as the group to
-which the notation belongs and some hints for printing, like good
-line breaking points.  The notation group is usually called a
-{\em scope} and it is usually associated to a {\em scope delimiter}.
+humans for they often expose too low level details in mathematical
+expressions. For this purpose, the \Coq{} system provides a
+\C{Notation} command, and we have mentioned it several times already,
+relying on the reader's intuition to understand roughly how it
+works. Its actual behavior is quite complex. With this command, it is
+possible to declare various kind of notations and to specify the way
+associativity and their precedence to the parsing engine of \Coq{}. It
+is also possible to provide some hints for printing, like good
+breaking points. {\em Scopes} are groups of notation that go together
+well, and can be activated or deactivated simultaneously. They are
+usually associated with a {\em scope delimiter}, which allows the
+activation of a scope locally in a sub-expression.
 
 For instance the infix notation that we have used so far for the
 constant \C{addn} can be declared as follows:
@@ -2163,9 +2194,12 @@ ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes behind the scope of this
 book; the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
 
-The definition behind a notation can involve more than one symbol,
-as in the example of the strict order relation:
-
+A notation can denote an arbitrary expression, and not only to a
+single constant. Here is for instance the definition of the infix
+notation \C{<}, for the strict comparison of two natural numbers: it
+denotes the composition of the comparison \C{_ <= _}
+(which refers to the constant \C{leq}) with the successor \C{_.+1}
+(which refers to the constructor \C{S}) on its first argument:
 
 \begin{coq}{name=notation_lt}{}
 Notation "m < n"  := (m.+1 <= n).
@@ -2173,10 +2207,11 @@ Notation "m < n"  := (m.+1 <= n).
 \coqrun{name=notation3}{ssr,notation_lt}
 
 \gotcha{There is no function testing if a natural number is strictly
-smaller than another one.  \C{(a < b)} is just syntactic
-sugar for \C{(a.+1 <= b)}}
+smaller than another one.  \C{(a < b)} is just an alternative syntax
+for \C{(a.+1 <= b)}}
 
-By the way the converse relation \C{(n > m)} is only accepted in input
+The converse relation \C{(n > m)} is defined as a notation for
+\C{(m < n)}. However, it is only accepted in input,
 and is always printed as  \C{(m < n)}, thanks to the following declaration:
 
 \begin{coq}{name=notation_gt}{}
@@ -2404,7 +2439,7 @@ $~$
 
 \begin{coq}{name=triple_solution}{}
 Inductive triple (A B C : Type) := mk_triple (a : A) (b : B) (c : C).
-Notation "( a , b , b )" := (mk_triple a b c).
+Notation "( a , b , c )" := (mk_triple a b c).
 Definition fst  A B C (p : triple A B C) := let: (a, _, _) := p in a.
 Definition snd  A B C (p : triple A B C) := let: (_, b, _) := p in b.
 Definition thrd A B C (p : triple A B C) := let: (_, _, c) := p in c.
@@ -2473,6 +2508,15 @@ Definition all_words n T (alphabet : seq T) :=
   let prepend x wl := [seq x :: w | w <- wl] in
   let extend wl := flatten [seq prepend x wl | x <- alphabet] in
   iter n extend [:: [::] ].
+\end{coq}
+
+Another possible solution~\footnote{suggested by Dairj Grinberg.}:
+
+\begin{coq}{name=allwords_solution_dg}{}
+Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
+  if n is m.+1 then
+    flatten [seq [seq x :: w | w <- (all_words_alt m xs)] | x <- xs]
+  else nil :: nil.
 \end{coq}
 
 \end{Answer}
