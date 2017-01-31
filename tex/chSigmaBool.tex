@@ -398,7 +398,7 @@ Although all these proofs and definitions are specific to \C{tuple},
 we are following a general schema here, involving
 three parameters: the original type \C{(seq T)}, the sub-type
 \C{(n.-tuple T)} and the projection \C{tval}.
-The \mcbMC{} library provides a \emph{sub-type kit} to lext one
+The \mcbMC{} library provides a \emph{sub-type kit} to let one
 write just the following text:
 
 \begin{coq}{name=subt}{}
@@ -972,7 +972,7 @@ Notation "{ 'perm' T }" := (perm_of T).
 This time we add the property of being injective, that in conjunction
 with finiteness characterizes permutations as bijections.
 
-Similarly to fniite functions we can declare a coercion to let
+Similarly to finite functions we can declare a coercion to let
 one write \C{(s x)} for \C{(s : \{perm T\})} to denote
 the result of applying the permutation \C{s} to \C{x}.
 
@@ -1102,7 +1102,7 @@ sizes are incompatible.
 
 This has to be compared with what was done for integer division, that
 was made total by returning a default value, namely \C{0}, outside
-its domain.  In the case of matrixes a size annotation is enough to make
+its domain.  In the case of matrices a size annotation is enough to make
 the operation total, while for division a proof would be necessary.
 Working with rich types is not always easy, for example the type
 checker does not understand automatically that a square matrix of

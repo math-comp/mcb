@@ -13,9 +13,9 @@ gitrev:
 clean:
 	rm -rf .*/rt *.aux
 
-COQBIN ?= 
+COQBIN ?=
 COQC := $(COQBIN)coqc
-MC ?= 
+MC ?=
 COQARGS := "-no-glob"
 
 coq: $(patsubst %.tex,.%/rt,$(wildcard *.tex))
@@ -33,5 +33,10 @@ coq: $(patsubst %.tex,.%/rt,$(wildcard *.tex))
 stats:
 	gitinspector -F htmlembedded -f tex -T -r -H  > stats.html
 
-spell:
-	for f in *.tex; do cat $$f | aspell --master=en_US -t list; done | sort | uniq | comm -2 -3 - sorted_words_to_ignore.txt
+spell: dictionary spell_without_dic
+
+dictionary:
+	for g in spell_files/*.txt; do cat $$g; done| sort | uniq > spell_files/all_sorted_words_to_ignore.txt
+
+spell_without_dic:
+	for f in *.tex; do cat $$f | aspell --master=en_US -t list; done | sort | uniq | comm -2 -3 - spell_files/all_sorted_words_to_ignore.txt

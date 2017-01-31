@@ -47,7 +47,7 @@ Note: in the following example we assume $cmd$ does nothing, exactly like
 \ssrc{$cmd$=> x px}{
   Run $cmd$, then pop Top, put it in the context naming it \C{x} then
   pop the new Top and names it \C{px} in the context}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
   =========
    forall x,
@@ -63,14 +63,14 @@ Note: in the following example we assume $cmd$ does nothing, exactly like
   \end{tabular}
 \ssrc{$cmd$=> [|x xs] //}{
   Run $cmd$, then reason by cases on Top. In the first
-  breanch do nothing, in the second one pop two
-  assumptions naming then \C{x} nd \C{xs}. Then get rid of
+  branch do nothing, in the second one pop two
+  assumptions naming then \C{x} and \C{xs}. Then get rid of
   trivial goals. Note that, since only the first branch is
   trivial, one can write \C{=> [// | x xs]} too.\caveat{
   Immediately after
   \C{case} and \C{elim} it does not perform any case analysis, but
   can still introduce different names in different branches}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
   =========
    forall s : seq nat,
@@ -86,9 +86,9 @@ Note: in the following example we assume $cmd$ does nothing, exactly like
   \end{tabular}
 \ssrc{$cmd$=> /andP[pa pb]}{
   Run $cmd$, then apply the view \C{andP} to Top, then destruct the
-  conjuction and introduce in the context the two
+  conjunction and introduce in the context the two
   parts naming the \C{pa} and \C{pb}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
   =========
    A && B -> C -> D
@@ -104,7 +104,7 @@ Note: in the following example we assume $cmd$ does nothing, exactly like
 \ssrc{$cmd$=> /= \{px\}}{
   Run $cmd$ then simplify the goal then discard \C{px} from
   then context}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    x : nat
    px : P x
@@ -119,10 +119,10 @@ Note: in the following example we assume $cmd$ does nothing, exactly like
   \end{lstlisting}\end{minipage}
   \end{tabular}
 \ssrc{$cmd$=> [y -> \{x\}]}{
-  Run $cmd$ then destruct the existential, then introduce y, 
+  Run $cmd$ then destruct the existential, then introduce y,
   then rewrite with Top left to right and
   discard the equation, then clear x}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.20\textwidth}\begin{lstlisting}
    x : nat
   =========
@@ -156,13 +156,13 @@ Note: in the following example we assume $cmd$ does nothing, exactly like
   \end{tabular}
 
 \subsection*{Pushing to the stack}
-Note: in the following $cmd$ is not 
+Note: in the following $cmd$ is not
 \C{apply} or \C{exact}. Moreover we display the
 goal just before $cmd$ is run.
 
 \ssrc{$cmd$: (x)$\;\;$y}{
   Push \C{y} then push \C{x} on the stack. \C{y} is also cleared}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    x, y : nat
    px : P x
@@ -181,7 +181,7 @@ goal just before $cmd$ is run.
 \ssrc{$cmd$: \{-2\}x (erefl x)}{
   Push the type of \C{(erefl x)}, then push \C{x} on the stack
   binding all but the second occurrence}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    x : nat
   =========
@@ -199,7 +199,7 @@ goal just before $cmd$ is run.
 \ssrc{$cmd$: \_.+1 \{px\}}{
   Clear \C{px} and generalize the goal with
   respect to the first match of the pattern \C{\_.+1}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    x : nat
    px : P x
@@ -218,7 +218,7 @@ goal just before $cmd$ is run.
 \ssrc{rewrite Eab (Exc b).}{
   Rewrite with \C{Eab} left to right, then with \C{Exc} by
   instantiating the first argument with \C{b}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    Eab : a = b
    Exc : forall x, x = c
@@ -236,7 +236,7 @@ goal just before $cmd$ is run.
 \ssrc{rewrite -Eab \{\}Eac.}{
 Rewrite with \C{Eab} right to left then with \C{Eac}
 left to right, finally clear \C{Eac}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    Eab : a = b
    Eac : a = c
@@ -252,7 +252,7 @@ left to right, finally clear \C{Eac}}
   \end{tabular}
 \ssrc{rewrite /(_ && _).}{
   Unfold the definition of \C{&&}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    a : bool
   =========
@@ -268,7 +268,7 @@ left to right, finally clear \C{Eac}}
 \ssrc{rewrite /= -[a]/(0+a)$\;$ -/c.}{
   Simplify the goal, then change \C{a} into \C{0+a}, finally fold back
   the local definition \C{c}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    a, b : nat
    c := b + 3 : nat
@@ -285,7 +285,7 @@ left to right, finally clear \C{Eac}}
   \end{tabular}
 \ssrc{apply: H.}{
   Apply \C{H} to the current goal}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    H : A -> B
   =========
@@ -299,7 +299,7 @@ left to right, finally clear \C{Eac}}
   \end{tabular}
 \ssrc{case: ab.}{
   Eliminate the conjunction or disjunction}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    ab : A /\ B
   =========
@@ -313,7 +313,7 @@ left to right, finally clear \C{Eac}}
   \end{tabular}
 \ssrc{case: (leqP a b).}{
 Reason by cases using the \C{leqP} spec lemma}
-  \begin{tabular}{c@{$\to$}cc} 
+  \begin{tabular}{c@{$\to$}cc}
   \begin{minipage}{0.10\textwidth}\begin{lstlisting}
    a, b : nat
   =========
@@ -334,11 +334,11 @@ Reason by cases using the \C{leqP} spec lemma}
   \end{tabular}
 
 \ssrc{elim: s.}{Perform an induction on {\tt s}}
-  \begin{tabular}{c@{$\to$}cc} 
+  \begin{tabular}{c@{$\to$}cc}
   \begin{minipage}{0.10\textwidth}\begin{lstlisting}
    s : seq nat
   =========
-   P s 
+   P s
   \end{lstlisting}\end{minipage}
   &
   \begin{minipage}{0.08\textwidth}\begin{lstlisting}
@@ -348,14 +348,14 @@ Reason by cases using the \C{leqP} spec lemma}
   &
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
   =========
-   forall n s, 
+   forall n s,
     P s -> P (n :: s)
   \end{lstlisting}\end{minipage}
   \end{tabular}
 \ssrc{elim/last\_ind: s}{
   Start an induction on \C{s} using the induction
   principle \C{last\_ind}}
-  \begin{tabular}{c@{$\to$}cc} 
+  \begin{tabular}{c@{$\to$}cc}
   \begin{minipage}{0.10\textwidth}\begin{lstlisting}
    s : seq nat
   =========
@@ -370,14 +370,14 @@ Reason by cases using the \C{leqP} spec lemma}
   \begin{minipage}{0.12\textwidth}\begin{lstlisting}
   =========
    forall s x,
-    P s -> 
+    P s ->
      P (rcons s x)
   \end{lstlisting}\end{minipage}
   \end{tabular}
 \ssrc{have pa : P a.}{
   Open a new goal for \C{P a}. Once resolved
   introduce a new entry in the context for it named \C{pa}}
-  \begin{tabular}{c@{$\to$}cc} 
+  \begin{tabular}{c@{$\to$}cc}
   \begin{minipage}{0.10\textwidth}\begin{lstlisting}
    a : T
   =========
@@ -399,7 +399,7 @@ Reason by cases using the \C{leqP} spec lemma}
   \end{tabular}
 \ssrc{by [].}{
   Prove the goal by trivial means, or fail}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
   =========
    0 <= n
@@ -412,7 +412,7 @@ Reason by cases using the \C{leqP} spec lemma}
   Apply \C{H} to the current goal and then assert all
   remaining goals, if any, are trivial. Equivalent to
   \C{by apply: H.}}
-  \begin{tabular}{c@{$\to$}c} 
+  \begin{tabular}{c@{$\to$}c}
   \begin{minipage}{0.15\textwidth}\begin{lstlisting}
    H : B
   =========
@@ -460,7 +460,7 @@ Reason by cases using the \C{leqP} spec lemma}
   view lemma applied to the left (resp. right) hand
   side. E.g. \C{apply/idP/negP}}
 
-  \begin{tabular}{c@{$\to$}cc} 
+  \begin{tabular}{c@{$\to$}cc}
   \begin{minipage}{0.10\textwidth}\begin{lstlisting}
    b1 : bool
    b2 : bool
@@ -516,7 +516,7 @@ Reason by cases using the \C{leqP} spec lemma}
   General induction over \C{n}, note that the first goal
   has a false assumption \C{forall n, n < 0 -> ...} and is
   thus solved by \C{//}}
-  \begin{tabular}{c@{$\to$}cc} 
+  \begin{tabular}{c@{$\to$}cc}
   \begin{minipage}{0.10\textwidth}\begin{lstlisting}
    n : nat
   =========
@@ -526,7 +526,7 @@ Reason by cases using the \C{leqP} spec lemma}
   \begin{minipage}{0.22\textwidth}\begin{lstlisting}
    n : nat
   =========
-   (forall m, m < n -> P m) -> 
+   (forall m, m < n -> P m) ->
     forall m, m < n.+1 -> P m
   \end{lstlisting}\end{minipage}
   \end{tabular}
@@ -628,18 +628,18 @@ iterated operations}
 
 \ssrc{rewrite \{3\}[in X in pat1]lem1}{
   Like in \C{rewrite [X in pat1]lem1} but use the pattern
-  inferred from \C{lem1} to identify the sub terms of \C{X} to be 
+  inferred from \C{lem1} to identify the sub terms of \C{X} to be
   rewritten. Of these terms, rewrite only the third one. Example:
   \C{rewrite \{3\}[in X in f \_ X]E.}}
-  \begin{tabular}{cc} 
+  \begin{tabular}{cc}
   \begin{minipage}{0.24\textwidth}\begin{lstlisting}
-  E : a = c 
+  E : a = c
   =========
   a + f a (a + a) = f a (a + a) + a
   \end{lstlisting}\end{minipage}
   $\to$\\
   \begin{minipage}{0.28\textwidth}\begin{lstlisting}
-      E : a = c 
+      E : a = c
       =========
       a + f a (a + a) = f a (c + a) + a
   \end{lstlisting}\end{minipage}
@@ -652,7 +652,7 @@ iterated operations}
 
 \ssrc{rewrite [e as X in pat1]lem1}{
   Like \C{rewrite [X in pat1]lem1} but match
-  \C{pat1}[\C{X} := \C{e}] insted of just \C{pat1}}
+  \C{pat1}[\C{X} := \C{e}] instead of just \C{pat1}}
 
 \ssrc{rewrite /def1 -[pat]/term /=}{
   Unfold all occurrences of \C{def1}. Then match the goal against \C{pat}
@@ -683,29 +683,29 @@ The sub terms selected by a pattern:
       (only) instance of the pattern
 \item the sub terms selected by the pattern are then all the copies of the
       instance of the pattern
-\item these copies are searched looking again at the key, and higher order 
+\item these copies are searched looking again at the key, and higher order
       comparing the arguments pairwise
 \end{enumerate}
 
-Note: occurrence numbers can be combined with patterns. They refer 
+Note: occurrence numbers can be combined with patterns. They refer
 to the list of of sub terms selected by the (last) pattern (i.e. they
 are processed at the very end).
 
 \ssrc{set n := \{2 4\}(\_ + b)}{
-  Put in the context a local definition named \C{n} for the 
-  second and fourth occurrences of the sub terms selected by the 
+  Put in the context a local definition named \C{n} for the
+  second and fourth occurrences of the sub terms selected by the
   pattern \C{(\_ + b)}}
-  \begin{tabular}{cc} 
+  \begin{tabular}{cc}
   \begin{minipage}{0.22\textwidth}\begin{lstlisting}
   =========
-  a + c + (a + b) + (a + b) = 
+  a + c + (a + b) + (a + b) =
    a + (a + b) + (0 + a + b) + c
   \end{lstlisting}\end{minipage}
   & $\to$\\
   \begin{minipage}{0.22\textwidth}\begin{lstlisting}
       n := a + b
      =========
-      a + c + (a + b) + n = 
+      a + c + (a + b) + n =
        a + (a + b) + n + c
   \end{lstlisting}\end{minipage}
   \end{tabular}

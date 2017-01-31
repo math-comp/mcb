@@ -3,7 +3,7 @@
 
 % in addition to the photos:
 % \begin{itemize}
-% \item talk about /= in 2 as a decorator for elim on a list (since arithmetics is all locked with nosimpl).
+% \item talk about /= in 2 as a decorator for elim on a list (since arithmetic is all locked with nosimpl).
 % \item talk about nosimpl in 3.3, say that according to our experience simpl is not
 % always a good idea hence nosimpl.
 % \item good practice (3.3 or 3.4): state and prove the fixpoint unfolding/folding equations.
@@ -14,10 +14,11 @@
 %\section{Motivations}
 
 At this stage, we are in the presence of one of the main issues in the
-representation of mathematics in a formal language: very often,
-several datastructures can be used to represent a same mathematical
-definition or statement. But this choice may have a significant impact
-on the upcoming layers of formalized theories. We have seen so far two
+representation of mathematics in a formal language: Very often,
+several data structures can be used to represent one and the same
+mathematical definition or statement. The choice between them
+may have a significant impact
+on the upcoming layers of formalized theories. So far, we have seen two
 ways of expressing logical statements: using boolean predicates and
 truth values on one hand, and using logical connectives and the
 \C{Prop} sort on the other. For instance, in order to define the
@@ -36,6 +37,10 @@ Definition has_prop  T (a : T -> bool) (x0 : T) (s : seq T) :=
    exists i, i < size s /\ a (nth x0 s i)
 \end{coq}
 
+(where we are assuming that \C{x0} is a given element of \C{T};
+otherwise, we can, e.g., quantify the whole statement by
+\C{exists (x0 : T)}).
+
 Term \C{(has a s)} is a boolean value.  It is hence
 easy to use it in a proof to perform a case
 analysis on the fact that sequence
@@ -47,7 +52,7 @@ case: (has a s).
 As we already noted, computation provides some automation for free.
 For example
 in order to establish that \C{(has odd [:: 3; 2; 7]) =
-  true}, we only need to observe that the left hand-side \emph{computes} to
+  true}, we only need to observe that the left hand side \emph{computes} to
 \C{true}.
 
 It is not possible to perform a similar case analysis in a proof
@@ -81,7 +86,7 @@ are structured logical statements, that can be ``destructed'' to
 provide witnesses (of existential statements), instances (of universal
 statements), subformulae (of conjunctions), etc.. They are proved by
 deduction, building proof trees made with the rules of the
-logic. Formalizing a predicate by the means of a boolean specification
+logic. Formalizing a predicate by means of a boolean specification
 requires implementing a form of decision
 procedure and possibly proving a specification lemma if
 the code of the procedure is not a self-explanatory description of the
@@ -97,9 +102,9 @@ principle holds on the corresponding predicate.
 The boolean reflection methodology proposes to avoid
 committing to one or the other of these options, and provides enough
 infrastructure to ease the bureaucracy of navigating between the two.
-The \C{is_true} coercion, which we have been using since the early
-pages of chapter~\ref{ch:proofs}, is in fact one ingredient of this
-infrastructure.
+The \C{is_true} coercion, which was being used silently in the
+background since the early pages of chapter~\ref{ch:proofs}, is in
+fact one piece of this infrastructure.
 
 \begin{coq}{}{title=The is\_true coercion}
 Definition is_true (b : bool) : Prop := b = true.
@@ -122,7 +127,7 @@ More on this mechanism will be told in section~\ref{sec:coercions}.
 
 How to best formalize the equivalence between a boolean value \C{b}
 and a statement \C{P : Prop}? The most direct way would be to use the
-conjunction of the two converse applications:
+conjunction of the two converse implications:
 
 \begin{coq}{}{}
 Definition bool_Prop_equiv (P : Prop) (b : bool) := b = true <-> P.
@@ -161,7 +166,7 @@ section~\ref{ch:ttch}, like for instance
 would be non-negligible.
 
 A better solution is
-to use an ad-hoc inductive definition that resembles a
+to use an ad hoc inductive definition that resembles a
 disjunction of conjunctions: we inline the two constructors of a
 disjunction and each of these constructors has the two arguments of
 the conjunction's single constructor:
@@ -174,7 +179,7 @@ Inductive reflect (P : Prop) (b : bool) : Prop :=
 \index[coq]{\C{reflect}}
 
 We can prove that the statement \C{reflect P b} is actually equivalent
-to the double implication, see exercise~\ref{ex:iffp}.
+to the double implication \C{bool_Prop_equiv}; see exercise~\ref{ex:iffp}.
 
 Let us illustrate the benefits of this alternate specialized double
 implication:
@@ -321,8 +326,8 @@ iffP : forall (P Q : Prop) (b : bool),
 \end{coqout}
 \index[coq]{\C{iffP}}
 Lemma \C{iffP} relates two equivalences \C{(reflect P b)}
-and \C{(reflect Q b)} involving a same boolean \C{b} but different
-\C{Prop} statements \C{P} and \C{Q}, as soon as one
+and \C{(reflect Q b)} involving one and the same boolean \C{b}
+but different \C{Prop} statements \C{P} and \C{Q}, as soon as one
 provides a proof of the usual double implication between \C{P} and
 \C{Q}.
 %\marginnote{Prove it as an exercise?}
@@ -446,7 +451,7 @@ which can be fed with a proof of its premise: it is (isomorphic to) the
 conjunction of \emph{two} such implications. The \emph{view mechanism}
 implemented in the tactic language has automatically guessed and
 inserted a term, called \emph{hint view}, which plays the role of an
-adaptor.
+adapter.
 \index[vernac]{\C{Hint View}}
 
 More precisely the \C{/andP} intro pattern has wrapped the top
@@ -664,7 +669,7 @@ detailed in section~\ref{sec:leqmax}
 %   This could be reused in the next section, to illustrate \C{wlog}.
 %
 %
-% \item There are more adaptors than \C{introT, introF, elimT, elimF},
+% \item There are more adapters than \C{introT, introF, elimT, elimF},
 %   in particular with negations \C{elimN,...} and \C{apply/v1/v2}.
 
 % \end{itemize}
@@ -776,7 +781,7 @@ involving such notion.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Inductive specs with indices}\label{ssec:specs}
-What we did for reflect, an ad hoc connective, to model a line of reasoning is
+What we did for \C{reflect}, an ad hoc connective, to model a line of reasoning, is
 a recurrent pattern in the \mcbMC{} library.  Such class of inductive
 predicates is called ``spec'', for \emph{specification}.
 
@@ -786,7 +791,7 @@ In particular their elimination rule encapsulates the notion
 of substitution, and that operation is performed automatically by
 the logic.
 
-If we look at reflect, and its use, one is very likely to substitute \C{b}
+If we look at \C{reflect}, and its use, one is very likely to substitute \C{b}
 for its value in each branch of the case.
 
 \begin{coq}{}{}
@@ -1084,19 +1089,18 @@ is to use the worst invention of computer science: copy-paste.  The language of
 \Coq{} is sufficiently expressive to model symmetries, and the
 Ssreflect proof language provides facilities to write symmetric arguments.
 
-We prove the following characterization of the max of two natural numbers.
-
-$$
-\forall n_1, n_2, m, \quad m \le max(n_1,n_2)
+We prove the following characterization of the max of two natural numbers:
+\[
+\forall n_1, n_2, m, \quad m \le \max(n_1,n_2)
 \Leftrightarrow m \le n_1 \textrm{ or } m \le n_2
-$$
+\]
 
-The proof goes like that: without loss of generality we can assume that
+The proof goes as follows: Without loss of generality we can assume that
 $n_2$ is greater or equal to $n_1$, hence $n_2$ is the maximum between
 $n_1$ and $n_2$.  Under this assumption it is sufficient to check
 that $m \le n_2$ holds iff either $m \le n_2$ or $m \le n_1$.
 The only non-trivial case is when we suppose $m \le n_1$ and
-we need to prove $m \le n_2$ which holds by transitivity.\hfill$\square$
+we need to prove $m \le n_2$, which holds by transitivity.\hfill$\square$
 
 As usual we model double implication as an equality between two
 boolean expressions:
@@ -1106,7 +1110,7 @@ Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 \end{coq}
 
 The proof uses the following lemmas.  Pay attention to the premise of
-\C{orb_idr} that is an implication.
+\C{orb_idr}, which is an implication.
 
 \begin{coq}{}{title=Tools}
 Lemma orb_idr (a b : bool) : (b -> a) -> a || b = a.
@@ -1289,10 +1293,10 @@ the \C{max} is \C{n1} due to the extra assumption.
 \mcbLEVEL{1}
 \mcbsubsubsection{Partially applied views}
 
-A less important, but very widespread feature, of the Ssreflect
-proof language can be used to shrink even further the proof.
+A less important, but very widespread, feature of the Ssreflect
+proof language can be used to shrink the proof even further.
 In this proof script, we have named the fact \C{le_mn2} only for the
-purpose of refering to this fact in the transitivity step.
+purpose of referring to this fact in the transitivity step.
 
 
 \begin{coq}{}{}
@@ -1310,7 +1314,7 @@ we have used it to transform the top assumption \C{(m <= n2)}.  Note that
 the \C{leq_trans} expects a second proof argument, and that its type
 would fix \C{b}, that is otherwise unspecified.  If one puts a
 full stop just before the terminating \C{->}, to see the output of
-the view application, he sees the following stack:
+the view application, one sees the following stack:
 
 \begin{coq}{}{}
 (forall n, n1 <= n -> m <= n) -> m <= n1.
@@ -1368,7 +1372,7 @@ Lemma edivnP m d (ed := edivn m d) :
 Proof.
 \end{coq}
 
-As one expects, being \C{edivn} a recursive program, its specification
+As one expects, \C{edivn} being a recursive program, its specification
 needs to be proved by induction.  Given that the recursive call is on
 the subtraction of the input, we need to perform a strong induction,
 as we did for the postage example in section~\ref{sec:strongind}.

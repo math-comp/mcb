@@ -594,7 +594,7 @@ boolean arithmetic, while expression:
 \[ 0 + x \times (S\ 0) \]
 is a well formed expression in the language $\{0,S, +, \times\}$ of
 Peano arithmetic. In these examples, however, the usual axioms that
-formalize the respective arithmetics confer a distinctive status to
+formalize the respective arithmetic confer a distinctive status to
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
 $S$ for natural numbers. More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
@@ -984,7 +984,7 @@ When writing recursive functions, the \Coq{} system imposes the
 constraint that the described computation must be \emph{guaranteed to
 terminate}.  The reason for this requirement is sketched in
 section~\ref{ssec:indreason}.
-This guarantee is obtained by analysing the description of the
+This guarantee is obtained by analyzing the description of the
 function, making sure that recursive calls always happen on a
 given argument that decreases.
 Termination is obvious when the recursive calls happen
@@ -997,7 +997,7 @@ against the pattern \C{p.+1.+1}, then the recursive call would have been
 allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.
 \marginnote{Here and earlier, we do not comment (yet) on the fact that
 \C{.+1.+1} is displayed \C{.+2}}
-\marginnote{Refer to CoqArt for more on termination issues?}
+\marginnote{Refer to~\cite{BC04} for more on termination issues?}
 \index[concept]{recursion!termination}
 \index[concept]{termination}
 
@@ -1181,7 +1181,7 @@ case, the trailing \C{n} is omitted in their name.
 We strongly advise the reader wanting to explore the \mcbMC{} library
 to browse their source
 files\footnote{\url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}
-and not to limit herself to queries to the toplevel. The
+and not to limit herself to interactive queries to the system. The
 information provided by the \C{Print} and \C{About} commands is
 useful to understand how to use the objects defined in the libraries
 once they are known by their name. By contrast, the source
@@ -1194,7 +1194,7 @@ There is no better way to browse the library than reading these banners.}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \section{Container datatypes}\label{sec:poly}
+% \section{Container data types}\label{sec:poly}
 \section{Containers}\label{sec:poly}
 
 
@@ -1208,7 +1208,7 @@ following data type for this purpose:
 Inductive listn := niln | consn (hd : nat) (tl : listn).
 \end{coq}
 
-The elements of this datatype are (one possible implementation of)
+The elements of this data type are (one possible implementation of)
 lists of zero or more natural numbers; the first constructor
 \C{niln} builds the empty list, whereas the second constructor
 \C{consn} builds a nonempty list by combining a natural number \C{hd}
@@ -2102,7 +2102,7 @@ a function of type \C{nat -> nat -> nat}: the two type parameters of
 \C{foldr} are set to \C{nat} in this case. The first explicit
 argument given to \C{foldr} is hence a function of
 type \C{nat -> nat -> nat}, which is created by \emph{abstracting} the
-variable \C{i} in the expression \C{F}, as mentionned in
+variable \C{i} in the expression \C{F}, as mentioned in
 section~\ref{ssec:deffun}. The name of the second argument of the
 function, called \C{a} here, should not appear in expression \C{F} in
 order for the notation to be meaningful.

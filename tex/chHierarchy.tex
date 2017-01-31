@@ -30,14 +30,14 @@ However, the more interesting mathematical objects have \emph{many}
 operations and properties, most of which they share with other kinds
 of objects: for example, elements of a field have all the properties
 of those of a ring (and more), which themselves have all the
-properties of an additive group. By organising the corresponding
-\mcbCIC{} structures in a hierarchy, we can materialise these
+properties of an additive group. By organizing the corresponding
+\mcbCIC{} structures in a hierarchy, we can materialize these
 inclusions in the \mcbMC{} library, and share operations and properties
 between related structures. For example, we can use the same generic
 ring multiplication for rings, integral domains, fields, algebras, and
 so on.
 
-Organising structures in a hierarchy does not require any new logical
+Organizing structures in a hierarchy does not require any new logical
 feature beyond those we have already seen: type inference with
 dependent types, coercions and canonical instances of structures.  It
 is only a ``simple matter of programming'', albeit one that involves
@@ -278,7 +278,7 @@ difficult. In this section we explain \emph{telescopes}, one of the
 simpler ways of implementing a structure hierarchy.  Telescopes
 suffice for most simple --- tree-like and shallow --- hierarchies, so
 new users do not necessarily need expertise with the more
-sophisticated \emph{packed class} organisation covered in the next
+sophisticated \emph{packed class} organization covered in the next
 section.
 
 Because of their limitations (covered at the end of this section),
@@ -431,7 +431,7 @@ checking heuristics for deep hierarchies.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{2}
-\mcbLEARN{Packed class organisation of structures}
+\mcbLEARN{Packed class organization of structures}
 \mcbPROVIDE{packed classes, \C{GRing}}
 \mcbREQUIRE{\C{eqType}}
 \mcbsection{Packed classes}\label{sec:packed}
@@ -441,7 +441,7 @@ The type structure hierarchy for the \mcbMC{} library is both deep
 (up to 11 levels) and non-linear. It is not uncommon for an algebraic
 structure to combine the properties of two unrelated structures: for
 example an algebra is both a ring and a module, neither of which is an
-instance of the other. Thus the \mcbMC{} type structures are organised
+instance of the other. Thus the \mcbMC{} type structures are organized
 along a different pattern, \emph{packed classes}, which is more flexible
 and efficient than the telescope pattern, but requires more work to follow.
 
@@ -533,7 +533,7 @@ defined using \C{find} and the axiom of countable
 choice, which is derivable in \mcbCIC{}% \footnote{behind the
 % \C{\{m|..\}} notation lies the \C{sig} dependent pair.  Such an inductive
 % data type is a copy of the existential quantifier but is
-% declared as a datatype rather than a
+% declared as a data type rather than a
 % proposition~\cite[section 3.1.4]{Coq:manual}.
 % \Coq{} checks that the \C{m} is built without using
 % the existential witness \C{n}.  In other words the proof in
@@ -615,7 +615,7 @@ for 0 in fields, or choose a basis of a subspace, for example.
 Furthermore, this is essentially a free assumption, because the
 \mcbMC{} algebra mixins specify \emph{strict} identities, such as
 \C{associative add} on line 7 above. In the pure \mcbCIC{}, these can only
-be realised for concrete data types with a binary representation,
+be realized for concrete data types with a binary representation,
 which are both discrete and countable, hence are \C{choiceType}s.  On
 the other hand, the ``classical \mcbCIC{}'' axioms needed to construct,
 e.g., real numbers, imply that all types are \C{choiceType}s.
@@ -642,7 +642,7 @@ private.
   then you have broken an abstraction barrier}
 
 The next structure in the hierarchy encapsulates nontrivial rings.
-Imposing the nontriviality condition $1 \neq 0$ is a compromise:
+Imposing the non-triviality condition $1 \neq 0$ is a compromise:
 it greatly simplifies the theory of polynomials (ensuring for instance that
 $X$ has degree 1), at the cost of ruling out possibly trivial matrix rings.
 

@@ -961,7 +961,7 @@ Proof. by []. Qed.
 
 This statement is true (or better, the hypothesis is false) by computation.
 In this last example the use of \C{==} give us immediate access to
-resoning by cases.
+reasoning by cases.
 
 \begin{coq}{name=test}{title=Why one should always use \C{==} (EM)}
 Lemma test_EM (x y : nat) : if x == y.+1 then x != 0 else true.
@@ -997,7 +997,7 @@ consequence we lose the former automation provided by computation
 and it also becomes harder to reason by cases on the membership predicate.
 On the contrary when we quantify a theory on the type  \C{(seq T)} for a
 \C{T} that is an \C{eqType}, we recover all that.  In other words,
-by better specifying the types that parameterize a generic container,
+by better specifying the types parameters of a generic container,
 we define which operations are licit and which properties hold.
 So far the only interface we know is \C{eqType}, that is primordial to
 boolean reflection.
@@ -1420,7 +1420,8 @@ Structure law := Law {
 The \C{Monoid.law} structure relates the \C{operator} (the key used by
 canonical structures) to the three properties of monoids.
 
-We can then parametrize an entire theory on this interface.
+We can then us this interface as a parameter for a bunch of lemmas,
+describing the theory shared by  its instances.
 
 \begin{coq}{name=bigop1}{}
 Coercion operator : law >-> Funclass.
@@ -1516,7 +1517,7 @@ Search _ (\sum_(0 <= i < 0) _).
 \end{coq}
 A lemma stating that an empty sum is zero is not part of the library.
 What is part of the library is a lemma that says that, if the list
-beign folded is \C{nil}, then the result is the initial value.  Such
+being folded is \C{nil}, then the result is the initial value.  Such
 a lemma, called \C{big_nil}, thus mentions only \C{[::]} in its
 statement, and not the (logically) equivalent \C{(index_iota 0 0)}.
 Still the goal \C{(\\sum_(0 <= i < 0) i = 0)} can be solved by
