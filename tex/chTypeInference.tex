@@ -1421,7 +1421,12 @@ The \C{Monoid.law} structure relates the \C{operator} (the key used by
 canonical structures) to the three properties of monoids.
 
 We can then us this interface as a parameter for a bunch of lemmas,
-describing the theory shared by  its instances.
+describing the theory shared by  its instances. The \C{(Monoid.law idx)}
+type annotation may seem puzzling at first; it combines various mechanisms
+we have seen earlier in the book: outside of the section \C{Definitions},
+the \C{Variables} \C{(T : Type)} and \C{(idm : T)} are lambda-lifted,
+and \C{T} is maximally inserted: applying \C{law} to \C{idx} thus yields
+a valid \C{Type}.
 
 \begin{coq}{name=bigop1}{}
 Coercion operator : law >-> Funclass.
