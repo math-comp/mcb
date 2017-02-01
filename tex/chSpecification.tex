@@ -864,8 +864,8 @@ inductive family to be replaced by \C{true} or \C{false} is here
 a pattern \C{(_ && _)} and the goal is searched for an instance of
 such pattern by the same matching algorithm the \C{rewrite} tactic
 uses for rewrite rules.
-Tuning of implicit arguments is key to obtaining easy to use
-lemmas, even more the ``spec'' ones.
+The tuning of implicit arguments is key to obtaining lemmas easy to
+use, even more so in the case of the ``spec'' ones.
 
 
 If one needs to override the pattern inferred for the index
@@ -1377,7 +1377,7 @@ needs to be proved by induction.  Given that the recursive call is on
 the subtraction of the input, we need to perform a strong induction,
 as we did for the postage example in section~\ref{sec:strongind}.
 
-Bet let's start by dealing with the trivial case of a null divisor.
+But let's start by dealing with the trivial case of a null divisor.
 
 \begin{coq}{}{}
 case: d => [//=|d /=] in ed *.
@@ -1629,7 +1629,12 @@ element in a list that is duplicate free.
 % colon.  The \lstinline/sort/ function mapping an \lstinline/eqType/
 % into a \lstinline/Type/ is inserted automatically.
 
-Coercions are composed transitively.
+Coercions are composed transitively: in the following example, \C{true}
+is used as the tail of a \C{seq}. Even though there is no direct coercion
+from \C{bool} to \C{seq}, Coq can go from one to the other via \C{nat}.
+Thus \C{true} is first coerced to \C{1} of type \C{nat} by \C{nat_of_bool},
+which is then turned into a \C{seq} (of length \C{1} containing \C{0}s) by
+\C{zerolist}.
 
 \begin{coq}{name=b2z}{}
 Definition zerolist n := mkseq (fun _ => 0) n.
