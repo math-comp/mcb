@@ -864,8 +864,8 @@ inductive family to be replaced by \C{true} or \C{false} is here
 a pattern \C{(_ && _)} and the goal is searched for an instance of
 such pattern by the same matching algorithm the \C{rewrite} tactic
 uses for rewrite rules.
-Tuning of implicit arguments is key to obtaining easy to use
-lemmas, even more the ``spec'' ones.
+The tuning of implicit arguments is key to obtaining lemmas easy to
+use, even more so in the case of the ``spec'' ones.
 
 
 If one needs to override the pattern inferred for the index
@@ -1377,7 +1377,7 @@ needs to be proved by induction.  Given that the recursive call is on
 the subtraction of the input, we need to perform a strong induction,
 as we did for the postage example in section~\ref{sec:strongind}.
 
-Bet let's start by dealing with the trivial case of a null divisor.
+But let's start by dealing with the trivial case of a null divisor.
 
 \begin{coq}{}{}
 case: d => [//=|d /=] in ed *.
