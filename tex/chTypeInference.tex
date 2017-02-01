@@ -54,9 +54,9 @@ that have access to
 %\marginnote{explain declarative programs}
 the library of already formalized facts.  In this way one can make the
 type inference algorithm aware of the contents of the library and
-make \Coq{} behave as a trained reader that is able to guess the
+make \Coq{} behave as a trained reader who is able to guess the
 intended meaning of a mathematical expressions from the context
-thanks to his background knowledge.
+thanks to her background knowledge.
 
 This chapter also introduces the key concepts of \emph{interface}
 and \emph{instance}.  An interface is essentially the signature
@@ -307,7 +307,7 @@ Choosing a good  declaration of implicit arguments for lemmas is
 tricky and requires one to think ahead how the lemma is used.
 % section~\ref{sec:declaringimpl} is dedicated to that.
 
-So far we have been using only the simplest for of type inference in
+So far we have been using only the simplest form of type inference in
 our interaction with the system. The unification problems we have
 encountered would have been solved by a first order unification
 algorithm and we did not need to compute or synthesize
@@ -826,12 +826,12 @@ Notation "x == y" := (@eq_op _ x y).
 In this simple case, there is only one property, named
 \C{Equality.axiom}, and the class is exactly the mixin.
 
-Said that, nothing really changes: the \C{eqType} structure
+That being said, nothing really changes: the \C{eqType} structure
 relates a type with a signature.
 
 Remark the use of \C{:>} instead of \C{:} to type the
 field called \C{sort}.  This tells \Coq{} to declare the
-\C{Equality.sort} projection as a coercion. This makes possible to
+\C{Equality.sort} projection as a coercion. This makes it possible to
 write \C{(forall T : eqType, forall x y : T, P)} even if \C{T} is not
 a type and only \C{(sort T)} is.
 
@@ -845,7 +845,7 @@ type \C{(sort ?e)}''. }
 Given the new definition of \lstinline/eqType/,
 when we write \lstinline/(a == b)/, type inference does not only infer
 a function to compare \lstinline/a/ with \lstinline/b/, but also a
-proof that such function is correct.
+proof that such a function is correct.
 Declaring the \C{eqType} instance for \C{nat} now requires some
 extra work, namely proving the correctness of the \C{eqn} function.
 
@@ -989,8 +989,8 @@ specified comparison function we can use it to build abstract theories,
 for example the one of sequences.
 
 It is worth to remark that the concept of interface is crucial to
-the development of such theory.  If we try to develop the theory
-of the type \C{(seq T)} for an arbitrary \C{T}, we can't go much far.
+the development of such a theory. If we try to develop the theory
+of the type \C{(seq T)} for an arbitrary \C{T}, we can't go very far.
 For example we can express what belonging to a sequence means, but
 not write a program that tests if a value is actually in the list.  As a
 consequence we lose the former automation provided by computation
