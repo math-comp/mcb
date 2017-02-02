@@ -8,7 +8,9 @@ all: gitrev
 	pdflatex main && cp main.pdf book.pdf
 .PHONY: gitrev
 gitrev:
-	git describe --tags > gitrev
+	date > gitrev
+	echo , >> gitrev
+	git describe --tags >> gitrev
 
 clean:
 	rm -rf .*/rt *.aux
