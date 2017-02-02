@@ -1,4 +1,8 @@
-all: book.pdf jscoq coq artwork
+all: book.pdf jscoq coq artwork revision
+
+.PHONY: revision
+revision:
+	sed 's/<!--date-->.*/<!--date-->(last update $(shell date))/' -i index.html
 
 jscoq:
 	git clone https://github.com/ejgallego/jscoq-builds.git --depth 1 jscoq
