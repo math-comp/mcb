@@ -1267,7 +1267,7 @@ In the \Coq{} system, the approach is different: every mathematical
 formula must have a well-defined value.  When facing a partially
 defined function, this means that a neighbour total function is chosen,
 one that coincides with the initial function when it is
-defined and that a default value must be provided when the initial
+defined and a default value must be provided when the initial
 mathematical function would otherwise be undefined.  With this
 approach, it may be that a formula has a well-defined value in the
 framework of total functions, while it would have no value, and no
@@ -1283,12 +1283,17 @@ a small departure from usual mathematics, it may take time to accept.
 
 Taking the example of multiplicative inverse as an illustration, the
 inverse function is defined in the \mcbMC{} library from the level of
-unit ring structures, so that the notation \C{x^-1} is provided for
-every member of a unit ring type and \C{x / y} is an abbreviation for
-\C{x * y  ^-1}.  However, the properties of the multiplicative inverse
+{\em unit ring structures}.  These structures are like ring structures,
+except that a subset of the type is identified, the subset of {\em units},
+and and inverse function, together with the notation \C{^-1}, so that
+the property that \C{x^-1} is a multiplicative inverse of \C{x} for every
+\C{x} that is a unit.  Moreover, this mathematical structure also provides
+the notation \C{x / y} as an abbreviation for \C{x * y^-1}.
+
+However, the properties of the multiplicative inverse
 are only provided for the elements that have a multiplicative
 inverse (these elements are called units).  When showing that a given
-type satisfies the ring structure,
+type satisfies the unit ring structure,
 we need to provide a total function for the multiplicative inverse,
 but we only have to ensure that the multiplicative inverse property is
 satisfied for the unit elements.  The element \C{0} is not
