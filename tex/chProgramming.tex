@@ -622,9 +622,11 @@ sequences of values are among the most prominent examples.
 
 In the following sections, we introduce basic data types \C{bool} for boolean
 values and \C{nat} for natural numbers, taking the opportunity to describe
-various constructs of the \Coq{} language as the become relevant.  These
-sections serve simultaneously as an introduction to the data types and to the
-\Coq{} language constructs.
+various constructs of the \Coq{} language as they become relevant.  These
+sections serve simultaneously as an introduction to the data types
+\Coq{bool} and \Coq{nat} and to the \Coq{} language constructs that
+are used to define new data types and describe operations on these
+data types.
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Boolean values}\label{ssec:boolval}
 
@@ -1235,35 +1237,35 @@ subtractions do exist.  So the predecessor of 3 is a natural number,
 but the predecessor of \C{0} is not, it is a relative integer.  This
 versatility, allowed by mathematical practice, may seem to provide
 the necessary soupleness to be able to write mathematical formulas
-quickly and meaningfully.  It is not the case.  there are mathematical
+quickly and meaningfully.  It is not enough.  There are mathematical
 functions that are inherently not defined everywhere, in ways that
 cannot be recovered by just adding a new type.
 
 The example we will choose is the example of multiplicative inverse.
 For natural numbers, only \(1\) has a multiplicative inverse
 \(1^{-1}=1\), so that for every number \(n\), \(n \times 1 \times
-1^{-1} = n\).  In a suitably large numerical type, such as a type of
+1^{-1} = n\).  In a suitably extended numerical type, such as a type of
 rational numbers, almost any number \(a\) has a multiplicative inverse
 \(a^{-1}\) so that for every other number \(n\) \(n \times a \times
 a^{-1}= n\).  It is only needed that \(a\) is non zero.  But zero
-remains an ``exceptional'' case, whatever enlargement of the output
+remains an ``exceptional'' case, whatever extension of the
 type we may propose.
 
 In the case of the inverse of zero, the usual mathematical practice
 takes a different stance.  This formula is just not defined, and
 similarly for any number \(n\), \(n/0\) is not defined.  In this
-sense, usual mathematics prefer to take a risk.  Mathematicians are
-allowed to write formula using division, but when it comes to
+sense, usual mathematics prefers to take a risk.  Mathematicians are
+allowed to write formulas using division, but when it comes to
 understanding the meaning of these formulas, it is their
-responsibility to check that the formula makes sense, in other words,
-that the formula does not contain any division by zero.  Thus a given
+responsibility to check that they make sense, in other words,
+that they do not contain any division by zero.  Thus a given
 formula is not well defined in all cases, it is well defined in
-precise context, the one that guarantees that there is
+a precise context, the one that guarantees that there is
 no division by zero.
 
 In the \Coq{} system, the approach is different: every mathematical
 formula must have a well-defined value.  When facing a partially
-defined function, this means that a neigbour total function is chosen,
+defined function, this means that a neighbour total function is chosen,
 one that coincides with the initial function when it is
 defined and that a default value must be provided when the initial
 mathematical function would otherwise be undefined.  With this
