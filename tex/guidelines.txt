@@ -3,3 +3,6 @@ English/LaTex:
 - Use an american dictionnary for spell checking
 - Capitalize Section, Chapter, Lemma
 - use macros for Coq, ssreflect, mathcomp, as in myacronyms
+- Finish sentences with a period followed by a line break or *two* spaces.
+  This convention is respected by Emacs and can be used in keyboard bindings
+  such as "Esc-k" for "kill to the rest of the sentence."
