@@ -1491,10 +1491,10 @@ Definition head T (x0 : T) (s : seq T) := if s is x :: _ then x else x0.
 \subsection{Recursion for sequences}
 
 \index[concept]{recursion}
-Terms of type \C{(seq A)}, for a type \C{A}, are finite piles of
+Terms of type \C{(seq A)}, for a type \C{A}, are finite stacks of
 \C{cons} constructors, terminated with a \C{nil}. They are similar to
 the terms of type \C{nat}, except that each \C{cons} constructor
-carries a datum of type \C{A}. Here also, recursion provides a way
+carries a datum of type \C{A}. Here again, recursion provides a way
 to process sequences of arbitrary size.
 
 
