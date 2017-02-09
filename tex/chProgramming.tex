@@ -582,7 +582,7 @@ every occurrence of the bound variable. This abbreviation facility can
 thus also be used to organize intermediate computations.
 
 \section{Data types, first examples}
-
+\label{sec:data}
 A well-formed mathematical expression is just a juxtaposition of
 symbols of a given language (and variables)
 that respects the prescribed arities of
@@ -594,22 +594,24 @@ boolean arithmetic, while expression:
 \[ 0 + x \times (S\ 0) \]
 is a well formed expression in the language $\{0,S, +, \times\}$ of
 Peano arithmetic. In these examples, however, the usual axioms that
-formalize the respective arithmetic confer a distinctive status to
+give a meaning to the respective arithmetic confer a distinctive status to
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
 $S$ for natural numbers. More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
 variable-free expression in Peano arithmetic is equal either to $0$ or
-to an iterated application of the symbol $S$ to $0$. In both
+to an iterated application of the symbol $S$ to $0$.  In both
 cases, the other symbols in the signature represent functions, whose
-computational content is prescribed by the axioms.
+computational content is prescribed by the axioms.  In what follows,
+we shall call the distinctive symbols \emph{constructors}.  So the constructors
+in boolean arithmetic are \(\top\) and \(\bot\) and the constructors of
+Peano arithmetic are \(0\) and \(S\).
 
-In \Coq{}, such expressions are represented using a \emph{data type},
+In \Coq{}, such languages are represented using a \emph{data type},
 whose definition provides in a single declaration the name of the
-type, the symbols of (constants and) operations that \emph{build}
-elements of this type, plus some rules on how to compute on these
-elements. These data types are introduced by the means of an
+type and the constructors, plus some rules on how to compute on
+these constructors.  These data types are introduced by the means of an
 \emph{inductive type definition}.
-One can explicitly define more operations on the elements of
+One can then explicitly define more operations on the elements of
 the type by describing how they compute on a given argument in the
 type using a case analaysis (or even a recursive definition) on the
 syntactic shape of this argument.
@@ -618,6 +620,13 @@ data types, among which boolean values, natural numbers, pairs or
 sequences of values are among the most prominent examples.
 \index[concept]{inductive type}
 
+In the following sections, we introduce basic data types \C{bool} for boolean
+values and \C{nat} for natural numbers, taking the opportunity to describe
+various constructs of the \Coq{} language as they become relevant.  These
+sections serve simultaneously as an introduction to the data types
+\Coq{bool} and \Coq{nat} and to the \Coq{} language constructs that
+are used to define new data types and describe operations on these
+data types.
 %%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Boolean values}\label{ssec:boolval}
 
@@ -755,7 +764,8 @@ is a value of type \C{nat}, \C{x.+1} is another way to write
 application, so that this notation makes it possible to avoid some
 needs for parentheses: assuming  that \C{f} is a function of type
 \C{nat -> nat} the expression \C{(f n.+1)} reads
-\C{(f (S n))}.
+\C{(f (S n))}.  Notations are also provided for \C{S (S n)}, written
+\C{n.+2}, and so on until \C{n.+4}.
 
 \begin{coq}{name=f_plus_one}{width=5cm,title=Queries}
 Check fun n => f n.+1.
@@ -768,7 +778,7 @@ fun n : nat => f n.+1 : nat -> nat
 
 When defining functions that operate on natural numbers, we can
 proceed by case analysis, as was done in the previous section for boolean
-values. Here as well, there are two cases: either the natural number used in
+values. Here again, there are two cases: either the natural number used in
 the computation is \C{O} or it is \C{p.+1} for
 some \C{p}, and the value of \C{p} may be used to describe the
 computations to be performed. This case analysis can be seen as
@@ -886,8 +896,9 @@ pattern S _
 \coqrun{name=f_plus_one_err_run;fail}{f_plus_one_err}
 \index[concept]{pattern matching!exhaustiveness}
 
-We conclude the section by showing a syntactic facility to scrutinize
-multiple values at the same time.
+We finish the section by showing a syntactic facility to scrutinize
+multiple values at the same time.  However, this part is not specific to
+natural numbers, and we use boolean values to illustrate the facility.
 
 \begin{coq}{name=awkward6}{}
 Definition same_bool b1 b2 :=
@@ -962,6 +973,25 @@ this sense, the recursive definition is really a definition.  Remark that
 what the \C{(addn n m)} program does is simply to pile \C{n} times the
 successor symbol on top of \C{m}.
 
+If we reflect again on the discussion of Peano arithmetics, as in
+Section~\ref{sec:data}, we see that addition is provided by the definition of
+\C{addn}, and the usual axioms of Peano arithmetic, namely:
+\[S~ x + y = S (x + y) \qquad x + 0 = x \]
+are actually provided by the computation behavior of the function,
+namely by the ``then'' branch and the ``else'' branch respectively.
+Therefore, Peano arithmetic is really provided by \Coq{} in two steps,
+first by providing the type of natural numbers and its constructors
+thanks to an \emph{inductive type definition}, and then by providing
+the operations as defined functions (usually recursive functions as in
+the case of addition).  The axioms are not constructed explicitely,
+but they appear as part of the behavior of the addition function.  In
+practice, it will be able to create theorems whose statements are
+exactly the axioms of Peano arithmetic, using the tools provided in
+Chapter~\ref{ch:proofs}.  The fact that the computation of \C{addn 2
+  3} ends in an expression where the \C{addn} symbol does not appear
+is consistent with the fact that \C{O} (also noted \C{0}) and \C{S}
+(also noted \C{.+1}) are the constructors of natural numbers.
+
 An alternative way of writing \C{addn} is to provide explicitly the
 rules of the pattern-matching at stake instead of relying on an \C{if}
 statement. This can be written as follows:
@@ -994,10 +1024,11 @@ argument \C{n} against the patterns \C{p.+1} and \C{0}; in the branch
 corrsponding to the pattern \C{p.+1}, the recursive call happens on
 \C{p}, a strict subterm of \C{p.+1}. Had we matched the argument \C{n}
 against the pattern \C{p.+1.+1}, then the recursive call would have been
-allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.
-\marginnote{Here and earlier, we do not comment (yet) on the fact that
-\C{.+1.+1} is displayed \C{.+2}}
-\marginnote{Refer to~\cite{BC04} for more on termination issues?}
+allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.  The way
+that \Coq{} verifies that recursive functions will terminate is
+explained in more detail in the reference manual \cite{Coq:04} or in the
+Coq'Art book \cite{BC04}.
+
 \index[concept]{recursion!termination}
 \index[concept]{termination}
 
@@ -1055,7 +1086,7 @@ case, the result of the function is zero.
 
 On paper, the expression \(m - n\), for $m, n \in
 \mathbb{N}$, is usually understood as an integer, which is negative
-when $n > m$. But here the output of \C{subn} is constraint by its
+when $n > m$. But here the output of \C{subn} is constrained by its
 output type to be a natural number. Moreover, any function defined in
 \Coq{} has to be total, i.e., has to assign a value to any element in
 the type of its arguments.
@@ -1067,23 +1098,10 @@ argument is zero. The default value output in this case is \C{0}, so
 that in the end \C{subn} sends two naturals \(m\) and
 \(n\) to \(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
 
-
- Thus, mathematically speaking,
-\C{subn} sends two naturals \(m\) and \(n\) to
-\(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
-This oddity is imposed by
-the fact that any function defined in \Coq{} has to be total, i.e., has
-to assign a value to any element in the type of its arguments. Since
-\C{subn} has type \C{nat -> nat -> nat},
-an element \emph{in type} \C{nat} has to be
-output by the function even in the case when  the second argument is
-non-zero and the first argument is zero. This problem disappears with
-the introduction of another type of numbers, with negative integers.
-(Alternatively, it is possible to implement partial functions by
-extending the output type; see Section~\ref{sec:othercontainers}.)
-\marginnote{The discussion above needs to be improved. And subn is may
-be not the right example, for its main raison d'être is the definition
-of comparison.}
+In a sense, subtraction,
+which is a partial function on natural numbers, has been made total by
+providing a default value in the ``exceptional'' cases.  We shall
+discuss this in more detail in Section~\ref{sec:total}.
 
 We can also write a recursive function with two arguments of
 type \C{nat}, that returns \C{true} exactly when the two arguments are
@@ -1476,7 +1494,7 @@ Definition head T (x0 : T) (s : seq T) := if s is x :: _ then x else x0.
 Terms of type \C{(seq A)}, for a type \C{A}, are finite piles of
 \C{cons} constructors, terminated with a \C{nil}. They are similar to
 the terms of type \C{nat}, except that each \C{cons} constructor
-carries a datum of type \C{A}. Here as well, recursion provides a way
+carries a datum of type \C{A}. Here also, recursion provides a way
 to process sequences of arbitrary size.
 
 
