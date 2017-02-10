@@ -1077,7 +1077,7 @@ Fixpoint subn m n : nat :=
 \coqrun{name=sub_run}{ssr,sub}
 \index[coq]{\C{subn}}
 From a mathematical point of view, this definition can be quite
-unsettling. The second pattern matching rule indicates that when
+unsettling.  The second pattern matching rule indicates that when
 any argument of the subtraction is 0, then the result is
 the first argument.  This is exactly what one would expect when the
 second argument is 0; but this rule also covers the case where the
@@ -1168,7 +1168,8 @@ multiplication
 (\C{muln}, \C{*}), subtraction (\C{subn}, \C{-}), division (\C{divn},
 \C{\%/}),  modulo (\C{modn}, \C{\%\%}), exponentiation (\C{expn}, \C{\^}),
 equality comparison (\C{eqn}, \C{==}), order
-comparison (\C{leq}, \C{<=}) on natural numbers. All these operations
+comparison (\C{leq}, \C{<=}) on natural numbers.  All these operations
+(apart from the comparisons)
 output natural numbers: as explained above, subtraction is made to
 return \(0\) when the subtrahend exceeds the minuend; similarly,
 division is integer division.  The trailing \C{n} in
@@ -2176,7 +2177,7 @@ expressions. For this purpose, the \Coq{} system provides a
 \C{Notation} command, and we have mentioned it several times already,
 relying on the reader's intuition to understand roughly how it
 works. Its actual behavior is quite complex. With this command, it is
-possible to declare various kind of notations and to specify the way
+possible to declare various kinds of notations and to specify their
 associativity and their precedence to the parsing engine of \Coq{}. It
 is also possible to provide some hints for printing, like good
 breaking points. {\em Scopes} are groups of notation that go together
@@ -2214,7 +2215,7 @@ ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes behind the scope of this
 book; the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
 
-A notation can denote an arbitrary expression, and not only to a
+A notation can denote an arbitrary expression, not just a
 single constant. Here is for instance the definition of the infix
 notation \C{<}, for the strict comparison of two natural numbers: it
 denotes the composition of the comparison \C{_ <= _}
