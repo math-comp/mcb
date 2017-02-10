@@ -590,7 +590,6 @@ the operations. For instance, the expression:
 \[(\top \vee \bot) \wedge b\]
 is a well formed expression in the language $\{\top, \bot,\vee,\wedge\}$ of
 boolean arithmetic, while expression:
-
 \[ 0 + x \times (S\ 0) \]
 is a well formed expression in the language $\{0,S, +, \times\}$ of
 Peano arithmetic. In these examples, however, the usual axioms that
@@ -603,13 +602,14 @@ to an iterated application of the symbol $S$ to $0$.  In both
 cases, the other symbols in the signature represent functions, whose
 computational content is prescribed by the axioms.  In what follows,
 we shall call the distinctive symbols \emph{constructors}.  So the constructors
-in boolean arithmetic are \(\top\) and \(\bot\) and the constructors of
+of boolean arithmetic are \(\top\) and \(\bot\) and the constructors of
 Peano arithmetic are \(0\) and \(S\).
 
 In \Coq{}, such languages are represented using a \emph{data type},
 whose definition provides in a single declaration the name of the
-type and the constructors, plus some rules on how to compute on
-these constructors.  These data types are introduced by the means of an
+type and the constructors, plus some rules on how to define maps on
+these data types or prove theorems about their elements.
+These data types are introduced by the means of an
 \emph{inductive type definition}.
 One can then explicitly define more operations on the elements of
 the type by describing how they compute on a given argument in the
@@ -973,19 +973,19 @@ this sense, the recursive definition is really a definition.  Remark that
 what the \C{(addn n m)} program does is simply to pile \C{n} times the
 successor symbol on top of \C{m}.
 
-If we reflect again on the discussion of Peano arithmetics, as in
+If we reflect again on the discussion of Peano arithmetic, as in
 Section~\ref{sec:data}, we see that addition is provided by the definition of
 \C{addn}, and the usual axioms of Peano arithmetic, namely:
-\[S~ x + y = S (x + y) \qquad x + 0 = x \]
+\[S~ x + y = S (x + y) \qquad 0 + x = x \]
 are actually provided by the computation behavior of the function,
 namely by the ``then'' branch and the ``else'' branch respectively.
 Therefore, Peano arithmetic is really provided by \Coq{} in two steps,
 first by providing the type of natural numbers and its constructors
 thanks to an \emph{inductive type definition}, and then by providing
 the operations as defined functions (usually recursive functions as in
-the case of addition).  The axioms are not constructed explicitely,
+the case of addition).  The axioms are not constructed explicitly,
 but they appear as part of the behavior of the addition function.  In
-practice, it will be able to create theorems whose statements are
+practice, it will be possible to create theorems whose statements are
 exactly the axioms of Peano arithmetic, using the tools provided in
 Chapter~\ref{ch:proofs}.  The fact that the computation of \C{addn 2
   3} ends in an expression where the \C{addn} symbol does not appear
