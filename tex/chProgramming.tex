@@ -51,7 +51,7 @@ of a certain arity, applied to some arguments which are
 either variables or themselves (sub)-expressions.
 In many cases these
 expressions are written using notations for the operations, like the
-infix $+$ the expression
+infix $+$ in the expression
 \[ 2 + 1 \]
 This expression represents a natural number, obtained as the result of
 an operation applied to its arguments. For instance, it is the result
@@ -289,7 +289,7 @@ above definition is better written:
 Definition g (n m : nat) : nat := n + m * 2.
 \end{coq}
 \coqrun{name=def_g_run}{def_g}
-which asserts firstly
+This asserts firstly
 (by the \C{(n m : nat)} type annotation)
 that both arguments \C{n} and \C{m} have type \C{nat},
 and secondly that the
@@ -624,7 +624,7 @@ In the following sections, we introduce basic data types \C{bool} for boolean
 values and \C{nat} for natural numbers, taking the opportunity to describe
 various constructs of the \Coq{} language as they become relevant.  These
 sections serve simultaneously as an introduction to the data types
-\Coq{bool} and \Coq{nat} and to the \Coq{} language constructs that
+\C{bool} and \C{nat} and to the \Coq{} language constructs that
 are used to define new data types and describe operations on these
 data types.
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -820,7 +820,8 @@ Thanks to notations however, a pattern can also contain
 occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
-re-used in the result part.
+reused in the result part.
+
 Remark that we did omit the type of the input \C{n}. We can omit this
 type because matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
@@ -970,7 +971,7 @@ computation:
 \index[concept]{computation}
 When the computation finishes, the symbol \C{addn} disappears.  In
 this sense, the recursive definition is really a definition.  Remark that
-what the \C{(addn n m)} program does is simply to pile \C{n} times the
+what the \C{(addn n m)} program does is simply to stack \C{n} times the
 successor symbol on top of \C{m}.
 
 If we reflect again on the discussion of Peano arithmetic, as in
@@ -1026,13 +1027,13 @@ corrsponding to the pattern \C{p.+1}, the recursive call happens on
 against the pattern \C{p.+1.+1}, then the recursive call would have been
 allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.  The way
 that \Coq{} verifies that recursive functions will terminate is
-explained in more detail in the reference manual \cite{Coq:04} or in the
+explained in more detail in the reference manual \cite{Coq:manual} or in the
 Coq'Art book \cite{BC04}.
 
 \index[concept]{recursion!termination}
 \index[concept]{termination}
 
-  An erroneous, in the sense of non-terminating,
+An erroneous, in the sense of non-terminating,
 definition is rejected by \Coq{}:
 
 \begin{coq}{name=loop}{width=6cm,title=Non-terminating program}
@@ -1504,7 +1505,7 @@ functions over any inductive type (not just \C{nat}). The recursive
 definition of the value of a
 function at a given constructor can use the value of the function at
 the arguments of the constructor. This defines the function over the
-entire type since all values of an inductive type are finite piles of
+entire type since all values of an inductive type are finite stacks of
 constructors.
 
 The size function counts the number of elements in a sequence:
@@ -1578,7 +1579,7 @@ that is used to concatenate two sequences together.
 \subsection{Option and pair data types}\label{sec:othercontainers}
 
 Here is another example of polymorphic data type, which represents a
-box that can be either empty, or contain a single value:
+box that can either be empty, or contain a single value:
 
 \begin{coq}{name=option}{}
 Inductive option A := None | Some (a : A).
@@ -1593,7 +1594,7 @@ partial function or of a filtering operation, using \C{None} as a
 default element.
 
 For example, function \C{only_odd} ``filters'' natural numbers, keeping the
-odd ones and replacing the evens by the \C{None} default value:
+odd ones and replacing the even ones by the \C{None} default value:
 
 \begin{coq}{name=only_odd}{}
 Definition only_odd (n : nat) : option nat :=
@@ -1980,7 +1981,7 @@ They represent unknown values, hence computation cannot
 proceed any further.  Still
 \Coq{} has developed the expression symbolically.
 To convince
-ourselves that such expression is meaningful
+ourselves that such an expression is meaningful
 we can try to substitute \C{f}, \C{x1}, \C{x2} and \C{init} with the
 values we used at the end of the last section to
 play with \C{foldr}, namely \C{addn}, \C{1}, \C{2} and \C{0}:
@@ -2051,7 +2052,7 @@ Here we see the impact of the difference in the definitions of
 number of pebbles (represented by the successor \C{S} symbol)
 given as first argument to its second argument
 before resorting to its base case, whereas in the \C{addn} variant,
-the resulting pile of pebbles is constructed top down. An intermediate
+the resulting stack of pebbles is constructed top down. An intermediate
 expression in the computation of \C{(addn n m)} exposes as many
 successors as recursive calls have been performed so far. Since bits
 of the final result are exposed early, the \C{predn} function can
