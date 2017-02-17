@@ -4,7 +4,6 @@ From mathcomp Require Import all_ssreflect.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
-% [DG] This looks outdated -- at least it doesn't compile.
 \end{coqdef}
 \begin{coqdef}{name=abort}
 Abort.
@@ -135,15 +134,7 @@ Argument A is implicit ...
 The constant \C{eq} is a \emph{predicate}, i.e., a function that
 outputs a proposition. The equality
 predicate is polymorphic: exactly like we have seen in the previous
-chapter, the \C{forall} quantifier (represented by the
-$\forall$ symbol in \Coq{}'s output, at least as long as the symbol
-is available)
-% [DG] In https://x80.org/collacoq/ it's just the string "forall", so
-% I am saying "as long as the symbol is available", but truth is I
-% don't know the technicalities. But something should be said about
-% the symbol, since it is confusing to refer to it by the name
-% "forall" whereas it appears as a symbol in the coqout environment.
-is used to make the (implicit)
+chapter, the $\forall$  quantifier is used to make the (implicit)
 parameter \C{A} range over types. Both examples \C{3 = 3} and \C{false
 && true = false} thus use the \emph{same} equality constant, but with
 different values (respectively, \C{nat} and \C{bool}) for the type
@@ -158,8 +149,6 @@ and the missing value is \C{bool}, the common type of \C{false} and
 
 As the \Coq{} system checks the well-typedness of statements,
 the two sides of a well-formed equality should have the same
-% [DG] I've never heard the word "hand side" used in English, although
-% I agree it would be a useful word.
 type:
 
 \begin{coq}{name=check-eq2}{width=4cm}
@@ -305,11 +294,7 @@ Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 \end{coq}
 \coqrun{name=testorbA}{ssr,orbA,abort,abort,abort}
 Proving these identities (once we have learned to provide proofs)
-% [DG] Many readers would interpret "is left as an exercise" as an
-% invitation to solve the exercise right now; but this isn't possible
-% yet.
-is left as an exercise (see
-exercise~\ref{ex:boolid}).
+is left as an exercise (see exercise~\ref{ex:boolid}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -351,20 +336,15 @@ way. For instance, lemma \C{leq0n} is displayed as:
 Lemma leq0n (n : nat) : 0 <= n.
 \end{coq}
 \coqrun{name=testcoercion}{ssr,coercion,abort}
-% [DG] Here at the latest, I believe the difference between "=" and
-% "==" should be explained; anything else would confuse the reader
-% if she is not already familiar with the difference between
-% booleans and propositions (which ssreflect seems to blur, but which
-% is still important to understand).
 
 As a general fact, boolean identities express that two boolean
 statements are equivalent. We already encountered special cases of
 such equivalence with propositional tautologies in
 section~\ref{ssec:id}. Here are a few more examples involving
 boolean predicates on natural numbers that we have defined in
-chapter~\ref{ch:prog}: the boolean equality \C{==} and its negation
+chapter~\ref{ch:prog}: the equality test \C{==} and its negation
 \C{!=}, the order relation \C{<} and its large version \C{<=}, and the
-divisibility predicate \L+%|+, with \L+(a %| b)+
+divisibility predicate \C{\%|}, with \C{(a \%| b)}
 meaning \C{a} \emph{divides} \C{b}.
 Note that we omit the type of the parameters; they are all of type
 \C{nat}, as enforced by the type of the operators involved in the
@@ -386,8 +366,6 @@ In the previous sections, we have seen statements of unconditional
 identities: either equalities between ground terms, or identities that
 hold for \emph{any} value of their parameters. A property that holds
 only when its parameters satisfy some condition is stated using an
-% [DG] Standard French abuse of "verify" for "satisfy" corrected.
-% Also, passive voice isn't necessary here.
 \emph{implication}, and the \Coq{} syntax for this connective
 is ``\C{->}''.  For instance:
 
@@ -647,16 +625,8 @@ in the definition of type \C{bool}.
 We shall thus provide two distinct pieces of
 script, one per each subproof to be constructed,
 starting with the branch associated with the \C{true} value. In order
-to signal that we are starting a piece of script for a sub-proof, it
-is a good practice to indent the corresponding script.\footnote{A
-``sub-proof'' means a proof of a sub-goal; i.e., a proof whose
-completion does not immediately conclude the proof of the lemma. Thus,
-for example, if the \C{case:} tactic splits a proof into two goals,
-then only the first case (i.e., the proof of the first of these goals)
-counts as a sub-proof. The second case is not a sub-proof (as it
-concludes the proof of the lemma), and thus is not indented.}
-% [DG] Added this boring technical footnote, as this is guaranteed to
-% confuse mathematicians.
+to help the reader identify the two parts of the proof script we indent the
+first one.
 
 Once the case analysis has substituted a concrete value for the
 parameter \C{b}, the proof becomes trivial, in both cases: We are in a
@@ -1462,7 +1432,7 @@ End.
 
 End Chinese.
 \end{coq}
-The part of this excerpt up to the ``...''
+The part of this excerpt up to the begging of the lemma
 corresponds to a mathematical sentence of the form: \emph{In this section,
   $m_1$ and $m_2$ are two coprime natural numbers\dots}. Within the
 scope of this section, the parameters \C{m1} and \C{m2} are
@@ -1477,35 +1447,12 @@ Lemma chinese_remainder m1 m2 (co_m12 : coprime m1 m2) x y :
   (x == y %[mod m1 * m2]) = (x == y %[mod m1]) && (x == y %[mod m2]).
 \end{coq}
 \coqrun{name=testchina}{ssr,chinaremstm,abort}
-% [DG] At the latest at this stage, you might want to explain why
-% assumptions (in an implication) are treated precisely in the same
-% way as variables. (I know it, but it's a bit of a surprise to
-% someone unused to Curry-Howard.)
+Note that the syntax to start a \C{Lemma} lets one name not only
+parameters as \C{m1} and \C{m2} but also assumptions as \C{co\_m12}.
 
 In general, when a section ends, the types of the constants and the
 statements of the lemmas change to include those section variables
 and hypotheses that are actually used in their definitions or proofs.
-% [DG] ... although it might not be very transparent which
-% hypotheses the engine believes to be used:
-%
-% Section test.
-%
-% Variables x : nat.
-% Hypothesis au : x = x.
-% Hypothesis bu : 2 = 2.
-% Variables y : nat.
-%
-% Lemma ouch : x = x.
-% Proof.
-%   by [].
-% Qed.
-%
-% End test.
-%
-% About ouch.
-%
-% Turns out that Coq abstracts au (but not bu). Not sure if the reader
-% needs to be warned at this place...
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1543,7 +1490,7 @@ as in:
 \index[concept]{improving \C{by []}}
 
 \begin{coq}{name=apply3}{}
-(* This line belongs to the file where the lemma leqnn is stated and proved.*)
+(* This line belongs to the file where leqnn is stated and proved.*)
 Hint Resolve leqnn.
 Lemma example a b : a + b <= a + b.
 Proof. by [].  Qed.
@@ -1670,6 +1617,7 @@ Lemma example m p : prime p ->
 Proof.
 move=> prime_p.
 apply: contraLR.
+rewrite -leqNgt.
 move=> leq_p_m.
 rewrite dvdn_addr.
 \end{coq}
@@ -1693,7 +1641,7 @@ We know that statement \D{p \%| m`!} holds because \C{p <= m} and
 because we can combine the following lemmas:
 
 \begin{coq}{name=facts1}{}
-Lemma dvdn_fact m n : 0 < m -> m <= n -> m %| n`!.
+Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Lemma prime_gt0 p : prime p -> 0 < p.
 \end{coq}
 
@@ -1719,21 +1667,18 @@ rewrite dvdn_addr.
     by [].  (* 0 < 1 *)
   by apply: prime_gt1.  (* 1 < p *)
 apply: dvdn_fact.
-  rewrite prime_gt0.  (* 0 < p *)
-  rewrite leqNgt.
-  by [].  (* true && ~~ (m < p) *)
-by [].   (* prime p *)
+rewrite prime_gt0. (* 0 < p <= n *)
+  by []. (* prime p *)
+by [].   (* true && p <= n *)
 Qed.
 \end{coq}
 \coqrun{name=testexp1}{ssr,exp1final}
 For brevity, we record the goal solved by a tactic in a comment after
-this tactic.\footnote{Some comments might still be helpful.
-After \C{apply: dvdn_fact.}, our goal became
-\C{0 < p <= m}, which is really an abbreviation for
-\C{(0 < p) && (p <= m)}. The two subsequent \C{rewrite} commands
-rewrote \C{(0 < p)} as a \C{true} and rewrote \C{(p <= m)} as
-\C{\~\~ (m < p)} (which is an assumption); after that, the goal fell
-prey to the \C{by []} tactic.}
+this tactic.  Before improving this script a comment is due:
+the goal after line 12, \C{0 < p <= m}, is really an abbreviation for
+\C{(0 < p) && (p <= m)}. The subsequent \C{rewrite} command
+replaces \C{(0 < p)} with \C{true}: after all the conclusion of
+\C{prime\_gt0} is an equation.  We explain such trick in details later on.
 
 We shall improve this script in two steps.  First, we take advantage of
 \C{rewrite} simplification flags.  It is quite common
@@ -1744,21 +1689,10 @@ as soon as possible.  Here, the first two side conditions are indeed
 trivial, and, just as with the introduction patterns of the \C{case} tactic,
 we can use a simplification switch \C{//} to prove them.
 We also combine on the same line the first three steps, using
-the semicolon\footnote{From this example, one might take away the
+the semicolon.\footnote{From this example, one might take away the
 wrong impression that a semicolon is synonymous to a dot. In general,
-it is not. The semicolon is actually a tactical (like \C{by}) that
-allows chaining tactics. A tactic of the form \C{t1; t2} (where
-\C{t1} and \C{t2} are two tactics) amounts to first applying
-\C{t1}, and then applying \C{t2} to \emph{each} of the subgoals
-spawned by the application of \C{t1}. When \C{t1} spawns exactly
-one subgoal, this is indeed equivalent to \C{t1. t2}. (Note that the
-tactic \C{t2} has to work in each of these subgoals in order for
-the notation to compile!)
-A slight
-variation of this syntax is \C{t0; [t1 | t2 | ... | tn]} for any
-tactics \C{t0}, \C{t1}, \ldots, \C{tn}; this amounts to applying
-tactic \C{t0}, and then applying tactic \C{t1} to the first subgoal
-spawned, \C{t2} to the second, and so on.}.
+it is not, since the tactic following it is applied to each goal resulting
+from the tactic preceding it. More details can be found in~\cite[section 9.2]{Coq:manual}}
 The proof script (up to the end of the proof of the first
 goal) then looks like this:
 
@@ -1824,10 +1758,6 @@ is the \C{=>} that is responsible for the naming of the hypothesis.
 In section~\ref{sec:rewrite2}, we shall describe some further
 ways to shrink the proof script.
 
-% [DG] I'd also mention how to use \C{apply:} when Coq isn't
-% able to automatically guess how the parameters are to be filled in.
-% So, apply: (lemma u v w).
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Proofs by induction}\label{ssec:ind}
 \index[concept]{induction}
@@ -1870,10 +1800,10 @@ follows:
 Indeed, if we take such function as the value for \C{P}, the first premise
 of \C{nat_ind} becomes
 
-\begin{coq}{name=Papplied}{width=6.5cm,title=P 0}
-(fun n : nat => (odd n && prime n) = true) 0
+\begin{coq}{name=Papplied}{width=7.4cm,title=P 0}
+(fun n => (odd n && prime n) = true) 0
 \end{coq}
-\begin{coq}{name=Preduced}{width=5.5cm,title=Equivalent by computation}
+\begin{coq}{name=Preduced}{width=4.6cm,title=Equivalent to}
 odd 0 && prime 0 = true
 \end{coq}
 \index[concept]{general term}
@@ -1882,34 +1812,33 @@ Remark the similarity between the function argument to \C{foldr}
 that is used to describe the general term of an iterated sum in
 section~\ref{sec:bigopnat} and the predicate \C{P} here used
 to describe a general property.
-% [DG] Is there really much of a similarity?
 
-\Coq{} defines an induction principle for every inductive type the
-user defines, with standard names formed by adding a suffix \C{_ind}
-to the name of the type. The statement of a generated induction principle
-is shaped
-by the structure of the definition of the inductive type. For example,
-if we define an inductive type \C{bintree} (representing unlabeled planar
-binary trees) as follows:
-\begin{coq}{}{}
-Inductive bintree := leaf | graft (u v : bintree).
-\end{coq}
-then we automatically are granted an induction principle called
-\C{bintree_ind}:
-\begin{coq}{}{width=3.8cm}
-About bintree_ind.
-\end{coq}
-\begin{coqout}{}{width=8.1cm}
-bintree_ind :
-forall P : bintree -> Prop,
-P leaf ->
-(forall u : bintree, P u -> forall v : bintree, P v -> P (graft u v)) ->
-forall b : bintree, P b
+% \Coq{} defines an induction principle for every inductive type the
+% user defines, with standard names formed by adding a suffix \C{_ind}
+% to the name of the type. The statement of a generated induction principle
+% is shaped
+% by the structure of the definition of the inductive type. For example,
+% if we define an inductive type \C{bintree} (representing unlabeled planar
+% binary trees) as follows:
+% \begin{coq}{}{}
+% Inductive bintree := leaf | graft (u v : bintree).
+% \end{coq}
+% then we automatically are granted an induction principle called
+% \C{bintree_ind}:
+% \begin{coq}{}{width=3.8cm}
+% About bintree_ind.
+% \end{coq}
+% \begin{coqout}{}{width=8.1cm}
+% bintree_ind :
+% forall P : bintree -> Prop,
+% P leaf ->
+% (forall u : bintree, P u -> forall v : bintree, P v -> P (graft u v)) ->
+% forall b : bintree, P b
+% 
+% Argument P is implicit
+% \end{coqout}
 
-Argument P is implicit
-\end{coqout}
-
-For another example, here is the induction principle for sequences
+For example, here is the induction principle for sequences
 (although denoted by \C{list_ind} rather than \C{seq_ind}, as
 \C{seq} is defined merely as a synonym for \C{list}), which has some
 similarities with the one for natural numbers:
@@ -1933,7 +1862,7 @@ functionalities, while \C{apply:} does not. Thus, while both \C{elim:}
 and \C{apply:} can be used to formalize a proof by induction, the
 user would have to explicitly specify both \C{t} and \C{P} in order to
 make use of the \C{apply:} tactic, whereas the \C{elim:} tactic
-does the job of determining these parameters itself:
+does the job of determining these parameters itself.
 The induction principle
 to be used is guessed from the type of the argument of the tactic. Let
 us illustrate on an example how the value of the parameter \C{P} is
@@ -1955,13 +1884,11 @@ m.+1 + 0 = m.+1
 \coqrun{name=addn0prun}{ssr,addn0p,show,abort}
 The \C{elim:} tactic is used here with an introduction pattern similar
 to the one we used for \C{case:}. It has two slots, because of the
-
 two constructors of type \C{nat} (corresponding naturally to what is
 commonly called the ``induction base'' and the ``induction step''),
 and in the second branch we give a
 name not only to the argument \C{m} of the successor, but also to the
 induction hypothesis. We also used the \C{//} switch to deal with the
-
 base case because if
 \C{m} is \C{0}, both sides evaluate to zero. The value of the parameter
 \C{P} synthesized by \C{elim:} for us is
@@ -1975,12 +1902,12 @@ to  pull the \C{.+1} out of the sum, so that the induction hypothesis
 
 Unfortunately proofs by induction do not always run so smooth.
 To our aid the \C{elim:} tactic provides two additional services.
+
 The first one is to let one \emph{generalize}
 the goal.  It is typically needed when the goal mentions a recursive function
-that uses an accumulator: its value is going to change during recursive calls;
-hence the induction hypothesis must be general.
-% [DG] I didn't understand this. What is an accumultor? And how can I
-% generalize the goal?
+that uses an accumulator: a variable which value changes during recursive calls;
+hence the induction hypothesis must be general.  We show
+this feature later on a concrete example (lemma \C{foldl\_rev}).
 
 Another service provided by \C{elim:} is specifying an alternative
 induction principle. For example, one may reason by induction on
@@ -2015,38 +1942,6 @@ Lemma foldr_cat T R f (z0 : R) (s1 s2 : seq T) :
 Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
 \end{coq}
 \coqrun{name=testfoldrevutils}{ssr,foldrevutils,abort,abort,abort}
-% Lemma cats1 T s (z : T) : s ++ [:: z] = rcons s z.
-% Proof.
-%  elim: s => [| t ts IH] //=.
-%   by rewrite IH.
-% Qed.
-%
-% Lemma cats0 T (s : seq T) : s ++ nil = s.
-% Proof.
-%   elim: s => [| t ts IH] //=.
-%   by rewrite IH.
-% Qed.
-%
-% Lemma foldr_cat T R (f : T -> R -> R) z0 (s1 s2 : seq T)  :
-%   foldr f z0 (s1 ++ s2) = foldr f (foldr f z0 s2) s1.
-% Proof.
-%   move: s2 z0.
-%   elim: s1 => [| p t1 IH] //=.
-%   move=> s1 z0.
-%   by rewrite IH.
-% Qed.
-%
-% Lemma rev_rcons T s (x : T) : rev (rcons s x) = x :: rev s.
-% Proof.
-%   rewrite /rev.
-%   move: s x.
-%   have: forall (s w : seq T) (x : T), catrev (rcons s x) w = x :: catrev s w.
-%     move=> s.
-%     elim: s => [| t ts IH] //=.
-%   move=> generalization.
-%   move=> s x.
-%   by apply generalization.
-% Qed.
 
 The complete proof script follows:
 
@@ -2070,27 +1965,28 @@ features a quantification on \C{z}:
 (fun s => forall z, foldl f z (rev s) = foldr (fun x z => f z x) z s)
 \end{coq}
 
-The ``\C{z}'' that comes \emph{after}
-``\C{elim/last_ind: s z => [|s x IHs]}'' deserves further explanation.
-Had we stopped at ``\C{elim/last_ind: s z => [|s x IHs] //}'', our goal
-would look like this:
-
-\begin{coqout}{}{}
-forall z : A,
-  foldl f z (rev (rcons s x)) = foldr (fun x0 : T => f^~ x0) z (rcons s x)
-\end{coqout}
-(ignore the ``\C{f^~}'', which is coming out of the blue here, but
-is merely the standard abbreviation for \C{fun x z => f z x} in the
-\mcbMC{} library).
-The additional ``\C{z}'' after the ``\C{=> [|s x IHs]}''
-is responsible for pulling the
-``\C{forall z : A}'' out of the goal again, back into the heap of
-variables and assumptions. (See subsection~\ref{ssec:stack} for more
-detail about this kind of operations.)
-
-We have thus generalized \C{z} only to pull it out of the goal again
-soon after. It might appear as if this was a useless detour.
-However, it was not. Thanks to the generalization, the induction
+% The ``\C{z}'' that comes \emph{after}
+% ``\C{elim/last_ind: s z => [|s x IHs]}'' deserves further explanation.
+% Had we stopped at ``\C{elim/last_ind: s z => [|s x IHs] //}'', our goal
+% would look like this:
+% 
+% \begin{coqout}{}{}
+% forall z : A,
+%   foldl f z (rev (rcons s x)) = foldr (fun x0 : T => f^~ x0) z (rcons s x)
+% \end{coqout}
+% (ignore the ``\C{f^~}'', which is coming out of the blue here, but
+% is merely the standard abbreviation for \C{fun x z => f z x} in the
+% \mcbMC{} library).
+% The additional ``\C{z}'' after the ``\C{=> [|s x IHs]}''
+% is responsible for pulling the
+% ``\C{forall z : A}'' out of the goal again, back into the heap of
+% variables and assumptions. (See subsection~\ref{ssec:stack} for more
+% detail about this kind of operations.)
+% 
+% We have thus generalized \C{z} only to pull it out of the goal again
+% soon after. It might appear as if this was a useless detour.
+% However, it was not. 
+Thanks to the generalization, the induction
 hypothesis \C{IHs} states:
 
 \begin{coq}{name=foldrevIH}{}
@@ -2130,21 +2026,9 @@ the Ssreflect language user manual~\cite{ssrman}.
 
 We have seen before that applying the \C{rewrite} tactic can
 create side conditions which themselves need to be proven (i.e., they
-are sub-goals). (For example, we obtained the side condition
-\D{p \%| m`!} when we used the \C{rewrite dvdn_addr} tactic in proving
-\C{example m p}, since the lemma \C{dvdn_addr} had a
-\D{d \%| m} condition.)
-These side conditions (by default) become the second, third and higher
-sub-goals in a proof script, so their proofs are usually postponed to
-after the first sub-goal (the main one) is proven. This is not always
-desirable; therefore, it is helpful to have a way to prove
-side conditions right away, on the same line where they arise.
-One way to do this (which we have already seen in action) is using the
-simplification item \C{//}.
-When this does not suffice, one can invoke another rewrite rule using
-the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
-all goals zero-or-more times.  For example, recall our proof of
-\C{example m p}:
+are sub-goals).
+
+For example, recall our proof of \C{example m p}:
 
 \begin{coq}{name=exp2x}{}
 Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
@@ -2156,6 +2040,17 @@ by rewrite dvdn_fact // prime_gt0. (* p %| m`! *)
 Qed.
 \end{coq}
 \coqrun{name=testexp2x}{ssr,exp2x}
+
+These side conditions (by default) become the second, third (and eventually 
+higher) sub-goals in a proof script, so their proofs are usually postponed to
+after the first sub-goal (the main one) is proven. This is not always
+desirable; therefore, it is helpful to have a way to prove
+side conditions right away, on the same line where they arise.
+One way to do this (which we have already seen in action) is using the
+simplification item \C{//}.
+When this does not suffice, one can invoke another rewrite rule using
+the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
+all goals zero-or-more times.  
 
 The side condition \D{p \%| m`!} spawned by \C{rewrite dvdn_addr} was
 proven in the last line of the script. Instead, we could have solved
@@ -2174,12 +2069,6 @@ Qed.
 \end{coq}
 \coqrun{name=testexp3x}{ssr,exp3x}
 \index[ssr]{\C{rewrite}! \C{?} (optional iteration)}
-
-The prefix \C{!} works similarly to \C{?}, but instead of applying
-the rewrite rule zero-or-more times, it applies it one-or-more times.
-% [DG] Not sure if this is relevant here, but you use a ! prefix
-% a few pages further down, so I figured it should be explained
-% somewhere.
 
 Another functionality offered by \C{rewrite} is the possibility
 to focus the search for the term to be replaced by providing a
@@ -2216,44 +2105,48 @@ In section~\ref{sec:edivn} we propose a less risky alternative.
 The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 \index[ssr]{\C{rewrite}!\C{//=} (simplify close)}
 
-Another version of the \C{rewrite} tactic allows
-\emph{unfolding} a definition
--- i.e., replacing an object by its definition.
+Another form of simplification that is often needed is the
+unfolding of a definition.
 For example, the lemma \C{leqE} that we used in
 the proof of \C{leq_mul2l} back in section~\ref{sec:multirew}
 does not exist in the library, and there is no name associated to this
 equation. It is simply the definition of \C{leq}, and we actually do
 not need to state a lemma in order to relate
 the name of a definition, like \C{leq}, to its body
-\C{fun n m => n - m == 0}. This unfolding operation can be
-performed by calling the \C{rewrite} tactic, prefixing the name of the
+\C{fun n m => n - m == 0}. Such operation can be performed by
+prefixing the name of the
 object with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
 indeed not a deductive operation but an instance of computation, as
-made more precise in chapter~\ref{ch:ttch}. Our proof of
-\C{leq_mul2l} thus takes the form
+made more precise in chapter~\ref{ch:ttch}. 
 
-\begin{coq}{}{width=9.7cm}
-Lemma leq_mul2l m n1 n2 :
- (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
-Proof.
-by rewrite /leq -mulnBr muln_eq0.
-Qed.
-\end{coq}
-
-Notice that \C{rewrite /leq} unfolded the definition of \C{leq}
-both in the expression \C{(m * n1 <= m * n2)} and in the expression
-\C{(n1 <= n2)}. In general, each appearance of the object is being
-unfolded. Sometimes it is desirable to unfold only some of them; see
-\cite[\S 7.1]{ssrman} for various ways to fine-tune the tactic for such
-purposes. One option is to
-tell \Coq{} what instances of the object are to be unfolded. For
-example, had we used \C{rewrite /(leq n1 n2)} instead of
-\C{rewrite /leq}, we would only have gotten \C{(n1 <= n2)} unfolded.
-
-A less frequently used variant of the \C{rewrite} tactic is the \C{-/}
-prefix; it allows \emph{folding} a definition, i.e., the reverse of
-unfolding. (For instance, \C{rewrite /(leq n1 n2)} could be undone by
-\C{rewrite -/(leq n1 n2)}.)
+% [ET] this is OK but clashes with the following section
+% Our proof of
+% \C{leq_mul2l} thus takes the form
+% 
+% \begin{coq}{}{width=9.7cm}
+% Lemma leq_mul2l m n1 n2 :
+%  (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
+% Proof.
+% by rewrite /leq -mulnBr muln_eq0.
+% Qed.
+% \end{coq}
+% 
+% Notice that \C{rewrite /leq} unfolded the definition of \C{leq}
+% both in the expression \C{(m * n1 <= m * n2)} and in the expression
+% \C{(n1 <= n2)}. 
+% In general, each appearance of the object is being
+% unfolded. Sometimes it is desirable to unfold only some of them; see
+% \cite[Section 7.1]{ssrman} for various ways to fine-tune the tactic for such
+% purposes.
+% One option is to
+% tell \Coq{} what instances of the object are to be unfolded. For
+% example, had we used \C{rewrite /(leq n1 n2)} instead of
+% \C{rewrite /leq}, we would only have gotten \C{(n1 <= n2)} unfolded.
+% 
+% A less frequently used variant of the \C{rewrite} tactic is the \C{-/}
+% prefix; it allows \emph{folding} a definition, i.e., the reverse of
+% unfolding. (For instance, \C{rewrite /(leq n1 n2)} could be undone by
+% \C{rewrite -/(leq n1 n2)}.)
 
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
@@ -2306,28 +2199,30 @@ m, n1, n2 : nat
 \end{coqout}
 \coqrun{name=ctxpat1run}{ssr,LeqDef,ctxpat1,show,abort}
 
-The same result could have been achieved by explicitly specifying
-the parameters in the matching subterm to be rewritten: viz., by
-using \C{rewrite (leqE n1 n2)} instead of
-\C{rewrite leqE}.\footnote{Sometimes, an even more precise
-specification is needed. Namely, it can happen that the term
-\C{(n1 <= n2)} appears twice in the goal: for example, when the goal
-is \C{(n1 <= n2) || (n1 <= n2)}. In this case, we would need
-\C{rewrite \{1\}(leqE n1 n2)} to rewrite only the first appearance of
-the term, and
-\C{rewrite \{2\}(leqE n1 n2)} to rewrite only the second. In general,
-the \C{\{k\}} prefix (for a positive integer \C{k})
-has the effect that the tactic is being applied in the
-\(k\)-th of the possible positions where it is applicable; for
-instance, in the proof of \C{silly_example}, we could have used
-\C{rewrite \{2\}(addn0 n)} instead of \C{rewrite [in RHS]addn0}.
-Care must be taken when the \C{\{k\}} prefix is applied without fully
-specifying the parameters, e.g., in the form \C{rewrite \{1\}leqE}; the
-behavior of \Coq{} in this situation is counterintuitive (it starts by
-finding one subterm of the goal matching \C{leqE}, then infers its
-parameters,
-and then rewrites the \(k\)-th among the appearances of the subterm
-with these parameters, rather than the \(k\)-th of all appearances).}
+% [ET] too early since we need CurryHoward to pass arguments to lemmas
+% 
+% The same result could have been achieved by explicitly specifying
+% the parameters in the matching subterm to be rewritten: viz., by
+% using \C{rewrite (leqE n1 n2)} instead of
+% \C{rewrite leqE}.\footnote{Sometimes, an even more precise
+% specification is needed. Namely, it can happen that the term
+% \C{(n1 <= n2)} appears twice in the goal: for example, when the goal
+% is \C{(n1 <= n2) || (n1 <= n2)}. In this case, we would need
+% \C{rewrite \{1\}(leqE n1 n2)} to rewrite only the first appearance of
+% the term, and
+% \C{rewrite \{2\}(leqE n1 n2)} to rewrite only the second. In general,
+% the \C{\{k\}} prefix (for a positive integer \C{k})
+% has the effect that the tactic is being applied in the
+% \(k\)-th of the possible positions where it is applicable; for
+% instance, in the proof of \C{silly_example}, we could have used
+% \C{rewrite \{2\}(addn0 n)} instead of \C{rewrite [in RHS]addn0}.
+% Care must be taken when the \C{\{k\}} prefix is applied without fully
+% specifying the parameters, e.g., in the form \C{rewrite \{1\}leqE}; the
+% behavior of \Coq{} in this situation is counterintuitive (it starts by
+% finding one subterm of the goal matching \C{leqE}, then infers its
+% parameters,
+% and then rewrites the \(k\)-th among the appearances of the subterm
+% with these parameters, rather than the \(k\)-th of all appearances).}
 % [DG] This footnote is probably less than optimal. I think it is
 % important to know how to specify a precise point of rewriting if all
 % the tricks and heuristics fail. Probably the use of {k} together
@@ -2394,10 +2289,9 @@ This indicates in particular that, although the term \C{(m * n1 <= m * n2)}
 is equal up to computation to the term \C{(m * n1 - m * n2 == 0)}, the matching
 algorithm is not able to see it. This is due to the compromise that
 has been chosen, between predictability and cleverness. Indeed the
-algorithm looks for a verbatim occurrence of the head symbol of the
-% [DG] "Head symbol" should probably be defined. I guess I know what
-% it means (the root of the syntax tree), but I don't believe I could
-% explain it well.
+algorithm looks for a verbatim occurrence of the head symbol\footnote{
+The head symbol is the root of the syntax tree of an expression.}
+of the
 pattern: in this case it hence looks for an occurrence of \C{(_ - _)},
 which is not found. As a consequence, we need an explicit step in the
 proof script in order to expose the subtraction before being able to
@@ -2457,7 +2351,7 @@ One can also re-fold a definition, but in such a case one has to specify,
 at least partially, its folded form.
 
 \begin{coq}{name=Unfold}{title=Refold,width=7cm}
-Lemma leq_mul2l_modified m n1 n2 :
+Lemma leq_mul2l m n1 n2 :
   (m * n1 - m * n2 == 0) =
     (m == 0) || (n1 <= n2).
 Proof.
@@ -2583,10 +2477,12 @@ in the \mcbMC{} library:
     {\tt seq.v}.
   \item We often use a one-letter suffix to resolve overloaded
     notation, e.g., \C{addn}, \C{addb}, \C{addr} denote nat, boolean, ring
-    addition, respectively. This policy does not necessarily apply to
-    constants that should always be hidden behind a generic notation,
-    and handled by a more generic theory.
+    addition, respectively. 
+    % This policy does not necessarily apply to
+    % constants that should always be hidden behind a generic notation,
+    % and handled by a more generic theory.
     % [DG] What does the preceding sentence mean?
+    % [ET] I don't get it either
   \item Finally, a handful of theorems have historical names,
     e.g, \L+Cayley_Hamilton+ or \L+factor_theorem+.
   \end{itemize}
