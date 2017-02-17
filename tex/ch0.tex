@@ -66,7 +66,7 @@ with more stars for more advanced topics.
 
 This part introduces two languages and a formalization approach.
 
-The first one is the formal language used to represent mathematics in
+The first language is used to represent mathematics in
 the \Coq{} proof assistant. It is called \emph{Gallina} and, as expert
 reader may know, it is based on a variant of type theory named the
 \mcbCIC{}. As this part of the book explains, the very same language is
@@ -75,22 +75,30 @@ to spell out the proofs of these properties. Another distinguishing
 feature of this foundational framework is the status it awards to
 computation, and the prominent role computations shall play in proofs.
 
-The second one is called \mcbSSR{}, \emph{Ssreflect} for
-short. Most often, a user of the \Coq{} proof assistant writes formal
-proofs gradually, and takes benefit from frequent interactions with
-the system. Ssreflect is a programming language designed to
-ease this activity of writing formal proofs. It has been designed to
-provide some support for the authors of large formal
-libraries, developed over a long time frame. The maintenance of large
-formal libraries require a solid writing discipline to be tractable,
-as it is the case for any large corpus of code. The \emph{Ssreflect}
-language helps writing scripts that are robust to the ancillary
-changes triggered by improving the libraries or changing the formal
-definitions. Actually, small scale reflection is firstly the name of a
-formalization methodology. Initially conceived for  the formal proof
+The second language is used to write proofs and is called \emph{Ssreflect},
+the short of \mcbSSR{}.
+% Most often, a user of the \Coq{} proof assistant writes formal
+% proofs gradually, and takes benefit from frequent interactions with
+% the system.
+\emph{Ssreflect} is a language designed to
+ease the activity of writing and maintaining formal proofs.
+In particular the maintenance of large
+formal libraries requires a solid writing discipline
+and a language that supports it.
+% . to be tractable,
+% as it is the case for any large corpus of code. 
+\emph{Ssreflect} provides linguistic constructs well adapted to 
+write scripts that can be easily fixed in response to % ancillary
+changes to the contents of the formal libraries.
+% or changing the formal
+% definitions. 
+
+Actually, \mcbSSR{} is firstly the name of a
+formalization methodology, sometimes also called \emph{Boolean Reflection}. 
+Initially conceived for  the formal proof
 of the Four Colors Theorem, it became a pillar of the \mcbMC{}
 library and of the formal proof of the Odd Order
-Theorem. The Ssreflect language was named after this methodology
+Theorem. The Ssreflect proof language was named after this methodology
 because of the support it provides for its implementation.
 
 % The \Coq{} system provides a rich platform in which all this is
