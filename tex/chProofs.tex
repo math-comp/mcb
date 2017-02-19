@@ -135,7 +135,12 @@ The constant \C{eq} is a \emph{predicate}, i.e., a function that
 outputs a proposition. The equality
 predicate is polymorphic: exactly like we have seen in the previous
 chapter, the $\forall$  quantifier is used to make the (implicit)
-parameter \C{A} range over types. Both examples \C{3 = 3} and \C{false
+parameter \C{A} range over types.
+% [DG] I still think we ought to explain that the $\forall$ symbol
+% corresponds to the word "forall". This *is* surprising; I know of no
+% non-obscure programming language that supports casually replacing
+% keywords by non-ASCII symbols.
+Both examples \C{3 = 3} and \C{false
 && true = false} thus use the \emph{same} equality constant, but with
 different values (respectively, \C{nat} and \C{bool}) for the type
 parameter \C{A}. Since the first argument of \C{eq} is implicit, it is not
@@ -320,6 +325,28 @@ is substituted for the parameter \C{n}.
 Lemma leq0n (n : nat) : 0 <= n = true.
 \end{coq}
 \coqrun{name=testleq0n}{ssr,leq0n,abort}
+
+Similarly, the boolean equality function
+\C{(eqn : nat -> nat -> nat)}, with infix notation \C{==}, is a
+boolean binary predicate on natural numbers, which checks whether two
+natural numbers are equal.  It should not be mistaken for the
+predicate \C{(eq : forall A : Type, A -> A -> Prop)}, with infix
+notation \C{=} (only one equality sign!), whose output has the type
+\C{Prop}.  The former is \emph{computational}, i.e., has an actual
+algorithmic definition which allows \Coq{} to compute its values on
+any given parameters (for example, \C{Eval compute in 2 == 3.} will
+yield \C{False}), whereas the latter is \emph{propositional} and
+merely creates a proposition stating that $2$ is equal to $3$ (which
+proposition can be disproven with a proof script, but this is not
+something that \Coq{} can do automatically).
+The difference between these two predicates should be familiar to any
+constructive mathematician; we will further dwell upon it in
+chapter~\ref{ch:boolrefl}.
+
+% [DG] Discussed of = vs. == as well as I could (which is probably not
+% very well). I think it really ought to be done as early as possible.
+% If we don't do it here, it will confuse the reader the moment an
+% "==" appears (which is rather soon).
 
 The \mcbMC{} library makes an extensive use of boolean predicates, and
 of the associated propositions. For the sake of readability, the
@@ -625,8 +652,8 @@ in the definition of type \C{bool}.
 We shall thus provide two distinct pieces of
 script, one per each subproof to be constructed,
 starting with the branch associated with the \C{true} value. In order
-to help the reader identify the two parts of the proof script we indent the
-first one.
+to help the reader identify the two parts of the proof script,
+we indent the first one.
 
 Once the case analysis has substituted a concrete value for the
 parameter \C{b}, the proof becomes trivial, in both cases: We are in a
@@ -1422,8 +1449,6 @@ Section Chinese.
 Variables m1 m2 : nat.
 Hypothesis co_m12 : coprime m1 m2.
 
-...
-
 Lemma chinese_remainder x y :
   (x == y %[mod m1 * m2]) = (x == y %[mod m1]) && (x == y %[mod m2]).
 Proof.
@@ -1432,7 +1457,7 @@ End.
 
 End Chinese.
 \end{coq}
-The part of this excerpt up to the begging of the lemma
+The part of this excerpt up to the beginning of the lemma
 corresponds to a mathematical sentence of the form: \emph{In this section,
   $m_1$ and $m_2$ are two coprime natural numbers\dots}. Within the
 scope of this section, the parameters \C{m1} and \C{m2} are
@@ -1448,7 +1473,8 @@ Lemma chinese_remainder m1 m2 (co_m12 : coprime m1 m2) x y :
 \end{coq}
 \coqrun{name=testchina}{ssr,chinaremstm,abort}
 Note that the syntax to start a \C{Lemma} lets one name not only
-parameters as \C{m1} and \C{m2} but also assumptions as \C{co\_m12}.
+parameters such as \C{m1} and \C{m2},
+but also assumptions such as \C{co\_m12}.
 
 In general, when a section ends, the types of the constants and the
 statements of the lemmas change to include those section variables
@@ -1644,6 +1670,8 @@ because we can combine the following lemmas:
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Lemma prime_gt0 p : prime p -> 0 < p.
 \end{coq}
+Notice that the expression \C{0 < m <= n} in \C{dvdn_fact} is really
+an abbreviation for \C{(0 < m) && (m <= n)}.
 
 The first goal is also easy to solve, using the following basic facts:
 
@@ -1668,8 +1696,8 @@ rewrite dvdn_addr.
   by apply: prime_gt1.  (* 1 < p *)
 apply: dvdn_fact.
 rewrite prime_gt0. (* 0 < p <= n *)
-  by []. (* prime p *)
-by [].   (* true && p <= n *)
+  by []. (* true && p <= m *)
+by [].   (* prime p *)
 Qed.
 \end{coq}
 \coqrun{name=testexp1}{ssr,exp1final}
@@ -1678,7 +1706,9 @@ this tactic.  Before improving this script a comment is due:
 the goal after line 12, \C{0 < p <= m}, is really an abbreviation for
 \C{(0 < p) && (p <= m)}. The subsequent \C{rewrite} command
 replaces \C{(0 < p)} with \C{true}: after all the conclusion of
-\C{prime\_gt0} is an equation.  We explain such trick in details later on.
+\C{prime\_gt0} is an equation.
+We explain such tricks in details later on.
+% [DG] Later = where? (a reference would be nice)
 
 We shall improve this script in two steps.  First, we take advantage of
 \C{rewrite} simplification flags.  It is quite common
@@ -1692,7 +1722,22 @@ We also combine on the same line the first three steps, using
 the semicolon.\footnote{From this example, one might take away the
 wrong impression that a semicolon is synonymous to a dot. In general,
 it is not, since the tactic following it is applied to each goal resulting
-from the tactic preceding it. More details can be found in~\cite[section 9.2]{Coq:manual}}
+from the tactic preceding it.
+More details can be found in~\cite[section 9.2]{Coq:manual}.}
+% The semicolon is actually a tactical (like \C{by}) that
+% allows chaining tactics. A tactic of the form \C{t1; t2} (where
+% \C{t1} and \C{t2} are two tactics) amounts to first applying
+% \C{t1}, and then applying \C{t2} to \emph{each} of the subgoals
+% spawned by the application of \C{t1}. When \C{t1} spawns exactly
+% one subgoal, this is indeed equivalent to \C{t1. t2}. (Note that the
+% tactic \C{t2} has to work in each of these subgoals in order for
+% the notation to compile!)
+% A slight
+% variation of this syntax is \C{t0; [t1 | t2 | ... | tn]} for any
+% tactics \C{t0}, \C{t1}, \ldots, \C{tn}; this amounts to applying
+% tactic \C{t0}, and then applying tactic \C{t1} to the first subgoal
+% spawned, \C{t2} to the second, and so on.
+% [DG] Keeping this just in case.
 The proof script (up to the end of the proof of the first
 goal) then looks like this:
 
@@ -1905,7 +1950,7 @@ To our aid the \C{elim:} tactic provides two additional services.
 
 The first one is to let one \emph{generalize}
 the goal.  It is typically needed when the goal mentions a recursive function
-that uses an accumulator: a variable which value changes during recursive calls;
+that uses an accumulator: a variable whose value changes during recursive calls;
 hence the induction hypothesis must be general.  We show
 this feature later on a concrete example (lemma \C{foldl\_rev}).
 
@@ -2041,6 +2086,8 @@ Qed.
 \end{coq}
 \coqrun{name=testexp2x}{ssr,exp2x}
 
+Here, our use of the \C{rewrite dvdn_addr} tactic forced us to prove
+the side condition \D{p \%| m`!}.
 These side conditions (by default) become the second, third (and eventually 
 higher) sub-goals in a proof script, so their proofs are usually postponed to
 after the first sub-goal (the main one) is proven. This is not always
@@ -2142,11 +2189,7 @@ made more precise in chapter~\ref{ch:ttch}.
 % tell \Coq{} what instances of the object are to be unfolded. For
 % example, had we used \C{rewrite /(leq n1 n2)} instead of
 % \C{rewrite /leq}, we would only have gotten \C{(n1 <= n2)} unfolded.
-% 
-% A less frequently used variant of the \C{rewrite} tactic is the \C{-/}
-% prefix; it allows \emph{folding} a definition, i.e., the reverse of
-% unfolding. (For instance, \C{rewrite /(leq n1 n2)} could be undone by
-% \C{rewrite -/(leq n1 n2)}.)
+
 
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
@@ -2268,6 +2311,7 @@ library, and instead is just the definition of \C{leq}. %  Indeed the
 However if we
 try to omit the first \C{rewrite !leqE} command, then the next one,
 % [DG] Why the exclamation mark in "!leqE"?
+% [DG] And if we keep it, I think its meaning should be explained.
 namely \C{rewrite -mulnBr}, fails:
 
 \begin{coq}{name=ctxpat3}{width=7.7cm}
@@ -2289,8 +2333,9 @@ This indicates in particular that, although the term \C{(m * n1 <= m * n2)}
 is equal up to computation to the term \C{(m * n1 - m * n2 == 0)}, the matching
 algorithm is not able to see it. This is due to the compromise that
 has been chosen, between predictability and cleverness. Indeed the
-algorithm looks for a verbatim occurrence of the head symbol\footnote{
-The head symbol is the root of the syntax tree of an expression.}
+algorithm looks for a verbatim occurrence of the
+head symbol\footnote{The head symbol is the root of the syntax tree
+of an expression.}
 of the
 pattern: in this case it hence looks for an occurrence of \C{(_ - _)},
 which is not found. As a consequence, we need an explicit step in the
@@ -2350,8 +2395,10 @@ m, n1, n2 : nat
 One can also re-fold a definition, but in such a case one has to specify,
 at least partially, its folded form.
 
+% [DG] I'm calling it leq_mul2l_rewritten because the statement has
+% been rewritten.
 \begin{coq}{name=Unfold}{title=Refold,width=7cm}
-Lemma leq_mul2l m n1 n2 :
+Lemma leq_mul2l_rewritten m n1 n2 :
   (m * n1 - m * n2 == 0) =
     (m == 0) || (n1 <= n2).
 Proof.
@@ -2365,6 +2412,9 @@ m, n1, n2 : nat
 \end{coqout}
 \coqrun{name=Unfoldrun}{ssr,Unfold,show,abort}
 \index[ssr]{\C{rewrite}! \C{-/} (folding)}
+Here, we have used the \C{-/} prefix for the \C{rewrite} tactic; it
+allows \emph{folding} a definition, i.e., the reverse of unfolding.
+
 
 More generally, the \C{rewrite} tactic can be used to replace a
 certain subterm of the goal by another one, which is equal to the
