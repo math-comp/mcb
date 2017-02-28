@@ -326,23 +326,25 @@ Lemma leq0n (n : nat) : 0 <= n = true.
 \end{coq}
 \coqrun{name=testleq0n}{ssr,leq0n,abort}
 
-Similarly, the boolean equality function
-\C{(eqn : nat -> nat -> nat)}, with infix notation \C{==}, is a
-boolean binary predicate on natural numbers, which checks whether two
-natural numbers are equal.  It should not be mistaken for the
-predicate \C{(eq : forall A : Type, A -> A -> Prop)}, with infix
-notation \C{=} (only one equality sign!), whose output has the type
-\C{Prop}.  The former is \emph{computational}, i.e., has an actual
-algorithmic definition which allows \Coq{} to compute its values on
-any given parameters (for example, \C{Eval compute in 2 == 3.} will
-yield \C{False}), whereas the latter is \emph{propositional} and
-merely creates a proposition stating that $2$ is equal to $3$ (which
-proposition can be disproven with a proof script, but this is not
-something that \Coq{} can do automatically).
-The difference between these two predicates should be familiar to any
-constructive mathematician; we will further dwell upon it in
-chapter~\ref{ch:boolrefl}.
-
+% Assia takes care of this one.
+% 
+% Similarly, the boolean equality function
+% \C{(eqn : nat -> nat -> nat)}, with infix notation \C{==}, is a
+% boolean binary predicate on natural numbers, which checks whether two
+% natural numbers are equal.  It should not be mistaken for the
+% predicate \C{(eq : forall A : Type, A -> A -> Prop)}, with infix
+% notation \C{=} (only one equality sign!), whose output has the type
+% \C{Prop}.  The former is \emph{computational}, i.e., has an actual
+% algorithmic definition which allows \Coq{} to compute its values on
+% any given parameters (for example, \C{Eval compute in 2 == 3.} will
+% yield \C{False}), whereas the latter is \emph{propositional} and
+% merely creates a proposition stating that $2$ is equal to $3$ (which
+% proposition can be disproven with a proof script, but this is not
+% something that \Coq{} can do automatically).
+% The difference between these two predicates should be familiar to any
+% constructive mathematician; we will further dwell upon it in
+% chapter~\ref{ch:boolrefl}.
+% 
 % [DG] Discussed of = vs. == as well as I could (which is probably not
 % very well). I think it really ought to be done as early as possible.
 % If we don't do it here, it will confuse the reader the moment an
