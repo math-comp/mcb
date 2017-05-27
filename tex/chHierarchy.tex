@@ -878,8 +878,8 @@ Now type checking
 \lstinline/id${}\equiv{}$(fun x => x)/ the type
 \lstinline/(phant_id (Choice.class $\mcbimplm{cT}$) $\mcbimplm{c}$)/.
 It will assign \C{x} the type
-\lstinline/(phantom (Choice.sort $\mcbimplm{cT}$) (Choice.class $\mcbimplm{cT}$))/,
-which it will then unify with \lstinline/(phantom NN $\mcbimplm{c}$)/.
+\lstinline/(phantom (Choice.class_of (Choice.sort $\mcbimplm{cT}$)) (Choice.class $\mcbimplm{cT}$))/,
+which it will then unify with \lstinline/(phantom (Choice.class_of NN) $\mcbimplm{c}$)/.
 To do so \lstinline/Choice.sort $\mcbimplm{cT}$/
 will first be unified with \C{NN},
 by setting $\mcbimplm{cT}$ to the canonical instance
@@ -905,7 +905,7 @@ to check the dependent type constraint on the mixin.
 Definition pack T b0 (m0 : mixin_of (@Zmodule.Pack T b0)) :=
   fun bT b & phant_id (Zmodule.class bT) b =>
   fun    m & phant_id m0 m => Pack (@Class T b m).
-Notation "[ 'ringType' 'of' T ]" := (@pack T _ m _ _ id _ _ id)
+Notation RingType T m := (@pack T _ m _ _ id _ id).
 \end{coq}
 
 Type-checking the second \C{id} will set \C{m} to \C{m0} after
@@ -925,7 +925,7 @@ Definition pack T :=
   fun bT b & phant_id (ComRing.class bT) (b : ComRing.class_of T) =>
   fun mT m & phant_id (UnitRing.class mT) (@UnitRing.Class T b m) =>
   Pack (@Class T b m).
-Notation "[ 'comUnitRingType' 'of' T ]" := (@pack T _ _ id _ _ id)
+Notation "[ 'comUnitRingType' 'of' T ]" := (@pack T _ _ id _ _ id).
 \end{coq}
 
 Finally, the instance constructor for the left algebra structure
