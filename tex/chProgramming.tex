@@ -18,7 +18,9 @@ In the formalism underlying the \Coq{} system, functions play a
 central role akin to the one of sets in set theory. In this chapter,
 we give a flavor of how to define functions in \Coq{}, how to perform
 computations and how to define basic mathematical objects in this
-formalism.
+formalism.  Readers with a mathematical background will need to get
+accustomed to the fact that functions are different in nature from the
+functions encountered in the mathematical tradition of set theory.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -35,9 +37,9 @@ that can be executed. As a consequence we borrow from computer science
 some jargon, like \emph{input} or \emph{return}. For example we say that
 an operation takes as input a number and returns its double to mean
 that the corresponding program computes or outputs the double of its
-input, or that the function maps a number to its double. For
-this purpose, we study examples involving natural numbers. In \Coq{}
-syntax, we casually use \C{nat} to refer to the collection of natural
+input, or that the function maps a number to its double. we study 
+many examples involving natural numbers. In the \Coq{}
+language, we casually use \C{nat} to refer to the collection of natural
 numbers and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
 (resp. product) operation on natural numbers,  before providing their
 actual formal definition in section~\ref{ssec:nat}. We will also
@@ -54,7 +56,7 @@ expressions are written using notations for the operations, like the
 infix $+$ in the expression
 \[ 2 + 1 \]
 This expression represents a natural number, obtained as the result of
-an operation applied to its arguments. For instance, it is the result
+an operation applied to its arguments.  More precisely, it is the result
 of the binary operation of addition, applied to two natural numbers
 $2$ and $1$. The same expression can also represent the result of the
 unary operation of {\em adding one on the right to a natural number},
@@ -68,7 +70,7 @@ written in the following manner:
 \end{coq}
 \coqrun{name=exfunrun}{check,exfun,dot}
 \index[coq]{\C{fun .. => ..}}
-The syntactic transformation of expression \C{(2 + 1)} into an
+The textual transformation of expression \C{(2 + 1)} into an
 explicit application of this function to one argument can be
 described as follows: select the sub-expression that is considered as
 the argument of the function, here \C{2}, and replace it with a
@@ -92,14 +94,18 @@ simply by writing the function on the left of the argument,
 with a separating space but {\em not
   necessarily with parentheses around the argument}; we will come back to this
 later in the present section. As a first approximation, we can see
-that expressions, also called \emph{terms}, in the syntax of \Coq{}
-are either variables, or
+that expressions in the language of \Coq{}, also called \emph{terms},
+are either variables, constants, 
 functions of the form \C{(fun x => e)}, where \C{e} is itself an
 expression, or the application \C{(e1 e2)} of an expression \C{e1} to
 another expression \C{e2}. However, just like with pen and paper, the addition
 operation is denoted in the \Coq{} syntax using an infix notation \C{+}.
 The transformation we just detailed, from expression \C{(2 + 1)} to expression
-\C{(fun n => n + 1) 2}, is called \emph{abstracting \C{2} in  \C{(2 + 1)}}.
+\C{(fun n => n + 1) 2}, is called \emph{abstracting \C{2} in  \C{(2 +
+    1)}}.  As a contrast to traditional set-theoretic approaches,
+abstraction is essentially the only way to define a function in this
+language.  A function is never described by providing extensively the
+graph as a subset of the cartesian product of the input and the output.
 \index[concept]{abstraction}
 
 While expression \C{(fun n => n + 1)} describes an operation
@@ -163,7 +169,7 @@ of type \C{nat}. In other words, the type of any expression made of
 \index[concept]{type}
 
 \Coq{} provides a command to retrieve relevant information about the
-definitions completed so far. Here is the response to a query about \C{f}:
+definitions done so far. Here is the response to a query about \C{f}:
 
 \begin{coq}{name=about_f}{width=5.5cm,title=Gathering information on f}
 About f.
@@ -252,7 +258,7 @@ Eval compute in f 3.
 \coqrun{name=compute_f3_run}{exdef,compute_f3}
 \index[vernac]{\C{Eval compute}}
 
-At the very least, we can observe that the argument \C{3} has been
+As a simple explanation, we can observe that the argument \C{3} has been
 substituted for the argument variable in the definition of function
 \C{f} and that the addition has been evaluated.
 Although this capability of \Coq{} plays a crucial role
@@ -306,7 +312,7 @@ g : nat -> nat -> nat
 \end{coqout}
 \coqrun{name=about_g_run}{def_g,about_g}
 
-The two first occurrences of \C{nat} in the response
+The first two occurrences of \C{nat} in the response
  \C{nat -> nat -> nat} assert that function \C{g} has two arguments,
  both of type \C{nat}; the last occurrence refers to the type of
  the output. This response actually reads \C{nat -> (nat -> nat)},
@@ -583,8 +589,10 @@ thus also be used to organize intermediate computations.
 
 \section{Data types, first examples}
 \label{sec:data}
-A well-formed mathematical expression is just a juxtaposition of
-symbols of a given language (and variables)
+\marginnote{Alternative section title : Mathematical data viewed as
+  data types}
+A well-formed mathematical expression is combination of variables
+and symbols of a given language
 that respects the prescribed arities of
 the operations. For instance, the expression:
 \[(\top \vee \bot) \wedge b\]
@@ -592,8 +600,11 @@ is a well formed expression in the language $\{\top, \bot,\vee,\wedge\}$ of
 boolean arithmetic, while expression:
 \[ 0 + x \times (S\ 0) \]
 is a well formed expression in the language $\{0,S, +, \times\}$ of
-Peano arithmetic. In these examples, however, the usual axioms that
-give a meaning to the respective arithmetic confer a distinctive status to
+Peano arithmetic.  However, these languages usually are equipped with
+behavior rules, expressed in the form of equality axioms, like
+\[\top \vee b = \top \qquad \hbox{or} 0 + x = 0\]
+In
+practice, these axioms arithmetic confer a distinctive status to
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
 $S$ for natural numbers. More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
@@ -606,21 +617,23 @@ of boolean arithmetic are \(\top\) and \(\bot\) and the constructors of
 Peano arithmetic are \(0\) and \(S\).
 
 In \Coq{}, such languages are represented using a \emph{data type},
-whose definition provides in a single declaration the name of the
+whose definition provides in a first single declaration the name of the
 type and the constructors, plus some rules on how to define maps on
-these data types or prove theorems about their elements.
-These data types are introduced by the means of an
-\emph{inductive type definition}.
+these data types or prove theorems about their elements.  The other
+operations are then derived from these rules.
+
+The first single declarations of data types are introduced by the means of
+\emph{inductive type definitions}.
 One can then explicitly define more operations on the elements of
 the type by describing how they compute on a given argument in the
-type using a case analaysis (or even a recursive definition) on the
-syntactic shape of this argument.
+type using a case analaysis or a recursive definition on the
+shape of this argument.
 This approach is used in a systematic way to define a variety of basic
-data types, among which boolean values, natural numbers, pairs or
+mathematical types, among which boolean values, natural numbers, pairs or
 sequences of values are among the most prominent examples.
 \index[concept]{inductive type}
 
-In the following sections, we introduce basic data types \C{bool} for boolean
+In the following sections, we introduce basic types \C{bool} for boolean
 values and \C{nat} for natural numbers, taking the opportunity to describe
 various constructs of the \Coq{} language as they become relevant.  These
 sections serve simultaneously as an introduction to the data types
@@ -644,7 +657,7 @@ Inductive bool := true | false.
 \index[vernac]{\C{Inductive}}
 
 It is actually one of the simplest possible inductive definitions,
-with only base cases, and no inductive ones. This
+with only base cases, and no inductive cases. This
 declaration states explicitly that there are exactly two
 elements in type \C{bool}: the distinct constants \C{true} and \C{false},
 called the \emph{constructors} of type \C{bool}.
@@ -700,6 +713,32 @@ the \C{compute} command rewrites any term of the shape
 \C{if true then t1 else t2} into \C{t1} and any term of the shape
 \C{if false then t1 else t2} into \C{t2}.
 
+We can then use this basic operation to describe the other elements
+that we usually consider as parts of the boolean language, usually
+at least conjunction, written \C{&&} and disjunction, written \C{||}.
+We first define these as functions, as follows:
+\begin{coq}{name=define_andb_orb}{}
+Definition andb (b1 b2 : bool) := if b1 then b2   else false.
+Definition orb  (b1 b2 : bool) := if b1 then true else b2.
+\end{coq}
+\coqrun{name=andor}{define_andb_orb}
+\index[coq]{\C{andb}}
+and then the notations \C{&&} and \C{||} are attached to these
+two functions, respectively.
+
+For any choice of values \C{b1}, \C{b2}, and \C{b3} it appends that
+the expressions \C{b1 && (b2 && b3)} and C{(b1 && b2) && b3} always
+compute to the same result.  In this sense, the conjunction operation
+is associative.  We shall see in chapter~\ref{ch:proof} that this
+known property can be stated explicitely.  For a mathematical reader,
+this associativity is often included in the reading process, so that
+the two forms of three-argument conjunctions are often identified.
+However, when manipulating boolean expressions of the \Coq{} language,
+there is a clear distinction between these two forms of conjunctions
+of three values, and the notation conventions makes sure that the two
+forms appear differently on the screen.  We will come back to this
+question in section~\ref{sec:notations}.
+
 The \mcbMC{} library provides a collection of boolean operations that
 mirror reasoning steps on truth values.  The functions are called
 \C{negb}, \C{orb}, \C{andb}, and \C{implyb}, with notations
@@ -712,22 +751,13 @@ not be confused with two consecutive occurrences of the one-character symbol
 The latter has a meaning in \Coq{}, but is almost never used
 in the \mcbMC{} library.
 
-For instance, the functions \C{andb} and \C{orb} are defined as follows.
-
-\begin{coq}{name=define_andb_orb}{}
-Definition andb (b1 b2 : bool) := if b1 then b2   else false.
-Definition orb  (b1 b2 : bool) := if b1 then true else b2.
-\end{coq}
-\coqrun{name=andor}{define_andb_orb}
-\index[coq]{\C{andb}}
-
 % \subsubsection{TODO : A note on associativity for notations}
 
 \subsection{Natural numbers}\index[concept]{natural number}
 \label{ssec:nat}
 
 The collection of natural numbers is formalized by a type called
-\C{nat}. An inhabitant of this type is either the constant \C{O}
+\C{nat}.  An inhabitant of this type is either the constant \C{O}
 (capital ``o'' letter) representing zero, or an
 application to an existing natural number of the function symbol \C{S}
 representing the successor:
@@ -776,7 +806,9 @@ fun n : nat => f n.+1 : nat -> nat
 \coqrun{name=f_plus_one_run}{ssr,exdef,f_plus_one}
 \index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
 
-When defining functions that operate on natural numbers, we can
+When defining functions that operate on natural numbers, we
+can\marginnote{It may be better to start with a function that tests
+  equality to 0}.
 proceed by case analysis, as was done in the previous section for boolean
 values. Here again, there are two cases: either the natural number used in
 the computation is \C{O} or it is \C{p.+1} for
@@ -810,8 +842,8 @@ Eval compute in predn 5.
 The \C{compute} command rewrites any term of the shape
 \C{if 0 is p.+1 then t1 else t2} into \C{t2} and any term of the shape
 \C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where all occurrences of
-\C{p} have been replaced by \C{k}. In our example, as the value of
-\C{k.+1} is \C{5}, \C{k} and hence \C{t2} is \C{4}.
+\C{p} have been replaced by \C{k}.  In our example, as the value of
+\C{k.+1} is \C{5}, \C{k} and hence \C{p} and\C{t1} are \C{4}.
 
 
 The symbols that are allowed in a pattern are essentially restricted
@@ -1199,7 +1231,7 @@ test functions identifying \C{prime} and \C{odd} numbers. In that
 case, the trailing \C{n} is omitted in their name.
 
 We strongly advise the reader wanting to explore the \mcbMC{} library
-to browse their source
+to browse the source
 files\footnote{\url{http://math-comp.github.io/math-comp/htmldoc/libgraph.html}}
 and not to limit herself to interactive queries to the system. The
 information provided by the \C{Print} and \C{About} commands is
@@ -1228,7 +1260,7 @@ following data type for this purpose:
 Inductive listn := niln | consn (hd : nat) (tl : listn).
 \end{coq}
 
-The elements of this data type are (one possible implementation of)
+The elements of this data type constitue a possible description of
 lists of zero or more natural numbers; the first constructor
 \C{niln} builds the empty list, whereas the second constructor
 \C{consn} builds a nonempty list by combining a natural number \C{hd}
@@ -1284,7 +1316,7 @@ Inductive list := nil | cons (hd : $\alpha$) (tl : list).
 
 \noindent This may look familiar jargon to some readers. In the
 present context however, we would rather like to avoid appealing to
-any notion of schema, that would be somehow added on top of the
+any notion of schema, that would somehow be added on top of the
 \Coq{} language. This way, we will make possible the writing of
 formal sentences with arbitrary quantifications on this parameter
 $\alpha$.
@@ -1302,6 +1334,7 @@ $\alpha$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The (polymorphic) sequence data type}
+\label{sec:sequence}
 \index[concept]{polymorphism}
 
 The \mcbMC{} library provides a generic data type to hold
@@ -1355,7 +1388,8 @@ an empty list of type \C{(seq A)}. The \emph{type} of the output of
 this function hence depends on the \emph{value of this input}. The
 type of \C{nil} is thus not displayed with the arrow notation
 ``\C{.. -> ..}'' that we have used so far for the type of
-functions. It is rather written as follows:
+functions. It is rather written as follows:\marginnote{no explanation
+  of the \(\forall\) symbol and the {\tt forall} keyword.}
 
 \begin{coq}{name=type_of_nil}{}
   forall A : Type, seq A
@@ -1412,11 +1446,8 @@ need to be written (the argument is {\em implicit}).  It is then the
 job of the \Coq{} system to guess what this argument is when looking at
 the first explicit argument given to the function.  The same happens
 to the type argument of \C{nil} in the built-in version of \C{seq}
-provided by the \mcbMC{} library (although not in the version we
-defined above).  In the end, this ensures that users can
+provided by the \mcbMC{} library.  In the end, this ensures that users can
 write the following expression.
-\marginnote{This comment should disappear thanks to a more timely
-  mention of implicit arguments.}
 
 \begin{coq}{name=check_list_2}{width=6cm,title=Query}
 Check cons 2 nil.
@@ -1603,7 +1634,6 @@ Definition only_odd (n : nat) : option nat :=
 \coqrun{name=only_odd_run}{ssr,option,only_odd}
 
 Similarly, one can use the \C{option} type to define a partial function
-\marginnote{This fails since None has no implicits}
 which computes the head of a non-empty list:
 
 
@@ -1671,10 +1701,10 @@ Eval compute in (true, false).1.
 \end{coqout}
 \coqrun{name=pairs_run}{ssr,pairs}
 As one expects, pairs can be nested. \Coq{} provides a slightly more complex
-notation for pairs, which makes possible to write \C{(3,true,4)} for
+notation for pairs, which makes it possible to write \C{(3,true,4)} for
 \C{((3,true),4)}. In this example, the value \C{true} is the second
 component of this tuple, or more precisely the second component of its
-first one: it can thus be obtained as \C{(3,true,4).1.2}. This may be
+first component: it can thus be obtained as \C{(3,true,4).1.2}. This may be
 a drawback, consequence of representing tuples as nested pairs. If
 tuples of a certain fixed length are pervasive to a development, one
 may consider defining another specific container type for this
@@ -1847,7 +1877,9 @@ Fixpoint foldr (T A : Type) (f : T -> A -> A) a s :=
 \coqrun{name=iter2_run}{ssr,iter2}
 
 Finally, remark that \C{T} and \C{A} are implicit arguments; hence they
-are not explicitly passed to \C{iter} and \C{fold} in the recursive calls.
+are not explicitly passed to \C{iter} and \C{fold} in the recursive
+calls.
+
 \begin{coq}{name=about_fold}{width=2.9cm}
 About foldr.
 $~$
@@ -2050,6 +2082,8 @@ Eval simpl in (addn n.+1 7).-1.
 Here we see the impact of the difference in the definitions of
 \C{addn} and \C{add}: the \C{add} variant transfers the
 number of pebbles (represented by the successor \C{S} symbol)
+\marginnote{I think it is counter-productive to use the pebble
+  metaphor here, because it was not introduced before.}
 given as first argument to its second argument
 before resorting to its base case, whereas in the \C{addn} variant,
 the resulting stack of pebbles is constructed top down. An intermediate
