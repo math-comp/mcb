@@ -44,7 +44,8 @@ numbers and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
 (resp. product) operation on natural numbers,  before providing their
 actual formal definition in section~\ref{ssec:nat}. We will also
 assume implicitly that numerals $0, 1, 2, \dots$ denote natural numbers,
-represented by their analogue \C{0}, \C{1}, \C{2}, \dots in \Coq{} syntax.
+represented by their analogue \C{0}, \C{1}, \C{2}, \dots in the \Coq{}
+language.
 
 
 \subsection{Defining functions, performing computation}\label{ssec:deffun}
@@ -99,7 +100,7 @@ are either variables, constants,
 functions of the form \C{(fun x => e)}, where \C{e} is itself an
 expression, or the application \C{(e1 e2)} of an expression \C{e1} to
 another expression \C{e2}. However, just like with pen and paper, the addition
-operation is denoted in the \Coq{} syntax using an infix notation \C{+}.
+operation is denoted in the \Coq{} language using an infix notation \C{+}.
 The transformation we just detailed, from expression \C{(2 + 1)} to expression
 \C{(fun n => n + 1) 2}, is called \emph{abstracting \C{2} in  \C{(2 +
     1)}}.  As a contrast to traditional set-theoretic approaches,
@@ -130,7 +131,7 @@ Definition f := fun n => n + 1.
 \end{coq}
 \index[vernac]{\C{Definition}}
 An alternative syntax for exactly the same definition is as follows
-and this alternative syntax is actually preferred.
+and this alternative is actually preferred.
 
 \begin{coq}{name=exdef_pref}{}
 Definition f n := n + 1.
@@ -277,7 +278,7 @@ computation.
 
 \subsection{Functions with several arguments}
 \label{sec:fun-sev-args}
-The syntax we used to define a function with a single argument
+The command we used to define a function with a single argument
 generalizes to the case of functions with several arguments, which are
 then separated by a space. Here is an example of a function with two
 arguments:
@@ -561,7 +562,7 @@ Here is an example of usage of this syntax:
 
 \begin{coq}{name=eval_let_expr}{width=6cm,title=Evaluating local definitions,label=lst:eval_let_expr}
 Eval compute in
-  let n := 33 in
+  let n := 33 : nat in
   let e := n + n + n in
     e + e + e.
 \end{coq}
