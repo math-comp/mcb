@@ -37,7 +37,7 @@ that can be executed. As a consequence we borrow from computer science
 some jargon, like \emph{input} or \emph{return}. For example we say that
 an operation takes as input a number and returns its double to mean
 that the corresponding program computes or outputs the double of its
-input, or that the function maps a number to its double. we study 
+input, or that the function maps a number to its double. We study 
 many examples involving natural numbers. In the \Coq{}
 language, we casually use \C{nat} to refer to the collection of natural
 numbers and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
@@ -603,9 +603,9 @@ boolean arithmetic, while expression:
 is a well formed expression in the language $\{0,S, +, \times\}$ of
 Peano arithmetic.  However, these languages usually are equipped with
 behavior rules, expressed in the form of equality axioms, like
-\[\top \vee b = \top \qquad \hbox{or} 0 + x = 0\]
+\[\top \vee b = \top \qquad \hbox{or} \qquad 0 + x = 0\]
 In
-practice, these axioms arithmetic confer a distinctive status to
+practice, these axioms confer a distinctive status to
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
 $S$ for natural numbers. More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
@@ -630,7 +630,7 @@ the type by describing how they compute on a given argument in the
 type using a case analaysis or a recursive definition on the
 shape of this argument.
 This approach is used in a systematic way to define a variety of basic
-mathematical types, among which boolean values, natural numbers, pairs or
+types, among which boolean values, natural numbers, pairs or
 sequences of values are among the most prominent examples.
 \index[concept]{inductive type}
 
@@ -711,13 +711,15 @@ Eval compute in twoVthree false.
 
 As illustrated on this example,
 the \C{compute} command rewrites any term of the shape
-\C{if true then t1 else t2} into \C{t1} and any term of the shape
+\C{if true then t1 else t2} into \C{t1} and %any term
+of the shape
 \C{if false then t1 else t2} into \C{t2}.
 
 We can then use this basic operation to describe the other elements
 that we usually consider as parts of the boolean language, usually
 at least conjunction, written \C{&&} and disjunction, written \C{||}.
 We first define these as functions, as follows:
+
 \begin{coq}{name=define_andb_orb}{}
 Definition andb (b1 b2 : bool) := if b1 then b2   else false.
 Definition orb  (b1 b2 : bool) := if b1 then true else b2.
@@ -728,9 +730,9 @@ and then the notations \C{&&} and \C{||} are attached to these
 two functions, respectively.
 
 For any choice of values \C{b1}, \C{b2}, and \C{b3} it appends that
-the expressions \C{b1 && (b2 && b3)} and C{(b1 && b2) && b3} always
+the expressions \C{b1 && (b2 && b3)} and \C{(b1 && b2) && b3} always
 compute to the same result.  In this sense, the conjunction operation
-is associative.  We shall see in chapter~\ref{ch:proof} that this
+is associative.  We shall see in chapter~\ref{ch:proofs} that this
 known property can be stated explicitely.  For a mathematical reader,
 this associativity is often included in the reading process, so that
 the two forms of three-argument conjunctions are often identified.
@@ -809,7 +811,7 @@ fun n : nat => f n.+1 : nat -> nat
 
 When defining functions that operate on natural numbers, we
 can\marginnote{It may be better to start with a function that tests
-  equality to 0}.
+  equality to 0}
 proceed by case analysis, as was done in the previous section for boolean
 values. Here again, there are two cases: either the natural number used in
 the computation is \C{O} or it is \C{p.+1} for
@@ -844,7 +846,7 @@ The \C{compute} command rewrites any term of the shape
 \C{if 0 is p.+1 then t1 else t2} into \C{t2} and any term of the shape
 \C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where all occurrences of
 \C{p} have been replaced by \C{k}.  In our example, as the value of
-\C{k.+1} is \C{5}, \C{k} and hence \C{p} and\C{t1} are \C{4}.
+\C{k.+1} is \C{5}, \C{k} and hence \C{p} and \C{t1} are \C{4}.
 
 
 The symbols that are allowed in a pattern are essentially restricted
