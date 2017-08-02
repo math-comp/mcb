@@ -810,8 +810,7 @@ fun n : nat => f n.+1 : nat -> nat
 \index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
 
 When defining functions that operate on natural numbers, we
-can\marginnote{It may be better to start with a function that tests
-  equality to 0}
+can
 proceed by case analysis, as was done in the previous section for boolean
 values. Here again, there are two cases: either the natural number used in
 the computation is \C{O} or it is \C{p.+1} for
@@ -822,13 +821,38 @@ the patterns, then the computation proceeds with the expression in the
 corresponding branch.  Such a case analysis is therefore also called
 \emph{pattern matching}. Here is an example:
 
-\begin{coq}{name=predn}{}
-Definition predn n := if n is p.+1 then p else n.
+\begin{coq}{name=test0}{}
+Definition test0 (n : nat) := if n is p.+1 then false else true.
 \end{coq}
 \coqrun{name=predn_run}{ssr,predn}
 \index[coq]{\C{predn} |seealso {\C{.-1}}}
 
-The function \C{predn} returns the predecessor of a natural number
+The function \C{test0} returns \C{true} exactly when the input is
+0.  In this definition \C{p.+1} is a
+pattern. The value bound to the name \C{p} mentioned in this pattern is not
+known in advance; it is actually computed at the moment the \C{n} is matched
+against the pattern.  We can verify the behavior as follows:
+
+\begin{coq}{name=compute_test0}{width=7cm,title=Evaluating test0}
+Eval compute in test0 5.
+\end{coq}
+\begin{coqout}{run=compute_test0_run}{width=5cm,title=Response}
+= false : nat
+\end{coqout}
+\coqrun{name=compute_test0_run}{ssr,compute_test0}
+The \C{compute} command rewrites any term of the shape
+\C{if 0 is p.+1 then t1 else t2} into \C{t2} and any term of the shape
+\C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where all occurrences of
+\C{p} have been replaced by \C{k}.  In our example, as the value of
+\C{k.+1} is \C{5}, \C{k} and hence \C{p} are \C{4}, and \C{t1} is
+\C{false}, which does not contain any occurrence of \C{p}, so \C{false} is
+returned.
+
+It useful that the pattern \C{p.+1} used in the definition of \C{test0}
+gives access to the value \C{p}.  Thanks to this, we can write a function
+that has more than two distinct values as results.  This is illustrated
+with our next example, 
+the function \C{predn} that returns the predecessor of a natural number
 when it exists, and 0 otherwise. In this definition \C{p.+1} is a
 pattern. The value bound to the name \C{p} mentioned in this pattern is not
 known in advance; it is actually computed at the moment the \C{n} is matched
@@ -841,13 +865,10 @@ Eval compute in predn 5.
 = 4 : nat
 \end{coqout}
 \coqrun{name=compute_match_run}{ssr,compute_match}
-
-The \C{compute} command rewrites any term of the shape
-\C{if 0 is p.+1 then t1 else t2} into \C{t2} and any term of the shape
-\C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where all occurrences of
-\C{p} have been replaced by \C{k}.  In our example, as the value of
-\C{k.+1} is \C{5}, \C{k} and hence \C{p} and \C{t1} are \C{4}.
-
+In this case, \C{5} is actually \C{4.+1} and when this is matched
+against the pattern \C{p.+1}, the variable \C{p} receives the
+value \C{4}, which can then be used in the \C{then} branch of the
+\C{if} construct.
 
 The symbols that are allowed in a pattern are essentially restricted
 to the constructors, here \C{O} and \C{S}, and to variable names.
@@ -857,7 +878,8 @@ decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
 reused in the result part.
 
-Remark that we did omit the type of the input \C{n}. We can omit this
+Remark that we did omit the type of the input \C{n} when defining
+C{predn}. We can omit this
 type because matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
 \C{nat}, as the \C{S} constructor belongs to \emph{exactly}
@@ -971,8 +993,8 @@ Definition same_bool b1 b2 :=
 \index[concept]{recursion}
 
 Using constructors and pattern matching, it is possible to add or
-subtract one, but not to describe the addition or subtraction of
-arbitrary numbers. For this purpose, we resort to recursive
+subtract one or a fixed number, but not to describe the addition or
+subtraction of arbitrary numbers. For this purpose, we resort to recursive
 definitions. The addition operation is defined in the
 following manner:
 
@@ -998,10 +1020,10 @@ expression \C{(addn 2 3)}, we can know the value by performing the following
 computation:
 \begin{tabbing}
 \C{adfasdfasdfafafafafafaf}\=\kill
-\C{(addn 2 3)} \> use the ``then'' branch, \C{p = 1}\\
-\C{(addn 1 3).+1} \> use the ``then'' branch, \C{p = 0}\\
+\C{(addn 2 3)} \> use the ``then'' branch, \C{p} receives 1\\
+\C{(addn 1 3).+1} \> use the ``then'' branch, \C{p} receives 0\\
 \C{(addn 0 3).+1.+1} \> use the ``else'' branch\\
-\C{3.+1.+1}\> remember that \C{5 = 3.+1.+1}
+\C{3.+1.+1}\> remember that \C{5} and \C{3.+1.+1} are the same number
 \end{tabbing}
 \index[concept]{computation}
 When the computation finishes, the symbol \C{addn} disappears.  In
@@ -1011,7 +1033,7 @@ successor symbol on top of \C{m}.
 
 If we reflect again on the discussion of Peano arithmetic, as in
 Section~\ref{sec:data}, we see that addition is provided by the definition of
-\C{addn}, and the usual axioms of Peano arithmetic, namely:
+\C{addn}, and two of the usual axioms of Peano arithmetic, namely:
 \[S~ x + y = S (x + y) \qquad 0 + x = x \]
 are actually provided by the computation behavior of the function,
 namely by the ``then'' branch and the ``else'' branch respectively.
@@ -1083,78 +1105,26 @@ instead of a subterm of "n".
 \end{coqout}
 \coqrun{name=loop_run;fail}{ssr,loop}
 
-% In function \C{add}, the first argument \C{n} is only used to
-% repeat \C{n} times the operation of adding a \C{.+1} on the second
-% argument.  This corresponds to the fact that the \C{p} is only used in
-% the recursive call.  The programming language makes it possible to do
-% more.  For instance, for a given function \(f\), we might want to add all
-% the values \(f 0 + f 1 + \cdots + f n\).  This would be done in the
-% following manner:
-%
-% \begin{coq}{name=example_sum_f}{}
-% Fixpoint sum_f (f : nat -> nat) (n : nat) :=
-%   if n is p.+1 then add (f n) (sum_f p) else f 0.
-% \end{coq}
-%
-If addition amounts to repeating the operation of applying \C{.+1}
-to one of the arguments, subtraction amounts to repeating the
-operation of fetching a subterm of the first argument.  This is also
-easily expressed using pattern matching constructs.  Here again,
-subtraction is already defined in the libraries, but we can play the game
-of re-defining our own version.
-
-\begin{coq}{name=sub}{}
-Fixpoint subn m n : nat :=
-  match m, n with
-  | p.+1, q.+1 => subn p q
-  | _ , _ => m
-  end.
-\end{coq}
-\coqrun{name=sub_run}{ssr,sub}
-\index[coq]{\C{subn}}
-From a mathematical point of view, this definition can be quite
-unsettling.  The second pattern matching rule indicates that when
-any argument of the subtraction is 0, then the result is
-the first argument.  This is exactly what one would expect when the
-second argument is 0; but this rule also covers the case where the
-second argument is non-zero while the first argument is 0: in that
-case, the result of the function is zero.
-
-On paper, the expression \(m - n\), for $m, n \in
-\mathbb{N}$, is usually understood as an integer, which is negative
-when $n > m$. But here the output of \C{subn} is constrained by its
-output type to be a natural number. Moreover, any function defined in
-\Coq{} has to be total, i.e., has to assign a value to any element in
-the type of its arguments.
-
-Since \C{subn} has type \C{nat -> nat -> nat},
-an element \emph{in type} \C{nat} has to be output by the function
-even in the case when the second argument is non-zero and the first
-argument is zero. The default value output in this case is \C{0}, so
-that in the end \C{subn} sends two naturals \(m\) and
-\(n\) to \(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
-
-In a sense, subtraction,
-which is a partial function on natural numbers, has been made total by
-providing a default value in the ``exceptional'' cases.  We shall
-discuss this in more detail in Section~\ref{sec:total}.
-
-We can also write a recursive function with two arguments of
-type \C{nat}, that returns \C{true} exactly when the two arguments are
-equal:
-
-\begin{coq}{name=nat_eq_def}{}
-Fixpoint eqn m n :=
-  match m, n with
-  | 0, 0 => true
+In the previous section, we described a function \C{test0} that tests
+whether a given number is 0.  With the help of recursivity, we can now
+define a function that tests whether two numbers are equal.
+\begin{coq}{name=eqn}{}
+Fixpoint eqn m n : bool :=
+  match m, n with =>
   | p.+1, q.+1 => eqn p q
-  | _, _ => false
+  | 0, 0 => true
+  | _ , _ => false
   end.
 \end{coq}
-\coqrun{name=nateq_run}{ssr,nat_eq_def}
-
-The last rule in the code of this function actually covers two cases :
-\C{0, _.+1} and \C{_.+1, 0}.
+\coqrun{name=eqn_run}{ssr,eqn}
+When comparing two numbers \C{m} \C{n}, we first check whether they both are
+successors of other numbers, if they are, then we name \C{p} and \C{q} these
+other numbers and we only have to verify whether these other numbers are
+equal.  It may also be the case that \C{m} and \C{n} are both 0, in this
+case we know they are equal.  Then, there remain two other cases, where either
+\C{m} is 0 and \C{n} is a successor, or the converse.  In that case, the
+answer is \C{false}.  These two cases are covered by the last pattern-matching
+rule in the function definition.
 
 For equality test functions, it is useful to add a more intuitive
 notation.  For instance we can attach a notation to \C{eqn} in
@@ -1214,19 +1184,6 @@ type.  Postfix notations such as \C{.-1} and \C{.*2} are provided for
 the predecessor and double functions.
 \index[coq]{\C{(_ .-1)}}
 \index[coq]{\C{(_ .*2)}}
-
-We detail here the definition of \C{leq} since it will be often used
-in examples.
-
-\begin{coq}{name=leq}{}
-Definition leq m n := m - n == 0.
-Notation "m <= n" := (leq m n).
-\end{coq}
-\coqrun{name=leq_run}{ssr,leq}
-
-Note that this definition crucially relies on the fact that
-subtraction computes to \C{0} whenever the first argument is less than
-or equal to the second argument.
 
 The \mcbMC{} library also provides concepts that make sense only
 for the \C{nat} data type, like the
