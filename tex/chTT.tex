@@ -4,8 +4,7 @@
 The authors made the deliberate choice to postpone the presentation of
 the mathematical foundations of the \Coq{} system and the formal
 definition of its language. Instead, the previous chapters have
-insisted on the definition of (typed) programs and on the way these
-% [DG] What does "insist" mean here?
+dealt with the definition of (typed) programs and on the way these
 programs can be used to describe computable functions and decidable
 predicates. This take on calculations is indeed both at the core of
 the type theory underlying \Coq{} and one of the crucial ingredients
@@ -96,11 +95,6 @@ also a term. In fact this term will be used as a type, and it
 represents a family of types \C{U} indexed by elements of type \C{T}.
 Importantly, if \C{x} does not occur in the term \C{U} as a
 free variable, then this term is usually denoted \C{T -> U}: it is
-% [DG] Annoying technicality: If you denote \C{forall x : T, U} by
-% \C{T -> U}, then you are implicitly identifying the terms
-% \C{forall x : T, U} for all choices of the letter \C{x}. So it's
-% probably not terms you want to speak of, but alpha-equivalence
-% classes of terms.
 used for the type of functions having their argument of type \C{T} and
 their results of type \C{U}. For instance, there is no difference
 between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, but the
@@ -546,14 +540,21 @@ ex : forall A : Type, (A -> Prop) -> Prop.
 ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
 \end{coq}
 
-The first quantification on \C{A} is the first one we encountered in this
-book, and expresses polymorphism.  Then we find an higher order quantification
-of a predicate \C{P} that makes the \C{ex} inductive declaration work
-for any formula describing a property of the witness.  Finally
-the dependent quantification \C{forall a : A} binds a term variable
-\C{a} in the type that follows to express that the property \C{P} must hold
-on the witness \C{a}.\\
-% [DG] This feels a bit hard to read...
+Both \C{ex} and \C{ex_intro} are parameterized by \C{(A : Type)}: as
+we have seen in chapter~\ref{ch:prog}, the \C{(forall A : Type)}
+quantification indicates that \C{ex} are \C{ex_intro} \C{polymorphic}
+constants, that can be instantiated for any type. Both \C{ex} and
+\C{ex_intro} also have a parameter of type  \C{(A -> Prop)}: since it
+does not appear in the rest of the type of \C{ex}, this parameter is
+not named and the type uses the arrow syntax instead of a more verbose
+\C{forall A : Type, forall P : A -> Prop, Prop}. This parameter is
+indicated by a so-called \emph{higher-order} quantification, because
+the parameter has an arrow type. Constants  \C{ex} and \C{ex_intro}
+can thus be  be specialized to any predicate \C{P}, so that the \C{ex}
+inductive declaration can be used on any formula. Finally, the
+\C{ex_intro} constant features a last, inner-most \C{forall a : A}
+quantifier, which binds a term variable \C{a} representing the witness
+of the existential statement for \C{P}.\\
 
 Let us also observe the inductive definition of the disjunction \C{or}
 and its two constructors \C{or\_introl} and \C{or\_intror}.
@@ -725,11 +726,10 @@ using a compact, symbolic, language.  Note that all bookkeeping actions
 correspond to regular, named, proof commands.  It is the use one makes of them
 that may be twofold: a case analysis in the middle of a proof may start two
 distinct lines of reasoning, and hence it is worth being noted explicitly with
-the \C{case} word; conversely, de-structuring a pair to obtain the two
-components can hardly be a relevant step in a proof, so one may prefer to
-perform such bookkeeping action with a symbolic, compact, notation
-corresponding to the same \C{case} functionality.
-% [DG] Not sure I understand the part after the semicolon.
+the \C{case} word. Conversly, breaking a pair into two pieces is
+usually not a significant, meaningful step in a proof: hence the
+possiblity to use a lightwight and compact syntax for this bookkeeping
+action, instead of an explicit mention of the \C{case} tactic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -859,8 +859,6 @@ by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 The way to discard an already named assumption is to mention
 its name in curly braces, as \C{=> \{x_gt1\}}.
 \index[ssr]{\C{tactic => ..}!\C{=> \{name\}} (disposal)}
-% [DG] You probably want "dispose of", not "dispose". But I think
-% "discard" is clearer here.
 
 We finally conclude with the \C{apply:} command. In the example just
 shown, we have used it with two arguments: a function and its last
@@ -917,7 +915,7 @@ Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 % On a lesser issue, the word "intro pattern" is used but not
 % explained; this holds even for the SSReflect manual! Is an intro
 % pattern just anything that laeds to a new constant in the context?
-
+% assia : TODO
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \mcbLEVEL{1}
@@ -975,6 +973,7 @@ move=> /(_ 3).
 % [DG] Why is there an "=>" after the "move" in the above example?
 % Nothing is getting moved into the context. Without the "=>" it works
 % just as fine. I'm surprised it works with "=>", though!
+% assia: TODO
 The idea behind the syntax here is that when we apply a view \C{v} to
 the top stack item (say, \C{top}), by writing \C{/v}, we are
 forming the term \C{(v top)}, whereas
@@ -983,10 +982,13 @@ by writing \C{/(_ x)}, we are forming the term \C{(top x)}.  The \C{_}
 is a placeholder for the top item, and is
 omitted in \C{/(v _)}.
 % [DG] Better "omitted in \C{/v}"?
+% assia: TODO
 
 When the top stack item is an equation, one can substitute it into
 the rest of the goal, using the tactics \C{<-}
 % [DG] Is "tactics" the right word here?
+% assia: TODO
+
 and \C{->} for right-to-left and left-to-right respectively.
 
 \begin{coq}{}{width=4cm}
@@ -1035,6 +1037,7 @@ The command \C{case: y} is equivalent to
 operates on the top item of the stack.
 Pushing items on the stack is called \emph{discharging}.
 % [DG] Reinstated, since you use the term.
+% assia: TODO
 
 Just before running \C{case}, the goal would look like this:
 
@@ -1054,7 +1057,7 @@ variable itself.  The correct invocation,
 \C{move: y odd\_y}, pushes first \C{odd\_y} and only then \C{y} onto
 the stack, leading to the valid goal
 
-\begin{coqout}{name=Stack2}{}
+\begin{coqout}{name=Stack2}{label=lst:stack2}
  x : nat
  x_gt1 : 1 < x
  ========================
@@ -1076,12 +1079,12 @@ subgoal 2 is:
  forall n : nat, odd n.+1 -> 2 < n.+1 + x
 \end{coqout}
 
-An alternative to discharging \C{odd\_y} would be to clear it, i.e., purge it
-from the context.  Listing context entry names inside curly braces has this
-effect, like in the case of \C{case: y \{odd\_y\}}.
-% [DG] The word "alternative" sounds wrong here -- clearing odd_y
-% leads into a dead end (2 < 0 + x can only be proven by contradiction
-% to odd 0).
+Note that listing context entry names inside curly braces purges them
+from the context. For instance the tactic \C{case: y \{odd\_y\}}
+clears the \C{odd\_y} fact. But this would lead to a dead end in the
+present proof, so let us come back to the proof of the
+implication~\ref{lst:stack2}.
+
 \index[ssr]{\C{tactic : ..}!\C{: \{name\}} (disposal)}
 
 One can combine \C{:} and \C{=>} around a proof command, to first prepare the
@@ -1219,6 +1222,7 @@ induction called ``course of values'' or ``strong induction''.
 % [DG] I've never seen it called "course of values". Apparently this
 % name is mostly used in computability theory? But "strong induction"
 % appears very often.
+%assia : TODO
 
 Claim: every amount of postage that is at least 12 cents
 can be made from 4-cent and 5-cent stamps.  The proof in the inductive
@@ -1367,6 +1371,7 @@ that \C{m'.+3.+4.+4.+4 < n.+1} is just syntactic sugar for
 % [DG] I hope I got these subtleties right. That said, I think it
 % would be better to first introduce the "set" tactic in a less
 % confusing example.
+%assia : TODO
 and so the name \C{m} is given to this term. We could have achieved
 the same goal using ``\C{set m := m'.+4.+4.+4.+4}''.
 \par
@@ -1399,6 +1404,7 @@ cover this exact amount of postage.
 % "[|s4 [s5 def_m4]]" and not "[|s4 s5 def_m4]". Is there some neat
 % and short explanation of this? (Not too important, but would
 % complete the picture.)
+%assia : TODO
 \end{itemize}
 \index[ssr]{\C{do n"!} (iteration)}
 
@@ -1449,6 +1455,7 @@ Lemma classic_bind P Q :
 \index[coq]{\C{classicW}}
 \index[coq]{\C{classically_bind}}
 % [DG] If we mention monads, let's include their unit.
+%assia : TODO
 The \C{classically} box can only be opened when the statement to be
 proved in the current goal is a boolean, hence an instance of a
 decidable predicate. Inside such a box the excluded middle is
