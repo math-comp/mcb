@@ -879,8 +879,13 @@ subgoal 2 is:
  (m.+1 * 0 == 0) = (m.+1 == 0) || (0 == 0)
 \end{coqout}
 \coqrun{name=mulneq01run}{ssr,mulneq01,show,abort}
-Indeed it is a good practice to get rid of the easiest subgoals as
-early as possible. And here the successor case is such an easy
+
+It is a good practice to get rid of the easy subgoal first:
+since we are going to indent the text of its subproof, it better be the
+shortest one.  In this way the reader can easily skip over the simple
+case, that is likely to be less interesting than the hard one.
+
+Here the successor case is such an easy
 subgoal: when \C{n} is of the form \C{k.+1}, it is easy to see that the
 right hand side of the equality evaluates to \C{false}, as both
 arguments of the boolean disjunction do. Now the left hand side
