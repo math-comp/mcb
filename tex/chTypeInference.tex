@@ -1726,7 +1726,7 @@ type is unified with another one containing the application of
 a projection to an unknown canonical structure instance.
 
 \begin{coq}{name=phantom}{}
-Inductive phantom (T : Type) (p : Type) := Phantom.
+Inductive phantom (T : Type) (p : T) := Phantom.
 \end{coq}
 
 The \C{Phantom} constructor expects two arguments.  If we apply
@@ -1747,7 +1747,7 @@ Notation "{ 'set' T }" := (set_of _ (Phantom Type T))
 \end{coq}
 
 When type inference runs on \C{\{set nat\}} the underlying term being
-typed is \C{(set\_of ?T (Phantom ?N nat))}.
+typed is \C{(set\_of ?T (Phantom Type nat))}.
 The unification problem arising for the last argument of \C{set\_of}
 is \C{(phantom Type (Equality.sort ?T))} versus
 \C{(phantom Type nat)}, that in turn contains the sub problem
