@@ -413,7 +413,7 @@ on a goal, here breaking an equivalence into one subgoal per
 implication, with a change of viewpoint, here by the means of the
 \C{eqnP} view. This combination of atomic proof steps is pervasive in
 a library designed using the boolean reflection methodology: the
-Ssreflect tactic language lets one use view lemmas freely
+SSReflect tactic language lets one use view lemmas freely
 in the middle of intro-patterns.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -517,7 +517,7 @@ in \C{Prop} with the ease to reason by equivalence via rewriting
 of boolean identities leads to concise proofs.
 }
 
-Let us now move to a non-artificial example to see how the Ssreflect
+Let us now move to a non-artificial example to see how the SSReflect
 tactic language supports the combination of views with the \C{apply},
 \C{case} and \C{rewrite} tactics.
 
@@ -1087,7 +1087,7 @@ pointing out that a missing part of the proof can be obtained by symmetry.
 The worst thing one can do when formalizing such an argument on a computer
 is to use the worst invention of computer science: copy-paste.  The language of
 \Coq{} is sufficiently expressive to model symmetries, and the
-Ssreflect proof language provides facilities to write symmetric arguments.
+SSReflect proof language provides facilities to write symmetric arguments.
 
 We prove the following characterization of the max of two natural numbers:
 \[
@@ -1293,7 +1293,7 @@ the \C{max} is \C{n1} due to the extra assumption.
 \mcbLEVEL{1}
 \mcbsubsubsection{Partially applied views}
 
-A less important, but very widespread, feature of the Ssreflect
+A less important, but very widespread, feature of the SSReflect
 proof language can be used to shrink the proof even further.
 In this proof script, we have named the fact \C{le_mn2} only for the
 purpose of referring to this fact in the transitivity step.
@@ -1419,7 +1419,7 @@ let ed := edivn_rec d m.+1 q in
   (ed.2 < d.+1) && (q * d.+1 + m.+1 == ed.1 * d.+1 + ed.2)
 \end{coqout}
 Note that the induction touches variables used in \C{ed} that
-is hence pushed on the goal stack.  The \C{@} modifier tells Ssreflect
+is hence pushed on the goal stack.  The \C{@} modifier tells SSReflect
 to keep the body of the let-in.
 
 Line 5 unfolds the recursive function and uses the following lemma to push the

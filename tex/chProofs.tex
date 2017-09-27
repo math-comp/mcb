@@ -450,7 +450,7 @@ system that describe the gradual construction of the proof she has in
 mind. This list of instructions is called a \emph{proof script}, and
 the instructions it is made of are called proof commands, or more traditionally
 \emph{tactics}.  The language of tactic we use is called
-Ssreflect.
+SSReflect.
 
 \begin{coq}{name=my-first-proof3}{title=Scheme of a complete proof}
 Lemma my_first_lemma : 3 = 3.
@@ -2069,7 +2069,7 @@ features we cannot extensively cover here.  We just sketch a very common idiom
 involving conditional rewrite rules and we mention the \C{RHS} pattern for
 the casual reader.  The interested reader can find more about the pattern
 language in section~\ref{sec:rewrite2} or in the dedicated chapter of
-the Ssreflect language user manual~\cite{ssrman}.
+the SSReflect language user manual~\cite{ssrman}.
 
 % One feature of the \C{rewrite} tactic is the optional iterator \C{?}.
 % A rewrite rule prefixed by \C{?}
@@ -2462,7 +2462,7 @@ of the art of search tools for formal libraries is far from being as
 advanced as what exists for instance for the world wide web.
 
 In order to help the users find their needle in the haystack,
-the \mcbMC{} library follows uniform naming policies, and the Ssreflect
+the \mcbMC{} library follows uniform naming policies, and the SSReflect
 proof language provides a \C{Search} command which displays lists of
 items filtered using patterns, like \C{(_ * _ + _)}
 or \C{(addn _ _)}, and substrings of the names, like \C{"rev" "cons"}.
