@@ -582,7 +582,7 @@ proof, or more commonly a subproof, ends there.
 \index[concept]{case analysis}
 %assia : I do not remember why the \C macro does not work here, seems
 %to be a problem with ~~...
-Let us now consider the tautology~\L+~~ (~~ b) = b+. The
+Let us now consider the tautology~\C{\~\~ (\~\~ b) = b}. The
 ``proof by computation'' technique of section~\ref{ssec:proofcomp}
 fails in this case:
 
@@ -1547,7 +1547,7 @@ Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 \end{coq}
 \coqrun{name=testexp}{ssr,exp,abort}
 
-where \L+p %| m`!+ stands for ``\C{p} divides the factorial of \C{m}''.
+where \C{p \%| m`!} stands for ``\C{p} divides the factorial of \C{m}''.
 
 The first step of our formal proof will be to give a name to the
 hypothesis \C{(prime p)}, which means that we add it to the
@@ -2529,8 +2529,8 @@ in the \mcbMC{} library:
 \item{\bf Generalities}
   \begin{itemize}
   \item Most of the time the name of a lemma can be read off its
-    statement: a lemma named \L+fee_fie_foe+ will say something about
-    \L+(fee .. (fie ..(foe ..) ..) ..)+, e.g. lemma \L+size_cat+ in
+    statement: a lemma named \C{fee\_fie\_foe} will say something about
+    \C{(fee .. (fie ..(foe ..) ..) ..)}, e.g. lemma \C{size\_cat} in
     {\tt seq.v}.
   \item We often use a one-letter suffix to resolve overloaded
     notation, e.g., \C{addn}, \C{addb}, \C{addr} denote nat, boolean, ring
@@ -2541,7 +2541,7 @@ in the \mcbMC{} library:
     % [DG] What does the preceding sentence mean?
     % [ET] I don't get it either
   \item Finally, a handful of theorems have historical names,
-    e.g, \L+Cayley_Hamilton+ or \L+factor_theorem+.
+    e.g, \C{Cayley\_Hamilton} or \C{factor\_theorem}.
   \end{itemize}
 \item{\bf Structures and Records}
   \begin{itemize}
@@ -2551,8 +2551,8 @@ in the \mcbMC{} library:
     % [DG] What is a structure type?
   \item Each instance of a structure type has a name formed with the
     name of the carrier type, followed by an underscore and the one of
-    the structure type like in \L+seq_sub_subType+, the structure of
-    \L+subType+ defined on \L+seq_sub+ (see {\tt fintype.v}). Notable
+    the structure type like in \C{seq\_sub\_subType}, the structure of
+    \C{subType} defined on \C{seq\_sub} (see {\tt fintype.v}). Notable
     exceptions to this rule are canonical constructions taking
     benefits of modular name spaces, like in {\tt ssralg.v}.
   \end{itemize}
@@ -2560,46 +2560,46 @@ in the \mcbMC{} library:
   \begin{itemize}
   \item If the conclusion of a lemma is a predicate or an equality for
     a predicate, then that predicate is a suffix of the lemma name,
-    like in \L+addn_eq0+ or \L+rev_uniq+.
+    like in \C{addn\_eq0} or \C{rev\_uniq}.
   \item If the conclusion of a lemma is a standard property such as
-    \L+\char+, \L+<|+, etc.\footnote{These examples are taken from
+    \C{\\char}, \C{<|}, etc.\footnote{These examples are taken from
       libraries in the Mathematical Component distribution.}:
     the property should be
-    indicated by a suffix (like \L+ _char+, \L+_normal+, etc), so
+    indicated by a suffix (like \C{ \_char}, \C{\_normal}, etc), so
     the lemma name
     should start with a description of the argument of the property, such as
     its key property, or its head constant.
-    Thus we have \L+quotient_normal+, not \L+normal_quotient+, etc. This
+    Thus we have \C{quotient\_normal}, not \C{normal\_quotient}, etc. This
     convention does not apply to monotony rules, for which we either
     use the name of the property with the suffix for the operator
-    (e.g., \L+groupM+), or the name of the operator with the S
-    suffix for subset monotony (e.g., \L+mulgS+).
+    (e.g., \C{groupM}), or the name of the operator with the S
+    suffix for subset monotony (e.g., \C{mulgS}).
   \item We try to use and maintain the following set of lemma suffixes:
     \begin{itemize}
     \item {\tt 0} : zero, or the empty set
-    \item {\tt 1} : unit, or the singleton set (use \L+_set1+ for
+    \item {\tt 1} : unit, or the singleton set (use \C{\_set1} for
       the latter to disambiguate)
     \item {\tt 2} : two, doubling, doubletons
     \item {\tt 3} etc, similarly
     \item {\tt A} : associativity
-    \item {\tt C} : commutativity, or set complement (use \L+Cr+
+    \item {\tt C} : commutativity, or set complement (use \C{Cr}
       for trailing complement)
     \item {\tt D} : set difference, addition
     \item {\tt E} : definition elimination (often conversion
       lemmas)
     \item {\tt F} : boolean false, finite type variant (as in
-      \L+canF_eq+), or group functor
+      \C{canF\_eq}), or group functor
     \item {\tt G} : group argument
     \item {\tt I} : set intersection, injectivity for binary operators
     \item {\tt J} : group conjugation
     \item {\tt K} : cancellation lemmas
-    \item {\tt L} : left hand side (as in \L+canLR+)
+    \item {\tt L} : left hand side (as in \C{canLR})
     \item {\tt M} : group multiplication
     \item {\tt N} : boolean negation, additive opposite
     \item {\tt P} : characteristic properties (often reflection
       lemmas)
     \item {\tt R} : group commutator, or right hand side (as in
-      \L+canRL+)
+      \C{canRL})
     \item {\tt S} : subset argument, or integer successor
     \item {\tt T} : boolean truth and Type-wide sets
     \item {\tt U} : set union
@@ -3419,3 +3419,4 @@ Qed.
 % reference manual here is an example of usage in the right context of the
 % commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
 % discuss all the matching discipline... nor the most advanced syntaxes)
+

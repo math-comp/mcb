@@ -2142,14 +2142,14 @@ The \C{iota} function generates the list
 \C{[:: m; m+1; ...; m+n-1]}
 of natural numbers
 corresponding to the range of the summation. Then the notation defines
-expressions with shape \L+\sum_ (m <= i < n) F+, with \C{F} a
+expressions with shape \C{\\sum\_ (m <= i < n) F}, with \C{F} a
 sub-expression featuring variable \C{i}, the one used for the
 index. For instance, once the above notation is granted and for any
 natural number \C{(n : nat)}, one may write
-the \Coq{} expression \L+(\sum_(1 <= i < n) i)+ to represent the
+the \Coq{} expression \C{(\\sum\_(1 <= i < n) i)} to represent the
 sum $\sum\limits_{i=1}^{n-1} i$. The name \C{i} is really used as a
 \emph{binder name} here and we may substitute \C{i} with any other
-name we may find more convenient, as in \L+(\sum_(1 <= j < n) j)+,
+name we may find more convenient, as in \C{(\\sum\_(1 <= j < n) j)},
 without actually changing the expression\footnote{Although this change
 results in two syntactically different expressions, they have the same
 meaning for \Coq{}}.
@@ -3142,3 +3142,4 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 % encode
 % decode
 % \end{coq}
+
