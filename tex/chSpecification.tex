@@ -1,4 +1,4 @@
-\Chapter{Boolean Reflection}{}
+\chapter{Boolean Reflection}{}
 \label{ch:boolrefl}
 
 % in addition to the photos:
@@ -581,7 +581,6 @@ We can now conclude the proof:
 Lemma leq_total m n : (m <= n) || (m >= n).
 Proof. by rewrite -implyNb -ltnNge; apply/implyP; apply: ltnW. Qed.
 \end{coq}
-\\
 
 The \C{case} tactic also combines well with the view mechanism, which
 eases reasoning by cases along a disjunction expressed with a boolean
@@ -959,8 +958,8 @@ Euclidean division algorithm.  The three subsections contain
 material in increasing order of difficulty.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Primes, a never ending story}\label{sec:infprimes}
+%\mcbLEVEL{1}
+\subsection{Primes, a never ending story}\label{sec:infprimes}
 \index[concept]{forward reasoning}
 
 Saying that primes are infinite can be phrased as: for any natural number
@@ -1077,8 +1076,8 @@ As a general principle, in the proof script style we propose, a full
 line should represent a meaningful reasoning step (for a human being).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Order and max, a matter of symmetry}\label{sec:leqmax}
+%\mcbLEVEL{1}
+\subsection{Order and max, a matter of symmetry}\label{sec:leqmax}
 \index[concept]{forward reasoning}
 \index[concept]{symmetric argument}
 
@@ -1290,8 +1289,8 @@ and \C{||}; and the final proof, by transitivity, in the case when
 the \C{max} is \C{n1} due to the extra assumption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsubsection{Partially applied views}
+%\mcbLEVEL{1}
+\subsubsection{Partially applied views}
 
 A less important, but very widespread, feature of the SSReflect
 proof language can be used to shrink the proof even further.
@@ -1328,8 +1327,8 @@ The very compact idiom \C{/leq_trans->} is quite frequent in the
 \mcbMC{} library.
 
 %%%%%%%%%%%%%%%5
-\mcbLEVEL{1}
-\mcbsubsection{Euclidean division, simple and correct}\label{sec:edivn}
+%\mcbLEVEL{1}
+\subsection{Euclidean division, simple and correct}\label{sec:edivn}
 \index[concept]{simplifying equation}
 
 Euclidean division is defined as one expects: iterating subtraction.
@@ -1521,11 +1520,11 @@ line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
 % \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Coercions}
-\mcbREQUIRE{}
-\mcbPROVIDE{}
-\mcbLEVEL{1}
-\mcbsection{Notational aspects of specifications}
+%\mcbLEARN{Coercions}
+%\mcbREQUIRE{}
+%\mcbPROVIDE{}
+%\mcbLEVEL{1}
+\section{Notational aspects of specifications}
 \label{sec:coercions}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

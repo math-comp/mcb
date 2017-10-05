@@ -1,14 +1,11 @@
 % vim:set errorformat="":
-\usepackage[pass]{geometry}
+%\usepackage[pass]{geometry}
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
-\usepackage{xcolor}
 \usepackage{colortbl}
 \usepackage{marginnote}
 \usepackage{wrapfig}
-\usepackage{graphicx}
-\usepackage{lipsum}
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{environ}
@@ -20,19 +17,17 @@
 \usepackage{multirow}
 \usepackage{needspace}
 \usepackage{lscape}
-%\usepackage{fontspec} % xelatex only
+% %\usepackage{fontspec} % xelatex only
 \usepackage{hyperref} % must be the last one
 \hypersetup{
     colorlinks=true,
-    linkcolor=blue,
-    citecolor=blue,
-    urlcolor=blue
+    linkcolor=ocre,
+    citecolor=ocre,
+    urlcolor=ocre
 }
-\renewcommand{\ExerciseHeader}{\medskip\noindent\textbf{\ExerciseName~\ExerciseHeaderNB.~\ExerciseHeaderDifficulty}\emph{\ExerciseHeaderTitle}\\~\\}
-\renewcommand{\AnswerHeader}{\medskip\noindent{\textbf{Answer of \ExerciseName~\ExerciseHeaderNB}\\}}
 
 \usepackage[skins,listings]{tcolorbox}
-\usepackage{boolexpr,ifthen}
+% %\usepackage{boolexpr,ifthen}
 \definecolor{dkblue}{rgb}{0,0.1,0.5}
 \definecolor{lightblue}{rgb}{0,0.5,0.5}
 \definecolor{dkgreen}{rgb}{0,0.4,0}
@@ -44,6 +39,7 @@
 
 \def\lstlanguagefiles{defManSSR.tex}
 \lstset{language=SSR}
+
 \newcommand{\mcbimpl}[1]{\lstinline/?$_{#1}$/}
 \newcommand{\mcbimplm}[1]{\mbox{?}_{#1}}
 
@@ -51,188 +47,82 @@
 
 \newcommand{\C}[1]{\mbox{\lstinline`#1`}}
 \newcommand{\D}[1]{\mbox{\lstinline'#1'}}
+% %\let\L=\lstinline
 
 % Highlights identifiers, |* id *| in underlined red, can we do better?
 %\lstset{moredelim=[is][\color{red}\bfseries\ttfamily\underbar]{|*}{*|}}
 \lstset{moredelim=[is][\ttfamily\uwave]{|==}{==|}}
 \lstset{moredelim=[is][\ttfamily\underbar]{|--}{--|}}
 
-\newcommand\Chapter[2]{\chapter
-  [#1\hfil\hbox{}\protect\linebreak{\itshape#2}]
-  {#1\\ [2ex] {\Large \itshape #2}}
-  \markboth{\MakeUppercase{\chaptername\ \thechapter.\ #1}}{}}
-
-\newcolumntype{V}{>{\centering\arraybackslash} m{0\linewidth} }
-
 \newcommand{\gotcha}[1]{
-\begin{center}
-\begin{tcolorbox}[colframe=gotcha,
-	center title,
-	title={\textcolor{white}{\textsf{\Large\textbf{Warning}}}}]
-\begin{tabular}{lV}
-\begin{minipage}{0.86\textwidth}
-\vspace{1em}
+\begin{remark}
 #1
-\end{minipage}
-&
-\warnsign{1cm}
-\end{tabular}
-\end{tcolorbox}
-\end{center}}
+\end{remark}
+}
 
 \newcommand{\mantra}[1]{
-\begin{center}
-\begin{tcolorbox}[colframe=mantra,
-	center title,
-	title={\textcolor{white}{\textsf{\Large\textbf{Advice}}}}]
-\begin{tabular}{lV}
-\begin{minipage}{0.86\textwidth}
-\vspace{1em}
+\begin{remark}
 #1
-\end{minipage}
-&
-\coqhead{1cm}
-\end{tabular}
-\end{tcolorbox}
-\end{center}}
-
-\newcommand{\coqhead}[1]{\includegraphics[width=#1]{../artwork/smallpantade}}
-\newcommand{\warnsign}[1]{\includegraphics[width=#1]{../artwork/Ambox_warning_pn}}
-
-\newcommand{\mcbpplevel}[1]{
-\switch[#1=]
-\case{1}
-\case{2} \hspace{0.6cm} \coqhead{0.6cm}
-\case{3} \coqhead{0.6cm} \coqhead{0.6cm}
-\otherwise Please use \textbackslash mcbLEVEL
-\endswitch
+\end{remark}
 }
-\newcommand{\mcbpptxtlevel}[1]{
-\switch[#1=]
-\case{1}
-\case{2} $(\star)$
-\case{3} $(\star\star)$
-\otherwise Please use \textbackslash mcbLEVEL
-\endswitch
-}
+% \newcommand{\mantra}[1]{
+% \begin{center}
+% \begin{tcolorbox}[colframe=mantra,
+% 	center title,
+% 	title={\textcolor{white}{\textsf{\Large\textbf{Advice}}}}]
+% \begin{tabular}{lV}
+% \begin{minipage}{0.86\textwidth}
+% \vspace{1em}
+% #1
+% \end{minipage}
+% &
+% \coqhead{1cm}
+% \end{tabular}
+% \end{tcolorbox}
+% \end{center}}
+
+% \newcommand{\coqhead}[1]{\includegraphics[width=#1]{/home/assia/Sources/mcb/artwork/smallpantade}}
+% \newcommand{\warnsign}[1]{\includegraphics[width=#1]{/home/assia/Sources/mcb/artwork/Ambox_warning_pn}}
 
 
-\newcommand{\mcbvarreset}{
-\mcbLEARN{Please use \textbackslash mcbLEARN}
-\mcbREQUIRE{Please use \textbackslash mcbREQUIRE}
-\mcbPROVIDE{Please use \textbackslash mcbPROVIDE}
-\mcbNOTES{}
-\mcbLEVEL{4}}
+% \newbox{\devnull}
+ \NewEnviron{coqdef}[1]{}
 
-\newcommand{\mcbLEARN}[1]{\def\mcbvarLEARN{#1}}
-\newcommand{\mcbREQUIRE}[1]{\def\mcbvarREQUIRE{#1}}
-\newcommand{\mcbPROVIDE}[1]{\def\mcbvarPROVIDE{#1}}
-\newcounter{mcbvarLEVEL}
-\newcommand{\mcbLEVEL}[1]{\setcounter{mcbvarLEVEL}{#1}}
-\newcommand{\mcbNOTES}[1]{\def\mcbvarNOTES{#1}}
-\newcounter{mcbvarTMP}
+ \newcommand{\coqrun}[2]{}
 
-\newcommand{\mcbsection}[1]{
-\setcounter{mcbvarTMP}{1}
-\ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
-\section[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1\hfill\mcbpptxtlevel{\value{mcbvarLEVEL}}}
-%\smash{\raisebox{0.7cm}{\hspace{0.9\textwidth}\mcbpptxtlevel{\value{mcbvarLEVEL}}}}
-%\marginnote{\small\begin{tabular}{p{3.8cm}}\hline
-%\textbf{Learns} \mcbvarLEARN \\
-%\textbf{Requires} \mcbvarREQUIRE \\
-%\textbf{Provides} \mcbvarPROVIDE \\
-%\textbf{Level} \arabic{mcbvarLEVEL} \\
-%\switch[\value{mcbvarTMP}=]
-%\case{0}
-%\case{1} \textbf{Note} \mcbvarNOTES \\
-%\endswitch
-%\hline
-%\end{tabular}\\~\\
-%}
-\mcbvarreset{}
-}
-
-\newcommand{\mcbsubsection}[1]{
-\setcounter{mcbvarTMP}{1}
-\ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
-%\subsection[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1}
-\subsection[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1\hfill\mcbpptxtlevel{\value{mcbvarLEVEL}}}
-%\smash{\raisebox{0.7cm}{\hspace{0.9\textwidth}\mcbpptxtlevel{\value{mcbvarLEVEL}}}}
-%\marginnote{\small\begin{tabular}{p{3.8cm}}\hline
-%\textbf{Learns} \mcbvarLEARN \\
-%\textbf{Requires} \mcbvarREQUIRE \\
-%\textbf{Provides} \mcbvarPROVIDE \\
-%\textbf{Level} \arabic{mcbvarLEVEL} \\
-%\switch[\value{mcbvarTMP}=]
-%\case{0}
-%\case{1} \textbf{Note} \mcbvarNOTES \\
-%\endswitch
-%\hline
-%\end{tabular}\\~\\
-%}
-\mcbvarreset{}
-}
+\lstnewenvironment{coq}[2]{\mdframed[skipabove=10pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=ocre,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=0pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt,
+innerbottommargin=0pt]\lstset{numbers=left,numberstyle=\tiny,xleftmargin=5mm}}{\endmdframed}
 
 
-\newcommand{\mcbsubsubsection}[1]{
-\setcounter{mcbvarTMP}{1}
-\ifthenelse{\equal{}{\mcbvarNOTES}}{\setcounter{mcbvarTMP}{0}}{}
-%\subsubsection[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1}
-\subsubsection[#1 \mcbpptxtlevel{\value{mcbvarLEVEL}}]{#1\hfill\mcbpptxtlevel{\value{mcbvarLEVEL}}}
-%\smash{\raisebox{0.7cm}{\hspace{0.9\textwidth}\mcbpptxtlevel{\value{mcbvarLEVEL}}}}
-%\marginnote{\small\begin{tabular}{p{3.8cm}}\hline
-%\textbf{Learns} \mcbvarLEARN \\
-%\textbf{Requires} \mcbvarREQUIRE \\
-%\textbf{Provides} \mcbvarPROVIDE \\
-%\textbf{Level} \arabic{mcbvarLEVEL} \\
-%\switch[\value{mcbvarTMP}=]
-%\case{0}
-%\case{1} \textbf{Note} \mcbvarNOTES \\
-%\endswitch
-%\hline
-%\end{tabular}\\~\\
-%}
-\mcbvarreset{}
-}
-\mcbvarreset{}
+\lstnewenvironment{coqout}[2]{\mdframed[skipabove=10pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=gray,
+backgroundcolor=black!5,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=0pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt,
+innerbottommargin=0pt]}{\endmdframed}
 
-\newbox{\devnull}
-\NewEnviron{coqdef}[1]{}
 
-\newcommand{\coqrun}[2]{}
-
-\newtcblisting[auto counter]{coq}[2]{
-	listing engine=listings,
-	listing options={numbers=left,numberstyle=\tiny,
-	                 aboveskip=0mm,belowskip=0mm,
-		         xrightmargin=0mm,xleftmargin=0mm},
-	%on line,
-	before={\noindent},
-	after={\hfill},
-	listing only,
-	fonttitle=\small\sffamily,%\bfseries,
-	boxrule=0.2mm,top=1mm,bottom=1mm,
-	#2
-}
-\newtcblisting{coqout}[2]{
-	listing engine=listings,
-	listing options={aboveskip=0mm,belowskip=0mm,
-	                 xrightmargin=0mm,xleftmargin=0mm},
-	%on line,
-	before={\noindent},
-	after={\hfill},
-	listing only,
-	fonttitle=\small\sffamily,%\bfseries,
-	boxrule=0.2mm,top=1mm,bottom=1mm,
-	#2
-}
-
-\newcommand{\somethingfollows}{\needspace{2\baselineskip}}
-\newcommand{\ssrc}[2]{\somethingfollows\C{#1}
-\setlength{\leftskip}{1.5em}
-
-#2
-
-\setlength{\leftskip}{0cm}\vspace{0.4em}}
-%\newcommand{\ssrc}[2]{\needspace{2\baselineskip}\C{#1}\vspace{0.4em}\\\hspace*{1.5em}\begin{minipage}{0.28\textwidth}#2 \hspace*{\fill}\end{minipage}\vspace{0.4em}}
+% For current cheatsheets, to be fixed
+\newcommand{\ssrc}[2]{\needspace{2\baselineskip}\C{#1}\vspace{0.4em}\\\hspace*{1.5em}\begin{minipage}{0.28\textwidth}#2 \hspace*{\fill}\end{minipage}\vspace{0.4em}}
 \newcommand{\caveat}[1]{\fbox{caveat}: #1}

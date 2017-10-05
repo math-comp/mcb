@@ -2,7 +2,9 @@ quick: gitrev
 	pdflatex main && cp main.pdf book.pdf
 all: gitrev
 	pdflatex main
-	bibtex main
+	makeindex main.idx -s StyleInd.ist
+	biber main
+	biber main
 	pdflatex main
 	pdflatex main
 	pdflatex main && cp main.pdf book.pdf
@@ -13,7 +15,7 @@ gitrev:
 	git describe --tags >> gitrev
 
 clean:
-	rm -rf .*/rt *.aux
+	rm -rf .*/rt *.aux *.bbl *.bcf *.idx *.out *.toc *.ilg *.ind *.listing *.ptc *.run.xml
 
 COQBIN ?=
 COQC := $(COQBIN)coqc

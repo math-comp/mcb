@@ -19,7 +19,7 @@ Redirect "g1" Show.
 Require Import tuple.
 \end{coqdef}
 
-\Chapter{Sub-Types}{}\label{ch:sigmabool}
+\chapter{Sub-Types}{}\label{ch:sigmabool}
 
 Inductive data types have been used to both code data, like lists, and
 logical connectives, like the existential quantifier.
@@ -75,12 +75,12 @@ Many such interfaces can be extended to sub-types, and we shall see that
 the \mcbMC{} library provides facilities to automate this.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbREQUIRE{eqtype, fintype, CS}
-\mcbPROVIDE{tuple}
-\mcbNOTES{}
-\mcbsection{$n$-tuples, lists with an invariant on the length}
+%\mcbLEVEL{1}
+%\mcbLEARN{}
+%\mcbREQUIRE{eqtype, fintype, CS}
+%\mcbPROVIDE{tuple}
+%\mcbNOTES{}
+\section{$n$-tuples, lists with an invariant on the length}
 \label{sec:tupleinvariant}
 
 We begin by defining the type of $n$-tuples: sequences of length $n$.
@@ -299,11 +299,11 @@ it is the new concept of tuple that takes care of the size related
 reasoning steps.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbREQUIRE{proof language}
-\mcbPROVIDE{an example of sub-type of eqType}
-\mcbLEARN{it is a schematic process}
-\mcbsection{$n$-tuples, a sub-type of sequences}
+%\mcbLEVEL{1}
+%\mcbREQUIRE{proof language}
+%\mcbPROVIDE{an example of sub-type of eqType}
+%\mcbLEARN{it is a schematic process}
+\section{$n$-tuples, a sub-type of sequences}
 \label{sec:subtypekit}
 
 We have seen that \lstinline/(seq T)/ is an \lstinline/eqType/
@@ -415,11 +415,11 @@ that is reminiscent of sub-typing in functional languages like OCaml.
 The following section details the implementation of the sub-type kit.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{2}
-\mcbLEARN{Declare a new subtype and derive eqType}
-\mcbPROVIDE{usage of \lstinline/[subType for ...]/}
-\mcbREQUIRE{}
-\mcbsubsection{The sub-type kit}
+%\mcbLEVEL{2}
+%\mcbLEARN{Declare a new subtype and derive eqType}
+%\mcbPROVIDE{usage of \lstinline/[subType for ...]/}
+%\mcbREQUIRE{}
+\subsection{The sub-type kit}
 
 When one has a base type T and a sub-type ST defined as a boolean
 sigma type, the \mcbMC{} library provides facilities to
@@ -519,8 +519,8 @@ all the theory that equips T is also available on ST.  Aliasing a
 type is useful to attach to it different notations or coercions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{A note on boolean $\Sigma$-types\label{hedberg}}
+%\mcbLEVEL{1}
+\subsection{A note on boolean $\Sigma$-types\label{hedberg}}
 \index[concept]{proof irrelevance}
 
 The \C{eq_irrelevance} theorem used to prove that tuples form an
@@ -555,12 +555,12 @@ function}, forming sub-types is extremely easy.
 ones, since they inherit all the theory.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbREQUIRE{eqtype,CS}
-\mcbPROVIDE{fintype}
-\mcbNOTES{}
-\mcbsection{Finite types and their theory}
+%\mcbLEVEL{1}
+%\mcbLEARN{}
+%\mcbREQUIRE{eqtype,CS}
+%\mcbPROVIDE{fintype}
+%\mcbNOTES{}
+\section{Finite types and their theory}
 
 Before describing other sub-types, we introduce the interface of
 types equipped with a finite enumeration.
@@ -747,11 +747,11 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Finite functions}
+%\mcbLEVEL{1}
+%\mcbLEARN{}
+%\mcbPROVIDE{}
+%\mcbREQUIRE{}
+\section{Finite functions}
 
 In standard mathematics functions that are point wise equal are
 considered as equal.  This principle, that we call \emph{functional
@@ -875,11 +875,11 @@ functions from \C{I} to \C{J} is systematically formed in order to
 provide its enumeration as the range of the summation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Finite sets}
+%\mcbLEVEL{1}
+%\mcbLEARN{}
+%\mcbPROVIDE{}
+%\mcbREQUIRE{}
+\section{Finite sets}
 
 We have seen how sub-types let one easily define a new type by, typically,
 enriching an existing one with some properties.  While this is very
@@ -953,11 +953,11 @@ do preserve the group structure and type inference can be programmed
 to infer so automatically.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Permutations}
+%\mcbLEVEL{1}
+%\mcbLEARN{}
+%\mcbPROVIDE{}
+%\mcbREQUIRE{}
+\section{Permutations}
 
 Another application of finite functions is the definition of
 the type of permutations.
@@ -1007,11 +1007,11 @@ Lemma card_perm A : #|perm_on A| = #|A| `!.
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{}
-\mcbPROVIDE{}
-\mcbREQUIRE{}
-\mcbsection{Matrix}
+%\mcbLEVEL{1}
+%\mcbLEARN{}
+%\mcbPROVIDE{}
+%\mcbREQUIRE{}
+\section{Matrix}
 \label{sec:matrix}
 
 We finally have all the bricks to define the type of matrices
@@ -1113,8 +1113,8 @@ size information most of the time, playing once again the role of a
 trained reader.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Example: matrix product commutes under trace}
+%\mcbLEVEL{1}
+\subsection{Example: matrix product commutes under trace}
 
 As an example let's take the following simple property of the trace.
 Note that we can omit the dimensions of \C{B} since it
@@ -1198,8 +1198,8 @@ A more detailed description of the hierarchy of structures is the
 subject of the next chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Block operations}
+%\mcbLEVEL{1}
+\subsection{Block operations}
 
 The size information stocked in the type of a matrix is
 also used to drive the decomposition of a matrix into sub-matrices,
@@ -1236,8 +1236,8 @@ an upper left square block of size 1, a row and a column of length $n-1$,
 and a square block of size $n-1$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{2}
-\mcbsubsection{Size casts}\label{sec:castmx}
+%\mcbLEVEL{2}
+\subsection{Size casts}\label{sec:castmx}
 
 Types containing values are a double edged sword.  While we have seen that
 they make the writing of matrix expressions extremely succinct, in
@@ -1312,8 +1312,8 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 \index[coq]{\C{conform_mx}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{3}
-\mcbsubsubsection{Sorts and \C{reflect}}
+%\mcbLEVEL{3}
+\subsubsection{Sorts and \C{reflect}}
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs
 from the one part of the \mcbMC{} library in a tiny detail.

@@ -12,7 +12,7 @@ Unset Printing Implicit Defensive.
 Abort.
 \end{coqdef}
 
-\Chapter{Implicit Parameters}{}
+\chapter{Implicit Parameters}{}
 
 The rules of the \mcbCIC{}, as the ones sketched in~\ref{ch:ttch},
 are expressed on the syntax of terms and
@@ -88,11 +88,11 @@ For this reason we shall need to dive, from time to time, into
 technical details, especially in sections labelled with two stars.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{HO unif is hard}
-\mcbREQUIRE{}
-\mcbPROVIDE{terminology}
-\mcbLEVEL{1}
-\mcbsection{Type inference and Higher-Order unification}\label{sec:hounif}
+%\mcbLEARN{HO unif is hard}
+%\mcbREQUIRE{}
+%\mcbPROVIDE{terminology}
+%\mcbLEVEL{1}
+\section{Type inference and Higher-Order unification}\label{sec:hounif}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The type inference algorithm is quite similar to the type checking
@@ -154,11 +154,11 @@ use the alternative syntax \mcbimpl{x} for implicit arguments (where
 $x$ is a unique name).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{type and term inference}
-\mcbREQUIRE{have, move, exact}
-\mcbPROVIDE{Arguments (setting implicit)}
-\mcbLEVEL{1}
-\mcbsection{Recap: type inference by examples}
+%\mcbLEARN{type and term inference}
+%\mcbREQUIRE{have, move, exact}
+%\mcbPROVIDE{Arguments (setting implicit)}
+%\mcbLEVEL{1}
+\section{Recap: type inference by examples}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Let us start with the simplest example one could imagine: defining the
@@ -326,12 +326,12 @@ unification algorithm implemented in \Coq{} can
 read~\cite{unifcoq,betaderekjournal}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{records as relations, canonical base instances}
-\mcbREQUIRE{}
-\mcbPROVIDE{Canonical}
-\mcbLEVEL{1}
-\mcbNOTES{}
-\mcbsection{Records as relations}\label{sec:eqtype}
+%\mcbLEARN{records as relations, canonical base instances}
+%\mcbREQUIRE{}
+%\mcbPROVIDE{Canonical}
+%\mcbLEVEL{1}
+%\mcbNOTES{}
+\section{Records as relations}\label{sec:eqtype}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 In computer science a record is a very common data structure.  It is a
@@ -745,11 +745,11 @@ The term synthesized by \Coq{} is the following one:
 % symbols to model the syntax and theory of iterated, ``big'', operators.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbREQUIRE{records + CS}
-\mcbPROVIDE{eqType}
-\mcbLEARN{interface to a theory}
-\mcbsection{Records as (first-class) interfaces}\label{rec:itf}
+%\mcbLEVEL{1}
+%\mcbREQUIRE{records + CS}
+%\mcbPROVIDE{eqType}
+%\mcbLEARN{interface to a theory}
+\section{Records as (first-class) interfaces}\label{rec:itf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 When we define an overloaded notation, we convey
@@ -869,11 +869,11 @@ otherwise implicit first argument of \C{Pack}) to document that
 we are relating the type \C{nat} with its comparison operation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{overloaded lemmas}
-\mcbREQUIRE{}
-\mcbPROVIDE{eqP}
-\mcbLEVEL{1}
-\mcbsection{Using a generic theory}\label{sec:eqtypetheory}
+%\mcbLEARN{overloaded lemmas}
+%\mcbREQUIRE{}
+%\mcbPROVIDE{eqP}
+%\mcbLEVEL{1}
+\section{Using a generic theory}\label{sec:eqtypetheory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The whole point of defining interfaces is to share a theory
@@ -977,11 +977,11 @@ Proof. by case: ifP => // /eqP  ->. Qed.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{eqType is the base of (abstract) ssr style}
-\mcbREQUIRE{}
-\mcbPROVIDE{\\in}
-\mcbLEVEL{1}
-\mcbsection{The generic theory of sequences}\label{sec:seqtypetheory}
+%\mcbLEARN{eqType is the base of (abstract) ssr style}
+%\mcbREQUIRE{}
+%\mcbPROVIDE{\\in}
+%\mcbLEVEL{1}
+\section{The generic theory of sequences}\label{sec:seqtypetheory}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Now that the \lstinline/eqType/ interface equips a type with a well
@@ -1119,11 +1119,11 @@ of iterated operations can be built and made practical thanks again
 to programmable type inference.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{bigop}
-\mcbREQUIRE{Canonical}
-\mcbPROVIDE{overloaded big notations}
-\mcbLEVEL{1}
-\mcbsection{The generic theory of ``big'' operators}\label{sec:bigop}
+%\mcbLEARN{bigop}
+%\mcbREQUIRE{Canonical}
+%\mcbPROVIDE{overloaded big notations}
+%\mcbLEVEL{1}
+\section{The generic theory of ``big'' operators}\label{sec:bigop}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The objective of the \emph{bigop} library is to provide compact notations
@@ -1510,8 +1510,8 @@ by hand.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Searching the bigop library}
+%\mcbLEVEL{1}
+\subsection{Searching the bigop library}
 
 Searching the bigop library for a lemma is slightly harder than
 searching the other libraries as explained in section~\ref{sec:search}.
@@ -1551,11 +1551,11 @@ Finally the \mcbMC{} user is advised to read the contents of the
 in that library.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Real bigop notation}
-\mcbREQUIRE{bigop}
-\mcbPROVIDE{BigBody}
-\mcbLEVEL{3}
-\mcbsection{Stable notations for big operators}
+%\mcbLEARN{Real bigop notation}
+%\mcbREQUIRE{bigop}
+%\mcbPROVIDE{BigBody}
+%\mcbLEVEL{3}
+\section{Stable notations for big operators}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The \C{bigop} constant and the notations attached to it
@@ -1619,11 +1619,11 @@ Notation "\big [ op / idx ]_ ( i <- r | P ) F" :=
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Declaring overloaded notations}
-\mcbREQUIRE{Canonical}
-\mcbPROVIDE{Notation}
-\mcbLEVEL{2}
-\mcbsection{Working with overloaded notations}
+%\mcbLEARN{Declaring overloaded notations}
+%\mcbREQUIRE{Canonical}
+%\mcbPROVIDE{Notation}
+%\mcbLEVEL{2}
+\section{Working with overloaded notations}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 This little section deals with two ``technological issues'' the reader
@@ -1695,11 +1695,11 @@ of the current conjecture.
 % TODO : Discuss also the dangers of breaking abstraction barriers, as a
 % good practice.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Implement \lstinline/[foo of nat]/}
-\mcbREQUIRE{Canonical}
-\mcbPROVIDE{Phantom}
-\mcbLEVEL{2}
-\mcbsection{Querying canonical structures}\label{sec:phantom}
+%\mcbLEARN{Implement \lstinline/[foo of nat]/}
+%\mcbREQUIRE{Canonical}
+%\mcbPROVIDE{Phantom}
+%\mcbLEVEL{2}
+\section{Querying canonical structures}\label{sec:phantom}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 It is possible to  ask \Coq{} if a certain term does validate an
@@ -1718,8 +1718,8 @@ The rest of this section introduces the general mechanism of phantom
 types used to trigger canonical structure resolution.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
-\mcbLEVEL{3}
-\mcbsubsection{Phantom types}
+%\mcbLEVEL{3}
+\subsection{Phantom types}
 
 First of all, canonical structure resolution kicks in during
 unification that in turn is used to compare types.  Types are

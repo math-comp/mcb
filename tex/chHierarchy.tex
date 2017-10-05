@@ -1,4 +1,4 @@
-\Chapter{Organizing Theories}{}
+\chapter{Organizing Theories}{}
 \label{ch:hierarchy}
 
 % Packaging records, the bigop hierarchy.
@@ -52,11 +52,11 @@ describe these interfaces first, so only those who wish to extend old
 or create new hierarchies need to read on.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{Using a structure}
-\mcbPROVIDE{\lib{fintype}, \C{GRing}, \lib{zmodp}}
-\mcbREQUIRE{\C{eqType}}
-\mcbsection{Structure interface}\label{str:itf}
+%\mcbLEVEL{1}
+%\mcbLEARN{Using a structure}
+%\mcbPROVIDE{\lib{fintype}, \C{GRing}, \lib{zmodp}}
+%\mcbREQUIRE{\C{eqType}}
+\section{Structure interface}\label{str:itf}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Most of the documented interface to a structure concerns the operations and
@@ -265,11 +265,11 @@ Canonical Zp_finRingType := [finRingType of 'I_p].
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbLEARN{Simple telescope hierarchy}
-\mcbPROVIDE{\lstinline/Monoid/ hierarchy}
-\mcbREQUIRE{\lstinline/bigop/}
-\mcbsection{Telescopes}
+%\mcbLEVEL{1}
+%\mcbLEARN{Simple telescope hierarchy}
+%\mcbPROVIDE{\lstinline/Monoid/ hierarchy}
+%\mcbREQUIRE{\lstinline/bigop/}
+\section{Telescopes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 While using and populating a structure hierarchy is fairly
@@ -430,11 +430,11 @@ trigger crippling inefficiencies in the type inference and type
 checking heuristics for deep hierarchies.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{2}
-\mcbLEARN{Packed class organization of structures}
-\mcbPROVIDE{packed classes, \C{GRing}}
-\mcbREQUIRE{\C{eqType}}
-\mcbsection{Packed classes}\label{sec:packed}
+%\mcbLEVEL{2}
+%\mcbLEARN{Packed class organization of structures}
+%\mcbPROVIDE{packed classes, \C{GRing}}
+%\mcbREQUIRE{\C{eqType}}
+\section{Packed classes}\label{sec:packed}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 The type structure hierarchy for the \mcbMC{} library is both deep
@@ -767,11 +767,11 @@ explicit ``join'' links to a telescope hierarchy (\lib{ssralg} does this
 for its algebraic predicate hierarchy).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{3}
-\mcbLEARN{Hiding inferred structures in parameters and constructors}
-\mcbPROVIDE{\lstinline/phantom/ idioms}
-\mcbREQUIRE{\lstinline/GRing/}
-\mcbsection{Parameters and constructors}\label{sec:phant}
+%\mcbLEVEL{3}
+%\mcbLEARN{Hiding inferred structures in parameters and constructors}
+%\mcbPROVIDE{\lstinline/phantom/ idioms}
+%\mcbREQUIRE{\lstinline/GRing/}
+\section{Parameters and constructors}\label{sec:phant}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 We have noted already that structure instances are often hard to

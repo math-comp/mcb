@@ -31,7 +31,7 @@ Show.
 \end{coqdef}
 
 
-\Chapter{First Steps in Formal Proofs}{}
+\chapter{First Steps in Formal Proofs}{}
 \label{ch:proofs}
 % In this chapter we explain how to state a lemma,
 % how to prove it, and how to search existing, loaded library.
@@ -51,16 +51,16 @@ the use of computable definitions and equational reasoning
 whenever possible, an approach that will be developed fully in
 chapter~\ref{ch:boolrefl}.
 
-\mcbLEARN{Stating basic theorems involving boolean statements,
-  equalities, and arrows. Universal quantification is presented via
-  parameters.}
-\mcbREQUIRE{About, Check, implicit arguments, notations for the
-  constants defined at chapter 1, principles of notations
-  (associativity,...), definition of 'boolean predicate', sections}
-\mcbPROVIDE{\C{Lemma},\C{Admitted}, eq, is-true, Lemma, \C{Prop}, \C{->}}
-\mcbLEVEL{1}
-%\mcbsection{First formal statements}
-\mcbsection{Formal statements}
+% \mcbLEARN{Stating basic theorems involving boolean statements,
+%   equalities, and arrows. Universal quantification is presented via
+%   parameters.}
+% \mcbREQUIRE{About, Check, implicit arguments, notations for the
+%   constants defined at chapter 1, principles of notations
+%   (associativity,...), definition of 'boolean predicate', sections}
+% \mcbPROVIDE{\C{Lemma},\C{Admitted}, eq, is-true, Lemma, \C{Prop}, \C{->}}
+% \mcbLEVEL{1}
+% %\section{First formal statements}
+\section{Formal statements}
 
 
 In this section, we illustrate how to state elementary candidate
@@ -327,7 +327,7 @@ Lemma leq0n (n : nat) : 0 <= n = true.
 \coqrun{name=testleq0n}{ssr,leq0n,abort}
 
 % Assia takes care of this one.
-% 
+%
 % Similarly, the boolean equality function
 % \C{(eqn : nat -> nat -> nat)}, with infix notation \C{==}, is a
 % boolean binary predicate on natural numbers, which checks whether two
@@ -344,7 +344,7 @@ Lemma leq0n (n : nat) : 0 <= n = true.
 % The difference between these two predicates should be familiar to any
 % constructive mathematician; we will further dwell upon it in
 % chapter~\ref{ch:boolrefl}.
-% 
+%
 % [DG] Discussed of = vs. == as well as I could (which is probably not
 % very well). I think it really ought to be done as early as possible.
 % If we don't do it here, it will confuse the reader the moment an
@@ -427,12 +427,12 @@ as described in section~\ref{sec:fun-sev-args}.
 % long as we do not explain formal proofs in more details...
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEARN{Commands to build and check formal proofs: trivial ones,
-  case analysis, rewriting}
-\mcbREQUIRE{computation, equality}
-\mcbPROVIDE{eq, is-true, \C{rewrite, case, by []}}
-\mcbLEVEL{1}
-\mcbsection{Formal proofs}
+% \mcbLEARN{Commands to build and check formal proofs: trivial ones,
+%   case analysis, rewriting}
+% \mcbREQUIRE{computation, equality}
+% \mcbPROVIDE{eq, is-true, \C{rewrite, case, by []}}
+% \mcbLEVEL{1}
+\section{Formal proofs}
 \index[concept]{formal proof}
 
 We shall now explain how to turn a well-formed statement into a
@@ -1250,8 +1250,8 @@ in the manual~\cite{ssrman}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %\section{More complex statements and proofs}
-\mcbLEVEL{1}
-\mcbsection{Quantifiers}
+%\mcbLEVEL{1}
+\section{Quantifiers}
 
 \subsection{Universal quantification, first examples}
 
@@ -1886,7 +1886,7 @@ to describe a general property.
 % P leaf ->
 % (forall u : bintree, P u -> forall v : bintree, P v -> P (graft u v)) ->
 % forall b : bintree, P b
-% 
+%
 % Argument P is implicit
 % \end{coqout}
 
@@ -2021,7 +2021,7 @@ features a quantification on \C{z}:
 % ``\C{elim/last_ind: s z => [|s x IHs]}'' deserves further explanation.
 % Had we stopped at ``\C{elim/last_ind: s z => [|s x IHs] //}'', our goal
 % would look like this:
-% 
+%
 % \begin{coqout}{}{}
 % forall z : A,
 %   foldl f z (rev (rcons s x)) = foldr (fun x0 : T => f^~ x0) z (rcons s x)
@@ -2034,10 +2034,10 @@ features a quantification on \C{z}:
 % ``\C{forall z : A}'' out of the goal again, back into the heap of
 % variables and assumptions. (See subsection~\ref{ssec:stack} for more
 % detail about this kind of operations.)
-% 
+%
 % We have thus generalized \C{z} only to pull it out of the goal again
 % soon after. It might appear as if this was a useless detour.
-% However, it was not. 
+% However, it was not.
 Thanks to the generalization, the induction
 hypothesis \C{IHs} states:
 
@@ -2060,8 +2060,8 @@ The generalization of \C{z} gave us the freedom to substitute a
 different value for \C{z}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsection{Rewrite, a Swiss army knife}\label{sec:rewrite}
+%\mcbLEVEL{1}
+\section{Rewrite, a Swiss army knife}\label{sec:rewrite}
 
 Approximately one third of the proof scripts in the \mcbMC{} library is made of
 invocations of the \C{rewrite} tactic. This proof command provides many
@@ -2095,7 +2095,7 @@ Qed.
 
 Here, our use of the \C{rewrite dvdn_addr} tactic forced us to prove
 the side condition \D{p \%| m`!}.
-These side conditions (by default) become the second, third (and eventually 
+These side conditions (by default) become the second, third (and eventually
 higher) sub-goals in a proof script, so their proofs are usually postponed to
 after the first sub-goal (the main one) is proven. This is not always
 desirable; therefore, it is helpful to have a way to prove
@@ -2104,7 +2104,7 @@ One way to do this (which we have already seen in action) is using the
 simplification item \C{//}.
 When this does not suffice, one can invoke another rewrite rule using
 the optional iterator \C{?}.  A rule prefixed by \C{?} is applied to
-all goals zero-or-more times.  
+all goals zero-or-more times.
 
 The side condition \D{p \%| m`!} spawned by \C{rewrite dvdn_addr} was
 proven in the last line of the script. Instead, we could have solved
@@ -2171,12 +2171,12 @@ the name of a definition, like \C{leq}, to its body
 prefixing the name of the
 object with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
 indeed not a deductive operation but an instance of computation, as
-made more precise in chapter~\ref{ch:ttch}. 
+made more precise in chapter~\ref{ch:ttch}.
 
 % [ET] this is OK but clashes with the following section
 % Our proof of
 % \C{leq_mul2l} thus takes the form
-% 
+%
 % \begin{coq}{}{width=9.7cm}
 % Lemma leq_mul2l m n1 n2 :
 %  (m * n1 <= m * n2) = (m == 0) || (n1 <= n2).
@@ -2184,10 +2184,10 @@ made more precise in chapter~\ref{ch:ttch}.
 % by rewrite /leq -mulnBr muln_eq0.
 % Qed.
 % \end{coq}
-% 
+%
 % Notice that \C{rewrite /leq} unfolded the definition of \C{leq}
 % both in the expression \C{(m * n1 <= m * n2)} and in the expression
-% \C{(n1 <= n2)}. 
+% \C{(n1 <= n2)}.
 % In general, each appearance of the object is being
 % unfolded. Sometimes it is desirable to unfold only some of them; see
 % \cite[Section 7.1]{ssrman} for various ways to fine-tune the tactic for such
@@ -2201,8 +2201,8 @@ made more precise in chapter~\ref{ch:ttch}.
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{2}
-\mcbsubsection{Rewrite contextual patterns}\label{sec:rewrite2}
+%\mcbLEVEL{2}
+\subsection{Rewrite contextual patterns}\label{sec:rewrite2}
 
 The example \C{leq_mul2l} illustrates how the \C{rewrite} tactic, provided a
 rewrite rule like \C{mulnBr} or \C{muln_eq0}, is able
@@ -2250,7 +2250,7 @@ m, n1, n2 : nat
 \coqrun{name=ctxpat1run}{ssr,LeqDef,ctxpat1,show,abort}
 
 % [ET] too early since we need CurryHoward to pass arguments to lemmas
-% 
+%
 % The same result could have been achieved by explicitly specifying
 % the parameters in the matching subterm to be rewritten: viz., by
 % using \C{rewrite (leqE n1 n2)} instead of
@@ -2451,8 +2451,8 @@ left and drops \C{IHn} from the context.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsection{Searching the library}\label{sec:search}
+%\mcbLEVEL{1}
+\section{Searching the library}\label{sec:search}
 \index[concept]{search}
 
 Finding the name of the ``right'' lemma in a library that contains
@@ -2469,8 +2469,8 @@ or \C{(addn _ _)}, and substrings of the names, like \C{"rev" "cons"}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Search by pattern}
+%\mcbLEVEL{1}
+\subsection{Search by pattern}
 
 The \C{Search} command takes a list of filters and prints the lemmas
 that do match all the criteria.
@@ -2499,8 +2499,8 @@ If we want to rule out all lemmas about coprimality we can refine the
 search by writing ``\C{Search eq odd -coprime}''.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\mcbLEVEL{1}
-\mcbsubsection{Search by name}
+%\mcbLEVEL{1}
+\subsection{Search by name}
 
 Being acquainted to the naming policy followed by the \mcbMC{} library
 provides one of the more effective ways of finding lemmas in the
@@ -2534,7 +2534,7 @@ in the \mcbMC{} library:
     {\tt seq.v}.
   \item We often use a one-letter suffix to resolve overloaded
     notation, e.g., \C{addn}, \C{addb}, \C{addr} denote nat, boolean, ring
-    addition, respectively. 
+    addition, respectively.
     % This policy does not necessarily apply to
     % constants that should always be hidden behind a generic notation,
     % and handled by a more generic theory.
@@ -3033,7 +3033,7 @@ Qed.
 % \mcbREQUIRE{}
 % \mcbPROVIDE{case, -, indentation, brute force proofs, semicolon, => after case}
 % \mcbLEVEL{1}
-% \mcbsection{Case analysis}
+% \section{Case analysis}
 %
 % In programming inductive data is matched against to consider all
 % possible cases.  In the same way, when we reason on a program
@@ -3133,7 +3133,7 @@ Qed.
 % \mcbREQUIRE{}
 % \mcbPROVIDE{apply, ->, =>, //}
 % \mcbLEVEL{1}
-% \mcbsection{Implication and backchaining}
+% \section{Implication and backchaining}
 %
 % \begin{coq}{width=4cm}
 % Check @dvdn_mul.
@@ -3419,4 +3419,3 @@ Qed.
 % reference manual here is an example of usage in the right context of the
 % commands.  E.g. we give an hint of what patterns do (rewrite) but we don't
 % discuss all the matching discipline... nor the most advanced syntaxes)
-
