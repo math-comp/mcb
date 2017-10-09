@@ -2,7 +2,7 @@ quick: gitrev
 	pdflatex main && cp main.pdf book.pdf
 all: gitrev
 	pdflatex main
-	makeindex main.idx -s StyleInd.ist
+	makeindex main.idx 
 	biber main
 	biber main
 	pdflatex main
