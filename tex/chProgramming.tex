@@ -172,12 +172,16 @@ of type \C{nat}. In other words, the type of any expression made of
 \Coq{} provides a command to retrieve relevant information about the
 definitions done so far. Here is the response to a query about \C{f}:
 
-\begin{coq}{name=about_f}{width=5.5cm,title=Gathering information on f}
+\noindent\begin{minipage}{0.5\textwidth}
+\begin{coq}{name=about_f}{}
 About f.
 \end{coq}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
 \begin{coqout}{run=about_f_run;dots}{title=Response,width=6.5cm}
 f : nat -> nat
 \end{coqout}
+\end{minipage}
 \coqrun{name=about_f_run}{exdef,about_f}
 \index[vernac]{\C{About}}
 which confirms the type information about the domain and codomain of
@@ -192,14 +196,18 @@ the type of its output.
 We can be more inquisitive in our requests for information about
 \C{f}, and ask also for the value behind this name \C{f}:
 
-\begin{coq}{name=print_f}{width=6cm}
+\noindent\begin{minipage}{0.5\textwidth}
+\begin{coq}{name=print_f}{}
 Print f.
 $~$
 \end{coq}
-\begin{coqout}{run=print_f_run;dots}{width=6cm}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{coqout}{run=print_f_run;dots}{}
 f = fun n : nat => n + 1
   : nat -> nat
 \end{coqout}
+\end{minipage}
 \coqrun{name=print_f_run}{exdef,print_f}
 \index[vernac]{\C{Print}}
 
@@ -1767,7 +1775,7 @@ these projections are also called \emph{fields} of the record.
 One can thus write:
 
 \noindent\begin{minipage}{0.5\textwidth}
-\begin{coq}{name=eval_point}{width=8.5cm,title=Query}
+\begin{coq}{name=eval_point}{}
 Eval compute in x (Point 3 0 2).
 Eval compute in y (Point 3 0 2).
 \end{coq}{}{}
