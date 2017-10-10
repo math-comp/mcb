@@ -11,9 +11,13 @@
 *.ilg
 *.ind
 *.listing
+*.bcf
+*.ptc
+*.xml
+*.txt
 **/.*/*.v
-**/.*/*.txt
 **/.*/rt
 *pdf
 **/#*#
 tex/gitrev
+coq/ch*.html
