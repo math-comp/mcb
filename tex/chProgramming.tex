@@ -1766,15 +1766,29 @@ respectively. In the case where they come from a record definition,
 these projections are also called \emph{fields} of the record.
 One can thus write:
 
+\noindent\begin{minipage}{0.5\textwidth}
 \begin{coq}{name=eval_point}{width=8.5cm,title=Query}
 Eval compute in x (Point 3 0 2).
 Eval compute in y (Point 3 0 2).
 \end{coq}{}{}
-\begin{coqout}{run=eval_point_run}{width=3.5cm,title=Response}
+\end{minipage}
+\begin{minipage}{0.5\textwidth}
+\begin{coqout}{run=eval_point_run}{title=Response}
 = 3 : nat
 = 0 : nat
 \end{coqout}{}{}
+\end{minipage}
 \coqrun{name=eval_point_run}{point,eval_point}
+
+% \begin{coq}{name=eval_point}{width=8.5cm,title=Query}
+% Eval compute in x (Point 3 0 2).
+% Eval compute in y (Point 3 0 2).
+% \end{coq}{}{}
+% \begin{coqout}{run=eval_point_run}{width=3.5cm,title=Response}
+% = 3 : nat
+% = 0 : nat
+% \end{coqout}{}{}
+% \coqrun{name=eval_point_run}{point,eval_point}
 
 As expected, the code for the \C{x} projection is:
 
