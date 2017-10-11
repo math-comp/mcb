@@ -58,7 +58,7 @@
 \makeindex[name=coq,title=Definitions and Notations,intoc]
 \makeindex[name=vernac,title=Coq Commands,intoc]
 
-\addbibresource{bibliography.bib}
+
 
 \begin{document}
 
@@ -155,13 +155,15 @@ sep=1cm]{\Huge\centering\bfseries\sffamily\parbox[c][][t]{\paperwidth}{\centerin
 \cleardoublepage
 \phantomsection
 \setlength{\columnsep}{0.75cm}
-\addcontentsline{toc}{chapter}{\textcolor{ocre}{Index}}
+
 
 \printindex[concept]
 \printindex[ssr]
 \printindex[coq]
 \printindex[vernac]
 
-\printbibliography
+\chapter*{Bibliography}
+\addcontentsline{toc}{chapter}{\textcolor{ocre}{Bibliography}}
+\printbibliography[heading=bibempty]
 
 \end{document}
