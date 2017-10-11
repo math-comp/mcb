@@ -2,30 +2,102 @@
 
 \section{Definition}
 
-\begin{itemize}
-\item Data structure:
+\subsection{Data structure}
 \begin{coq}{}{}
 Inductive nat : Type := O | S (n : nat)
 \end{coq}
 
-\item Basic associated commands:
-  \begin{itemize}
-    \item Case analysis
-    \item Récurrence
-  \end{itemize}
-\end{itemize}
+\subsection{Notations for the constructors}
+
+\begin{tabular}{llll}
+Notation  & Term      & Type & Meaning \\\hline
+\C{0}     & \C{O}     & \C{nat} & Zero \\\hline
+\C{1}, \C{2},\ldots   & \C{(S O)},\C{(S (S O))},\ldots & \C{nat} & $2, 3,\ldots$\\\hline
+\C{n.+1}              & \C{(S n)} & \C{nat} & $n+1$ \\\hline
+\C{n.+2}              & \C{(S (S n))} & \C{nat} & $n+2$ \\\hline
+\C{n.+3}              & \C{(S (S (S n))))} & \C{nat} & $n+3$ \\\hline
+\C{n.+4}              & \C{(S (S (S (S n)))))} & \C{nat} & $n+4$ \\\hline
+\end{tabular}
+
+\subsection{Basic associated commands}
+
+\paragraph{Case analysis}
+On a natural number \C{n : nat} present in the context, the tactic:
+\begin{coq}{}{}
+  case: n => [|m].
+\end{coq}
+opens two subgoals: in the first one \C{n} is substituted
+by \C{O}, in the second one it is substituted by \C{m.+1}.
+
+
+\paragraph{Recurrence}
+On a natural number \C{n : nat} present in the context, the tactic:
+\begin{coq}{}{}
+  elim: n => [|m ihm].
+\end{coq}
+opens two subgoals: in the first one \C{n} is substituted
+by \C{O}, in the second one it is substituted by \C{m.+1}. The second
+subgoal features an induction hypothesis, for \C{m}, named \C{ihm}.
+
+\paragraph{See also}
+Section~\ref{sec:nat-useful-tac}.
+
+\section{Comparisons}
+
+\begin{tabular}{llll}
+Notation  & Term      & Type & Meaning \\\hline
+\C{n = m} & \C{(eq n m)} & \C{Prop} & Rewritable equality \\
+\C{n <> m} & \C{(not (eq n m))} & \C{Prop} & Disequality\\\hline
+\C{n == m}  & \C{(eqn n m)}  & \C{bool} & Boolean equality \\
+\C{n != m}  & \C{(negb (eqn n m))}  & bool & Boolean disequality \\\hline
+\C{n <= m}  & \C{(leq n m)}  & \C{bool} & $n \leq m$ \\\hline
+\C{n < m}  & \C{(leq n m)}   & \C{bool} & $n < m$ \\\hline
+\C{n >= m}  & \C{(geq n m)}  & \C{bool} & $n \geq m$ \\\hline
+\C{n > m}  & \C{(geq n m)}   & \C{bool} & $n > m$ \\
+\end{tabular}
+
+\paragraph{See also}
+Section~\ref{nat:more-rel}.
 
 \section{Basic arithmetics}
 
+\begin{tabular}{llll}
+Notation  & Term      & Type & Meaning \\\hline
+\C{n.-1}  & \C{(predn n)} & \C{nat} & $n - 1$ \\
+\C{n.-2}  & \C{(predn (predn n))} & \C{nat} & $n - 2$ \\
+\C{(n + m)} & \C{(addn n m)} & \C{nat} & $n + m$ \\
+\C{(n * m)} & \C{(muln n m)} & \C{nat} & $n * m$ \\
+\C{(n - m)} & \C{(subn n m)} & \C{nat} & $n - m$, \quad $0$ if $m \leq n$\\
+\end{tabular}
 
 
 \section{Declared canonical structures}
+\begin{itemize}
+\item Equality type (\C{eqtype});
+\item Countable type (\C{counttype});
+\item Choice type (\C{choicetype});
+\item Bigops for addition, multiplication, gcd, lcm, max.
+\end{itemize}
 
+\section{More operations}
 
-\section{More arithmetical operations}
+\begin{tabular}{llll}
+Notation  & Term      & Type & Meaning \\\hline
+\C{n.*2}
+\end{tabular}{llll}
+\section{More relations}\label{nat:more-rel}
 
+\begin{tabular}{llll}
+\C{d \%| m} & \C{(divn d m)}  & \C{bool} & $d$ divides $m$ \\
+\C{m = n \%[mod d]} & \C{(m \%\% d = n \%\% d)}  & \C{Prop} & $m$ equals $n$ modulo $d$\\
+\C{m == n \%[mod d]}& \C{(m \%\% d == n \%\% d)}  & \C{bool} & $m$ equals $n$ modulo $d$ (boolean version) \\
+\C{m <> n \%[mod d]} & \C{(m \%\% d <> n \%\% d)}  & \C{Prop} & $m$ differs
+           from $n$ modulo $d$\\
+\C{m <> n \%[mod d]} & \C{(m \%\% d <> n \%\% d)}  & \C{Prop} & $m$ differs
+          \%from $n$ modulo $d$ (boolean version)\\
+\end{tabular}
 
-\section{Useful tactic idioms}
+\section{Useful tactic idioms}\label{sec:nat-useful-tac}
 
 
 \section{See also}
