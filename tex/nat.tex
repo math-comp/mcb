@@ -83,23 +83,57 @@ Notation  & Term      & Type & Meaning \\\hline
 
 \begin{tabular}{llll}
 Notation  & Term      & Type & Meaning \\\hline
-\C{n.*2}
-\end{tabular}{llll}
+$\_$      & \C{minn m n} & \C{nat} & Minimum of $n$ and $m$  \\\hline
+$\_$      & \C{maxn m n} & \C{nat} & Maximum of $n$ and $m$  \\\hline
+\C{m ^ n} & \C{(expn m n)} & \C{nat} & $m^n$\\\hline
+\C{n\`!}   & \C{factorial n)} & \C{nat} & $n!$\\\hline
+\C{n.*2}  & \C{(double n)} & \C{nat} & $2n$ \\\hline
+\C{n./2}  & \C{(half n)} & \C{nat} & $\floor{\frac{n}{2}}$ \\\hline
+$\_$ & \C{(uphalf n)} & \C{nat} &  $\floor{\frac{n + 1}{2}}$ \\\hline
+$\_$ & \C{(odd n)} & \C{bool} & Tests the oddity of $n$ \\\hline
+\C{m \%/ d} & \C{(divn m d)} & \C{nat} &  quotient of the Euclidean
+                                         division of $m$ by
+                                         $d$\\
+\C{m \%\% d} & \C{(modn m d)} & \C{nat} & remainder of the Euclidean division of $m$ by $d$\\
+$\_$      & (edivn m n) & \C{nat * nat} & Pair the quotient and remainder\\
+                     &&& of the Euclidean division of $m$ by $n$\\\hline
+$\_$      & (gcdn m n) & \C{nat} & GCD of $m$ and $n$\\
+$\_$      & (egcdn m n) & \C{nat * nat} & Bézout coefficients of $m$ and $n$\\
+$\_$      & (lcmn m n) & \C{nat} & LCM of $m$ and $n$\\\hline
+
+\end{tabular}
 \section{More relations}\label{nat:more-rel}
 
 \begin{tabular}{llll}
-\C{d \%| m} & \C{(divn d m)}  & \C{bool} & $d$ divides $m$ \\
 \C{m = n \%[mod d]} & \C{(m \%\% d = n \%\% d)}  & \C{Prop} & $m$ equals $n$ modulo $d$\\
-\C{m == n \%[mod d]}& \C{(m \%\% d == n \%\% d)}  & \C{bool} & $m$ equals $n$ modulo $d$ (boolean version) \\
+\C{m == n \%[mod d]}& \C{(m \%\% d == n \%\% d)}  & \C{bool} & $m$
+                                                               equals
+                                                               $n$
+                                                               modulo
+                                                               $d$ \\
+&&& (boolean version) \\
 \C{m <> n \%[mod d]} & \C{(m \%\% d <> n \%\% d)}  & \C{Prop} & $m$ differs
            from $n$ modulo $d$\\
 \C{m <> n \%[mod d]} & \C{(m \%\% d <> n \%\% d)}  & \C{Prop} & $m$ differs
-          \%from $n$ modulo $d$ (boolean version)\\
+          \%from $n$ modulo $d$ \\
+&&& (boolean version)\\\hline
+\C{m <= n <= p} & \C{((m <= n) && (n <= p))} & \C{bool} & $m \leq n \leq p$\\
+\C{m <= n < p} & \C{((m <= n) && (n < p))} & \C{bool} & $m \leq n < p$\\
+\C{m < n <= p} & \C{((m < n) && (n <= p))} & \C{bool} & $m < n \leq p$\\
+\C{m < n < p} & \C{((m < n) && (n < p))} & \C{bool} & $m < n < p$\\
+\C{ m <= n ?= iff Cond} & \C{(leqif m n Cond)} & \C{Type} & $m \leq n$
+                                                            and $m =
+                                                            n$ iff
+                                                            Cond (pair
+                                                            of rewrite
+                                                            rules)
+  \\\hline
+\C{d \%| m} & \C{(divn d m)}  & \C{bool} & $d$ divides $m$ \\\hline
 \end{tabular}
 
 \section{Useful tactic idioms}\label{sec:nat-useful-tac}
 
-
+More recurrences, witness from existential, \C{ifP}, comparisons, \C{ring}
 \section{See also}
 
 
