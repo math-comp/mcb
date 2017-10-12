@@ -172,16 +172,21 @@ of type \C{nat}. In other words, the type of any expression made of
 \Coq{} provides a command to retrieve relevant information about the
 definitions done so far. Here is the response to a query about \C{f}:
 
-\noindent\begin{minipage}{0.5\textwidth}
-\begin{coq}{name=about_f}{}
-About f.
-\end{coq}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\begin{coqout}{run=about_f_run;dots}{title=Response,width=6.5cm}
-f : nat -> nat
-\end{coqout}
-\end{minipage}
+\begin{coqinout}
+{About f.}
+{f : nat -> nat}
+\end{coqinout}
+
+% \noindent\begin{minipage}{0.5\textwidth}
+% \begin{coq}{name=about_f}{}
+% About f.
+% \end{coq}
+% \end{minipage}
+% \begin{minipage}{0.5\textwidth}
+% \begin{coqout}{run=about_f_run;dots}{title=Response,width=6.5cm}
+% f : nat -> nat
+% \end{coqout}
+% \end{minipage}
 \coqrun{name=about_f_run}{exdef,about_f}
 \index[vernac]{\C{About}}
 which confirms the type information about the domain and codomain of
