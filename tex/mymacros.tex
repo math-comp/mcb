@@ -107,7 +107,11 @@ linewidth=4pt,
 innerbottommargin=0pt]}{\endmdframed}
 
 
-\lstnewenvironment{coq-left}[2]{\mdframed[skipabove=10pt,
+\lstnewenvironment{coq-left}{
+\vspace{\baselineskip}%
+\noindent
+\minipage{0.5\textwidth}%
+\mdframed[skipabove=0pt,
 skipbelow=7pt,
 rightline=false,
 leftline=true,
@@ -120,10 +124,18 @@ innertopmargin=0pt,
 leftmargin=0cm,
 rightmargin=0cm,
 linewidth=4pt,
-innerbottommargin=0pt]\lstset{numbers=left,numberstyle=\tiny,xleftmargin=5mm}}{\endmdframed}
+innerbottommargin=0pt]\lstset{numbers=left,numberstyle=\tiny,xleftmargin=5mm}%
+}
+{\endmdframed%
+\endminipage%
+}
 
 
-\lstnewenvironment{coqout-right}[2]{\mdframed[skipabove=10pt,
+\lstnewenvironment{coqout-right}{
+\vspace{\baselineskip}%
+\noindent
+\minipage{0.5\textwidth}%
+\mdframed[skipabove=0pt,
 skipbelow=7pt,
 rightline=false,
 leftline=true,
@@ -137,64 +149,14 @@ innertopmargin=0pt,
 leftmargin=0cm,
 rightmargin=0cm,
 linewidth=4pt,
-innerbottommargin=0pt]}{\endmdframed}
+innerbottommargin=0pt]%
+}
+{\endmdframed%
+ \endminipage%
+}
+
+
 
 % For current cheatsheets, to be fixed
 \newcommand{\ssrc}[2]{\needspace{2\baselineskip}\C{#1}\vspace{0.4em}\\\hspace*{1.5em}\begin{minipage}{0.28\textwidth}#2 \hspace*{\fill}\end{minipage}\vspace{0.4em}}
 \newcommand{\caveat}[1]{\fbox{caveat}: #1}
-
-% A command for puting Coq code and output side by side. For now it
-% has two argument, first for the input code, with a coloured left
-% side bar and numbered lines, the second for the output code, with a
-% grey left side bar, no line number and a brey background.
-% Uses an auxiliary .lst.tmp file: an extra rule is needed for clean
-% in the Makefile.
-% Rmk: for now, the two code boxes have equal size (0.5/textwidth). May
-% be we'll need extra arguments if this needs to be parameterized.
-% TODO: add more arguments to feed the coq-check routine.
-\newwrite\tempfile
-\newcommand{\coqinout}[2]{
-    \immediate\openout\tempfile=\jobname.lst.tmp
-    \immediate\write\tempfile{#1}
-    \immediate\closeout\tempfile
-\noindent\begin{minipage}{0.5\textwidth}
-\begin{mdframed}[skipabove=10pt,
-skipbelow=7pt,
-rightline=false,
-leftline=true,
-topline=false,
-bottomline=false,
-linecolor=ocre,
-innerleftmargin=5pt,
-innerrightmargin=5pt,
-innertopmargin=0pt,
-leftmargin=0cm,
-rightmargin=0cm,
-linewidth=4pt,
-innerbottommargin=0pt]
-    \lstinputlisting[numbers=left,numberstyle=\tiny,xleftmargin=5mm]{\jobname.lst.tmp}
-\end{mdframed}
-\end{minipage}
-\immediate\openout\tempfile=\jobname.lst.tmp
-    \immediate\write\tempfile{#2}
-    \immediate\closeout\tempfile
-\begin{minipage}{0.5\textwidth}
-\begin{mdframed}[skipabove=10pt,
-skipbelow=7pt,
-rightline=false,
-leftline=true,
-topline=false,
-bottomline=false,
-linecolor=gray,
-backgroundcolor=black!5,
-innerleftmargin=5pt,
-innerrightmargin=5pt,
-innertopmargin=0pt,
-leftmargin=0cm,
-rightmargin=0cm,
-linewidth=4pt,
-innerbottommargin=0pt]
-    \lstinputlisting{\jobname.lst.tmp}
-\end{mdframed}
-\end{minipage}
-}

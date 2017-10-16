@@ -15,7 +15,7 @@ gitrev:
 	git describe --tags >> gitrev
 
 clean:
-	rm -rf .*/rt *.aux *.bbl *.bcf *.idx *.out *.toc *.ilg *.ind *.listing *.ptc *.run.xml *.lst.tmp
+	rm -rf .*/rt *.aux *.bbl *.bcf *.idx *.out *.toc *.ilg *.ind *.listing *.ptc *.run.xml
 
 COQBIN ?=
 COQC := $(COQBIN)coqc
