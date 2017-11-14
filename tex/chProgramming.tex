@@ -173,7 +173,7 @@ of type \C{nat}. In other words, the type of any expression made of
 definitions done so far. Here is the response to a query about \C{f}:
 
 
-\begin{coq-left}%{name=about_f}{}
+\begin{coq-left}{name=about_f}{}
 About f.
 \end{coq-left}
 \begin{coqout-right}%{run=about_f_run;dots}{title=Response,width=6.5cm}
@@ -193,7 +193,7 @@ the type of its output.
 We can be more inquisitive in our requests for information about
 \C{f}, and ask also for the value behind this name \C{f}:
 
-\begin{coq-left}%{name=print_f}{}
+\begin{coq-left}{name=print_f}{}
 Print f.
 $~$
 \end{coq-left}
@@ -219,28 +219,28 @@ For example the function \C{f} we just defined can \emph{only be
   applied to a natural number}, i.e., a term of type \C{nat}. Therefore
 this first query succeeds, as \C{3} is a natural number:
 
-\begin{coq}{name=check_f3}{width=5.1cm,title=Check well-typedness}
+\begin{coq-left}{name=check_f3}{width=5.1cm,title=Check well-typedness}
 Check f 3.
-\end{coq}
-\begin{coqout}{run=check_f3_run}{title=Response,width=7cm}
+\end{coq-left}
+\begin{coqout-right}{run=check_f3_run}{title=Response,width=7cm}
  f 3 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=check_f3_run}{exdef,check_f3}
 \index[vernac]{\C{Check}}
 But \C{f} cannot be applied to something that is not a natural number,
 like for example a function:
 
-\begin{coq}{name=type_err_f}{width=6cm,title=Type error}
+\begin{coq-left}{name=type_err_f}{width=6cm,title=Type error}
 Check f (fun x : nat => x + 1).
 $~$
 $~$
-\end{coq}
-\begin{coqout}{run=type_err_run}{title=Response,width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=type_err_run}{title=Response,width=6cm}
 Error:
 The term "(fun x : nat => x + 1)"
 has type "nat -> nat" while it is
 expected to be "nat".
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=type_err_run;fail}{exdef,type_err_f}
 \index[concept]{type error}
 As expected, it makes little sense to compute the addition between
@@ -251,12 +251,12 @@ meaning that they are \emph{reduced} to a ``simpler'' form, also
 called a \emph{normal form}. For example computing \C{(f 3)} returns
 value \C{4}:
 
-\begin{coq}{name=compute_f3}{width=6cm,title=Evaluating a function}
+\begin{coq-left}{name=compute_f3}{width=6cm,title=Evaluating a function}
 Eval compute in f 3.
-\end{coq}
-\begin{coqout}{run=compute_f3_run}{title=Response,width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=compute_f3_run}{title=Response,width=6cm}
  = 4 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=compute_f3_run}{exdef,compute_f3}
 \index[vernac]{\C{Eval compute}}
 
@@ -306,12 +306,12 @@ output of the function also has type \C{nat}, as prescribed by the
 provides information on the type of the arguments and values of
 \C{g}:
 
-\begin{coq}{name=about_g}{width=5.5cm,title=Gathering information on g}
+\begin{coq-left}{name=about_g}{width=5.5cm,title=Gathering information on g}
 About g.
-\end{coq}
-\begin{coqout}{run=about_g_run;dots}{title=Response,width=6.5cm}
+\end{coq-left}
+\begin{coqout-right}{run=about_g_run;dots}{title=Response,width=6.5cm}
 g : nat -> nat -> nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=about_g_run}{def_g,about_g}
 
 The first two occurrences of \C{nat} in the response
@@ -341,12 +341,12 @@ Definition h (n : nat) : nat -> nat := fun m => n + m * 2.
 
 Queries on the respective types of \C{g} and \C{h} provide identical answers:
 
-\begin{coq}{name=about_h}{width=5.5cm,title=Gathering information on h}
+\begin{coq-left}{name=about_h}{width=5.5cm,title=Gathering information on h}
 About h.
-\end{coq}
-\begin{coqout}{run=about_h_run;dots}{title=Response,width=6.5cm}
+\end{coq-left}
+\begin{coqout-right}{run=about_h_run;dots}{title=Response,width=6.5cm}
 h : nat -> nat -> nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=about_h_run}{def_h,about_h}
 
 If we go further in our scrutiny and ask the \Coq{} system to print
@@ -354,18 +354,18 @@ the definitions associated to names \C{g} and \C{h}, we see that these
 definitions are exactly the same: The \Coq{} system does not make any
 difference between these two ways of describing a two-argument function.
 
-\begin{coq}{name=print_gh}{width=6cm}
+\begin{coq-left}{name=print_gh}{width=6cm}
 Print g.
 $~$
 Print h.
 $~$
-\end{coq}
-\begin{coqout}{run=print_gh_run}{width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=print_gh_run}{width=6cm}
 g = fun n m : nat => n + m * 2
   : nat -> nat -> nat
 h = fun n m : nat => n + m * 2
   : nat -> nat -> nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=print_gh_run}{def_h,def_g,print_gh}
 \index[vernac]{\C{Print}}
 
@@ -375,12 +375,12 @@ because \C{g} is also meant to be applied to two arguments.
 As expected, the value we obtain this way is itself a function, of a
 single argument, as illustrated by the following query:
 
-\begin{coq}{name=check_g3}{width=5.5cm,title=Applying g partially}
+\begin{coq-left}{name=check_g3}{width=5.5cm,title=Applying g partially}
 Check g 3.
-\end{coq}
-\begin{coqout}{run=check_g3_run}{title=Response,width=6.5cm}
+\end{coq-left}
+\begin{coqout-right}{run=check_g3_run}{title=Response,width=6.5cm}
 g 3 : nat -> nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=check_g3_run}{def_g,check_g3}
 \index[concept]{partial application}
 \index[concept]{typing an application}
@@ -389,12 +389,12 @@ Now function \C{g} can be applied to the numbers \C{2} and \C{3}, as
 in \C{g 2 3}. This results in a term of type \C{nat}, the type of the
 outputs of \C{g}, and we can even compute this value:
 
-\begin{coq}{name=eval_g_2_3}{width=5cm}
+\begin{coq-left}{name=eval_g_2_3}{width=5cm}
 Eval compute in g 2 3.
-\end{coq}
-\begin{coqout}{run=eval_g_2_3_run}{width=5cm}
+\end{coq-left}
+\begin{coqout-right}{run=eval_g_2_3_run}{width=5cm}
 = 8 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=eval_g_2_3_run}{def_g,eval_g_2_3}
 
 Term \C{(g 2 3)} actually reads \C{((g 2) 3)} and features three
@@ -474,12 +474,12 @@ function \C{repeat_twice} to  the function
 \C{f} and the number \C{2}. Let us compute the resulting value of this
 application:
 
-\begin{coq}{name=eval_repeat_twice_f_two}{width=6cm}
+\begin{coq-left}{name=eval_repeat_twice_f_two}{width=6cm}
 Eval compute in repeat_twice f 2.
-\end{coq}
-\begin{coqout}{run=eval_repeat_twice_f_two_run}{width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=eval_repeat_twice_f_two_run}{width=6cm}
 = 4 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=eval_repeat_twice_f_two_run}{exdef,repeat_twice_def,eval_repeat_twice_f_two}
 
 Expression \C{(repeat_twice f 2)} actually reads
@@ -500,12 +500,12 @@ arguments: as illustrated in section~\ref{sec:fun-sev-args}, its
 partial application to a single argument provides a well-formed
 function, from \C{nat} to \C{nat}:
 
-\begin{coq}{name=check_repeat_twice_f_two}{width=6cm,title=Partial application}
+\begin{coq-left}{name=check_repeat_twice_f_two}{width=6cm,title=Partial application}
 Check (repeat_twice f).
-\end{coq}
-\begin{coqout}{run=check_repeat_twice_f_two_run}{title=Response,width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=check_repeat_twice_f_two_run}{title=Response,width=6cm}
 repeat_twice f : nat -> nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=check_repeat_twice_f_two_run}{exdef,repeat_twice_def,check_repeat_twice_f_two}
 
 Now looking at the type of \C{repeat_twice} and adding redundant parentheses
@@ -521,14 +521,14 @@ argument matches the left hand side of this arrow (as depicted with
 different underline styles). When this is not the case, \Coq{} issues a
 type error.
 
-\begin{coq}{name=fail_check_repeat_twice_f}{width=5.5cm,title=Ill-formed
+\begin{coq-left}{name=fail_check_repeat_twice_f}{width=5.5cm,title=Ill-formed
   application}
 Check (repeat_twice f f).
-\end{coq}
-\begin{coqout}{run=fail_check_repeat_twice_f_run}{title=Response,width=6.2cm}
+\end{coq-left}
+\begin{coqout-right}{run=fail_check_repeat_twice_f_run}{title=Response,width=6.2cm}
 Error: The term "f" has type "nat -> nat"
 while it is expected to have type "nat".
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=fail_check_repeat_twice_f_run;fail}{exdef,repeat_twice_def,fail_check_repeat_twice_f}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -561,15 +561,15 @@ abbreviated.
 \index[concept]{binder}
 Here is an example of usage of this syntax:
 
-\begin{coq}{name=eval_let_expr}{width=6cm,title=Evaluating local definitions,label=lst:eval_let_expr}
+\begin{coq-left}{name=eval_let_expr}{width=6cm,title=Evaluating local definitions,label=lst:eval_let_expr}
 Eval compute in
   let n := 33 : nat in
   let e := n + n + n in
     e + e + e.
-\end{coq}
-\begin{coqout}{run=eval_let_expr_run}{title=Response,width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=eval_let_expr_run}{title=Response,width=6cm}
  = 297 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=eval_let_expr_run}{eval_let_expr}
 
 When it comes to comparing the values of computations, a local definition
@@ -670,13 +670,13 @@ called the \emph{constructors} of type \C{bool}.
 In practice, this means that we can \emph{build} a well-formed expression of
 type \C{bool} by using either \C{true} or \C{false}.
 
-\begin{coq}{name=check_true}{width=6cm,title=Queries}
+\begin{coq-left}{name=check_true}{width=6cm,title=Queries}
 Check true.
-\end{coq}
+\end{coq-left}
 \coqrun{name=check_true_run}{check_true}
-\begin{coqout}{run=check_true_run}{width=6cm,title=Response}
+\begin{coqout-right}{run=check_true_run}{width=6cm,title=Response}
 true : bool
-\end{coqout}
+\end{coqout-right}
 
 In order to \emph{use} a boolean value in a computation, we need a
 syntax to represent the two-branch case analysis that can be performed
@@ -700,14 +700,14 @@ Definition twoVthree (b : bool) := if b then 2 else 3.
 As one expects, when \C{b} is \C{true}, the expression
 \C{(twoVthree b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
 
-\begin{coq}{name=eval_twoVthree}{width=7cm,title=Evaluating twoVthree}
+\begin{coq-left}{name=eval_twoVthree}{width=7cm,title=Evaluating twoVthree}
 Eval compute in twoVthree true.
 Eval compute in twoVthree false.
-\end{coq}
-\begin{coqout}{run=eval_twoVthree_run}{title=Response,width=5cm}
+\end{coq-left}
+\begin{coqout-right}{run=eval_twoVthree_run}{title=Response,width=5cm}
   = 2 : nat
   = 3 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=eval_twoVthree_run}{definetwoVthree,eval_twoVthree}
 
 As illustrated on this example,
@@ -801,12 +801,12 @@ needs for parentheses: assuming  that \C{f} is a function of type
 \C{(f (S n))}.  Notations are also provided for \C{S (S n)}, written
 \C{n.+2}, and so on until \C{n.+4}.
 
-\begin{coq}{name=f_plus_one}{width=5cm,title=Queries}
+\begin{coq-left}{name=f_plus_one}{width=5cm,title=Queries}
 Check fun n => f n.+1.
-\end{coq}
-\begin{coqout}{run=f_plus_one_run}{width=7cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=f_plus_one_run}{width=7cm,title=Response}
 fun n : nat => f n.+1 : nat -> nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=f_plus_one_run}{ssr,exdef,f_plus_one}
 \index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
 
@@ -835,12 +835,12 @@ pattern. The value bound to the name \C{p} mentioned in this pattern is not
 known in advance; it is actually computed at the moment the \C{n} is matched
 against the pattern. For instance:
 
-\begin{coq}{name=compute_match}{width=7cm,title=Evaluating predn}
+\begin{coq-left}{name=compute_match}{width=7cm,title=Evaluating predn}
 Eval compute in predn 5.
-\end{coq}
-\begin{coqout}{run=compute_match_run}{width=5cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=compute_match_run}{width=5cm,title=Response}
 = 4 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=compute_match_run}{ssr,compute_match}
 
 The \C{compute} command rewrites any term of the shape
@@ -920,16 +920,16 @@ A fundamental principle is enforced by \Coq{} on case analysis:
 the inductive type.  For example, the following definition is
 rejected by \Coq{}.
 
-\begin{coq}{name=f_plus_one_err}{width=6cm,title=Non-exhaustive case analysis}
+\begin{coq-left}{name=f_plus_one_err}{width=6cm,title=Non-exhaustive case analysis}
 Definition wrong (n : nat) :=
   match n with 0 => true end.
 $~$
-\end{coq}
-\begin{coqout}{run=f_plus_one_err_run}{width=6cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=f_plus_one_err_run}{width=6cm,title=Response}
 Error: Non exhaustive pattern-matching:
 no clause found for
 pattern S _
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=f_plus_one_err_run;fail}{f_plus_one_err}
 \index[concept]{pattern matching!exhaustiveness}
 
@@ -1072,16 +1072,16 @@ Coq'Art book \cite{BC04}.
 An erroneous, in the sense of non-terminating,
 definition is rejected by \Coq{}:
 
-\begin{coq}{name=loop}{width=6cm,title=Non-terminating program}
+\begin{coq-left}{name=loop}{width=6cm,title=Non-terminating program}
 Fixpoint loop n :=
  if n is 0 then loop n else 0.
 $~$
-\end{coq}
-\begin{coqout}{run=loop_run}{title=Response,width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=loop_run}{title=Response,width=6cm}
 Error: Recursive call to loop has
 principal argument equal to "n"
 instead of a subterm of "n".
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=loop_run;fail}{ssr,loop}
 
 % In function \C{add}, the first argument \C{n} is only used to
@@ -1171,22 +1171,22 @@ that we have programmed this equality test function, we can verify
 that the \Coq{} system really identifies various ways to write the same
 natural number.
 
-\begin{coq}{name=equalities}{width=6cm}
+\begin{coq-left}{name=equalities}{width=6cm}
 Eval compute in 0 == 0.
 Eval compute in 1 == S 0.
 Eval compute in 1 == 0.+1.
 Eval compute in 2 == S 0.
 Eval compute in 2 == 1.+1.
 Eval compute in 2 == addn 1 0.+1.
-\end{coq}
-\begin{coqout}{run=equalities_run}{width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=equalities_run}{width=6cm}
 = true : bool
 = true : bool
 = true : bool
 = false : bool
 = true : bool
 = true : bool
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=equalities_run}{ssr,equalities}
 
 % Indeed, rules \C{eqn 0 0 $\rightarrow$ true},
@@ -1271,18 +1271,18 @@ lists of zero or more natural numbers; the first constructor
 with an already existing list \C{tl}.
 For example:
 
-\begin{coq}{name=cons_mono_err}{width=6.5cm}
+\begin{coq-left}{name=cons_mono_err}{width=6.5cm}
 Check consn 1 (consn 2 niln).
 Check consn true (consn false niln).
 $~$
 $~$
-\end{coq}{}{}
-\begin{coqout}{run=cons_mono_err_run}{width=5.7cm}
+\end{coq-left}{}{}
+\begin{coqout-right}{run=cons_mono_err_run}{width=5.7cm}
 consn 1 (consn 2 niln) : listn
 Error: The term "true" has
 type "bool" while it is
 expected to have type "nat".
-\end{coqout}{}{}
+\end{coqout-right}{}{}
 \coqrun{name=cons_mono_err_run;fail}{listn_def,cons_mono_err}
 
 As expected, \C{listn} %elements of this data type
@@ -1427,16 +1427,16 @@ In the case of \C{cons}, however,
 one can be even more concise. Let us ask for
 information about \C{cons} using the command \C{About}:
 
-\begin{coq}{name=about_cons}{width=3cm,title=Query}
+\begin{coq-left}{name=about_cons}{width=3cm,title=Query}
 About cons.
 $~$
 $~$
-\end{coq}
-\begin{coqout}{run=about_cons_run;dots}{width=9cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=about_cons_run;dots}{width=9cm,title=Response}
 cons : forall A : Type, A -> seq A -> seq A
 ...
 Argument A is implicit and maximally inserted
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=about_cons_run}{ssr,about_cons}
 \index[concept]{implicit argument}
 
@@ -1453,12 +1453,12 @@ to the type argument of \C{nil} in the built-in version of \C{seq}
 provided by the \mcbMC{} library.  In the end, this ensures that users can
 write the following expression.
 
-\begin{coq}{name=check_list_2}{width=6cm,title=Query}
+\begin{coq-left}{name=check_list_2}{width=6cm,title=Query}
 Check cons 2 nil.
-\end{coq}
-\begin{coqout}{run=check_list_2_run}{width=6cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=check_list_2_run}{width=6cm,title=Response}
 [:: 2] : seq nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=check_list_2_run}{ssr,check_list_2}
 \index[coq]{\C{(_ :: _)}}
 This example shows that the function \C{cons} is only applied
@@ -1480,16 +1480,16 @@ This example, and the following ones, also show
 that \Coq{} and the \mcbMC{} library provide
 a collection of notations for lists.
 
-\begin{coq}{name=check_list_3}{width=6cm,title=Query}
+\begin{coq-left}{name=check_list_3}{width=6cm,title=Query}
 Check 1 :: 2 :: 3 :: nil.
 Check fun l => 1 :: 2 :: 3 :: l.
 $~$
-\end{coq}
-\begin{coqout}{run=check_list_3_run}{width=6cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=check_list_3_run}{width=6cm,title=Response}
 [:: 1; 2; 3] : seq nat
 fun l : seq nat => [:: 1, 2, 3 & l]
   : seq nat -> seq nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=check_list_3_run}{ssr,check_list_3}
 \index[coq]{\C{[:: .. , .. & ..]}}
 
@@ -1589,12 +1589,14 @@ Notation "[ 'seq' E | i <- s ]" := (map (fun i => E) s).
 For instance, with this notation we write the computation of successors
 for a given sequence of natural numbers as follows:
 
-\begin{coq}{name=try_map_notation}{width=7.8cm,title=Query}
-Eval compute in [seq i.+1 | i <- [:: 2; 3]].
-\end{coq}
-\begin{coqout}{run=try_map_notation_run}{width=4.3cm,title=Response}
+\begin{coq-left}{name=try_map_notation}{width=7.8cm,title=Query}
+Eval compute in
+  [seq i.+1 | i <- [:: 2; 3]].
+\end{coq-left}
+\begin{coqout-right}{run=try_map_notation_run}{width=4.3cm,title=Response}
 = [:: 3; 4] : seq nat
-\end{coqout}
+$~$
+\end{coqout-right}
 \coqrun{name=try_map_notation_run}{ssr,try_map_notation}
 \index[concept]{list comprehension}
 \index[coq]{\C{[seq .. "| .. <- ..]}}
@@ -1695,15 +1697,16 @@ component of a pair. The \mcbMC{} library has a notation for these
 projections: \C{c.1} is the first component of the pair \C{c}
 and \C{c.2} is its second.
 
-\begin{coq}{name=pairs}{width=6cm}
+\begin{coq-left}{name=pairs}{width=6cm}
 Check (3, false).
 Eval compute in (true, false).1.
-\end{coq}
-\begin{coqout}{run=pairs_run}{width=6cm}
+\end{coq-left}
+\begin{coqout-right}{run=pairs_run}{width=6cm}
 (3, false) : nat * bool
  = true : bool
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=pairs_run}{ssr,pairs}
+
 As one expects, pairs can be nested. \Coq{} provides a slightly more complex
 notation for pairs, which makes it possible to write \C{(3,true,4)} for
 \C{((3,true),4)}. In this example, the value \C{true} is the second
@@ -1767,18 +1770,14 @@ respectively. In the case where they come from a record definition,
 these projections are also called \emph{fields} of the record.
 One can thus write:
 
-\noindent\begin{minipage}{0.5\textwidth}
-\begin{coq}{name=eval_point}{}
+\begin{coq-left}{name=eval_point}{}
 Eval compute in x (Point 3 0 2).
 Eval compute in y (Point 3 0 2).
-\end{coq}{}{}
-\end{minipage}
-\begin{minipage}{0.5\textwidth}
-\begin{coqout}{run=eval_point_run}{title=Response}
+\end{coq-left}{}{}
+\begin{coqout-right}{run=eval_point_run}{title=Response}
 = 3 : nat
 = 0 : nat
-\end{coqout}{}{}
-\end{minipage}
+\end{coqout-right}{}{}
 \coqrun{name=eval_point_run}{point,eval_point}
 
 % \begin{coq}{name=eval_point}{width=8.5cm,title=Query}
@@ -1898,14 +1897,16 @@ Finally, remark that \C{T} and \C{A} are implicit arguments; hence they
 are not explicitly passed to \C{iter} and \C{fold} in the recursive
 calls.
 
-\begin{coq}{name=about_fold}{width=2.9cm}
+\begin{coq-left}{name=about_fold}{width=2.9cm}
 About foldr.
 $~$
-\end{coq}
-\begin{coqout}{run=about_fold_run}{width=9.3cm}
-foldr : forall T A : Type, (T -> A -> A) -> A -> seq T -> A
+$~$
+\end{coq-left}
+\begin{coqout-right}{run=about_fold_run}{width=9.3cm}
+foldr : forall T A : Type, 
+  (T -> A -> A) -> A -> seq T -> A
 Arguments T, A are implicit ...
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=about_fold_run}{ssr,iter2,about_fold}
 
 
@@ -1955,14 +1956,14 @@ the subtraction of \C{5} from \C{7}, or \C{foldr}
 to compute the
 sum of all numbers in \C{[:: 1; 2]}:
 
-\begin{coq}{name=eval_iter}{width=8cm}
+\begin{coq-left}{name=eval_iter}{width=8cm}
 Eval compute in iter 5 predn 7.
 Eval compute in foldr addn 0 [:: 1; 2].
-\end{coq}
-\begin{coqout}{run=eval_iter_run}{width=4cm}
+\end{coq-left}
+\begin{coqout-right}{run=eval_iter_run}{width=4cm}
  = 2 : nat
  = 3 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=eval_iter_run}{ssr,iter,eval_iter}
 
 %\marginnote{assia: what about a good practice box here? for naming policy
@@ -2001,12 +2002,12 @@ If we ask for the type of
 \C{foldr} in the middle of the section, we see that
 it is not a polymorphic function (yet).
 
-\begin{coq}{name=about_fold_sec}{width=3.5cm}
+\begin{coq-left}{name=about_fold_sec}{width=3.5cm}
 About foldr.
-\end{coq}
-\begin{coqout}{run=before_section_run;dots}{width=8.5cm}
+\end{coq-left}
+\begin{coqout-right}{run=before_section_run;dots}{width=8.5cm}
 foldr : A -> seq T -> A
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=before_section_run}{ssr,sec,about_fold_sec,enditer}
 
 We hence postulate a term of type \C{A} and two of type \C{T}
@@ -2014,16 +2015,16 @@ in order to apply \C{foldr} to a two-element list,
 and we ask \Coq{} to compute this
 expression.
 
-\begin{coq}{name=vars}{width=7cm}
+\begin{coq-left}{name=vars}{width=7cm}
 Variable init : A.
 Variables x1 x2 : T.
 Eval compute in foldr init [:: x1; x2].
-\end{coq}
-\begin{coqout}{run=symbcomp}{width=5cm}
+\end{coq-left}
+\begin{coqout-right}{run=symbcomp}{width=5cm}
 $~$
 $~$
  = f x1 (f x2 init) : A
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=symbcomp}{ssr,sec,vars,enditer}
 
 The symbols \C{f}, \C{x1}, \C{x2} and \C{init} are inert:
@@ -2036,12 +2037,12 @@ we can try to substitute \C{f}, \C{x1}, \C{x2} and \C{init} with the
 values we used at the end of the last section to
 play with \C{foldr}, namely \C{addn}, \C{1}, \C{2} and \C{0}:
 
-\begin{coq}{name=hyp_subst}{width=7cm}
+\begin{coq-left}{name=hyp_subst}{width=7cm}
 Eval compute in addn 1 (addn 2 0).
-\end{coq}
-\begin{coqout}{run=hyp_subst_run}{width=5cm}
+\end{coq-left}
+\begin{coqout-right}{run=hyp_subst_run}{width=5cm}
  = 3 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=hyp_subst_run}{ssr,hyp_subst}
 
 The expression, which now contains no inert symbols, computes to the numeral 3,
@@ -2086,15 +2087,15 @@ we point the interested reader to \cite[section 8.7.1]{Coq:manual} for
 \marginnote{predn has a notation attached to it}
 more details.
 
-\begin{coq}{name=symb_add}{width=7cm}
+\begin{coq-left}{name=symb_add}{width=7cm}
 Variable n : nat.
 Eval simpl in (add  n.+1 7).-1.
 Eval simpl in (addn n.+1 7).-1.
-\end{coq}
-\begin{coqout}{run=symb_add_run}{width=5cm}
+\end{coq-left}
+\begin{coqout-right}{run=symb_add_run}{width=5cm}
 = (add n 8).-1 : nat
 = addn n 7 : nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=symb_add_run}{ssr,addn_redef,add_def,symb_add}
 
 Here we see the impact of the difference in the definitions of
@@ -2190,14 +2191,15 @@ also provide the neutral element \C{0} for the addition: this is the
 initial value of the iteration, corresponding to an empty index range.
 
 Let us perform a few examples of computations with these iterated sums.
-\begin{coq}{name=evalsum}{width=8.5cm,title=Query}
+
+\begin{coq-left}{name=evalsum}{width=8.5cm,title=Query}
 Eval compute in \sum_( 1 <= i < 5 ) (i * 2 - 1).
 Eval compute in \sum_( 1 <= i < 5 ) i.
-\end{coq}
-\begin{coqout}{run=evalsum_run}{width=3.5cm,title=Response}
+\end{coq-left}
+\begin{coqout-right}{run=evalsum_run}{width=3.5cm,title=Response}
 = 16 : nat
 = 10 : nat
-\end{coqout}{}{}
+\end{coqout-right}{}{}
 \coqrun{name=evalsum_run}{ssr,iotasum,evalsum}
 
 Behind the scenes, iteration happens following the order of the list,
@@ -2318,9 +2320,6 @@ represented by a notation.  In order to understand the meaning of an unknown not
 
 \begin{coq}{name=locate}{width=2.9cm}
 Locate "<=".
-$~$
-$~$
-$~$
 \end{coq}
 \begin{coqout}{run=locate_run}{width=9.5cm}
 Notation                                       Scope
@@ -2398,16 +2397,17 @@ Notation "( a , b , c )" := (mk_triple a b c).
 Notation "p .1" := (fst p) (at level 2).
 Notation "p .2" := (snd p) (at level 2).
 Notation "p .3" := (thrd p) (at level 2).
+\end{coq}
+\begin{coq-left}{name=triple}{width=8cm}
 Eval compute in (4, 5, 8).1.
 Eval compute in (true, false, 1).2.
 Eval compute in (2, true, false).3.
-\end{coq}
-\begin{coqout}{run=triple_run}{width=4cm}
-$~$
-     = 4 : nat
-     = false : bool
-     = false : bool
-\end{coqout}
+\end{coq-left}
+\begin{coqout-right}{run=triple_run}{width=4cm}
+ = 4 : nat
+ = false : bool
+ = false : bool
+\end{coqout-right}
 \coqrun{name=triple_run}{ssr,triple_solution,triple}
 
 Remark that the triple data type has to be polymorphic in order to
@@ -2435,18 +2435,18 @@ from \(0\)) if \(n\)
 is smaller than the size of the list.  It should return
 the default value otherwise.
 
-\begin{coq}{name=nth}{width=7cm}
+\begin{coq-left}{name=nth}{width=7cm}
 Eval compute in
   nth 99 [:: 3; 7; 11; 22] 2.
 Eval compute in
   nth 99 [:: 3; 7; 11; 22] 7.
-\end{coq}
-\begin{coqout}{run=nth_run}{width=5cm}
-     = 11
-     : nat
-     = 99
-     : nat
-\end{coqout}
+\end{coq-left}
+\begin{coqout-right}{run=nth_run}{width=5cm}
+ = 11
+ : nat
+ = 99
+ : nat
+\end{coqout-right}
 \coqrun{name=nth_run}{ssr,nth}
 \end{Exercise}
 
@@ -2455,14 +2455,14 @@ Eval compute in
 Define the program \C{rev} that reverses the order of the elements
 of a list.
 
-\begin{coq}{name=revtest}{width=5cm}
+\begin{coq-left}{name=revtest}{width=5cm}
 Eval compute in
   rev [:: 1; 2; 3].
-\end{coq}
-\begin{coqout}{run=rev_run}{width=7cm}
+\end{coq-left}
+\begin{coqout-right}{run=rev_run}{width=7cm}
  = [:: 3; 2; 1]
  : seq nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=rev_run}{ssr,revsolution,revtest}
 \end{Exercise}
 
@@ -2473,14 +2473,14 @@ their concatenation.  Don't write a recursive function; just reuse
 the concatenation function and one of the higher-order iterators
 seen so far.
 
-\begin{coq}{name=flatten}{width=7.3cm}
+\begin{coq-left}{name=flatten}{width=7.3cm}
 Eval compute in
-  flatten [:: [:: 1; 2; 3]; [:: 4; 5] ].
-\end{coq}
-\begin{coqout}{run=flatten_run}{width=5cm}
+ flatten [:: [:: 1; 2; 3]; [:: 4; 5]].
+\end{coq-left}
+\begin{coqout-right}{run=flatten_run}{width=5cm}
  = [:: 1; 2; 3; 4; 5]
  : seq nat
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=flatten_run}{ssr,flatten_solution,flatten}
 \end{Exercise}
 
@@ -2492,18 +2492,18 @@ length \C{n} and a sequence of symbols \C{alphabet}.
 The program has to generate a list of all words (i.e., lists
 of symbols) of size \C{n} using the symbols from \C{alphabet}.
 
-\begin{coq}{name=allwords}{width=5.5cm}
+\begin{coq-left}{name=allwords}{width=5.5cm}
 Eval compute in
   all_words 2 [:: 1; 2; 3].
 $~$
 $~$
-\end{coq}
-\begin{coqout}{run=allwords_run}{width=7cm}
+\end{coq-left}
+\begin{coqout-right}{run=allwords_run}{width=7cm}
  = [:: [:: 1; 1]; [:: 1; 2]; [:: 1; 3];
        [:: 2; 1]; [:: 2; 2]; [:: 2; 3];
        [:: 3; 1]; [:: 3; 2]; [:: 3; 3]]
  : seq (seq nat)
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=allwords_run}{ssr,allwords_solution,allwords}
 \end{Exercise}
 
