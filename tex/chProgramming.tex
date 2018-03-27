@@ -848,15 +848,15 @@ The \C{compute} command rewrites any term of the shape
 \C{false}, which does not contain any occurrence of \C{p}, so \C{false} is
 returned.
 
-It useful that the pattern \C{p.+1} used in the definition of \C{test0}
+It is useful that the pattern \C{p.+1} used in the definition of \C{test0}
 gives access to the value \C{p}.  Thanks to this, we can write a function
 that has more than two distinct values as results.  This is illustrated
 with our next example, 
 the function \C{predn} that returns the predecessor of a natural number
 when it exists, and 0 otherwise. In this definition \C{p.+1} is a
 pattern. The value bound to the name \C{p} mentioned in this pattern is not
-known in advance; it is actually computed at the moment the \C{n} is matched
-against the pattern. For instance:
+known in advance; it is actually computed at the moment the argument
+\C{n} is matched against the pattern. For instance:
 
 \begin{coq}{name=compute_match}{width=7cm,title=Evaluating predn}
 Eval compute in predn 5.
@@ -941,15 +941,14 @@ A fundamental principle is enforced by \Coq{} on case analysis:
 the inductive type.  For example, the following definition is
 rejected by \Coq{}.
 
-\begin{coq}{name=f_plus_one_err}{width=6cm,title=Non-exhaustive case analysis}
+\begin{coq}{name=f_plus_one_err}{width=5.5cm,title=Non-exhaustive case analysis}
 Definition wrong (n : nat) :=
   match n with 0 => true end.
 $~$
 \end{coq}
-\begin{coqout}{run=f_plus_one_err_run}{width=6cm,title=Response}
+\begin{coqout}{run=f_plus_one_err_run}{width=6.5cm,title=Response}
 Error: Non exhaustive pattern-matching:
-no clause found for
-pattern S _
+no clause found for pattern S _
 \end{coqout}
 \coqrun{name=f_plus_one_err_run;fail}{f_plus_one_err}
 \index[concept]{pattern matching!exhaustiveness}
@@ -958,7 +957,7 @@ We finish the section by showing a syntactic facility to scrutinize
 multiple values at the same time.  However, this part is not specific to
 natural numbers, and we use boolean values to illustrate the facility.
 
-\begin{coq}{name=awkward6}{}
+\begin{coq}{name=awkward6}{title=Multiple match}
 Definition same_bool b1 b2 :=
   match b1, b2 with
   | true, true => true
@@ -1079,7 +1078,7 @@ Termination is obvious when the recursive calls happen
 only on ``syntactically smaller arguments''. For instance, in our
 example \C{addn}, the function is defined by matching its first
 argument \C{n} against the patterns \C{p.+1} and \C{0}; in the branch
-corrsponding to the pattern \C{p.+1}, the recursive call happens on
+corresponding to the pattern \C{p.+1}, the recursive call happens on
 \C{p}, a strict subterm of \C{p.+1}. Had we matched the argument \C{n}
 against the pattern \C{p.+1.+1}, then the recursive call would have been
 allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.  The way
@@ -1177,7 +1176,7 @@ multiplication
 equality comparison (\C{eqn}, \C{==}), order
 comparison (\C{leq}, \C{<=}) on natural numbers.  All these operations
 (apart from the comparisons)
-output natural numbers: as explained above, subtraction is made to
+output natural numbers: subtraction is made to
 return \(0\) when the subtrahend exceeds the minuend; similarly,
 division is integer division.  The trailing \C{n} in
 the names is chosen to signal that these operations are on the \C{nat} data
@@ -1188,7 +1187,7 @@ the predecessor and double functions.
 
 The \mcbMC{} library also provides concepts that make sense only
 for the \C{nat} data type, like the
-test functions identifying \C{prime} and \C{odd} numbers. In that
+test functions for \C{prime} and \C{odd} numbers. In that
 case, the trailing \C{n} is omitted in their name.
 
 We strongly advise the reader wanting to explore the \mcbMC{} library
