@@ -853,7 +853,12 @@ gives access to the value \C{p}.  Thanks to this, we can write a function
 that has more than two distinct values as results.  This is illustrated
 with our next example, 
 the function \C{predn} that returns the predecessor of a natural number
-when it exists, and 0 otherwise. In this definition \C{p.+1} is a
+when it exists, and 0 otherwise.
+
+\begin{coq}{name=show_predn}{title=Describing predn}
+Definition predn n := if n is p.+1 then p else 0.
+\end{coq}
+In this definition \C{p.+1} is a
 pattern. The value bound to the name \C{p} mentioned in this pattern is not
 known in advance; it is actually computed at the moment the argument
 \C{n} is matched against the pattern. For instance:
