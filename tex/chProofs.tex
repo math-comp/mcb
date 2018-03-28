@@ -40,7 +40,7 @@ Show.
 % next chapter, and so are conjunctions and existential statements.
 
 In this chapter, we explain how to use the \Coq{} system to state and
-to prove theorems, focusing on simple statements and basic proof
+prove theorems, focusing on simple statements and basic proof
 commands. In the course of this book, we will see that choosing the
 right way to state a proposition formally can be a rather delicate
 matter. For equivalent wordings of one and the same
@@ -405,7 +405,7 @@ Lemma odd_gt0 n : odd n -> n > 0.
 \coqrun{name=testimpl}{ssr,implication,abort,abort}
 
 This arrow \C{->} is the
-same as the one we have used in chapter~\ref{ch:prog} in order to
+same as the one we used in chapter~\ref{ch:prog} in order to
 represent function types. This is no accident, but we postpone further
 comments on the meaning of this arrow to section~\ref{sec:chi}. For
 now let us only stress that \C{->} is right-associative, and
@@ -596,8 +596,7 @@ Proof. by [].
 \end{coq}
 \coqrun{name=negbKerr;fail}{ssr,negbK,done}
 \begin{coqout}{run=negbKerr}{width=5cm, title=Failing proof script}
-Error: No applicable
-tactic.
+Error: No applicable tactic.
 \end{coqout}
 \index[coq]{\C{negbK}}
 
@@ -642,9 +641,11 @@ name follows the separator \C{:}. The \Coq{} system displays the state
 of the proof after this command: The proof now has two subcases,
 treated in two parallel branches, one in which the parameter \C{b}
 takes the value \C{true} and one in which the parameter \C{b} takes
-the value \C{false}. More generally, the \C{case: t} tactic performs a
-case analysis on (the shape of) a term \C{t} which should be of an
-inductive type. As any inhabitant of an inductive type is necessarily
+the value \C{false}. More generally, the \C{case: t} tactic only works
+when \C{t} belongs to an inductive type.  This tactic then
+performs a
+case analysis on (the shape of) a term \C{t}.  As any inhabitant of an
+inductive type is necessarily
 built from one of its constructors, this tactic creates as many
 branches in the proof as the type has constructors, in the order in
 which they appear in the definition of the type. In our example, the
@@ -652,7 +653,7 @@ branch for \C{true} comes first, because this constructor comes first
 in the definition of type \C{bool}.
 
 We shall thus provide two distinct pieces of
-script, one per each subproof to be constructed,
+script, one for each subproof to be constructed,
 starting with the branch associated with the \C{true} value. In order
 to help the reader identify the two parts of the proof script,
 we indent the first one.
@@ -675,7 +676,7 @@ case: b.
    ~~ ~~ false = false
 \end{coqout}
 
-Once the first goal is solved, we have only one subgoal left, and
+Once the first goal is solved, we only have one subgoal left, and
 we solve it using the same tactic.
 
 \begin{coq}{def=negbkt2,done,done,qed}{width=6cm,title=Second trivial case}
@@ -695,7 +696,7 @@ $~$
 $~$
 \end{coqout}
 
-Yet, as we mentioned earlier, we can also use the \C{by} tactical as a
+However, as we mentioned earlier, we can also use the \C{by} tactical as a
 prefix for any tactic (not just an empty list of tactics),
 and have the system check that after the
 \C{case} tactic, the proof actually becomes trivial, in both branches
@@ -741,7 +742,7 @@ one (recursive) argument. A case analysis on term \C{(n : nat)} thus
 has two branches: one in which \C{n} is \C{0} and one in which \C{n} is
 \C{(S k)}, denoted \C{k.+1}, for some \C{(k : nat)}. We hence need a
 variant of the \C{case} tactic, in order to \emph{name} the parameter
-\C{k} that pops up in the second branch as the argument of the \C{S}
+\C{k} that appears in the second branch as the argument of the \C{S}
 constructor of type \C{nat}:
 
 \begin{coq}{name=leqn01}{width=7cm,title=case with naming}
@@ -780,7 +781,7 @@ As hinted in the first chapter, the term \C{(k.+1 <= 0)}
 is displayed as \C{(k < 0)}.
 
 The first goal
-can be easily solved by computation, as both sides of the equality
+can easily be solved by computation, as both sides of the equality
 evaluate to \C{true}.
 
 \begin{coq}{def=leqn01,done}{width=7cm}
@@ -895,7 +896,7 @@ definition of the addition \C{addn}, this in turn reduces to
 \C{(k + (m * k.+1)).+1}. The left hand side term hence is of the form
 \C{t.+1 == 0}, where \C{t} stands for \C{(k + (m * k.+1))}, and this
 reduces to \C{false}.\label{proof:mulneq0}
-In consequence, the successor branch of the case analysis is trivial
+In consequence, the successor branch of the second case analysis is trivial
 by computation.
 
 
@@ -1368,7 +1369,7 @@ Lemma addnC : commutative addn.
 \end{coq}
 \coqrun{name=testcomm}{ssr,comm,addncom,abort}
 The \mcbMC{} library defines several such predicates, which are used
-as molds in order to state standard properties in a consistent and
+as templates in order to state standard properties in a consistent and
 compact way. We provide below a few examples:
 
 \begin{coq}{name=predicators}{}
@@ -1425,7 +1426,7 @@ The constant \C{commutative} has a polymorphic parameter \C{T},
 takes a binary operation as argument and builds a
 \emph{proposition}. It is hence a polymorphic unary predicate on
 a certain class of functions, the binary functions with both their
-arguments and their result having the same type. Just like the
+arguments having the same type. Just like the
 polymorphic binary predicate \C{eq}, the predicate \C{commutative} can
 be used to form propositions:
 
@@ -1507,7 +1508,7 @@ Proof. by apply: leqnn. Qed.
 \end{coq}
 \coqrun{name=apply1run}{ssr,apply1}
 \index[ssr]{\C{apply:}}
-The lookup performed by the \C{apply} tactic works up to computation:
+The comparison performed by the \C{apply} tactic is up to computation:
 
 \begin{coq}{name=apply2}{}
 Lemma example a b : a.+1 + b <= (a + b).+1.
@@ -1547,7 +1548,8 @@ Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 \end{coq}
 \coqrun{name=testexp}{ssr,exp,abort}
 
-where \C{p \%| m`!} stands for ``\C{p} divides the factorial of \C{m}''.
+where \D{p \%| m`!} stands for ``\C{p} divides the factorial of \C{m}''.\marginpar{there is a problem with the factorial notation at the beginning
+of this line}
 
 The first step of our formal proof will be to give a name to the
 hypothesis \C{(prime p)}, which means that we add it to the
@@ -1805,7 +1807,7 @@ reduced in size. One simple improvement is to replace the chained
 tactic \C{rewrite -leqNgt; move=> leq_p_m} by the equivalent
 \C{rewrite -leqNgt => leq_p_m}. Indeed, as we will see later (in
 subsection~\ref{ssec:stack}), the \C{move} tactic does nothing; it
-is the \C{=>} that is responsible for the naming of the hypothesis.
+is the \C{=>} that is responsible for naming the hypothesis.
 
 In section~\ref{sec:rewrite2}, we shall describe some further
 ways to shrink the proof script.
@@ -1817,9 +1819,9 @@ ways to shrink the proof script.
 Let us take the well known induction principle for Peano's natural numbers
 and let us formalize it in the language of \Coq{}.  It reads:
 let $\mathcal{P}$ be a property of natural numbers; if
-$\mathcal{P}$ holds on $0$ and if, for each natural number $n$, the
+$\mathcal{P}$ holds for $0$ and if, for each natural number $n$, the
 property
-$\mathcal{P}$ holds on $n + 1$ as soon as it holds on $n$, then $\mathcal{P}$
+$\mathcal{P}$ holds for $n + 1$ as soon as it holds for $n$, then $\mathcal{P}$
 holds for any $n$.  Induction is typically regarded as a schema, where
 the variable $\mathcal{P}$ stands for any property we could think about.
 
@@ -1839,7 +1841,7 @@ nat_ind : forall P : nat -> Prop,
 \coqrun{name=aboutnatindrun}{ssr,aboutnatind}
 Here \C{P} is quantified exactly as \C{n} is, but its type is a bit more
 complex and deserves an explanation.  As we have seen in the first
-chapter, the \C{->} denotes the type of functions; hence \C{P} is a
+chapter, the \C{->} denotes the type of functions; hence \C{P} is a\marginpar{There is a problem with the \C{-} macro when the first character is -, which cancels the space that precedes it}
 function from \C{nat} to \C{Prop}.  Recall that \C{Prop} is the type
 of \emph{propositions}, i.e., something we may want to prove.  In the
 light of that, \C{P} is a function producing a proposition out of a natural
@@ -1946,7 +1948,8 @@ base case because if
 \C{P} synthesized by \C{elim:} for us is
 \C{(fun n : nat => n + 0 = n)}. It has been obtained by
 \emph{abstracting} the term \C{m} in the goal (see
-section~\ref{ssec:deffun}). The proof concludes by using lemma \C{addSn}
+section~\ref{ssec:deffun}). This proof can be concluded by using
+lemma \C{addSn}
 to  pull the \C{.+1} out of the sum, so that the induction hypothesis
 \C{IHm} can be used for rewriting.
 % [DG] If you want to use the slang "rewrite [something]" for
@@ -2044,7 +2047,7 @@ hypothesis \C{IHs} states:
 \begin{coq}{name=foldrevIH}{}
 IHs : forall z : A, foldl f z (rev s) = foldr (fun x z => f z x) z s
 \end{coq}
-which is more general than what we had obtained if we had not
+which is more general than what we would have obtained if we had not
 generalized \C{z} beforehand.
 The quantification on \C{z} is crucial since the goal in the induction step,
 just before we use \C{IHs}, is the following one:
@@ -2066,8 +2069,8 @@ different value for \C{z}.
 Approximately one third of the proof scripts in the \mcbMC{} library is made of
 invocations of the \C{rewrite} tactic. This proof command provides many
 features we cannot extensively cover here.  We just sketch a very common idiom
-involving conditional rewrite rules and we mention the \C{RHS} pattern for
-the casual reader.  The interested reader can find more about the pattern
+involving conditional rewrite rules and we mention the \C{RHS} pattern.
+The interested reader can find more about the pattern
 language in section~\ref{sec:rewrite2} or in the dedicated chapter of
 the SSReflect language user manual~\cite{ssrman}.
 
@@ -2095,7 +2098,7 @@ Qed.
 
 Here, our use of the \C{rewrite dvdn_addr} tactic forced us to prove
 the side condition \D{p \%| m`!}.
-These side conditions (by default) become the second, third (and eventually
+Side conditions (by default) become the second, third (and potentially
 higher) sub-goals in a proof script, so their proofs are usually postponed to
 after the first sub-goal (the main one) is proven. This is not always
 desirable; therefore, it is helpful to have a way to prove
@@ -2110,7 +2113,8 @@ The side condition \D{p \%| m`!} spawned by \C{rewrite dvdn_addr} was
 proven in the last line of the script. Instead, we could have solved
 it right away by rewriting using \C{?dvdn_fact ?prime_gt0}.
 In fact, optionally rewriting with \C{dvdn_fact} on all goals affects only
-the side condition, since the main goal mentions no ``divides'' predicate.
+the side condition, since the main goal does not mention the
+``divides'' predicate.
 The same holds for \C{prime_gt0}. The resulting proof script is:
 
 \begin{coq}{name=exp3x}{}
@@ -2162,6 +2166,8 @@ The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 Another form of simplification that is often needed is the
 unfolding of a definition.
 For example, the lemma \C{leqE} that we used in
+\marginpar{When reading the text, I thought that \C{leqE} did exist.  I
+think we should avoid misleading readers like that.}
 the proof of \C{leq_mul2l} back in section~\ref{sec:multirew}
 does not exist in the library, and there is no name associated to this
 equation. It is simply the definition of \C{leq}, and we actually do
@@ -2170,7 +2176,7 @@ the name of a definition, like \C{leq}, to its body
 \C{fun n m => n - m == 0}. Such operation can be performed by
 prefixing the name of the
 object with \C{/}, as in \C{rewrite /leq}. Unfolding a definition is
-indeed not a deductive operation but an instance of computation, as
+not a deductive operation but an instance of computation, as
 made more precise in chapter~\ref{ch:ttch}.
 
 % [ET] this is OK but clashes with the following section
@@ -2533,7 +2539,8 @@ in the \mcbMC{} library:
     \C{(fee .. (fie ..(foe ..) ..) ..)}, e.g. lemma \C{size\_cat} in
     {\tt seq.v}.
   \item We often use a one-letter suffix to resolve overloaded
-    notation, e.g., \C{addn}, \C{addb}, \C{addr} denote nat, boolean, ring
+    notation, e.g., \C{addn}, \C{addb}, and \C{addr} denote nat, boolean, and
+    ring
     addition, respectively.
     % This policy does not necessarily apply to
     % constants that should always be hidden behind a generic notation,
