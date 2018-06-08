@@ -666,7 +666,7 @@ we need to provide a good enumeration.
 Definition ord_enum n : seq (ordinal n) := pmap insub (iota 0 n).
 \end{coq}
 
-The \C{iota} function produces the sequence \C{[:: 0, 1, ... n.-1]}.
+The \C{iota} function produces the sequence \C{[:: 0; 1; ...; n.-1]}.
 Such a sequence is mapped via \C{insub} that tests if an element \C{x}
 is smaller than \C{n}.  If it is the case it produces \C{(Some x)},
 where \C{x} is an ordinal, else \C{None}.  \C{pmap} drops all \C{None}
