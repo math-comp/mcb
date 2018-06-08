@@ -49,7 +49,7 @@ Notation  & Term      & Type & Meaning \\\hline
 \C{n = m} & \C{(eq n m)} & \C{Prop} & Rewritable equality \\
 \C{n <> m} & \C{(not (eq n m))} & \C{Prop} & Disequality\\\hline
 \C{n == m}  & \C{(eqn n m)}  & \C{bool} & Boolean equality \\
-\C{n != m}  & \C{(negb (eqn n m))}  & bool & Boolean disequality \\\hline
+\C{n != m}  & \C{(negb (eqn n m))}  & \C{bool} & Boolean disequality \\\hline
 \C{n <= m}  & \C{(leq n m)}  & \C{bool} & $n \leq m$ \\\hline
 \C{n < m}  & \C{(leq n m)}   & \C{bool} & $n < m$ \\\hline
 \C{n >= m}  & \C{(geq n m)}  & \C{bool} & $n \geq m$ \\\hline
@@ -95,11 +95,11 @@ $\_$ & \C{(odd n)} & \C{bool} & Tests the oddity of $n$ \\\hline
                                          division of $m$ by
                                          $d$\\
 \C{m \%\% d} & \C{(modn m d)} & \C{nat} & remainder of the Euclidean division of $m$ by $d$\\
-$\_$      & (edivn m n) & \C{nat * nat} & Pair the quotient and remainder\\
+$\_$      & \C{(edivn m n)} & \C{nat * nat} & Pair the quotient and remainder\\
                      &&& of the Euclidean division of $m$ by $n$\\\hline
-$\_$      & (gcdn m n) & \C{nat} & GCD of $m$ and $n$\\
-$\_$      & (egcdn m n) & \C{nat * nat} & Bézout coefficients of $m$ and $n$\\
-$\_$      & (lcmn m n) & \C{nat} & LCM of $m$ and $n$\\\hline
+$\_$      & \C{(gcdn m n)} & \C{nat} & GCD of $m$ and $n$\\
+$\_$      & \C{(egcdn m n)} & \C{nat * nat} & Bézout coefficients of $m$ and $n$\\
+$\_$      & \C{(lcmn m n)} & \C{nat} & LCM of $m$ and $n$\\\hline
 
 \end{tabular}
 \section{More relations}\label{nat:more-rel}
