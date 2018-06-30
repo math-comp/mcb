@@ -1,4 +1,4 @@
-Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect.
 
 Module reflect1.
 

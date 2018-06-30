@@ -1,4 +1,4 @@
-Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect.
 
 Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
 Proof.
