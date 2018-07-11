@@ -1375,7 +1375,7 @@ compact way. We provide below a few examples:
 \begin{coq}{name=predicators}{}
 Section StandardPredicates.
 Variable T : Type.
-Implicit Types (op add : T -> T -> T) (R : rel T).
+Implicit Types (op add : T -> T -> T).
 Definition associative op := forall x y z, op x (op y z) = op (op x y) z.
 Definition left_distributive op add :=
   forall x y z, op (add x y) z = add (op x z) (op y z).
@@ -1386,8 +1386,6 @@ End StandardPredicates.
 \index[coq]{\C{associative}}
 \index[coq]{\C{left_id}}
 \index[coq]{\C{left_distributive}}
-\index[coq]{\C{rel}}
-where \C{(rel T)} is an abbreviation for the type \C{(T -> T -> bool)}.
 
 Beside the standardization of the statements through these
 predicates, the \mcbMC{} library uses a systematic naming policy for the lemmas
