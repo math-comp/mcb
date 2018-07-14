@@ -1097,12 +1097,17 @@ instead of a subterm of "n".
 %   if n is p.+1 then add (f n) (sum_f p) else f 0.
 % \end{coq}
 %
-If addition amounts to repeating the operation of applying \C{.+1}
-to one of the arguments, subtraction amounts to repeating the
-operation of fetching a subterm of the first argument.  This is also
-easily expressed using pattern matching constructs.  Here again,
-subtraction is already defined in the libraries, but we can play the game
-of re-defining our own version.
+
+We have seen that addition is implemented by repeating the operation
+of applying \C{.+1} to one of the arguments. Conversely, comparing two
+natural numbers is implemented by repeating the operation of fetching a
+subterm. Consider two terms \C{m} and \C{n} representing the natural
+numbers $m$ and $n$ respectively. Then $m$ is larger than $n$ if and only
+if \C{m} has $k$ more constructors than \C{n} for some $k \geq
+0$, which measures the distance between $m$ and $n$. Comparison is
+thus implemented in terms of an auxiliary
+truncated subtraction, which is again easily expressed using pattern
+matching constructs:
 
 \begin{coq}{name=sub}{}
 Fixpoint subn m n : nat :=
@@ -1113,32 +1118,41 @@ Fixpoint subn m n : nat :=
 \end{coq}
 \coqrun{name=sub_run}{ssr,sub}
 \index[coq]{\C{subn}}
-From a mathematical point of view, this definition can be quite
-unsettling.  The second pattern matching rule indicates that when
+Number $n$ is smaller than number $m$ if and only if \C{(subn m n)} is
+zero. Here as well, this subtraction is already defined in the
+libraries, but we play the game of re-defining our own version.
+% From a mathematical point of view, this definition can be quite
+% unsettling.
+The second pattern matching rule indicates that when
 any argument of the subtraction is 0, then the result is
-the first argument.  This is exactly what one would expect when the
-second argument is 0; but this rule also covers the case where the
+the first argument.  This % is exactly what one would expect when the
+% second argument is 0; but this
+rule thus also covers the case where the
 second argument is non-zero while the first argument is 0: in that
-case, the result of the function is zero.
+case, the result of the function is zero.  Another possible view on
+\C{subn} it to see it as a subtraction operation on natural numbers,
+made total by providing a default value in the ``exceptional'' cases.
+We shall discuss totality of functions in more detail in
+Section~\ref{sec:total}.
 
-On paper, the expression \(m - n\), for $m, n \in
-\mathbb{N}$, is usually understood as an integer, which is negative
-when $n > m$. But here the output of \C{subn} is constrained by its
-output type to be a natural number. Moreover, any function defined in
-\Coq{} has to be total, i.e., has to assign a value to any element in
-the type of its arguments.
+% On paper, the expression \(m - n\), for $m, n \in
+% \mathbb{N}$, is usually understood as an integer, which is negative
+% when $n > m$. But here the output of \C{subn} is constrained by its
+% output type to be a natural number. Moreover, any function defined in
+% \Coq{} has to be total, i.e., has to assign a value to any element in
+% the type of its arguments.
 
-Since \C{subn} has type \C{nat -> nat -> nat},
-an element \emph{in type} \C{nat} has to be output by the function
-even in the case when the second argument is non-zero and the first
-argument is zero. The default value output in this case is \C{0}, so
-that in the end \C{subn} sends two naturals \(m\) and
-\(n\) to \(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
+% Since \C{subn} has type \C{nat -> nat -> nat},
+% an element \emph{in type} \C{nat} has to be output by the function
+% even in the case when the second argument is non-zero and the first
+% argument is zero. The default value output in this case is \C{0}, so
+% that in the end \C{subn} sends two naturals \(m\) and
+% \(n\) to \(\max\left\{m-n, 0\right\}\) as opposed to \(m-n\).
 
-In a sense, subtraction,
-which is a partial function on natural numbers, has been made total by
-providing a default value in the ``exceptional'' cases.  We shall
-discuss this in more detail in Section~\ref{sec:total}.
+% In a sense, subtraction,
+% which is a partial function on natural numbers, has been made total by
+% providing a default value in the ``exceptional'' cases.  We shall
+% discuss this in more detail in Section~\ref{sec:total}.
 
 We can also write a recursive function with two arguments of
 type \C{nat}, that returns \C{true} exactly when the two arguments are
@@ -1903,7 +1917,7 @@ $~$
 $~$
 \end{coq-left}
 \begin{coqout-right}{run=about_fold_run}{width=9.3cm}
-foldr : forall T A : Type, 
+foldr : forall T A : Type,
   (T -> A -> A) -> A -> seq T -> A
 Arguments T, A are implicit ...
 \end{coqout-right}
