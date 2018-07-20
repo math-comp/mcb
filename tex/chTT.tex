@@ -496,12 +496,13 @@ Now recall the similarity between $\to$ and $\forall$, where the former is the
 simple, non-dependent case of the latter.  If we ask for the type of
 the \C{conj} constructor:
 
-\begin{coq}{name=Ande1}{width=4cm}
+\begin{coq-left}{name=Ande1}{width=4cm}
 About conj.
-\end{coq}
-\begin{coqout}{}{width=8cm}
+\end{coq-left}
+\begin{coqout-right}{}{width=8cm}
 conj: forall A B : Prop, A -> B -> A /\ B
-\end{coqout}
+\end{coqout-right}
+
 we may wonder what happens if the type of the second argument (i.e., \C{B})
 becomes dependent on the value of the first argument (of type \C{A}).
 What we obtain is actually the inductive definition corresponding to the
@@ -758,46 +759,58 @@ pulls an item out of the stack and names it.  The \C{move} proof
 command does nothing, so we use it as a placeholder
 for the postfix \C{=>} bookkeeping action:
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 move=> xy pr_x odd_y.
-\end{coq}
-\begin{coqout}{name=Stack1}{width=5cm}
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack1}{width=5cm}
  xy : nat * nat
  pr_x : prime xy.1
  odd_y : odd xy.2
 ========================
  2 < xy.2 + xy.1
-\end{coqout}
+\end{coqout-right}
 
 Now, en passant, we would like to decompose \C{xy} into its first
 and second component.  Instead of the verbose \C{=> xy; case: xy => x y},
 we can use the symbolic notation \C{[]} to perform such action.
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 move=> [x y] pr_x odd_y.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=5cm}
  x, y : nat
  pr_x : prime (x,y).1
  odd_y : odd (x,y).2
 ========================
  2 < (x,y).2 + (x,y).1
-\end{coqout}
+\end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> [ .. $\mid$ .. ]} (case)}
 
 We can place the \C{/=} switch to force the system to reduce the formulas on
 the stack, before introducing them in the context, and obtain:
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 move=> [x y] /= pr_x odd_y.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=5cm}
  x, y : nat
  pr_x : prime x
  odd_y : odd y
 ========================
  2 < y + x
-\end{coqout}
+\end{coqout-right}
 
 We can also process an assumption through a lemma; when a lemma is
 used in this way, it is called a \emph{view}. This feature is of
@@ -809,16 +822,20 @@ of \C{(prime x)}.
 \index[concept]{view}
 
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 move=> [x y] /= /prime_gt1-x_gt1 odd_y.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=5cm}
  x, y : nat
  x_gt1 : 1 < x
  odd_y : odd y
 ========================
  2 < y + x
-\end{coqout}
+\end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /=} (simplification)}
 
 The leading \C{/} makes \C{prime\_gt1} work as a function instead of
@@ -829,15 +846,19 @@ Indeed \C{-} can be omitted.
 One could also examine \C{y}: it can't be \C{0}, since it would contradict
 the assumption saying that \C{y} is \C{odd}.
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 move=> [x [//|y]] /= /prime_gt1-x_gt1.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=5cm}
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=5cm}
  x, y : nat
  x_gt1 : 1 < x
  ========================
  ~~ odd y -> 2 < y.+1 + x
-\end{coqout}
+\end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /view} (view application)}
 \index[ssr]{\C{tactic => ..}!\C{=> //} (close trivial goals)}
 
@@ -864,14 +885,16 @@ We finally conclude with the \C{apply:} command. In the example just
 shown, we have used it with two arguments: a function and its last
 argument. In fact, the lemma \C{ltn\_addl} looks as follows:
 
-\begin{coq}{}{width=4cm}
+\begin{coq-left}{}{width=4cm}
 About ltn_addl.
-\end{coq}
-\begin{coqout}{}{width=8cm}
-ltn_addl : forall m n p : nat, m < n -> m < p + n
-
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=8cm}
+ltn_addl : forall m n p : nat,
+  m < n -> m < p + n
 Arguments m, n are implicit
-\end{coqout}
+\end{coqout-right}
 
 \C{apply:} automatically fills in the blanks between the function
 \C{ltn\_addl}
@@ -930,25 +953,29 @@ forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1
 \end{coqout}
 and we stop just after applying the view, we end up in a valid state:
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 move=> [x y] /= /prime_gt1.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=6cm}
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=6cm}
  x, y : nat
  ========================
  1 < x -> odd y -> 2 < y + x
-\end{coqout}
+\end{coqout-right}
 
 One can also chain multiple views on the same stack item:
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 move=> [x y] /= /prime_gt1/ltnW.
-\end{coq}
-\begin{coqout}{name=Stack2}{width=6cm}
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=6cm}
  x, y : nat
  ========================
  0 < x -> odd y -> 2 < y + x
-\end{coqout}
+\end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /view/view} (many views)}
 
 Two other operations are available on the top stack item: specialization
@@ -962,18 +989,20 @@ and substitution.  Let's take the following conjecture.
 The top stack item is a quantified assumption.  To specialize it to, say,
 \C{3} one can write as follows:
 
-\begin{coq}{}{width=4cm}
+\begin{coq-left}{}{width=4cm}
 move=> /(_ 3).
-\end{coq}
-\begin{coqout}{}{width=8cm}
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=8cm}
 ========================
 3 * 2 = 3 + 3 -> 6 = 3 + 3
-\end{coqout}
+\end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /(_ arg)} (specialization)}
 % [DG] Why is there an "=>" after the "move" in the above example?
 % Nothing is getting moved into the context. Without the "=>" it works
 % just as fine. I'm surprised it works with "=>", though!
 % assia: TODO
+
 The idea behind the syntax here is that when we apply a view \C{v} to
 the top stack item (say, \C{top}), by writing \C{/v}, we are
 forming the term \C{(v top)}, whereas
@@ -991,15 +1020,17 @@ the rest of the goal, using the tactics \C{<-}
 
 and \C{->} for right-to-left and left-to-right respectively.
 
-\begin{coq}{}{width=4cm}
+\begin{coq-left}{}{width=4cm}
 move=> /(_ 3) <-.
-\end{coq}
-\begin{coqout}{}{width=8cm}
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=8cm}
 ========================
 6 = 3 * 2
-\end{coqout}
+\end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> ->} (rewriting L2R)}
 \index[ssr]{\C{tactic => ..}!\C{=> <-} (rewriting R2L)}
+
 In other words, the arrows are just a compact syntax for rewriting,
 as in the \C{rewrite} tactic, with the top assumption.
 
@@ -1091,12 +1122,16 @@ One can combine \C{:} and \C{=>} around a proof command, to first prepare the
 goal for its execution and finally apply the necessary bookkeeping to the
 result.  For example:
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 case: y odd_y => [|y']
-\end{coq}
-\begin{coqout}{name=Stack2}{width=6cm}
-2 subgoals
-
+$~$
+$~$
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{name=Stack2}{width=6cm}
   x : nat
   x_gt1 : 1 < x
   ========================
@@ -1104,7 +1139,7 @@ case: y odd_y => [|y']
 
 subgoal 2 is:
  odd y'.+1 -> 2 < y'.+1 + x
-\end{coqout}
+\end{coqout-right}
 
 At the left of the \C{:} operator one can also put a name for an
 equation that links the term at the top of the stack before and

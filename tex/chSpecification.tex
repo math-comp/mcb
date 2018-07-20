@@ -151,6 +151,9 @@ case: b; case => hlr hrl.
 by right => hP; move: (hrl hP).
 Qed.
 \end{coq}
+
+The last goal, just before line 5 is executed, is the following one:
+
 \begin{coqout}{}{width=5cm,title=Last goal}
 1 subgoal
 P : Prop
@@ -184,13 +187,16 @@ to the double implication \C{bool_Prop_equiv}; see exercise~\ref{ex:iffp}.
 Let us illustrate the benefits of this alternate specialized double
 implication:
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 Lemma test_reflect b P :
   reflect P b -> P \/ ~ P.
 Proof.
 case.
-\end{coq}
-\begin{coqout}{}{width=6cm}
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=6cm}
   b : bool
   P : Prop
   ============================
@@ -198,7 +204,7 @@ case.
 
 subgoal 2 is:
  ~ P -> b = false -> P \/ ~ P
-\end{coqout}
+\end{coqout-right}
 
 A simple case analysis on the hypothesis \C{(reflect P b)} exposes in
 each branch both versions of the statement.
@@ -317,14 +323,18 @@ this bridge:
 % than the one we proved in exercise~\ref{}
 % section~\ref{ssec:boolProp}:
 
-\begin{coq}{}{width=3cm}
+\begin{coq-left}{}{width=3cm}
 About iffP.
-\end{coq}
-\begin{coqout}{}{width=9cm}
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=9cm}
 iffP : forall (P Q : Prop) (b : bool),
-  reflect P b -> (P -> Q) -> (Q -> P) -> reflect Q b
-\end{coqout}
+  reflect P b -> (P -> Q) -> (Q -> P) ->
+    reflect Q b
+\end{coqout-right}
 \index[coq]{\C{iffP}}
+
 Lemma \C{iffP} relates two equivalences \C{(reflect P b)}
 and \C{(reflect Q b)} involving one and the same boolean \C{b}
 but different \C{Prop} statements \C{P} and \C{Q}, as soon as one
@@ -347,13 +357,16 @@ Lemma idP {b : bool} : reflect b b.
 We can now come back to the proof of lemma \C{eqnP}, and start its
 proof script by applying \C{iffP}.
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 Lemma eqnP {n m : nat} :
   reflect (n = m) (eqn n m).
 Proof.
 apply: (iffP idP).
-\end{coq}
-\begin{coqout}{}{width=5cm}
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=5cm}
 n : nat
 m : nat
 ===================
@@ -361,7 +374,8 @@ m : nat
 
 subgoal 2 is:
  eqn m n -> m = n
-\end{coqout}
+\end{coqout-right}
+
 The proof is now an easy induction, and is left as exercise~\ref{ex:eqnP}.
 
 % In fact the library does not feature the specialization \C{iffP_lr},
@@ -376,6 +390,7 @@ decidable equality:
 Lemma nat_inj_eq T (f : T -> nat) x y :
   injective f -> reflect (x = y) (eqn (f x) (f y)).
 \end{coq}
+
 The equality decision procedure just consists in pre-applying
 the injection \C{f} to the decision procedure \C{eqn} available on
 type \C{nat}. Since we already know that \C{eqn} is a decision
@@ -385,15 +400,18 @@ only if \C{(f x = f y)}, which  follows directly from the injectivity of
 implications, replacing on the fly the evaluation
 \C{(eqn (f x) (f y))} by the \C{Prop} equality \C{(f x = f y)}:
 
-\begin{coq}{}{width=7.7cm}
+\begin{coq-left}{}{width=7.7cm}
 Lemma nat_inj_eq T (f : T -> nat) x y :
   injective f ->
     reflect (x = y) (eqn (f x) (f y)).
 Proof.
 move=> f_inj.
 apply: (iffP eqnP).
-\end{coq}
-\begin{coqout}{}{width=4.3cm}
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=4.3cm}
 T : Type
 f : T -> nat
 f_inj : injective f
@@ -403,7 +421,8 @@ x = y -> f x = f y
 
 subgoal 2 is:
  f x = f y -> x = y
-\end{coqout}
+\end{coqout-right}
+
 Note that \C{eqn}, being completely specified by \C{eqnP}, is not
 anymore part of the picture.  Finishing the proof is left as
 exercise~\ref{ex:eqnPinj}.
@@ -429,18 +448,18 @@ that one wants to access the components of a conjunctive hypothesis,
 stated as a boolean conjunction. We can use lemma \C{andP} in a view
 intro-pattern in this way:
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 Lemma example n m k : k <= n ->
   (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP.
-\end{coq}
-\begin{coqout}{}{width=6cm}
+\end{coq-left}
+\begin{coqout-right}{}{width=6cm}
 n, m, k : nat
 lekn : k <= n
 ==========================
  n <= m /\ m <= k -> n = k
-\end{coqout}
+\end{coqout-right}
 
 The view intro-pattern \C{/andP} has \emph{applied} the reflection
 view \C{andP} to
@@ -476,40 +495,44 @@ which reduces to \C{((n <= m) /\\ (m <= k))} since \C{c} is \C{true}
 Going back to  our example: we can then chain this view with a case
 intro-pattern to break the conjunction and introduce its components:
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 Lemma example n m k : k <= n ->
   (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP[lenm lemk].
-\end{coq}
-\begin{coqout}{}{width=6cm}
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=6cm}
 n, m, k : nat
 lekn : k <= n
 lenm : n <= m
 lemk : m <= k
 ===========================
 n = k
-\end{coqout}
+\end{coqout-right}
 
 As \C{(n <= m)} is by definition \C{(n - m == 0)}, we can use the
 reflection view
 \C{eqnP} in order to transform this hypothesis into a proper equation.
 Observe the new shape of the \C{lenm} hypothesis:
 
-\begin{coq}{}{width=7cm}
+\begin{coq-left}{}{width=7cm}
 Lemma example n m k : k <= n ->
   (n <= m) && (m <= k) -> n = k.
 Proof.
 move=> lekn /andP [/eqnP lenm lemk].
-\end{coq}
-\begin{coqout}{}{width=5.1cm}
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=5.1cm}
 n, m, k : nat
 lekn : k <= n
 lenm : n - m = 0
 lemk : m <= k
 ===========================
 n = k
-\end{coqout}
+\end{coqout-right}
 
 \mantra{
 Combining wisely the structured reasoning of inductive predicates
@@ -534,29 +557,33 @@ Lemma leq_total m n : (m <= n) || (m >= n).
 The first step of the proof is to view this disjunction as an
 implication, using the classical equivalence and a negated premise:
 
-\begin{coq}{}{width=7.6cm}
-Lemma leq_total m n : (m <= n) || (m >= n).
+\begin{coq-left}{}{width=7.6cm}
+Lemma leq_total m n :
+  (m <= n) || (m >= n).
 Proof.
 rewrite -implyNb.
-\end{coq}
-\begin{coqout}{}{width=4.7cm}
+\end{coq-left}
+\begin{coqout-right}{}{width=4.7cm}
 m, n : nat
 =====================
 ~~ (m <= n) ==> (n <= m)
-\end{coqout}
+$~$
+\end{coqout-right}
 
 This premise can be seen as \C{n < m}:
 
-\begin{coq}{}{width=7.6cm}
-Lemma leq_total m n : (m <= n) || (m >= n).
+\begin{coq-left}{}{width=7.6cm}
+Lemma leq_total m n :
+  (m <= n) || (m >= n).
 Proof.
 rewrite -implyNb -ltnNge.
-\end{coq}
-\begin{coqout}{}{width=4.5cm}
+\end{coq-left}
+\begin{coqout-right}{}{width=4.5cm}
 m, n : nat
 =====================
 (n < m) ==> (n <= m)
-\end{coqout}
+$~$
+\end{coqout-right}
 
 This is now an instance of the weakening property of the comparison,
 except that it is expressed with a boolean implication. But the view
@@ -564,16 +591,18 @@ mechanism not only exists in intro-patterns: it can also be used in
 combination with the \C{apply} tactic, to apply a view to a given goal
 with a minimal amount of bureaucracy:
 
-\begin{coq}{}{width=7.6cm}
-Lemma leq_total m n : (m <= n) || (m >= n).
+\begin{coq-left}{}{width=7.6cm}
+Lemma leq_total m n :
+  (m <= n) || (m >= n).
 Proof.
 rewrite -implyNb -ltnNge; apply/implyP.
-\end{coq}
-\begin{coqout}{}{width=4.5cm}
+\end{coq-left}
+\begin{coqout-right}{}{width=4.5cm}
 m, n : nat
 =====================
 (n < m) -> (n <= m)
-\end{coqout}
+$~$
+\end{coqout-right}
 
 We can now conclude the proof:
 
@@ -625,7 +654,6 @@ to the boolean formula \C{le_n21}, namely \C{(maxn n1 n2 = n1)},
 and rewrites with it obtaining:
 
 \begin{coqout}{}{}
-
   m : nat
   n1 : nat
   n2 : nat
@@ -821,13 +849,15 @@ corresponds to the \C{ReflectT} constructor.  Conversely,
 Let's take an example where we reason by cases on the \C{andP} lemma,
 that states \C{(forall a b, reflect (a /\\ b) (a && b))}.
 
-\begin{coq}{}{width=6cm}
+\begin{coq-left}{}{width=6cm}
 Lemma example a b :
   a && b ==> (a == b).
 Proof.
 case: andP => [ab|nab].
-\end{coq}
-\begin{coqout}{}{width=6cm}
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=6cm}
 a, b : bool
 ab : a /\ b
 ========================
@@ -835,7 +865,7 @@ true ==> (a == b)
 
 subgoal 2 is:
 false ==> (a == b)
-\end{coqout}
+\end{coqout-right}
 
 Remark how the automatic substitution trivializes the
 second goal.  The first one can be solved by replacing
@@ -1561,16 +1591,15 @@ Set Printing Coercions. Redirect "g1" Show.
 by [].
 Qed.
 \end{coqdef}
-\begin{coq}{def=istrue}{width=6cm}
+\begin{coq-left}{def=istrue}{width=6cm}
 Lemma example : prime 17.
 $~$
-$~$
-\end{coq}
+\end{coq-left}
 \coqrun{name=r3}{ssr,istrue}
-\begin{coqout}{run=r3;out=g1}{title=Goal fully printed,width=6cm}
+\begin{coqout-right}{run=r3;out=g1}{title=Goal fully printed,width=6cm}
 ========================
 is_true (prime 17)
-\end{coqout}
+\end{coqout-right}
 
 When the statement of the example is processed by \Coq{}
 and it is enforced to be a type, but \lstinline/(prime 17)/ is actually

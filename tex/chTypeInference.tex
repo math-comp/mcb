@@ -165,17 +165,17 @@ Let us start with the simplest example one could imagine: defining the
 polymorphic identity function and checking its application to
 \lstinline/3/.
 
-\begin{coq}{name=exid}{width=8cm,title=Polymorphic identity}
-Definition id (A : Type) (a : A) : A := a.
+\begin{coq-left}{name=exid}{width=8cm,title=Polymorphic identity}
+Definition id A (a : A) : A := a.
 Check (id nat 3).
 Check (id _ 3).
-\end{coq}
+\end{coq-left}
 \coqrun{name=r1}{exid}
-\begin{coqout}{run=r1}{title=Response,width=4cm}
-
+\begin{coqout-right}{run=r1}{title=Response,width=4cm}
+$~$
 id nat 3 : nat
 id nat 3 : nat
-\end{coqout}
+\end{coqout-right}
 
 In the expression \lstinline/(id nat 3)/ no subterm was omitted,
 therefore \Coq{} accepted the term and printed its type.  In the third
@@ -207,17 +207,17 @@ the right number of \lstinline/_/ for him.  For more details
 refer to~\cite[section 2.7]{Coq:manual}.  Here
 we only provide a simple example.
 
-\begin{coq}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
+\begin{coq-left}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
 Arguments id {A} a.
 Check (id 3).
 Check (@id nat 3).
-\end{coq}
+\end{coq-left}
 \coqrun{name=iarg}{impl-arg-id}
-\begin{coqout}{run=iarg}{title=Response,width=6cm}
-
+\begin{coqout-right}{run=iarg}{title=Response,width=6cm}
+$~$
 id 3 : nat
 id 3 : nat
-\end{coqout}
+\end{coqout-right}
 
 The \lstinline/Arguments/ directive ``documents'' the constant
 \lstinline/id/.  In this case it just marks the argument that has to
@@ -228,17 +228,21 @@ prefixing the name of the constant with the \lstinline/@/ symbol.
 Another piece of information that is often left implicit is
 the type of abstracted or quantified variables.
 
-\begin{coq}{name=infarg}{title=Omitting type annotations,width=7cm}
+\begin{coq-left}{name=infarg}{title=Omitting type annotations,width=7cm}
 Check (fun x => @id nat x).
-
-Lemma prime_gt1 p : prime p -> 1 < p.
-\end{coq}
-\coqrun{name=inf}{ssr,infarg,abort}
-\begin{coqout}{run=inf}{title=Response,width=5cm}
-fun x : nat => id x :
-  nat -> nat
 $~$
-\end{coqout}
+Lemma prime_gt1 p :
+  prime p -> 1 < p.
+$~$
+\end{coq-left}
+\coqrun{name=inf}{ssr,infarg,abort}
+\begin{coqout-right}{run=inf}{title=Response,width=5cm}
+fun x : nat => id x : nat -> nat
+$~$
+p : nat
+============================
+ prime p -> 1 < p
+\end{coqout-right}
 
 In the first line the syntax (\lstinline/fun x => ...)/ is sugar for
 \lstinline/(fun x : _ => ...)/ where we leave the type of
@@ -267,27 +271,29 @@ have q_gt1 := @prime_gt1 _ pr_q.
 exact: ltnW q_gt1.
 Qed.
 \end{coqdef}
-\begin{coq}{def=infdata}{title=Inferring a term,width=7cm}
+\begin{coq-left}{def=infdata}{title=Inferring a term,width=7cm}
 Lemma example q : prime q -> 0 < q.
 Proof.
 move=> pr_q.
-have q_gt1 := @prime_gt1 _ pr_q.
-exact: ltnW q_gt1.
-Qed.
-\end{coq}
-\coqrun{name=inf2}{ssr,infdata}
-\begin{coqout}{run=inf2;out=g1}{title=Goal after line 3,width=5cm}
-1 subgoal
-
+\end{coq-left}
+\begin{coqout-right}{run=inf2;out=g1}{title=Goal after line 3,width=5cm}
 q : nat
 pr_q : prime q
 ========================
 0 < q
-\end{coqout}
+\end{coqout-right}
 
 The proof begins by giving the name \lstinline/pr_q/ to the assumption
-\lstinline/(prime q)/.  Then it builds a proof term by hand using
+\lstinline/(prime q)/. 
+Then it builds a proof term by hand using
 the lemma stated in the previous example and names it \lstinline/q_gt1/.
+
+\begin{coq}{}{}
+have q_gt1 := @prime_gt1 _ pr_q.
+exact: ltnW q_gt1.
+Qed.
+\end{coq}
+
 In the expression \lstinline/(prime_gt1 _ pr_q)/, the place holder,
 that we name \mcbimpl{p}, stands for a natural number.
 When type inference reaches \mcbimpl{p}, it fixes its type to \lstinline/nat/.
@@ -394,16 +400,16 @@ Definition nat_eqType : eqType := @Pack nat eqn.
 Projections, when applied to a record instance like
 \lstinline/nat_eqType/ compute and extract the desired component.
 
-\begin{coq}{name=redproj}{title=Computation of projections,width=6cm}
+\begin{coq-left}{name=redproj}{title=Computation of projections,width=6cm}
 Eval simpl in sort nat_eqType.
 Eval simpl in @eq_op nat_eqType.
-\end{coq}
+\end{coq-left}
 \coqrun{name=r}{ssr,eqtype,eqn,redproj}
-\begin{coqout}{run=r}{title=Response,width=6cm}
+\begin{coqout-right}{run=r}{title=Response,width=6cm}
 = nat : Type
 = eqn : sort nat_eqType ->
          sort nat_eqType -> bool
-\end{coqout}
+\end{coqout-right}
 
 Given that \lstinline/(sort nat_eqType)/ and \lstinline/nat/
 are convertible, equal up to computation, we can use the two terms
@@ -411,13 +417,13 @@ interchangeably.  The same holds for \lstinline/(eq_op nat_eqType)/
 and \lstinline/eqn/.  Thanks to this fact \Coq{} can type check the
 following term:
 
-\begin{coq}{name=eqop}{width=5.7cm}
+\begin{coq-left}{name=eqop}{width=5.7cm}
 Check (@eq_op nat_eqType 3 4).
-\end{coq}
+\end{coq-left}
 \coqrun{name=e1}{ssr,eqtype,eqn,eqop}
-\begin{coqout}{run=e1}{width=6.3cm}
+\begin{coqout-right}{run=e1}{width=6.3cm}
 eq_op 3 4 : bool
-\end{coqout}
+\end{coqout-right}
 
 This term is well typed, but checking it is not as simple as one may
 expect.
@@ -489,17 +495,17 @@ Notation "x == y" := (@eq_op _ x y).
 Check (@eq_op bool_eqType true false).
 Check (@eq_op nat_eqType 3 4).
 \end{coqdef}
-\begin{coq}{name=infix,print}{title=Overloaded notation,width=7cm}
+\begin{coq-left}{name=infix,print}{title=Overloaded notation,width=7cm}
 Notation "x == y" := (@eq_op _ x y).
 Check (@eq_op bool_eqType true false).
 Check (@eq_op nat_eqType 3 4).
-\end{coq}
+\end{coq-left}
 \coqrun{name=r2}{ssr,eqtype,eqn,bety,infix,print}
-\begin{coqout}{run=r2}{title=Response,width=5cm}
-
+\begin{coqout-right}{run=r2}{title=Response,width=5cm}
+$~$
 true == false : bool
 3 == 4 : bool
-\end{coqout}
+\end{coqout-right}
 
 As a printing rule, the place holder stands for a wild card: the
 notation is used no matter the value of the first argument of
@@ -515,14 +521,14 @@ interpreted as an implicit argument: type inference is expected to find a value
 for it.  Unfortunately such notation does not work as a parsing rule
 yet.
 
-\begin{coq}{name=parsenocs}{width=4cm}
+\begin{coq-left}{name=parsenocs}{width=4cm}
 Check (3 == 4).
 $~$
-\end{coq}
-\begin{coqout}{run=nc}{width=8cm}
+\end{coq-left}
+\begin{coqout-right}{run=nc}{width=8cm}
 Error: The term "3" has type "nat" while
 it is expected to have type "sort ?e".
-\end{coqout}
+\end{coqout-right}
 \coqrun{name=nc;fail}{ssr,eqtype,eqn,infix,parsenocs}
 
 If we unravel the notation, the input term is really
@@ -555,17 +561,17 @@ The keyword \lstinline/Canonical/ was chosen to stress that the
 program is deterministic: each type  \lstinline/T/ is related to
 (at most) one \emph{canonical} comparison function.
 
-\begin{coq}{name=parse}{width=6cm}
+\begin{coq-left}{name=parse}{width=6cm}
 Check (3 == 4).
 Check (true == false).
 Eval compute in (3 == 4).
-\end{coq}
+\end{coq-left}
 \coqrun{name=cs}{ssr,eqtype,eqn,bety,infix,declcs,parse}
-\begin{coqout}{run=cs}{width=6cm}
+\begin{coqout-right}{run=cs}{width=6cm}
 3 == 4 : bool
 true == false : bool
 = false : bool
-\end{coqout}
+\end{coqout-right}
 
 The mechanics of the small program we wrote using the
 \lstinline/Canonical/ keyword can be explained using the
@@ -641,14 +647,17 @@ atomic, like \lstinline/nat/ or \lstinline/bool/.  If we try for
 example to use it on terms whose type was built using a type
 constructor like the one of pairs we encounter an error.
 
-\begin{coq}{name=reccs}{title=Error,width=6cm}
+\begin{coq-left}{name=reccs}{title=Error,width=6cm}
 Check (3, true) == (4, false).
 $~$
-\end{coq}
+$~$
+\end{coq-left}
 \coqrun{name=nc1;fail}{ssr,eqtype,eqn,bety,infix,declcs,reccs}
-\begin{coqout}{run=nc1}{title=Response,width=6cm}
-Error: The term "(3, true)" has type "(nat * bool)%type" while it is expected to have type "sort ?e".
-\end{coqout}
+\begin{coqout-right}{run=nc1}{title=Response,width=6cm}
+Error: The term "(3, true)" has type
+"(nat * bool)%type" while it is expected
+to have type "sort ?e".
+\end{coqout-right}
 
 The term \lstinline/(3,true)/ has type \lstinline/(nat * bool)/ and,
 so far, we only taught \Coq{} how to compare booleans and natural
@@ -713,13 +722,13 @@ are successful and \lstinline/v1/ is the solution for
 After the table of canonical solutions has been extended, our example
 is accepted.
 
-\begin{coq}{name=parsecs2}{width=6.3cm}
+\begin{coq-left}{name=parsecs2}{width=6.3cm}
 Check (3, true) == (4, false).
-\end{coq}
+\end{coq-left}
 \coqrun{name=cs2}{ssr,eqtype,eqn,bety,infix,declcs,paircs,declcs2,parsecs2}
-\begin{coqout}{run=cs2}{width=5.7cm}
+\begin{coqout-right}{run=cs2}{width=5.7cm}
 (3, true) == (4, false) : bool
-\end{coqout}
+\end{coqout-right}
 
 The term synthesized by \Coq{} is the following one:
 
@@ -1345,17 +1354,19 @@ Lemma big_mkcond I r (P : pred I) F :
 
 If we chain the two lemmas we can pull out the last item.
 
-\begin{coq}{name=bigop3natrec}{}
+\begin{coq-left}{name=bigop3natrec}{}
 Lemma sum_odd_3 :
   \sum_(1 <= i < 3.*2) i.*2 = 5 * 4
 Proof.
 rewrite big_mkcond big_nat_recr //=.
 rewrite unlock /=.
-\end{coq}
-\begin{coqout}{}{}
+\end{coq-left}
+\begin{coqout-right}{}{}
 ============================
-\sum_(0 <= i < 5) (if odd i then i else 0) + 5 = 3^2
-\end{coqout}
+\sum_(0 <= i < 5) (if odd i then i else 0) +
+  5 =
+  3^2
+\end{coqout-right}
 
 When the last item is pulled out, we can unlock the computation
 and obtain the following goal:
@@ -1376,16 +1387,18 @@ We detail how this requirement is stated, and automatically satisfied by
 section by showing that the same lemmas also apply to an iterated
 product.
 
-\begin{coq}{name=bigop3natrec}{width=5.5cm}
+\begin{coq-left}{name=bigop3natrec}{width=5.5cm}
 Lemma prod_fact_4 :
   \prod_(1 <= i < 5) i = 4`!.
 Proof.
 rewrite big_nat_recr //=.
-\end{coq}
-\begin{coqout}{}{width=6cm,title=Pulling out the last product}
+\end{coq-left}
+\begin{coqout-right}{}{width=6cm,title=Pulling out the last product}
 ============================
 \prod_(1 <= i < 4) i * 4 = 4`!
-\end{coqout}
+$~$
+$~$
+\end{coqout-right}
 
 This is the reason why we can say that the bigop library is generic:
 it works uniformly on any iterated operator, and, provided the operator
@@ -1666,18 +1679,16 @@ The converse technological issue may arise when canonical structure
 inference ``promotes'' the operator name to a projection of the
 corresponding canonical monoid structure.
 
-\begin{coq}{name=infix,print}{width=5.3cm}
+\begin{coq-left}{name=infix,print}{width=5.3cm}
 Implicit Type l : seq nat.
 Lemma example F l1 l2 :
  \sum_(i <- l1 ++ l2) F i =
  \sum_(i <- l2 ++ l1) F i.
 Proof.
 rewrite big_cat.
-rewrite /=.
-by rewrite addnC -big_cat.
-Qed.
-\end{coq}
-\begin{coqout}{run=roar}{title=Response after line 6,width=6.9cm}
+$~$
+\end{coq-left}
+\begin{coqout-right}{run=roar}{title=Response after line 6,width=6.9cm}
 F : nat -> nat
 l1, l2 : seq nat
 ============================
@@ -1685,11 +1696,19 @@ addn_monoid
  (\big[addn_monoid/0]_(i <- l1) F i)
  (\big[addn_monoid/0]_(i <- l2) F i) =
 \sum_(i <- (l2 ++ l1)) F i
-\end{coqout}
+\end{coqout-right}
 
 It is not uncommon to see \C{/=} switch in purely algebraic proofs
 (where no computation is really involved) just to clean up the display
 of the current conjecture.
+The proof concludes as follows:
+
+\begin{coq}
+rewrite /=.
+by rewrite addnC -big_cat.
+Qed.
+\end{coq}
+
 
 
 % TODO : Discuss also the dangers of breaking abstraction barriers, as a
