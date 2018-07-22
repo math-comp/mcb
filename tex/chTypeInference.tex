@@ -1058,7 +1058,7 @@ Qed.
 \end{coq}
 where \C{(A =i B)} is a synonym for \C{(forall x, x \\in A = x \\in B)},
 
-The \C{in\_cons} lemma is just a convenience rewrite rule, while
+The \C{in\_cons} lemma is just a convenient rewrite rule, while
 \C{mem\_undup} says that the \C{undup} function does not drop
 any non-duplicate element.  Note that in the proof we use both
 the decidability of membership (\C{Hy}) and the decidability of
@@ -1075,7 +1075,7 @@ Qed.
 The proof of \C{undup\_uniq} requires no new ingredients and
 completes the specification of \C{undup}.
 
-A last, very important step in the theory of sequences is to show
+The last, very important step in the theory of sequences is to show
 that the container preserves the \C{eqType} interface: whenever we can
 compare the elements of a sequence, we can also compare sequences.
 
@@ -1433,7 +1433,7 @@ Structure law := Law {
 The \C{Monoid.law} structure relates the \C{operator} (the key used by
 canonical structures) to the three properties of monoids.
 
-We can then us this interface as a parameter for a bunch of lemmas,
+We can then use this interface as a parameter for a bunch of lemmas,
 describing the theory shared by  its instances. The \C{(Monoid.law idx)}
 type annotation may seem puzzling at first. It combines various mechanisms
 we have seen earlier in the book: once the section \C{Definitions} is

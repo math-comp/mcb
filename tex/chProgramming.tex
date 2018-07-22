@@ -142,7 +142,7 @@ In this syntax, the name of the argument \C{n} is provided
 \emph{on the left of} the separating \C{:=}, to be then referenced
 \emph{on the right of} the separating \C{:=}, in the actual
 definition of the function. The code of the actual definition is
-hence comprised between the \C{:=} symbol and the terminating dot.
+hence enclosed between the \C{:=} symbol and the terminating dot.
 
 The information on the domain and codomain of \C{f},
 as in \(f\ :\ {\mathbb{N}}\rightarrow{\mathbb{N}}\), is provided using
@@ -521,8 +521,7 @@ argument matches the left hand side of this arrow (as depicted with
 different underline styles). When this is not the case, \Coq{} issues a
 type error.
 
-\begin{coq-left}{name=fail_check_repeat_twice_f}{width=5.5cm,title=Ill-formed
-  application}
+\begin{coq-left}{name=fail_check_repeat_twice_f}{width=5.5cm,title=Ill-formed-application}
 Check (repeat_twice f f).
 \end{coq-left}
 \begin{coqout-right}{run=fail_check_repeat_twice_f_run}{title=Response,width=6.2cm}
@@ -602,11 +601,11 @@ is a well formed expression in the language $\{\top, \bot,\vee,\wedge\}$ of
 boolean arithmetic, while expression:
 \[ 0 + x \times (S\ 0) \]
 is a well formed expression in the language $\{0,S, +, \times\}$ of
-Peano arithmetic.  However, these languages usually are equipped with
+Peano arithmetic.  These languages are usually equipped with
 behavior rules, expressed in the form of equality axioms, like
 \[\top \vee b = \top \qquad \hbox{or} \qquad 0 + x = 0\]
 In
-practice, these axioms confer a distinctive status to
+practice, these axioms confer a distinctive status on
 the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
 $S$ for natural numbers. More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
@@ -739,7 +738,7 @@ this associativity is often included in the reading process, so that
 the two forms of three-argument conjunctions are often identified.
 However, when manipulating boolean expressions of the \Coq{} language,
 there is a clear distinction between these two forms of conjunctions
-of three values, and the notation conventions makes sure that the two
+of three values, and the notation conventions make sure that the two
 forms appear differently on the screen.  We will come back to this
 question in section~\ref{sec:notabrev}.
 
@@ -794,9 +793,9 @@ of this chapter, we call such a term a \emph{numeral}.
 The \mcbMC{} library provides a few notations to make the use of the
 constructor \C{S} more intuitive to read.  In particular, if \C{x}
 is a value of type \C{nat}, \C{x.+1} is another way to write
-\C{(S x)}.  The ``\C{.+1}'' notation binds more strongly than function
-application, so that this notation makes it possible to avoid some
-needs for parentheses: assuming  that \C{f} is a function of type
+\C{(S x)}.  The ``\C{.+1}'' notation binds stronger than function
+application, rendering some parentheses unnecessary:
+assuming  that \C{f} is a function of type
 \C{nat -> nat} the expression \C{(f n.+1)} reads
 \C{(f (S n))}.  Notations are also provided for \C{S (S n)}, written
 \C{n.+2}, and so on until \C{n.+4}.
@@ -858,7 +857,7 @@ decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
 reused in the result part.
 
-Remark that we did omit the type of the input \C{n}. We can omit this
+Observe that we did omit the type of the input \C{n}. We can omit this
 type because matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
 \C{nat}, as the \C{S} constructor belongs to \emph{exactly}
@@ -1007,8 +1006,8 @@ computation:
 \index[concept]{computation}
 When the computation finishes, the symbol \C{addn} disappears.  In
 this sense, the recursive definition is really a definition.  Remark that
-what the \C{(addn n m)} program does is simply to stack \C{n} times the
-successor symbol on top of \C{m}.
+the \C{(addn n m)} program simply stacks \C{n} times the successor symbol
+on top of \C{m}.
 
 If we reflect again on the discussion of Peano arithmetic, as in
 Section~\ref{sec:data}, we see that addition is provided by the definition of
@@ -1062,7 +1061,7 @@ corrsponding to the pattern \C{p.+1}, the recursive call happens on
 \C{p}, a strict subterm of \C{p.+1}. Had we matched the argument \C{n}
 against the pattern \C{p.+1.+1}, then the recursive call would have been
 allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.  The way
-that \Coq{} verifies that recursive functions will terminate is
+\Coq{} verifies that recursive functions will terminate is
 explained in more detail in the reference manual \cite{Coq:manual} or in the
 Coq'Art book \cite{BC04}.
 
@@ -1436,7 +1435,7 @@ this type can be
 \emph{inferred} from the type of the given element \C{2}. One can
 thus write the sequence as  \C{(cons _ 2 (nil _))}, using the
 placeholder \C{_} to
-denote  a subterm, here a type, to be inferred by \Coq{}.
+denote  a subterm, here a type to be inferred by \Coq{}.
 In the case of \C{cons}, however,
 one can be even more concise. Let us ask for
 information about \C{cons} using the command \C{About}:
