@@ -17,7 +17,7 @@ Abort.
 The rules of the \mcbCIC{}, as the ones sketched in~\ref{ch:ttch},
 are expressed on the syntax of terms and
 are implemented by the kernel of \Coq{}.  Such software component
-performs \emph{type checking}: given a term and type it checks if such
+performs \emph{type checking}: given a term and type, it checks if such
 term has the given type.  To keep type checking simple and decidable
 the syntax of terms makes all information explicit. As a consequence
 the terms written in such verbose syntax are pretty large.
@@ -158,7 +158,7 @@ $x$ is a unique name).
 %\mcbREQUIRE{have, move, exact}
 %\mcbPROVIDE{Arguments (setting implicit)}
 %\mcbLEVEL{1}
-\section{Recap: type inference by examples}
+\section{Recap: type inference by example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Let us start with the simplest example one could imagine: defining the
@@ -180,7 +180,7 @@ id nat 3 : nat
 In the expression \lstinline/(id nat 3)/ no subterm was omitted,
 therefore \Coq{} accepted the term and printed its type.  In the third
 line, even if the subterm \lstinline/nat/ was omitted, \Coq{} accepted
-the term.  Type inference found a value for the place holder
+the term.  Type inference found a value for the placeholder
 for us by proceeding in the following way:  it traversed the term
 recursively from left to right, ensuring that the type of each
 argument of the application had the type expected by the function.  In
@@ -195,7 +195,7 @@ type inference runs recursively on the argument \lstinline/3/
 discovering it has type \lstinline/nat/ and imposes that it unifies
 with the value of the first argument (that is \mcbimpl{A}).  For this
 to be true \mcbimpl{A} has to be assigned the value \lstinline/nat/.
-As a result the system prints the input term, where the place holder
+As a result the system prints the input term, where the placeholder
 has been replaced by the value type inference assigned to it.
 
 In the light of that, we observe that every time we apply the identity
@@ -259,7 +259,7 @@ Since the statement uses \lstinline/p/ as the argument of the
 of type \lstinline/nat/.
 
 The kind of information filled in by type inference can also be of
-another, more interesting, nature.  So far all place holders were
+another, more interesting, nature.  So far all placeholders were
 standing for types, but the user is also allowed to put \lstinline/_/
 in place of a term.
 
@@ -294,7 +294,7 @@ exact: ltnW q_gt1.
 Qed.
 \end{coq}
 
-In the expression \lstinline/(prime_gt1 _ pr_q)/, the place holder,
+In the expression \lstinline/(prime_gt1 _ pr_q)/, the placeholder,
 that we name \mcbimpl{p}, stands for a natural number.
 When type inference reaches \mcbimpl{p}, it fixes its type to \lstinline/nat/.
 What is more interesting is what happens when type inference reaches the
@@ -305,7 +305,7 @@ type of \lstinline/prime_gt1/ where we substitute \mcbimpl{p} for
 \lstinline/p/.  Unifying \lstinline/(prime $\mcbimplm{p}$)/ with
 \lstinline/(prime q)/ is possible by assigning \lstinline/q/ to
 \mcbimpl{p}.  Hence the proof term just constructed is
-well typed, its type is \lstinline/(1 < q)/ and the place holder
+well typed, its type is \lstinline/(1 < q)/ and the placeholder
 has been set to be \lstinline{q}.
 As we did for the identity function, we can declare the \lstinline/p/
 argument of \lstinline/prime_gt1/ as implicit.
@@ -507,7 +507,7 @@ true == false : bool
 3 == 4 : bool
 \end{coqout-right}
 
-As a printing rule, the place holder stands for a wild card: the
+As a printing rule, the placeholder stands for a wild card: the
 notation is used no matter the value of the first argument of
 \lstinline/eq_op/.  As a result both occurrences of \lstinline/eq_op/,
 line 2 and 3, are printed using the infix \lstinline/==/ syntax.
@@ -516,7 +516,7 @@ type of the arguments and the typing discipline ensures the
 arguments match the type of the comparison function packaged in
 the record.
 
-When the notation is used as a parsing rule, the place holder is
+When the notation is used as a parsing rule, the placeholder is
 interpreted as an implicit argument: type inference is expected to find a value
 for it.  Unfortunately such notation does not work as a parsing rule
 yet.
@@ -532,7 +532,7 @@ it is expected to have type "sort ?e".
 \coqrun{name=nc;fail}{ssr,eqtype,eqn,infix,parsenocs}
 
 If we unravel the notation, the input term is really
-\lstinline/(eq_op _ 3 4)/. We name the place holder \mcbimpl{e}.
+\lstinline/(eq_op _ 3 4)/. We name the placeholder \mcbimpl{e}.
 If we replay the type inference steps seen before, the unification
 step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
@@ -598,7 +598,7 @@ value.  The corresponding solution is assigned to the implicit
 argument \mcbimpl{S}.
 
 In the table we reported only the relevant entries.  Entries
-corresponding to the \lstinline/eq_op/ projection plays no role
+corresponding to the \lstinline/eq_op/ projection play no role
 in the \mcbMC{} library. The name of such projections is
 usually omitted to signal that fact.
 
