@@ -1356,7 +1356,7 @@ If we chain the two lemmas we can pull out the last item.
 
 \begin{coq-left}{name=bigop3natrec}{}
 Lemma sum_odd_3 :
-  \sum_(1 <= i < 3.*2) i.*2 = 5 * 4
+  \sum_(0 <= i < 3.*2 | odd i) i = 3^2.
 Proof.
 rewrite big_mkcond big_nat_recr //=.
 rewrite unlock /=.
