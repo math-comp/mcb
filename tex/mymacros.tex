@@ -155,11 +155,72 @@ innerbottommargin=0pt]%
  \endminipage%
 }
 
+\newcommand{\cheatsep}[0]{\hspace{0.18\textwidth}%
+\color{ocre}%
+\rule{4pt}{4pt}%
+\color{white}%
+\rule{4pt}{4pt}%
+\color{ocre}%
+\rule{4pt}{4pt}%
+\color{white}%
+\rule{4pt}{4pt}%
+\color{ocre}%
+\rule{4pt}{4pt}%
+\color{black}}
+
+\lstnewenvironment{cheat}{\mdframed[skipabove=10pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=ocre,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=0pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt,
+innerbottommargin=0pt]\lstset{numberstyle=\tiny}}{\endmdframed}
 
 
-% For current cheatsheets, to be fixed
-\newcommand{\ssrc}[2]{\needspace{2\baselineskip}\C{#1}\vspace{0.4em}\\\hspace*{1.5em}\begin{minipage}{0.28\textwidth}#2 \hspace*{\fill}\end{minipage}\vspace{0.4em}}
-\newcommand{\caveat}[1]{\fbox{caveat}: #1}
+\lstnewenvironment{cheatout}{
+\vspace{\baselineskip}%
+\noindent
+\minipage{0.22\textwidth}%
+\mdframed[skipabove=0pt,
+skipbelow=7pt,
+rightline=false,
+leftline=true,
+topline=false,
+bottomline=false,
+linecolor=gray,
+backgroundcolor=black!5,
+innerleftmargin=5pt,
+innerrightmargin=5pt,
+innertopmargin=0pt,
+leftmargin=0cm,
+rightmargin=0cm,
+linewidth=4pt,
+innerbottommargin=0pt]%
+}
+{\endmdframed%
+ \endminipage%
+}
 
 \newcommand{\mcbLEVELx}[0]{\color{ocre}$\star$\color{black}}
 \newcommand{\mcbLEVELxx}[0]{\color{ocre}$\star\star$\color{black}}
+
+% For current cheatsheets, to be fixed
+\newcommand{\caveat}[1]{\color{ocre}{ caveat }\color{black} #1}
+
+\newcommand{\somethingfollows}{\needspace{2\baselineskip}}
+
+\newcommand{\ssrc}[2]{\somethingfollows\C{#1}
+	
+\setlength{\leftskip}{1.5em}
+
+#2
+
+\setlength{\leftskip}{0cm}\vspace{0.4em}}
+
