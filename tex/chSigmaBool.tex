@@ -75,7 +75,6 @@ Many such interfaces can be extended to sub-types, and we shall see that
 the \mcbMC{} library provides facilities to automate this.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbLEARN{}
 %\mcbREQUIRE{eqtype, fintype, CS}
 %\mcbPROVIDE{tuple}
@@ -299,7 +298,6 @@ it is the new concept of tuple that takes care of the size related
 reasoning steps.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbREQUIRE{proof language}
 %\mcbPROVIDE{an example of sub-type of eqType}
 %\mcbLEARN{it is a schematic process}
@@ -415,11 +413,10 @@ that is reminiscent of sub-typing in functional languages like OCaml.
 The following section details the implementation of the sub-type kit.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{2}
 %\mcbLEARN{Declare a new subtype and derive eqType}
 %\mcbPROVIDE{usage of \lstinline/[subType for ...]/}
 %\mcbREQUIRE{}
-\subsection{The sub-type kit}
+\subsection{The sub-type kit \mcbLEVELx{}}
 
 When one has a base type T and a sub-type ST defined as a boolean
 sigma type, the \mcbMC{} library provides facilities to
@@ -519,7 +516,6 @@ all the theory that equips T is also available on ST.  Aliasing a
 type is useful to attach to it different notations or coercions.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \subsection{A note on boolean $\Sigma$-types\label{hedberg}}
 \index[concept]{proof irrelevance}
 
@@ -555,7 +551,6 @@ function}, forming sub-types is extremely easy.
 ones, since they inherit all the theory.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbLEARN{}
 %\mcbREQUIRE{eqtype,CS}
 %\mcbPROVIDE{fintype}
@@ -622,7 +617,6 @@ library of iterated operations.  In particular notations like
 inhabitants of the finite type \C{T}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% \mcbLEVEL{1}
 % \mcbLEARN{}
 % \mcbREQUIRE{eqtype,CS}
 % \mcbPROVIDE{fintype}
@@ -747,7 +741,6 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbLEARN{}
 %\mcbPROVIDE{}
 %\mcbREQUIRE{}
@@ -875,7 +868,6 @@ functions from \C{I} to \C{J} is systematically formed in order to
 provide its enumeration as the range of the summation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbLEARN{}
 %\mcbPROVIDE{}
 %\mcbREQUIRE{}
@@ -953,7 +945,6 @@ do preserve the group structure and type inference can be programmed
 to infer so automatically.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbLEARN{}
 %\mcbPROVIDE{}
 %\mcbREQUIRE{}
@@ -1007,7 +998,6 @@ Lemma card_perm A : #|perm_on A| = #|A| `!.
 \end{coq}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 %\mcbLEARN{}
 %\mcbPROVIDE{}
 %\mcbREQUIRE{}
@@ -1113,7 +1103,6 @@ size information most of the time, playing once again the role of a
 trained reader.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \subsection{Example: matrix product commutes under trace}
 
 As an example let's take the following simple property of the trace.
@@ -1198,7 +1187,6 @@ A more detailed description of the hierarchy of structures is the
 subject of the next chapter.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \subsection{Block operations}
 
 The size information stocked in the type of a matrix is
@@ -1236,8 +1224,7 @@ an upper left square block of size 1, a row and a column of length $n-1$,
 and a square block of size $n-1$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{2}
-\subsection{Size casts}\label{sec:castmx}
+\subsection{Size casts \mcbLEVELx{}}\label{sec:castmx}
 
 Types containing values are a double edged sword.  While we have seen that
 they make the writing of matrix expressions extremely succinct, in
@@ -1312,8 +1299,7 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 \index[coq]{\C{conform_mx}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{3}
-\subsubsection{Sorts and \C{reflect}}
+\subsubsection{Sorts and \C{reflect} \mcbLEVELxx{}}
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs
 from the one part of the \mcbMC{} library in a tiny detail.

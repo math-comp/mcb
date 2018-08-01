@@ -58,7 +58,6 @@ chapter~\ref{ch:boolrefl}.
 %   constants defined at chapter 1, principles of notations
 %   (associativity,...), definition of 'boolean predicate', sections}
 % \mcbPROVIDE{\C{Lemma},\C{Admitted}, eq, is-true, Lemma, \C{Prop}, \C{->}}
-% \mcbLEVEL{1}
 % %\section{First formal statements}
 \section{Formal statements}
 
@@ -432,7 +431,6 @@ as described in section~\ref{sec:fun-sev-args}.
 %   case analysis, rewriting}
 % \mcbREQUIRE{computation, equality}
 % \mcbPROVIDE{eq, is-true, \C{rewrite, case, by []}}
-% \mcbLEVEL{1}
 \section{Formal proofs}
 \index[concept]{formal proof}
 
@@ -1256,7 +1254,6 @@ in the manual~\cite{ssrman}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %\section{More complex statements and proofs}
-%\mcbLEVEL{1}
 \section{Quantifiers}
 
 \subsection{Universal quantification, first examples}
@@ -2077,7 +2074,6 @@ The generalization of \C{z} gave us the freedom to substitute a
 different value for \C{z}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \section{Rewrite, a Swiss army knife}\label{sec:rewrite}
 
 Approximately one third of the proof scripts in the \mcbMC{} library is made of
@@ -2222,8 +2218,7 @@ made more precise in chapter~\ref{ch:ttch}.
 \index[ssr]{\C{rewrite}! \C{/} (unfolding)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{2}
-\subsection{Rewrite contextual patterns}\label{sec:rewrite2}
+\subsection{Rewrite contextual patterns \mcbLEVELx{}}\label{sec:rewrite2}
 
 The example \C{leq_mul2l} illustrates how the \C{rewrite} tactic, provided a
 rewrite rule like \C{mulnBr} or \C{muln_eq0}, is able
@@ -2484,7 +2479,6 @@ left and drops \C{IHn} from the context.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \section{Searching the library}\label{sec:search}
 \index[concept]{search}
 
@@ -2502,7 +2496,6 @@ or \C{(addn _ _)}, and substrings of the names, like \C{"rev" "cons"}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \subsection{Search by pattern}
 
 The \C{Search} command takes a list of filters and prints the lemmas
@@ -2532,7 +2525,6 @@ If we want to rule out all lemmas about coprimality we can refine the
 search by writing ``\C{Search eq odd -coprime}''.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\mcbLEVEL{1}
 \subsection{Search by name}
 
 Being acquainted to the naming policy followed by the \mcbMC{} library
@@ -3066,7 +3058,6 @@ Qed.
 % \mcbLEARN{case}
 % \mcbREQUIRE{}
 % \mcbPROVIDE{case, -, indentation, brute force proofs, semicolon, => after case}
-% \mcbLEVEL{1}
 % \section{Case analysis}
 %
 % In programming inductive data is matched against to consider all
@@ -3166,7 +3157,6 @@ Qed.
 % \mcbLEARN{apply}
 % \mcbREQUIRE{}
 % \mcbPROVIDE{apply, ->, =>, //}
-% \mcbLEVEL{1}
 % \section{Implication and backchaining}
 %
 % \begin{coq}{width=4cm}
