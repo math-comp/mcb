@@ -901,7 +901,7 @@ If one needs to override the pattern inferred for the index
 of \C{andP}, he can provide one by hand as follows:
 
 \begin{coq}{}{}
-Lemma example a b : (a || ~ a) && (a && b ==> (a == b)).
+Lemma example a b : (a || ~~ a) && (a && b ==> (a == b)).
 Proof. by case: (a && _) / andP => [[-> ->] |] //; rewrite orbN. Qed.
 \end{coq}
 A more detailed explanation of this syntax can be found
@@ -1086,7 +1086,7 @@ We can resort to the flexibility of \C{have} to obtain a more
 pertinent script: the first argument to \C{have}, here a name, can
 actually be any introduction pattern, i.e. what follows
 the \C{=>} operator, for example a view application.
-At the light of that, the script can be
+In the light of that, the script can be
 rearranged as follows.
 
 \begin{coq}{}{}
@@ -1382,7 +1382,7 @@ We start by showing the following equation.
 \begin{coq}{}{}
 Lemma edivn_recE d m q :
  edivn_rec d m q = if m - d is m'.+1 then edivn_rec d m' q.+1 else (q,m).
-Proof. by elim: m. Qed.
+Proof. by case: m. Qed.
 \end{coq}
 \index[concept]{unfolding equation}
 It is often useful to state and prove unfolding equations like this one.
@@ -1605,7 +1605,7 @@ When the statement of the example is processed by \Coq{}
 and it is enforced to be a type, but \lstinline/(prime 17)/ is actually
 a term of type \lstinline/bool/.  Early in the library the
 function \lstinline/is_true/ is declared as a coercion from
-\lstinline/bool/ to \lstinline/Prop/ and hence is it inserted
+\lstinline/bool/ to \lstinline/Prop/ and hence it is inserted
 by \Coq{} automatically.
 
 \begin{coq}{name=istruedef}{}

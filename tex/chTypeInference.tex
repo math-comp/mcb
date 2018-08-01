@@ -17,7 +17,7 @@ Abort.
 The rules of the \mcbCIC{}, as the ones sketched in~\ref{ch:ttch},
 are expressed on the syntax of terms and
 are implemented by the kernel of \Coq{}.  Such software component
-performs \emph{type checking}: given a term and type it checks if such
+performs \emph{type checking}: given a term and type, it checks if such
 term has the given type.  To keep type checking simple and decidable
 the syntax of terms makes all information explicit. As a consequence
 the terms written in such verbose syntax are pretty large.
@@ -158,7 +158,7 @@ $x$ is a unique name).
 %\mcbREQUIRE{have, move, exact}
 %\mcbPROVIDE{Arguments (setting implicit)}
 %\mcbLEVEL{1}
-\section{Recap: type inference by examples}
+\section{Recap: type inference by example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Let us start with the simplest example one could imagine: defining the
@@ -180,7 +180,7 @@ id nat 3 : nat
 In the expression \lstinline/(id nat 3)/ no subterm was omitted,
 therefore \Coq{} accepted the term and printed its type.  In the third
 line, even if the subterm \lstinline/nat/ was omitted, \Coq{} accepted
-the term.  Type inference found a value for the place holder
+the term.  Type inference found a value for the placeholder
 for us by proceeding in the following way:  it traversed the term
 recursively from left to right, ensuring that the type of each
 argument of the application had the type expected by the function.  In
@@ -195,10 +195,10 @@ type inference runs recursively on the argument \lstinline/3/
 discovering it has type \lstinline/nat/ and imposes that it unifies
 with the value of the first argument (that is \mcbimpl{A}).  For this
 to be true \mcbimpl{A} has to be assigned the value \lstinline/nat/.
-As a result the system prints the input term, where the place holder
+As a result the system prints the input term, where the placeholder
 has been replaced by the value type inference assigned to it.
 
-At the light of that, we observe that every time we apply the identity
+In the light of that, we observe that every time we apply the identity
 function to a term we can omit to specify its first argument,
 since \Coq{} is able to infer it and complete the input term for us.
 This phenomenon is so frequent that one can ask the system to insert
@@ -250,7 +250,7 @@ In the first line the syntax (\lstinline/fun x => ...)/ is sugar for
 when it reaches the last argument of the identity function.
 It unifies the type of \lstinline/x/ with the value of the first
 argument given to \lstinline/id/ that in this case is \lstinline/nat/.
-This last example is emblematic: most of the times the type of
+This last example is emblematic: most of the time the type of
 abstracted variables can be inferred by looking at how they are used.
 This is very common in lemma statements.  For example, the third line
 states a theorem on \lstinline/p/ without explicitly giving its type.
@@ -259,7 +259,7 @@ Since the statement uses \lstinline/p/ as the argument of the
 of type \lstinline/nat/.
 
 The kind of information filled in by type inference can also be of
-another, more interesting, nature.  So far all place holders were
+another, more interesting, nature.  So far all placeholders were
 standing for types, but the user is also allowed to put \lstinline/_/
 in place of a term.
 
@@ -294,7 +294,7 @@ exact: ltnW q_gt1.
 Qed.
 \end{coq}
 
-In the expression \lstinline/(prime_gt1 _ pr_q)/, the place holder,
+In the expression \lstinline/(prime_gt1 _ pr_q)/, the placeholder,
 that we name \mcbimpl{p}, stands for a natural number.
 When type inference reaches \mcbimpl{p}, it fixes its type to \lstinline/nat/.
 What is more interesting is what happens when type inference reaches the
@@ -305,7 +305,7 @@ type of \lstinline/prime_gt1/ where we substitute \mcbimpl{p} for
 \lstinline/p/.  Unifying \lstinline/(prime $\mcbimplm{p}$)/ with
 \lstinline/(prime q)/ is possible by assigning \lstinline/q/ to
 \mcbimpl{p}.  Hence the proof term just constructed is
-well typed, its type is \lstinline/(1 < q)/ and the place holder
+well typed, its type is \lstinline/(1 < q)/ and the placeholder
 has been set to be \lstinline{q}.
 As we did for the identity function, we can declare the \lstinline/p/
 argument of \lstinline/prime_gt1/ as implicit.
@@ -507,7 +507,7 @@ true == false : bool
 3 == 4 : bool
 \end{coqout-right}
 
-As a printing rule, the place holder stands for a wild card: the
+As a printing rule, the placeholder stands for a wild card: the
 notation is used no matter the value of the first argument of
 \lstinline/eq_op/.  As a result both occurrences of \lstinline/eq_op/,
 line 2 and 3, are printed using the infix \lstinline/==/ syntax.
@@ -516,7 +516,7 @@ type of the arguments and the typing discipline ensures the
 arguments match the type of the comparison function packaged in
 the record.
 
-When the notation is used as a parsing rule, the place holder is
+When the notation is used as a parsing rule, the placeholder is
 interpreted as an implicit argument: type inference is expected to find a value
 for it.  Unfortunately such notation does not work as a parsing rule
 yet.
@@ -532,7 +532,7 @@ it is expected to have type "sort ?e".
 \coqrun{name=nc;fail}{ssr,eqtype,eqn,infix,parsenocs}
 
 If we unravel the notation, the input term is really
-\lstinline/(eq_op _ 3 4)/. We name the place holder \mcbimpl{e}.
+\lstinline/(eq_op _ 3 4)/. We name the placeholder \mcbimpl{e}.
 If we replay the type inference steps seen before, the unification
 step is now failing.  Instead of \lstinline/(sort nat_eqType)/
 versus \lstinline/nat/, now unification has to solve the problem
@@ -598,7 +598,7 @@ value.  The corresponding solution is assigned to the implicit
 argument \mcbimpl{S}.
 
 In the table we reported only the relevant entries.  Entries
-corresponding to the \lstinline/eq_op/ projection plays no role
+corresponding to the \lstinline/eq_op/ projection play no role
 in the \mcbMC{} library. The name of such projections is
 usually omitted to signal that fact.
 
@@ -778,7 +778,7 @@ Module Equality.
 Structure type : Type := Pack {
   sort : Type;
   op : sort -> sort -> bool;
-  axiom : forall x y, reflect (x = y) (eq_op x y)
+  axiom : forall x y, reflect (x = y) (op x y)
 }.
 
 End Equality.
@@ -1052,13 +1052,13 @@ Proof. by []. Qed.
 Lemma mem_undup s : undup s =i s.
 Proof.
 move=> x; elim: s => //= y s IHs.
-case Hy: (y \in s); last by rewrite in_cons IHs.
-by rewrite in_cons IHs; case: eqP => // ->.
+case: ifP; rewrite in_cons IHs //.
+by case: eqP => // ->.
 Qed.
 \end{coq}
 where \C{(A =i B)} is a synonym for \C{(forall x, x \\in A = x \\in B)},
 
-The \C{in\_cons} lemma is just a convenience rewrite rule, while
+The \C{in\_cons} lemma is just a convenient rewrite rule, while
 \C{mem\_undup} says that the \C{undup} function does not drop
 any non-duplicate element.  Note that in the proof we use both
 the decidability of membership (\C{Hy}) and the decidability of
@@ -1075,7 +1075,7 @@ Qed.
 The proof of \C{undup\_uniq} requires no new ingredients and
 completes the specification of \C{undup}.
 
-A last, very important step in the theory of sequences is to show
+The last, very important step in the theory of sequences is to show
 that the container preserves the \C{eqType} interface: whenever we can
 compare the elements of a sequence, we can also compare sequences.
 
@@ -1152,7 +1152,7 @@ operation being iterated and the neutral element for such operator.
 For example if $A$ is empty, then the union of all $g(a)$ is $\emptyset$,
 while if $n=0$, then the sum of all $f(i)$ is $0$.
 Then the range is an expression identifying a finite set of elements,
-some times expressing an order (relevant when the iterated operation is not
+sometimes expressing an order (relevant when the iterated operation is not
 commutative).  Finally a general term describing the
 items being combined by the iterated operation.
 
@@ -1165,7 +1165,7 @@ as a list; the general term $f(i)$ by a function \C{(fun i =>
 elements of a list and combining the results by the \C{foldr} iterator.
 
 Functional programming can also be used to describe the finite domain.
-For example, the list of natural numbers $m, m+1, \ldots, m + (n - m)$
+For example, the list of natural numbers $m, m+1, \ldots, m + (n - m) - 1$
 corresponding to the range $m \leq i < n$ can be built using the \C{iota}
 function as follows:
 \begin{coq}{name=iota}{}
@@ -1183,7 +1183,7 @@ $$
 An alternative writing for the same summation exploits the general
 terms to rule out even numbers:
 $$
-\sum_{i < n} (i * 2 - 1) = n^2
+\sum_{i < n} (i * 2 + 1) = n^2
 $$
 While this latter writing is elegant, it is harder to support
 generically, since the filtering condition is not explicit.
@@ -1198,7 +1198,7 @@ $$
 Last, not all filtering conditions can be naturally expressed in the
 general term. An example is not being a prime number.
 
-At the light of that, our formal statement concerning the sum
+In the light of that, our formal statement concerning the sum
 of odd numbers is the following:
 
 \begin{coq}{name=bigop21}{}
@@ -1236,7 +1236,7 @@ Using the \C{bigop} constant to express our statement leads to
 
 \begin{coq}{name=bigop2}{}
 Lemma sum_odd n :
-  bigop 0 addn (index_iota 0 n.*2) odd (fun i => i) = n^2
+  bigop 0 addn (index_iota 0 n.*2) odd (fun i => i) = n^2.
 \end{coq}
 
 Note that \C{odd} is already a predicate on \C{nat}, the general
@@ -1357,7 +1357,7 @@ If we chain the two lemmas we can pull out the last item.
 
 \begin{coq-left}{name=bigop3natrec}{}
 Lemma sum_odd_3 :
-  \sum_(1 <= i < 3.*2) i.*2 = 5 * 4
+  \sum_(0 <= i < 3.*2 | odd i) i = 3^2.
 Proof.
 rewrite big_mkcond big_nat_recr //=.
 rewrite unlock /=.
@@ -1434,7 +1434,7 @@ Structure law := Law {
 The \C{Monoid.law} structure relates the \C{operator} (the key used by
 canonical structures) to the three properties of monoids.
 
-We can then us this interface as a parameter for a bunch of lemmas,
+We can then use this interface as a parameter for a bunch of lemmas,
 describing the theory shared by  its instances. The \C{(Monoid.law idx)}
 type annotation may seem puzzling at first. It combines various mechanisms
 we have seen earlier in the book: once the section \C{Definitions} is
