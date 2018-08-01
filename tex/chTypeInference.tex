@@ -1117,7 +1117,8 @@ when \C{T} is an \C{eqType}.
 Let s1 := [:: 1; 2 ].
 Let s2 := [:: 3; 5; 7].
 Let ss :  seq (seq nat) := [:: s1 ; s2 ].
-Check (ss != [::]) && s1 \in ss && undup_uniq ss.
+Check (ss != [::]) && s1 \in ss.
+Check undup_uniq ss.
 \end{coq}
 \coqrun{name=uniqp2}{ssr,itereqtype}
 
