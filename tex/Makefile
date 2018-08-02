@@ -10,7 +10,7 @@ all: gitrev
 	pdflatex main && cp main.pdf book.pdf
 .PHONY: gitrev
 gitrev:
-	date > gitrev
+	date -R > gitrev
 	echo , >> gitrev
 	git describe --tags >> gitrev
 
