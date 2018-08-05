@@ -109,7 +109,7 @@ elements when seen as sequences:
 
 \begin{coq}{name=sizetup}{}
 Lemma size_tuple T n (t : n.-tuple T) : size t = n.
-Proof. by case: t => s /eqP. Qed.
+Proof. by case: t => s /= /eqP. Qed.
 \end{coq}
 \coqrun{name=r2}{ssr,tup,sizetup}
 
