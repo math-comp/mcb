@@ -627,7 +627,7 @@ The first single declarations of data types are introduced by the means of
 \emph{inductive type definitions}.
 One can then explicitly define more operations on the elements of
 the type by describing how they compute on a given argument in the
-type using a case analaysis or a recursive definition on the
+type using a case analysis or a recursive definition on the
 shape of this argument.
 This approach is used in a systematic way to define a variety of basic
 types, among which boolean values, natural numbers, pairs or
@@ -733,7 +733,7 @@ For any choice of values \C{b1}, \C{b2}, and \C{b3} it appends that
 the expressions \C{b1 && (b2 && b3)} and \C{(b1 && b2) && b3} always
 compute to the same result.  In this sense, the conjunction operation
 is associative.  We shall see in chapter~\ref{ch:proofs} that this
-known property can be stated explicitely.  For a mathematical reader,
+known property can be stated explicitly.  For a mathematical reader,
 this associativity is often included in the reading process, so that
 the two forms of three-argument conjunctions are often identified.
 However, when manipulating boolean expressions of the \Coq{} language,
@@ -1057,7 +1057,7 @@ Termination is obvious when the recursive calls happen
 only on ``syntactically smaller arguments''. For instance, in our
 example \C{addn}, the function is defined by matching its first
 argument \C{n} against the patterns \C{p.+1} and \C{0}; in the branch
-corrsponding to the pattern \C{p.+1}, the recursive call happens on
+corresponding to the pattern \C{p.+1}, the recursive call happens on
 \C{p}, a strict subterm of \C{p.+1}. Had we matched the argument \C{n}
 against the pattern \C{p.+1.+1}, then the recursive call would have been
 allowed on arguments \C{p} or \C{p.+1}, but not \C{p.+1.+1}.  The way
@@ -1277,7 +1277,7 @@ following data type for this purpose:
 Inductive listn := niln | consn (hd : nat) (tl : listn).
 \end{coq}
 
-The elements of this data type constitue a possible description of
+The elements of this data type constitute a possible description of
 lists of zero or more natural numbers; the first constructor
 \C{niln} builds the empty list, whereas the second constructor
 \C{consn} builds a nonempty list by combining a natural number \C{hd}
@@ -2280,8 +2280,8 @@ Notation "m <= n" := (leq m n) (at level 70, no associativity).
 where the rightmost annotations, between parentheses, indicate a
 precedence level and an associativity rule so as to avoid parsing
 ambiguities. A lower level binds more than a higher level. A comprehensive
-description of the \C{Notation} command goes behind the scope of this
-book; the interested reader shall refer to~\cite[chapter 12]{Coq:manual}.
+description of the \C{Notation} command goes beyond the scope of this
+book; the interested reader can refer to~\cite[chapter 12]{Coq:manual}.
 
 A notation can denote an arbitrary expression, not just a
 single constant. Here is for instance the definition of the infix
