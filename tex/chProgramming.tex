@@ -2206,11 +2206,15 @@ initial value of the iteration, corresponding to an empty index range.
 Let us perform a few examples of computations with these iterated sums.
 
 \begin{coq-left}{name=evalsum}{width=8.5cm,title=Query}
-Eval compute in \sum_( 1 <= i < 5 ) (i * 2 - 1).
-Eval compute in \sum_( 1 <= i < 5 ) i.
+Eval compute in
+  \sum_( 1 <= i < 5 ) (i * 2 - 1).
+Eval compute in
+  \sum_( 1 <= i < 5 ) i.
 \end{coq-left}
 \begin{coqout-right}{run=evalsum_run}{width=3.5cm,title=Response}
+$~$
 = 16 : nat
+$~$
 = 10 : nat
 \end{coqout-right}{}{}
 \coqrun{name=evalsum_run}{ssr,iotasum,evalsum}
