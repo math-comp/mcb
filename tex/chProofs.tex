@@ -727,7 +727,7 @@ n : nat
 
 Both comparison operations \C{<=} and \C{==} are defined by case
 analysis on their \emph{first} argument, independently of the shape of
-the second. The proof of \C{leq0n} thus goes by case analysis on
+the second. The proof of \C{leqn0} thus goes by case analysis on
  term \C{(n : nat)}, as it appears as a first argument to
 both these comparison operators.  Remember that the inductive type \C{nat} is
 defined as:
@@ -1427,7 +1427,7 @@ commutative :
 \end{coqout-right}
 \coqrun{name=aboutcomrun}{ssr,aboutcomm}
 
-The constant \C{commutative} has a polymorphic parameter \C{T},
+The constant \C{commutative} has polymorphic parameters \C{S} and \C{T},
 takes a binary operation as argument and builds a
 \emph{proposition}. It is hence a polymorphic unary predicate on
 a certain class of functions, the binary functions with both their
@@ -1723,7 +1723,7 @@ the goal after line 12, \C{0 < p <= m}, is really an abbreviation for
 \C{(0 < p) && (p <= m)}. The subsequent \C{rewrite} command
 replaces \C{(0 < p)} with \C{true}: after all the conclusion of
 \C{prime\_gt0} is an equation.
-We explain such tricks in details later on.
+We explain such tricks in detail later on.
 % [DG] Later = where? (a reference would be nice)
 
 We shall improve this script in two steps.  First, we take advantage of
@@ -2589,7 +2589,7 @@ in the \mcbMC{} library:
     like in \C{addn\_eq0} or \C{rev\_uniq}.
   \item If the conclusion of a lemma is a standard property such as
     \C{\\char}, \C{<|}, etc.\footnote{These examples are taken from
-      libraries in the Mathematical Component distribution.}:
+      libraries in the Mathematical Components distribution.}:
     the property should be
     indicated by a suffix (like \C{ \_char}, \C{\_normal}, etc), so
     the lemma name
