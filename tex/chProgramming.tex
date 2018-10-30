@@ -1738,7 +1738,7 @@ becomes ``ambiguous'',
 in the sense that the same infix \C{*} symbol can be used to multiply two
 natural numbers as in \C{(1 * 2)} but also to write the type of pairs \C{(nat *
 bool)}.  Such an ambiguity is somewhat justified by the fact that the pair
-data type can be seen as the (Cartesian) product of the arguments.  The
+data type can be seen as the (Cartesian) product of the arguments.\footnote{In reality the data type of pairs, as it comes with \Coq{}, is called \C{prod} and its constructor \C{pair}.}  The
 ambiguity can be resolved by annotating the expression with a specific
 label: \C{(a * b)\%N} interprets the infix \C{*} as multiplication of natural numbers,
 while \C{(a * b)\%type} would interpret \C{*} as the pair data type
