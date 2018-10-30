@@ -270,7 +270,8 @@ more precise about this normalization strategy. This would require
 at least describing in more details the formalism underlying the
 \Coq{} system, which we do only in chapter~\ref{ch:ttch}. The
 interested reader should actually refer to \cite[section
-8.7.1]{Coq:manual} for the official documentation of \C{compute}.
+5.3.7, ``Performing computations'']{Coq:manual} for 
+the official documentation of \C{compute}.
 For now, we suggest to keep only the intuition that this
 normalization procedure provides the ``expected value'' of a
 computation.
@@ -1743,7 +1744,7 @@ label: \C{(a * b)\%N} interprets the infix \C{*} as multiplication of natural nu
 while \C{(a * b)\%type} would interpret \C{*} as the pair data type
 constructor. The \C{\%N} and \C{\%type} labels are said to be
 \emph{notation scope delimiters} (for more details see
-\cite[section 12.2]{Coq:manual}).\index[concept]{notation scope}
+\cite[section 6.1.2, ``Interpretation scopes'']{Coq:manual}).\index[concept]{notation scope}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Aggregating data in record types}
@@ -1874,7 +1875,7 @@ an input \C{x} (or \C{x'}, or \C{x1}, \ldots), its type is supposed to be
 \C{T}.  Concretely, it lets us omit an explicit type annotation
 in the definition of programs using \C{x}, such as \C{iter}.
 The  \C{Implicit Type} command is used frequently in the
-\mcbMC{} library; the reader can refer to~\cite[section 2.7.18]{Coq:manual}
+\mcbMC{} library; the reader can refer to~\cite[section 4.2, ``Extensions of Gallina'']{Coq:manual}
 for a more detailed documentation of it.
 
 When
@@ -2096,7 +2097,8 @@ normalization strategy to perform computation, the \C{simpl}
 evaluation strategy.  One difference between the \C{simpl}
 and \C{compute} strategies is that the \C{simpl} one usually leaves
 expressions in nicer forms whenever they contain variables. Here again
-we point the interested reader to \cite[section 8.7.1]{Coq:manual} for
+we point the interested reader to \cite[section
+5.3.7, ``Performing computations'']{Coq:manual} for
 \marginnote{predn has a notation attached to it}
 more details.
 
@@ -2285,7 +2287,7 @@ where the rightmost annotations, between parentheses, indicate a
 precedence level and an associativity rule so as to avoid parsing
 ambiguities. A lower level binds more than a higher level. A comprehensive
 description of the \C{Notation} command goes beyond the scope of this
-book; the interested reader can refer to~\cite[chapter 12]{Coq:manual}.
+book; the interested reader can refer to~\cite[chapter 6.1, ``Syntax extensions and interpretation scopes'']{Coq:manual}.
 
 A notation can denote an arbitrary expression, not just a
 single constant. Here is for instance the definition of the infix
