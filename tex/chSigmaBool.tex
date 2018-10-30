@@ -410,7 +410,11 @@ type out of the newly defined type of tuples.  Once the projection
 is registered the equality axiom can be proved automatically by
 \C{[eqMixin of n.-tuple T by <:]}, where \C{<:} is just a symbol
 that is reminiscent of sub-typing in functional languages like OCaml.
+Note that \C{hnf} is an evaluation strategy that focuses on the head
+symbol of the expression and that ignores its sub terms, see \cite[section
+5.3.7, ``Performing computations'']{Coq:manual}.
 The following section details the implementation of the sub-type kit.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\mcbLEARN{Declare a new subtype and derive eqType}

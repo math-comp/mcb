@@ -336,7 +336,7 @@ Lemma leq0n (n : nat) : 0 <= n = true.
 % notation \C{=} (only one equality sign!), whose output has the type
 % \C{Prop}.  The former is \emph{computational}, i.e., has an actual
 % algorithmic definition which allows \Coq{} to compute its values on
-% any given parameters (for example, \C{Eval compute in 2 == 3.} will
+% any given parameters (for example, \C{Compute 2 == 3.} will
 % yield \C{False}), whereas the latter is \emph{propositional} and
 % merely creates a proposition stating that $2$ is equal to $3$ (which
 % proposition can be disproven with a proof script, but this is not
@@ -2947,8 +2947,8 @@ Qed.
 % the two expressions is trivial.
 %
 % \begin{coq}{title=Computation in proofs}
-% Eval compute in (0 + 3).  (* prints 3 *)
-% Eval compute in (true || false).  (* prints true *)
+% Compute (0 + 3).  (* prints 3 *)
+% Compute (true || false).  (* prints true *)
 % Lemma example3 : 0 + 3 = 3.
 % Proof. by []. Qed.
 % \end{coq}

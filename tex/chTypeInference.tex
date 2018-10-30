@@ -561,7 +561,7 @@ program is deterministic: each type  \lstinline/T/ is related to
 \begin{coq-left}{name=parse}{width=6cm}
 Check (3 == 4).
 Check (true == false).
-Eval compute in (3 == 4).
+Compute (3 == 4).
 \end{coq-left}
 \coqrun{name=cs}{ssr,eqtype,eqn,bety,infix,declcs,parse}
 \begin{coqout-right}{run=cs}{width=6cm}

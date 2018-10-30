@@ -252,13 +252,13 @@ called a \emph{normal form}. For example computing \C{(f 3)} returns
 value \C{4}:
 
 \begin{coq-left}{name=compute_f3}{width=6cm,title=Evaluating a function}
-Eval compute in f 3.
+Compute f 3.
 \end{coq-left}
 \begin{coqout-right}{run=compute_f3_run}{title=Response,width=6cm}
  = 4 : nat
 \end{coqout-right}
 \coqrun{name=compute_f3_run}{exdef,compute_f3}
-\index[vernac]{\C{Eval compute}}
+\index[vernac]{\C{Compute}}
 
 As a simple explanation, we can observe that the argument \C{3} has been
 substituted for the argument variable in the definition of function
@@ -391,7 +391,7 @@ in \C{g 2 3}. This results in a term of type \C{nat}, the type of the
 outputs of \C{g}, and we can even compute this value:
 
 \begin{coq-left}{name=eval_g_2_3}{width=5cm}
-Eval compute in g 2 3.
+Compute g 2 3.
 \end{coq-left}
 \begin{coqout-right}{run=eval_g_2_3_run}{width=5cm}
 = 8 : nat
@@ -476,7 +476,7 @@ function \C{repeat_twice} to  the function
 application:
 
 \begin{coq-left}{name=eval_repeat_twice_f_two}{width=6cm}
-Eval compute in repeat_twice f 2.
+Compute repeat_twice f 2.
 \end{coq-left}
 \begin{coqout-right}{run=eval_repeat_twice_f_two_run}{width=6cm}
 = 4 : nat
@@ -562,7 +562,7 @@ abbreviated.
 Here is an example of usage of this syntax:
 
 \begin{coq-left}{name=eval_let_expr}{width=6cm,title=Evaluating local definitions,label=lst:eval_let_expr}
-Eval compute in
+Compute
   let n := 33 : nat in
   let e := n + n + n in
     e + e + e.
@@ -582,7 +582,7 @@ expression above has exactly the same value as:
 \end{coq}
 
 However, in practice the evaluation strategy used in a normalization
-command like \C{Eval compute in ..} takes advantage of the
+command like \C{Compute ..} takes advantage of the
  \C{let  .. in ..} notation to
 avoid duplicating computation efforts. In our example, the value of
 the partial sum \C{(33 + 33 + 33)} is computed only once and shared at
@@ -701,8 +701,8 @@ As one expects, when \C{b} is \C{true}, the expression
 \C{(twoVthree b)} evaluates to \C{2}, while it evaluates to \C{3} otherwise:
 
 \begin{coq-left}{name=eval_twoVthree}{width=7cm,title=Evaluating twoVthree}
-Eval compute in twoVthree true.
-Eval compute in twoVthree false.
+Compute twoVthree true.
+Compute twoVthree false.
 \end{coq-left}
 \begin{coqout-right}{run=eval_twoVthree_run}{title=Response,width=5cm}
   = 2 : nat
@@ -836,7 +836,7 @@ known in advance; it is actually computed at the moment the \C{n} is matched
 against the pattern. For instance:
 
 \begin{coq-left}{name=compute_match}{width=7cm,title=Evaluating predn}
-Eval compute in predn 5.
+Compute predn 5.
 \end{coq-left}
 \begin{coqout-right}{run=compute_match_run}{width=5cm,title=Response}
 = 4 : nat
@@ -1186,12 +1186,12 @@ that the \Coq{} system really identifies various ways to write the same
 natural number.
 
 \begin{coq-left}{name=equalities}{width=6cm}
-Eval compute in 0 == 0.
-Eval compute in 1 == S 0.
-Eval compute in 1 == 0.+1.
-Eval compute in 2 == S 0.
-Eval compute in 2 == 1.+1.
-Eval compute in 2 == addn 1 0.+1.
+Compute 0 == 0.
+Compute 1 == S 0.
+Compute 1 == 0.+1.
+Compute 2 == S 0.
+Compute 2 == 1.+1.
+Compute 2 == addn 1 0.+1.
 \end{coq-left}
 \begin{coqout-right}{run=equalities_run}{width=6cm}
 = true : bool
@@ -1604,7 +1604,7 @@ For instance, with this notation we write the computation of successors
 for a given sequence of natural numbers as follows:
 
 \begin{coq-left}{name=try_map_notation}{width=7.8cm,title=Query}
-Eval compute in
+Compute
   [seq i.+1 | i <- [:: 2; 3]].
 \end{coq-left}
 \begin{coqout-right}{run=try_map_notation_run}{width=4.3cm,title=Response}
@@ -1713,7 +1713,7 @@ and \C{c.2} is its second.
 
 \begin{coq-left}{name=pairs}{width=6cm}
 Check (3, false).
-Eval compute in (true, false).1.
+Compute (true, false).1.
 \end{coq-left}
 \begin{coqout-right}{run=pairs_run}{width=6cm}
 (3, false) : nat * bool
@@ -1785,8 +1785,8 @@ these projections are also called \emph{fields} of the record.
 One can thus write:
 
 \begin{coq-left}{name=eval_point}{}
-Eval compute in x (Point 3 0 2).
-Eval compute in y (Point 3 0 2).
+Compute x (Point 3 0 2).
+Compute y (Point 3 0 2).
 \end{coq-left}{}{}
 \begin{coqout-right}{run=eval_point_run}{title=Response}
 = 3 : nat
@@ -1795,8 +1795,8 @@ Eval compute in y (Point 3 0 2).
 \coqrun{name=eval_point_run}{point,eval_point}
 
 % \begin{coq}{name=eval_point}{width=8.5cm,title=Query}
-% Eval compute in x (Point 3 0 2).
-% Eval compute in y (Point 3 0 2).
+% Compute x (Point 3 0 2).
+% Compute y (Point 3 0 2).
 % \end{coq}{}{}
 % \begin{coqout}{run=eval_point_run}{width=3.5cm,title=Response}
 % = 3 : nat
@@ -1971,8 +1971,8 @@ to compute the
 sum of all numbers in \C{[:: 1; 2]}:
 
 \begin{coq-left}{name=eval_iter}{width=8cm}
-Eval compute in iter 5 predn 7.
-Eval compute in foldr addn 0 [:: 1; 2].
+Compute iter 5 predn 7.
+Compute foldr addn 0 [:: 1; 2].
 \end{coq-left}
 \begin{coqout-right}{run=eval_iter_run}{width=4cm}
  = 2 : nat
@@ -1987,7 +1987,7 @@ Eval compute in foldr addn 0 [:: 1; 2].
 \section{Symbolic computation}\label{sec:symcomp}
 \index[concept]{computation!symbolic}
 
-As we mentioned in section~\ref{sec:functions}, the \C{Eval compute}
+As we mentioned in section~\ref{sec:functions}, the \C{Compute}
 command of \Coq{} can be used to normalize expressions, which
 eventually leads to simpler terms, like numerals. This flavour of
 computation can however accommodate to the presence of parameters in
@@ -2032,7 +2032,7 @@ expression.
 \begin{coq-left}{name=vars}{width=7cm}
 Variable init : A.
 Variables x1 x2 : T.
-Eval compute in foldr init [:: x1; x2].
+Compute foldr init [:: x1; x2].
 \end{coq-left}
 \begin{coqout-right}{run=symbcomp}{width=5cm}
 $~$
@@ -2052,7 +2052,7 @@ values we used at the end of the last section to
 play with \C{foldr}, namely \C{addn}, \C{1}, \C{2} and \C{0}:
 
 \begin{coq-left}{name=hyp_subst}{width=7cm}
-Eval compute in addn 1 (addn 2 0).
+Compute addn 1 (addn 2 0).
 \end{coq-left}
 \begin{coqout-right}{run=hyp_subst_run}{width=5cm}
  = 3 : nat
@@ -2094,8 +2094,8 @@ functions compute the same results when applied to numerals.  Still,
 their computational behavior may differ when computing on arbitrary
 symbolic values. In order to highlight this, we will use another
 normalization strategy to perform computation, the \C{simpl}
-evaluation strategy.  One difference between the \C{simpl}
-and \C{compute} strategies is that the \C{simpl} one usually leaves
+evaluation strategy.  One difference between the \C{Eval simpl}
+and \C{Compute} strategies is that the \C{simpl} one usually leaves
 expressions in nicer forms whenever they contain variables. Here again
 we point the interested reader to \cite[section
 5.3.7, ``Performing computations'']{Coq:manual} for
@@ -2196,7 +2196,7 @@ function, called \C{a} here, should not appear in expression \C{F} in
 order for the notation to be meaningful.
 % [DG] Is this true? I cannot use the variable "a" ever when I use this
 % notation? I hope the compiler is smarter than that! (My experiments
-% exhibit no problems: e.g., "Eval compute in \sum_ (2 <= a < 6) a."
+% exhibit no problems: e.g., "Compute \sum_ (2 <= a < 6) a."
 % returns 14, as it should).
 Crucially, the \C{foldr}
 iterator takes as
@@ -2208,9 +2208,9 @@ initial value of the iteration, corresponding to an empty index range.
 Let us perform a few examples of computations with these iterated sums.
 
 \begin{coq-left}{name=evalsum}{width=8.5cm,title=Query}
-Eval compute in
+Compute
   \sum_( 1 <= i < 5 ) (i * 2 - 1).
-Eval compute in
+Compute
   \sum_( 1 <= i < 5 ) i.
 \end{coq-left}
 \begin{coqout-right}{run=evalsum_run}{width=3.5cm,title=Response}
@@ -2418,9 +2418,9 @@ Notation "p .2" := (snd p) (at level 2).
 Notation "p .3" := (thrd p) (at level 2).
 \end{coq}
 \begin{coq-left}{name=triple}{width=8cm}
-Eval compute in (4, 5, 8).1.
-Eval compute in (true, false, 1).2.
-Eval compute in (2, true, false).3.
+Compute (4, 5, 8).1.
+Compute (true, false, 1).2.
+Compute (2, true, false).3.
 \end{coq-left}
 \begin{coqout-right}{run=triple_run}{width=4cm}
  = 4 : nat
@@ -2455,9 +2455,9 @@ is smaller than the size of the list.  It should return
 the default value otherwise.
 
 \begin{coq-left}{name=nth}{width=7cm}
-Eval compute in
+Compute
   nth 99 [:: 3; 7; 11; 22] 2.
-Eval compute in
+Compute
   nth 99 [:: 3; 7; 11; 22] 7.
 \end{coq-left}
 \begin{coqout-right}{run=nth_run}{width=5cm}
@@ -2475,7 +2475,7 @@ Define the program \C{rev} that reverses the order of the elements
 of a list.
 
 \begin{coq-left}{name=revtest}{width=5cm}
-Eval compute in
+Compute
   rev [:: 1; 2; 3].
 \end{coq-left}
 \begin{coqout-right}{run=rev_run}{width=7cm}
@@ -2493,7 +2493,7 @@ the concatenation function and one of the higher-order iterators
 seen so far.
 
 \begin{coq-left}{name=flatten}{width=7.3cm}
-Eval compute in
+Compute
  flatten [:: [:: 1; 2; 3]; [:: 4; 5]].
 \end{coq-left}
 \begin{coqout-right}{run=flatten_run}{width=5cm}
@@ -2512,7 +2512,7 @@ The program has to generate a list of all words (i.e., lists
 of symbols) of size \C{n} using the symbols from \C{alphabet}.
 
 \begin{coq-left}{name=allwords}{width=5.5cm}
-Eval compute in
+Compute
   all_words 2 [:: 1; 2; 3].
 $~$
 $~$
@@ -2774,8 +2774,8 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 % Check negb (negb true).
 % Check negb 3. (* boom *)
 %
-% Eval compute in negb true.
-% Eval compute in negb false.
+% Compute negb true.
+% Compute negb false.
 % \end{coq}
 % We see the function type (arrow) and how typing works in this simple case.
 % Also that functions compute in \Coq{}.
@@ -2790,8 +2790,8 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 % Definition andb (b1 : bool) (b2 : bool) :=
 %   if b1 then b2 else false.
 % Notation "x && y" := (andb x y).
-% Eval compute in true && false.
-% Eval compute in true && true.
+% Compute true && false.
+% Compute true && true.
 % \end{coq}
 %
 % \subsection{Polymorphic containers and binding in match}
@@ -2824,10 +2824,10 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | None => true
 %   | Some _ => false  (* Here _ means discard the little a *)
 %   end.
-% Eval compute in is_empty None.
-% Eval compute in is_empty (Some true).
+% Compute is_empty None.
+% Compute is_empty (Some true).
 % (* Note: the function is polymorphic! *)
-% Eval compute in is_empty (Some 4).
+% Compute is_empty (Some 4).
 % \end{coq}
 %
 % Two words about polymorphism.
@@ -2841,8 +2841,8 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | Some x => x  (* this x is a name on the left bound to the contents *)
 %   end.
 %
-% Eval compute in get_default None 3.
-% Eval compute in get_default (Some 4) 3.
+% Compute get_default None 3.
+% Compute get_default (Some 4) 3.
 % \end{coq}
 %
 % More containers
@@ -2861,7 +2861,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | ( x , _ ) => x
 %   end.
 %
-% Eval compute in fst (true, None).
+% Compute fst (true, None).
 %
 % Definition snd A B (p : A * B) :=
 %   match p with (_, y) => y end.
@@ -2892,7 +2892,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 % Infix "+" := plus.
 %
 % Check 2 + 3.
-% Eval compute in 2 + 3.
+% Compute 2 + 3.
 % \end{coq}
 %
 % execution step by step
@@ -2952,7 +2952,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | _ :: xs => xs
 %   end.
 %
-% Eval compute in tl (6 :: 99 :: nil).
+% Compute tl (6 :: 99 :: nil).
 %
 % (* The most popular function on lists *)
 % Fixpoint len A (l : list A) : nat :=
@@ -2961,7 +2961,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | x :: xs => 1 + (len xs)
 %   end.
 %
-% Eval compute in len (1 :: 2 :: 3 :: nil).
+% Compute len (1 :: 2 :: 3 :: nil).
 % Fixpoint split A B (l : list (A * B)) : list A * list B :=
 %   match l with
 %   | nil => (nil, nil)
@@ -2970,7 +2970,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %       (x :: fst xs_ys, y :: snd xs_ys)
 %   end.
 %
-% Eval compute in
+% Compute
 %   split ((1,2) :: (3,4) :: nil).
 %
 % Fixpoint zip A B (la : list A) (lb : list B) : list (A * B) :=
@@ -2980,10 +2980,10 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | _, _ => nil
 %   end.
 %
-% Eval compute in
+% Compute
 %   zip (1 :: 2 :: nil) (true :: false :: nil).
 %
-% Eval compute in
+% Compute
 %   let xs_ys := split ((1,2) :: (3,4) :: nil) in
 %   zip (fst xs_ys) (snd xs_ys).
 % \end{coq}
@@ -3005,7 +3005,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 % Fixpoint loop (n : nat) : False := loop n.
 %
 % Check loop 3.
-% Fail Timeout 2 Eval compute in loop 3.
+% Fail Timeout 2 Compute loop 3.
 % \end{coq}
 %
 % Also data must be checked.
@@ -3021,7 +3021,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %
 % Definition loop2 : False := self (Call self).
 %
-% Fail Timeout 2 Eval compute in loop2.
+% Fail Timeout 2 Compute loop2.
 % \end{coq}
 %
 % \subsection{HO programming}
@@ -3038,9 +3038,9 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   | x :: xs => f x :: map f xs
 %   end.
 %
-% Eval compute in
+% Compute
 %   map (fun x => x + 2) (3 :: 4 :: 7 :: nil).
-% Eval compute in
+% Compute
 %   map negb (true :: false :: nil).
 %
 % (* fold f (x1 :: x2 :: .. xn :: nil) a
@@ -3054,7 +3054,7 @@ Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
 %   end.
 %
 % (* what does this do? *)
-% Eval compute in fold cons (1 :: 2 :: 3 :: nil) nil.
+% Compute fold cons (1 :: 2 :: 3 :: nil) nil.
 % \end{coq}
 %
 % Here one could use a section for A B and talk about all that.
