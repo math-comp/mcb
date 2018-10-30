@@ -278,7 +278,7 @@ The next section is devoted to the proof and usage of more involved views.
 
 Reflection views are also used to specify types equipped with a
 \emph{decidable equality}, by showing that the equality predicate
-\C{eq} (seen in section~\ref{ssec:indtypes}) is implemented by a
+\C{eq} (seen in section~\ref{ssec:moreconns}) is implemented by a
 certain boolean equality test. For instance, we can specify the
 boolean equality test on type \C{nat} implemented in
 chapter~\ref{ch:prog} as:
@@ -666,7 +666,7 @@ subgoal 2 is:
 \end{coqout}
 
 The full proof of \C{leq_max} is quite interesting and will be
-detailed in section~\ref{sec:leqmax}
+detailed in section~\ref{sec:leqmax}.
 
 % \marginnote{We could propose another exercise in next section in order
 % to factor this proof with a \C{wlog}.}
@@ -813,7 +813,7 @@ a recurrent pattern in the \mcbMC{} library.  Such class of inductive
 predicates is called ``spec'', for \emph{specification}.
 
 Spec predicates are inductive families with indexes, exactly
-as the \C{eq} predicate seen in section~\ref{ssec:indtypes}.
+as the \C{eq} predicate seen in section~\ref{ssec:moreconns}.
 In particular their elimination rule encapsulates the notion
 of substitution, and that operation is performed automatically by
 the logic.
@@ -893,12 +893,12 @@ inductive family to be replaced by \C{true} or \C{false} is here
 a pattern \C{(_ && _)} and the goal is searched for an instance of
 such pattern by the same matching algorithm the \C{rewrite} tactic
 uses for rewrite rules.
-The tuning of implicit arguments is key to obtaining lemmas easy to
+The tuning of implicit arguments is key to making lemmas easy to
 use, even more so in the case of the ``spec'' ones.
 
 
 If one needs to override the pattern inferred for the index
-of \C{andP}, he can provide one by hand as follows:
+of \C{andP}, one can provide it by hand as follows:
 
 \begin{coq}{}{}
 Lemma example a b : (a || ~~ a) && (a && b ==> (a == b)).
@@ -949,7 +949,7 @@ In practice lines of reasoning consisting in a specific branching of
 a proof can often be modelled by an appropriate spec lemma.
 
 \mantra{The structure of the proof shall not be driven by the syntax of the
-definition/predicate under study but by the view/spec used to reason about it}
+definition/predicate under study but by the view/spec used to reason about it.}
 
 % \subsection{TBD: dependent elimination (**)}
 
@@ -975,8 +975,8 @@ definition/predicate under study but by the view/spec used to reason about it}
 So far we've only tackled simple lemmas; most of them did admit a one line
 proof.  When proofs get longer \emph{structure} is the best ally in making
 them readable and maintainable.  Structuring proofs means identifying
-intermediate results, factor similar lines of reasoning (e.g., symmetries),
-signal crucial steps to the reader, and so on.  In short, a
+intermediate results, factoring similar lines of reasoning (e.g., symmetries),
+signaling crucial steps to the reader, and so on.  In short, a
 proof written in \Coq{} should not look too different from a proof
 written on paper.
 
@@ -1371,7 +1371,7 @@ The \C{fix} keyword lets one write a recursive function locally, without
 providing a global name as \C{Fixpoint} does.  This also means that \C{d}
 is a parameter of \C{edivn_rec} that does not change during recursion.
 The \C{edivn} program handles the case of a null divisor, producing
-the dummy pair \C{(0,m)} for the quotient and the reminder respectively.
+the dummy pair \C{(0,m)} for the quotient and the remainder respectively.
 
 We start by showing the following equation.
 
@@ -1707,7 +1707,7 @@ feature subtyping.  As we will see in chapter~\ref{ch:hierarchy}
 the role played by coercions in the modelling of the hierarchy
 of algebraic structures is minor.  The job of
 coercions in that context is limited to
-forgeting some fields of a structure to obtain a simpler one, and
+forgetting some fields of a structure to obtain a simpler one, and
 that is easy.  What
 is hard is to reconstruct the missing fields of a structure
 or compare two structures finding the minimum super structure.
