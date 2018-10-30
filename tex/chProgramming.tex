@@ -1637,7 +1637,7 @@ Inductive option A := None | Some (a : A).
 \end{coq}
 \index[coq]{\C{option}}
 
-Akin to a pointed version of \C{A}, type  \C{(option A)} contains a
+Type  \C{(option A)} contains a
 copy of all the elements of \C{A},
 built using the \C{Some} constructor, plus an extra element given by
 the constructor \C{None}. It may be used to represent the output of a
@@ -1725,8 +1725,8 @@ As one expects, pairs can be nested. \Coq{} provides a slightly more complex
 notation for pairs, which makes it possible to write \C{(3,true,4)} for
 \C{((3,true),4)}. In this example, the value \C{true} is the second
 component of this tuple, or more precisely the second component of its
-first component: it can thus be obtained as \C{(3,true,4).1.2}. This may be
-a drawback, consequence of representing tuples as nested pairs. If
+first component: it can thus be obtained as \C{(3,true,4).1.2}. This is a
+consequence of representing tuples as nested pairs. If
 tuples of a certain fixed length are pervasive to a development, one
 may consider defining another specific container type for this
 purpose. See for instance exercise~\ref{ex:triple} for the definition
