@@ -349,7 +349,7 @@ statement
 \C{(2 != 7 && prime 7)} is convertible to \C{true}.
 Finally, as illustrated in
 section~\ref{sec:symcomp}, computation is not limited to terms without
-variables: The term \C{(isT : true)} is a valid proof of
+variables: The term \C{(isT : true)}\footnote{In other words \C{isT} is a proof of all statements that are trivial by computation. We invite the reader that finds the writing \C{(isT : true)} ill typed to peek ahead to section~\ref{sec:coercions}.} is a valid proof of
 \C{(0 < n.+1)}, as well as a proof of \C{(0 != p.+1)}.
 \index[coq]{\C{isT}}
 
