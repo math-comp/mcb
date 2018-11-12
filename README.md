@@ -10,3 +10,7 @@ The `docs/` directory contains the website of the book.
 
 The `artwork/` directory contains the graphics used in the book.
 
+### Homepage
+
+Link to the [homepage of the book](https://math-comp.github.io/mcb)
+
