@@ -809,8 +809,7 @@ fun n : nat => f n.+1 : nat -> nat
 \index[coq]{\C{(_ .+1)}|seealso {\C{S}}}
 
 When defining functions that operate on natural numbers, we
-can\marginnote{It may be better to start with a function that tests
-  equality to 0}
+can
 proceed by case analysis, as was done in the previous section for boolean
 values. Here again, there are two cases: either the natural number used in
 the computation is \C{O} or it is \C{p.+1} for
@@ -819,33 +818,34 @@ computations to be performed. This case analysis can be seen as
 matching against \emph{patterns}: if the data fits one of
 the patterns, then the computation proceeds with the expression in the
 corresponding branch.  Such a case analysis is therefore also called
-\emph{pattern matching}. Here is an example:
+\emph{pattern matching}. Here is a toy example:
 
-\begin{coq}{name=predn}{}
-Definition predn n := if n is p.+1 then p else n.
+\begin{coq}{name=non_zero}{}
+Definition non_zero n := if n is p.+1 then true else false.
 \end{coq}
-\coqrun{name=predn_run}{ssr,predn}
-\index[coq]{\C{predn} |seealso {\C{.-1}}}
+\coqrun{name=non_zero_run}{ssr,non_zero}
+%
 
-The function \C{predn} returns the predecessor of a natural number
-when it exists, and 0 otherwise. In this definition \C{p.+1} is a
-pattern. The value bound to the name \C{p} mentioned in this pattern is not
-known in advance; it is actually computed at the moment the \C{n} is matched
-against the pattern. For instance:
+The function \C{non_zero} returns the boolean value \C{false} if its
+argument is \C{0}, and \C{true} otherwise. In this definition \C{p.+1} is a
+pattern: The value bound to the name \C{p} mentioned in this pattern is not
+known in advance. This value is actually computed at the moment the
+argument \C{n} provided to the function is matched against the
+pattern. For instance:
 
-\begin{coq-left}{name=compute_match}{width=7cm,title=Evaluating predn}
-Compute predn 5.
+\begin{coq-left}{name=compute_match}{width=7cm,title=Evaluating non_zero}
+Compute non_zero 5.
 \end{coq-left}
 \begin{coqout-right}{run=compute_match_run}{width=5cm,title=Response}
-= 4 : nat
+= true : bool
 \end{coqout-right}
 \coqrun{name=compute_match_run}{ssr,compute_match}
 
-The \C{compute} command rewrites any term of the shape
+The \C{Compute} command rewrites any term of the shape
 \C{if 0 is p.+1 then t1 else t2} into \C{t2} and any term of the shape
 \C{if k.+1 is p.+1 then t1 else t2} into \C{t1} where all occurrences of
-\C{p} have been replaced by \C{k}.  In our example, as the value of
-\C{k.+1} is \C{5}, \C{k} and hence \C{p} and \C{t1} are \C{4}.
+\C{p} have been replaced by \C{k}.  In our example, the value of
+\C{k.+1} is \C{5}, thus the value of \C{k} is \C{4} and \C{t1} is \C{true}.
 
 
 The symbols that are allowed in a pattern are essentially restricted
@@ -854,10 +854,16 @@ Thanks to notations however, a pattern can also contain
 occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
-reused in the result part.
+reused in the result part, as in:
 
-Observe that we did omit the type of the input \C{n}. We can omit this
-type because matching
+\begin{coq}{name=pred}{}
+Definition pred n := if n is p.+1 then p else 0.
+\end{coq}
+\coqrun{name=pred_run}{ssr}
+\index[coq]{\C{predn} |seealso {\C{.-1}}}
+
+Observe that in the definitions of functions \C{predn} and
+\C{non_zero}, we did omit the type of the input \C{n}: matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
 \C{nat}, as the \C{S} constructor belongs to \emph{exactly}
 one inductive definition, namely the one of \C{nat}.
@@ -865,14 +871,14 @@ one inductive definition, namely the one of \C{nat}.
 The pattern used in the \C{if} statement can be composed of
 several nested levels of the \C{.+1} pattern.  For instance,
 if we want to write a function
-that returns \(n-5\) for every input \(n\) larger than or equal to 5 and 0
-for every input smaller than 5, we can write the following definition:
+that returns \(true\) for every input \(n\) larger than 4
+and \(false\) otherwise, we can write the following definition:
 
-\begin{coq}{name=pred5}{}
-Definition pred5 n :=
-  if n is u.+1.+1.+1.+1.+1 then u else 0.
+\begin{coq}{name=larger_than4}{}
+Definition larger_than_4 n :=
+  if n is u.+1.+1.+1.+1.+1 then true else false.
 \end{coq}
-\coqrun{name=pred5_run}{ssr,pred5}
+\coqrun{name=larger_than4_run}{ssr,larger_than4}
 
 On the other hand, if we want to describe a different computation for
 three different cases and use variables in more than one case, we need
@@ -1224,7 +1230,7 @@ return \(0\) when the subtrahend exceeds the minuend; similarly,
 division is integer division.  The trailing \C{n} in
 the names is chosen to signal that these operations are on the \C{nat} data
 type.  Postfix notations such as \C{.-1} and \C{.*2} are provided for
-the predecessor and double functions.
+the predecessor (\C{predn}) and double (\C{double}) functions.
 \index[coq]{\C{(_ .-1)}}
 \index[coq]{\C{(_ .*2)}}
 
@@ -2097,13 +2103,13 @@ and \C{Compute} strategies is that the \C{simpl} one usually leaves
 expressions in nicer forms whenever they contain variables. Here again
 we point the interested reader to \cite[section
 5.3.7, ``Performing computations'']{Coq:manual} for
-\marginnote{predn has a notation attached to it}
+
 more details.
 
 \begin{coq-left}{name=symb_add}{width=7cm}
 Variable n : nat.
-Eval simpl in (add  n.+1 7).-1.
-Eval simpl in (addn n.+1 7).-1.
+Eval simpl in predn (add  n.+1 7).
+Eval simpl in predn (addn n.+1 7).
 \end{coq-left}
 \begin{coqout-right}{run=symb_add_run}{width=5cm}
 = (add n 8).-1 : nat
