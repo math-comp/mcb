@@ -15,13 +15,12 @@ Check
 \chapter{Functions and Computation}\label{ch:prog}
 
 In the formalism underlying the \Coq{} system, functions play a
-central role akin to the one of sets in set theory. In this chapter,
-we give a flavor of how to define functions in \Coq{}, how to perform
-computations and how to define basic mathematical objects in this
-formalism.  Readers with a mathematical background will need to get
-accustomed to the fact that functions are different in nature from the
+central role akin to the one of sets in set theory. However, functions
+in this formalisem are rather different in nature from the
 functions encountered in the mathematical tradition of set theory.
-
+In this chapter, we give a flavor of how to define functions in
+\Coq{}, how to perform computations and how to define basic
+mathematical objects.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Functions}\label{sec:functions}
@@ -37,25 +36,26 @@ that can be executed. As a consequence we borrow from computer science
 some jargon, like \emph{input} or \emph{return}. For example we say that
 an operation takes as input a number and returns its double to mean
 that the corresponding program computes or outputs the double of its
-input, or that the function maps a number to its double. We study
-many examples involving natural numbers. In the \Coq{}
-language, we casually use \C{nat} to refer to the collection of natural
-numbers and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
-(resp. product) operation on natural numbers,  before providing their
-actual formal definition in section~\ref{ssec:nat}. We will also
-assume implicitly that numerals $0, 1, 2, \dots$ denote natural numbers,
-represented by their analogue \C{0}, \C{1}, \C{2}, \dots in the \Coq{}
-language.
+input, or that the function maps a number to its double. We start with
+a collection of examples involving natural numbers. For this purpose,
+we casually use the \Coq{} term \C{nat} to refer to the collection of natural
+numbers, and the infix symbol  \C{+} (resp. \C{*}) to denote the  addition
+(resp. product) operation on natural numbers, before providing their
+actual formal definition in section~\ref{ssec:nat}. We also
+assume implicitly that the \Coq{} symbols  \C{0}, \C{1}, \C{2}
+represent natural numbers which represent the corresponding numerals
+$0, 1, 2, \dots$.
 
 
-\subsection{Defining functions, performing computation}\label{ssec:deffun}
+\subsection{Defining functions, performing
+  computation}\label{ssec:deffun}
 Mathematical formulas are expressions composed of operation symbols,
 of a certain arity, applied to some arguments which are
 either variables or themselves (sub)-expressions.
 In many cases these
 expressions are written using notations for the operations, like the
-infix $+$ in the expression
-\[ 2 + 1 \]
+infix $+$ in the expression:
+\[ 2 + 1. \]
 This expression represents a natural number, obtained as the result of
 an operation applied to its arguments.  More precisely, it is the result
 of the binary operation of addition, applied to two natural numbers
@@ -82,7 +82,7 @@ expression \C{n + 1}. The keyword ``\C{fun}'' stands for
 \emph{function}.
 \index[concept]{binder}
 
-Now we still need to \emph{apply} this operation to the argument
+Now we still need to \emph{apply} this function to the argument
 \C{2}, and this is written as:
 
 \begin{coq}{name=exapp}{title=Adding one to two, label=coq:exapp}
@@ -153,7 +153,7 @@ the \C{nat} label to annotate the argument and the output in the
 Definition f (n : nat) : nat := n + 1.
 \end{coq}
 \coqrun{name=exdeftyperun}{exdef_type}
-The label \C{nat} is actually called a {\em type}.
+The label \C{nat} is in fact called a {\em type}.
 We refer once again to chapter~\ref{ch:ttch} for a more accurate
 description of types: in the present chapter we rely on the loose intuition
 that a type refers to a collection of objects that can be treated in a
@@ -206,18 +206,17 @@ f = fun n : nat => n + 1
 
 The output of this \C{Print} query has some similarities with the
  mathematical notation in \eqref{equation:f} and provides both the
- actual definition of \C{f} and its type information. Actually the way
+ actual definition of \C{f} and its type information. Note that the way
  the definition is printed also features a type annotation of the
  arguments of the function, in the fragment ``\C{fun n : nat =>}''.
 
 Types are used in particular to avoid confusion and rule out
-ill-formed expressions. \Coq{} provides a command to check whether
-an expression is \emph{well typed}.
-\index[concept]{well typed}
-
+ill-formed expressions.
 For example the function \C{f} we just defined can \emph{only be
-  applied to a natural number}, i.e., a term of type \C{nat}. Therefore
-this first query succeeds, as \C{3} is a natural number:
+  applied to a natural number}, i.e., a term of type \C{nat}.
+\Coq{} provides a command to check whether
+an expression is \emph{well typed}:\index[concept]{well typed}
+ as \C{3} is a natural number, the following query succeeds:
 
 \begin{coq-left}{name=check_f3}{width=5.1cm,title=Check well-typedness}
 Check f 3.
@@ -227,7 +226,7 @@ Check f 3.
 \end{coqout-right}
 \coqrun{name=check_f3_run}{exdef,check_f3}
 \index[vernac]{\C{Check}}
-But \C{f} cannot be applied to something that is not a natural number,
+But \C{f} cannot be applied to an argument that is not a natural number,
 like for example a function:
 
 \begin{coq-left}{name=type_err_f}{width=6cm,title=Type error}
@@ -260,17 +259,17 @@ Compute f 3.
 \coqrun{name=compute_f3_run}{exdef,compute_f3}
 \index[vernac]{\C{Compute}}
 
-As a simple explanation, we can observe that the argument \C{3} has been
+We can observe that in the course of the computation, argument \C{3} has been
 substituted for the argument variable in the definition of function
-\C{f} and that the addition has been evaluated.
-Although this capability of \Coq{} plays a crucial role
-in the \mcbMC{} library, as we will see in chapter~\ref{ch:proofs}, it
-is too early to be
-more precise about this normalization strategy. This would require
-at least describing in more details the formalism underlying the
+\C{f}, and that the addition has been evaluated.
+This capability of \Coq{} plays a crucial role
+in the \mcbMC{} library, as we shall see in chapter~\ref{ch:proofs}. It
+is however too early to be
+more precise about this normalization strategy. This would indeed
+require describing in more details the formalism underlying the
 \Coq{} system, which we do only in chapter~\ref{ch:ttch}. The
 interested reader should actually refer to \cite[section
-5.3.7, ``Performing computations'']{Coq:manual} for 
+5.3.7, ``Performing computations'']{Coq:manual} for
 the official documentation of \C{compute}.
 For now, we suggest to keep only the intuition that this
 normalization procedure provides the ``expected value'' of a
@@ -280,8 +279,8 @@ computation.
 
 \subsection{Functions with several arguments}
 \label{sec:fun-sev-args}
-The command we used to define a function with a single argument
-generalizes to the case of functions with several arguments, which are
+The command we used to define a function with a \emph{single} argument
+generalizes to the case of functions with \emph{several} arguments, which are
 then separated by a space. Here is an example of a function with two
 arguments:
 
@@ -316,9 +315,9 @@ g : nat -> nat -> nat
 \coqrun{name=about_g_run}{def_g,about_g}
 
 The first two occurrences of \C{nat} in the response
- \C{nat -> nat -> nat} assert that function \C{g} has two arguments,
+ \C{(nat -> nat -> nat)} assert that function \C{g} has two arguments,
  both of type \C{nat}; the last occurrence refers to the type of
- the output. This response actually reads \C{nat -> (nat -> nat)},
+ the output. This response actually reads \C{(nat -> (nat -> nat))},
  as the \C{->} symbol associates to the right. Otherwise said,
  {\em a multiple
  argument function is a single argument function that returns a
@@ -582,7 +581,7 @@ expression above has exactly the same value as:
 \end{coq}
 
 However, in practice the evaluation strategy used in a normalization
-command like \C{Compute ..} takes advantage of the
+command like \C{Compute} takes advantage of the
  \C{let  .. in ..} notation to
 avoid duplicating computation efforts. In our example, the value of
 the partial sum \C{(33 + 33 + 33)} is computed only once and shared at
@@ -591,8 +590,6 @@ thus also be used to organize intermediate computations.
 
 \section{Data types, first examples}
 \label{sec:data}
-\marginnote{Alternative section title : Mathematical data viewed as
-  data types}
 A well-formed mathematical expression is a combination of variables
 and symbols of a given language
 that respects the prescribed arities of
@@ -647,7 +644,8 @@ data types.
 
 The collection $\mathbb{B} := \{\top, \bot\}$ of boolean values is
 formalized by a type called \C{bool}, with two inhabitants \C{true}
-and \C{false}. The declaration of this type happens
+and \C{false}, representing $\top$ and $\bot$ respectively. The
+declaration of this type happens
 in one of the first files to be automatically loaded when \Coq{} starts,
 so booleans look like a built-in notion.  Nevertheless, the type of
 boolean values is actually defined in the following manner:
@@ -734,9 +732,10 @@ For any choice of values \C{b1}, \C{b2}, and \C{b3} it appends that
 the expressions \C{b1 && (b2 && b3)} and \C{(b1 && b2) && b3} always
 compute to the same result.  In this sense, the conjunction operation
 is associative.  We shall see in chapter~\ref{ch:proofs} that this
-known property can be stated explicitly.  For a mathematical reader,
-this associativity is often included in the reading process, so that
-the two forms of three-argument conjunctions are often identified.
+known property can be \emph{stated} explicitly. To a practiced pair of
+eyes, this associativity property is implicitely used in the reading
+process, so that the two forms of three-argument conjunctions are
+identified.
 However, when manipulating boolean expressions of the \Coq{} language,
 there is a clear distinction between these two forms of conjunctions
 of three values, and the notation conventions make sure that the two
@@ -744,7 +743,7 @@ forms appear differently on the screen.  We will come back to this
 question in section~\ref{sec:notabrev}.
 
 The \mcbMC{} library provides a collection of boolean operations that
-mirror reasoning steps on truth values.  The functions are called
+model reasoning steps on truth values.  The functions are called
 \C{negb}, \C{orb}, \C{andb}, and \C{implyb}, with notations
 \C{\~\~},  \C{||}, \C{&&}, and \C{==>}, respectively
 (the last three operators are
@@ -782,9 +781,8 @@ numbers obtained using the successor function at least once: therefore
 so on, and any natural number has this shape. The constant \C{O} and
 the function \C{S} are the constructors of type \C{nat}.
 
-When interacting with
-\Coq{}, we will often see decimal
-notations, but these are only a parsing and display
+The decimal
+notations we have used so far are only a parsing and display
 facility provided to the user for readability: \C{O} is displayed
 $0$, \C{(S O)} is displayed $1$, etc.  Users can also type decimal
 numbers to describe values in type \C{nat}: these are automatically
