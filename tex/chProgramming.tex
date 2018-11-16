@@ -2119,12 +2119,11 @@ Eval simpl in predn (addn n.+1 7).
 
 Here we see the impact of the difference in the definitions of
 \C{addn} and \C{add}: the \C{add} variant transfers the
-number of pebbles (represented by the successor \C{S} symbol)
-\marginnote{I think it is counter-productive to use the pebble
-  metaphor here, because it was not introduced before.}
+number of  successor symbols \C{S}
 given as first argument to its second argument
 before resorting to its base case, whereas in the \C{addn} variant,
-the resulting stack of pebbles is constructed top down. An intermediate
+the resulting stack of successor symbols is constructed top down. An
+intermediate
 expression in the computation of \C{(addn n m)} exposes as many
 successors as recursive calls have been performed so far. Since bits
 of the final result are exposed early, the \C{predn} function can
