@@ -2112,7 +2112,7 @@ Eval simpl in predn (add  n.+1 7).
 Eval simpl in predn (addn n.+1 7).
 \end{coq-left}
 \begin{coqout-right}{run=symb_add_run}{width=5cm}
-= (add n 8).-1 : nat
+= predn (add n 8) : nat
 = addn n 7 : nat
 \end{coqout-right}
 \coqrun{name=symb_add_run}{ssr,addn_redef,add_def,symb_add}
