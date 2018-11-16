@@ -1,23 +1,22 @@
 \chapter{Type Theory}{}
 \label{ch:ttch}
 
-The authors made the deliberate choice to postpone the presentation of
-the mathematical foundations of the \Coq{} system and the formal
-definition of its language. Instead, the previous chapters have
-dealt with the definition of (typed) programs and on the way these
-programs can be used to describe computable functions and decidable
-predicates. This take on calculations is indeed both at the core of
-the type theory underlying \Coq{} and one of the crucial ingredients
-to the methodology at the base of the \mcbMC{} library. The present chapter is
-devoted to a more in-depth presentation of these mathematical
-foundations, although an exhaustive description shall remain out of
-the scope of the present book. For more comprehensive presentations of
-type theory for formalized mathematics, the reader can refer to more
-specialized references like~\cite{ttfp}, or the
-shorter survey in the Handbook of Automated
-Reasoning~\cite[Volume 2, chapter 18]{handbook-ar}.
-
-\section{Terms, types, proofs}\label{sec:chi}
+%T he authors made the deliberate choice to postpone the presentation of
+% the mathematical foundations of the \Coq{} system and the formal
+% definition of its language. Instead, the previous chapters have
+% dealt with the definition of (typed) programs and on the way these
+% programs can be used to describe computable functions and decidable
+% predicates. This take on calculations is indeed both at the core of
+% the type theory underlying \Coq{} and one of the crucial ingredients
+% to the methodology at the base of the \mcbMC{} library. The present chapter is
+% devoted to a more in-depth presentation of these mathematical
+% foundations, although an exhaustive description shall remain out of
+% the scope of the present book.
+% For more comprehensive presentations of
+% type theory for formalized mathematics, the reader can refer to more
+% specialized references like~\cite{ttfp}, or the
+% shorter survey in the Handbook of Automated
+% Reasoning~\cite[Volume 2, chapter 18]{handbook-ar}.
 
 The \Coq{} proof assistant provides a formal language to describe
 mathematical statements and proofs, called
@@ -28,6 +27,10 @@ provide some hints on the main features of this formalism. The
 Calculus of Inductive Constructions is described formally in chapter 4
 of the reference manual of \Coq{}~\cite{Coq:manual}. The reference book on
 homotopy type theory~\cite{hottbook} describes a very close formalism.
+
+
+
+\section{Terms, types, proofs}\label{sec:chi}
 
 
 
@@ -62,7 +65,7 @@ $$\Gamma \vdash t : T$$
 which means:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}.
 Typing judgments are justified from typing rules, and these
-justifications form trees similar to the proof trees of natural deduction.
+justifications form trees, akin to the proof trees of natural deduction.
 Before getting more precise about what contexts, terms and types are,
 let us emphasize a couple of important differences with set theory
 here: first, the typing judgment features explicit expressions for
@@ -74,14 +77,23 @@ group, and not only a proof.
 
 \subsection{First types, terms and computations}\label{ssec:terms}
 
-So every expression we have manipulated so far is a \emph{term} of the
+Every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
 has a type in the context in which it occurs.
 
+We assume a countable infinite set of symbols available for names, so
+that it is always possible to exhibit a name distinct from a given
+arbitrary finite collection of names. This names are used to denote
+\emph{variables}, which are among the simplest, atomic terms. The
+other atomic terms are the \emph{sorts} \C{Prop} and \C{Type}$_i$, for
+$i \in \mathbb{N}$\footnote{Coq has another sort \C{Set} but we do not
+  use it here.}.
 
-We put aside inductive types until section~\ref{ssec:indtypes}, and define
+
+
+We % put aside inductive types until section~\ref{ssec:indtypes}, and
+define
 inductively what the terms of the formalism are. We suppose that we
-
 have a countable infinite set of symbols available for names, so that it is
 always possible to exhibit a name distinct from a given arbitrary
 finite collection of names. The simplest, atomic, terms are the
@@ -102,9 +114,7 @@ notation. In the case where \C{x} does occur in term \C{U}, the term
 \C{forall x : T, U} is called a \emph{dependent type}.
 \index[concept]{dependent type}
 If \C{x} is a variable and \C{T}, \C{u}
-
 are terms, then \C{(fun x:T => u)} is a term, which represents a function
-
 with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
 \C{(t u)} is also a term, which represents the application of (function)
 \C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
