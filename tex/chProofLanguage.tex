@@ -11,7 +11,6 @@ description of the formal proof being constructed. Importantly, it
 provides support for taming the bookkeeping part of the activity of
 interactive proving.
 
-\subsection{Proof commands}
   The proof commands we have mentioned in chapter~\ref{ch:proofs} can all be
 explained in terms of the proof terms they produce behind the scenes.
 For example, \C{case: n} provides a much more compact syntax
@@ -52,7 +51,7 @@ just after a \C{case:} or \C{elim:} proof command.  The current section
 expands on this subject covering the full management of the proof context.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Goals as stacks}\label{ssec:stack}
+\section{Goals as stacks}\label{ssec:stack}
 \index[concept]{goal stack model}
 
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
@@ -74,7 +73,7 @@ possibility to use a lightweight and compact syntax for this bookkeeping
 action, instead of an explicit mention of the \C{case} tactic.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Pulling from the stack}
+\subsection{Pulling from the stack}
 \index[ssr]{\C{tactic => ..}}
 
 Let's start with the post-processing phase, called \emph{introduction pattern}.
@@ -281,7 +280,7 @@ Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 % assia : TODO
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Working on the stack}
+\subsection{Working on the stack}
 
 The stack can also be used as a workplace.  Indeed, there is no need
 to pull all items from the stack.  If we take the previous example:
@@ -374,7 +373,7 @@ In other words, the arrows are just a compact syntax for rewriting,
 as in the \C{rewrite} tactic, with the top assumption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Pushing to the stack}
+\subsection{Pushing to the stack}
 \index[ssr]{\C{tactic : ..}}
 
 We have seen how to pull items from the stack to the context.
@@ -511,7 +510,7 @@ under the name \C{A}). This
 will come handy in section~\ref{sec:strongind}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Application: strengthening induction}
+\subsection{Example: strengthening induction}
 \index[concept]{induction!strong}
 \index[concept]{induction!curse of values}
 \label{sec:strongind}
@@ -1088,3 +1087,50 @@ condition \C{(n2 <= n1)}.
 
 The very compact idiom \C{/leq_trans->} is quite frequent in the
 \mcbMC{} library.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Proof maintenance: a matter of style}
+
+MC developed over 6 years by 10 people since 2016 (Coq 8.1) and maintained for, at the time of writing 12 years.
+
+\subsection{Readability v.s. Compactness}
+
+the first thing is to be able to read, some issues are UI related, some experience related, some approach related.
+readability is given by fwd steps, what proves them could be automatic or cryptic code, you can skip it, at least at the beginning. If the lemma is 1 line, then it is its statement that matters.
+
+still you may need to repair it, hence to read it.
+hints for reading/writing the cryptic part: symbols/short names VS named
+commands/meaningful steps.
+
+rule of thumb: 1 line one step for the reader (it is up to you to make 1 step and not 20, it is up to ssr to let you write 1 line and not 20).
+
+\subsection{Checkpoints}
+
+fwd steps define blocks that typically confine error.
+when you repair you start replaying from there.
+idiom of \C{have {H}H : ty} to refine H.
+
+\subsection{Fail early and locally}
+
+this is the base semantics of tactic, there is no silent failure.
+still on can weaken the behavior by using try or ? in rewrite (beware).
+structuring the proof and using terminators such as by that assert the goal is solved avoid unsolved goals to silently reach the end of the proof without being noticed (where they come from?).
+
+\subsection{Large proofs}
+
+unfortunately splitting a large proof into small lemmas is a myth.
+it takes great effort and sometimes it is not just possible since
+the context is so large that one would inflate everything and obtain
+unreadable, unreusable, unnameable lemmas.
+using have and co give you similar syntax to the one of Lemma to
+locally define these factoids.
+
+clean up the context. some tactics do it automatically (case and apply).
+the have {H}H idiom helps.
+
+\subsection{Avoiding sources of randomness}
+the intros business.
+the super auto business.
+decision procedures are good.
+tactic language evolves conservatively, sitting on a reasonably well specified semantics.
+
