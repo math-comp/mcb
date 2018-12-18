@@ -707,3 +707,384 @@ cover this exact amount of postage.
 %assia : TODO
 \end{itemize}
 \index[ssr]{\C{do n"!} (iteration)}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Structuring proofs, by examples}
+
+So far we've only tackled simple lemmas; most of them did admit a one line
+proof.  When proofs get longer \emph{structure} is the best ally in making
+them readable and maintainable.  Structuring proofs means identifying
+intermediate results, factoring similar lines of reasoning (e.g., symmetries),
+signaling crucial steps to the reader, and so on.  In short, a
+proof written in \Coq{} should not look too different from a proof
+written on paper.
+
+The first subsection introduces the \C{have} tactic, that is the key
+to structure proofs into intermediate steps.  The second subsection
+deals with the ``problem'' of symmetries.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Primes, a never ending story}\label{sec:infprimes}
+\index[concept]{forward reasoning}
+
+Saying that primes are infinite can be phrased as: for any natural number
+$m$, there exists a prime greater than $m$.  The proof of this claim goes like
+that: every natural number greater than 1 has at least one prime divisor.  If
+we take $m! + 1$, then such prime divisor $p$ can be shown to be greater than $m$ as
+follows.  By contraposition we assume $p \leq m$ and we show that $p$
+does not divide $m!+1$.
+Being smaller than $m$, $p$ divides $m!$, hence to divide $m!+1$, $p$ should divide
+$1$; that is not possible since $p$ is prime, hence greater than 1.
+\hfill$\square$
+
+We first show that any positive number smaller than $n$ divides $n!$.
+
+\begin{coq}{}{}
+Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
+Proof.
+case: m => //= m; elim: n => //= n IHn; rewrite ltnS leq_eqVlt.
+by case/orP=> [/eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
+Qed.
+\end{coq}
+
+After the first line the proof state is the following one:
+
+\begin{coqout}{}{}
+m, n : nat
+IHn : m < n -> m.+1 %| n`!
+========================
+(m == n) || (m < n) -> m.+1 %| (n.+1)`!
+\end{coqout}
+The case analysis rules out \C{(m = 0)}, and simplifies the hypothesis
+to \C{(m <= n)}.  Recall that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
+(y <= z))}; hence when the first inequality evaluates to true (e.g. when \C{x}
+is 0) the conjunction simplifies to the second conjunct.  The \C{leq_eqVlt}
+rewrite rule rephrases \C{<=} as a disjunction (the capital \C{V} letter
+is reminiscent of $\lor$).
+
+When we reason by cases on the top assumption, line 4, we face two goals, both
+easy to solve if we look at the development of the factorial of \C{n.+1},
+i.e., \D{(n.+1 * n`!)}.  The former amounts to showing that
+\D{(n.+1 \%| n.+1 * n`!)}, while the latter to showing that \D{(m.+1 \%| n.+1 *
+n`!)} under the (inductive) hypothesis that \D{(m.+1 \%| n`!)}.
+
+What is paradigmatic in this little proof is the use of the \emph{goal stack
+as a work space}.  In other words the proof script would be much more involved
+if we started by introducing in the proof context all assumptions.
+\\
+
+We can now move to the proof of the main result.  We state it using a
+``synonym'' of the exists quantifier that is specialized to carry two
+properties.  This way the statement is simpler to destruct: with just one
+case analysis we obtain the witness and the two properties.
+We also resort to the following lemmas.
+
+\begin{coq}{}{title=Tools}
+Lemma fact_gt0 n : 0 < n`!.
+Lemma pdivP n : 1 < n -> exists2 p, prime p & p %| n,
+Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
+Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
+\end{coq}
+The first step is to prove that $m! + 1$ is greater than $1$, a triviality.
+Still it gives us the occasion to explain the \C{have} tactic, which lets us
+augment the proof context with a new fact, typically an intermediate step of
+our proof.
+\index[ssr]{\C{have name : type}}
+\index[ssr]{\C{have name : type by tactic}}
+
+\begin{coq}{}{}
+Lemma prime_above m : exists2 p, m < p & prime p.
+Proof.
+have m1_gt1: 1 < m`! + 1.
+  by rewrite addn1 ltnS fact_gt0.
+\end{coq}
+
+Its syntax is similar to the one of the \C{Lemma} command: it takes a name, a
+statement and starts a (sub) proof.  Since the proof is so short, we will
+put it on the same line, and remove the full stop.
+
+The next step is to use the \C{pdivP} lemma to gather a prime divisor of
+\D{m`!.+1}.  We end up with the following, rather unsatisfactory, script.
+
+\begin{coq}{}{}
+Lemma prime_above m : exists2 p, m < p & prime p.
+Proof.
+have m1_gt1: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+case: (pdivP m1_gt1) => [p pr_p p_dv_m1].
+\end{coq}
+
+It is unsatisfactory because in our paper proof what plays an
+interesting role is the \C{p} that we obtain in the second line,
+and not the \C{m1_gt1} fact we proved as an intermediate fact.
+
+We can resort to the flexibility of \C{have} to obtain a more
+pertinent script: the first argument to \C{have}, here a name, can
+actually be any introduction pattern, i.e. what follows
+the \C{=>} operator, for example a view application.
+In the light of that, the script can be
+rearranged as follows.
+
+\begin{coq}{}{}
+Lemma prime_above m : exists2 p, m < p & prime p.
+Proof.
+have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
+by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
+Qed.
+\end{coq}
+
+Here the first line obtains a prime \C{p} as desired, the second
+one begins to show it fits by contrapositive reasoning, and the
+third one, already commented in section~\ref{sec:quantifiedst}, concludes.
+
+As a general principle, in the proof script style we propose, a full
+line should represent a meaningful reasoning step (for a human being).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Order and max, a matter of symmetry}\label{sec:leqmax}
+\index[concept]{forward reasoning}
+\index[concept]{symmetric argument}
+
+It is quite widespread in paper proofs to appeal to the reader's intelligence
+pointing out that a missing part of the proof can be obtained by symmetry.
+The worst thing one can do when formalizing such an argument on a computer
+is to use the worst invention of computer science: copy-paste.  The language of
+\Coq{} is sufficiently expressive to model symmetries, and the
+SSReflect proof language provides facilities to write symmetric arguments.
+
+We prove the following characterization of the max of two natural numbers:
+\[
+\forall n_1, n_2, m, \quad m \le \max(n_1,n_2)
+\Leftrightarrow m \le n_1 \textrm{ or } m \le n_2
+\]
+
+The proof goes as follows: Without loss of generality we can assume that
+$n_2$ is greater or equal to $n_1$, hence $n_2$ is the maximum between
+$n_1$ and $n_2$.  Under this assumption it is sufficient to check
+that $m \le n_2$ holds iff either $m \le n_2$ or $m \le n_1$.
+The only non-trivial case is when we suppose $m \le n_1$ and
+we need to prove $m \le n_2$, which holds by transitivity.\hfill$\square$
+
+As usual we model double implication as an equality between two
+boolean expressions:
+
+\begin{coq}{}{}
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+\end{coq}
+
+The proof uses the following lemmas.  Pay attention to the premise of
+\C{orb_idr}, which is an implication.
+
+\begin{coq}{}{title=Tools}
+Lemma orb_idr (a b : bool) : (b -> a) -> a || b = a.
+Lemma maxn_idPl {m n} : reflect (maxn m n = m) (n <= m).
+Lemma leq_total m n : (m <= n) || (n <= m).
+\end{coq}
+
+Our first attempt takes no advantage of the symmetry argument:
+we reason by cases on the order relation,
+we name the resulting fact on the same line
+(it eases tracking where things come from) and we solve the two
+goals independently.
+
+\begin{coq}{}{}
+Proof.
+case/orP: (leq_total n2 n1) => [le_n21|le_n12].
+  rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+  by apply: leq_trans le_mn2 le_n21.
+rewrite maxnC orbC.
+rewrite (maxn_idPl le_n12) orb_idr // => le_mn1.
+by apply: leq_trans le_mn1 le_n12.
+Qed.
+\end{coq}
+
+After line 2, the proof status is the following one:
+
+\begin{coqout}{}{title=Output line 2}
+2 subgoals
+m, n1, n2 : nat
+le_n21 : n2 <= n1
+========================
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+
+subgoal 2 is:
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+\end{coqout}
+
+The first goal is simplified by
+rewriting with \C{maxn_idPl} (as we did in section~\ref{sec:viewtac}).
+Then \C{orb_idr} trivializes the main goal and generates a side condition with
+an extra hypothesis we name \C{le_mn2}.
+
+\begin{coqout}{}{title=Output before line 3,width=6.7cm}
+2 subgoals
+m, n1, n2 : nat
+le_n21 : n2 <= n1
+========================
+(m <= n1) = (m <= n1) || (m <= n2)
+
+subgoal 2 is: ...
+\end{coqout}
+\begin{coqout}{}{title=Output after 3,width=5.3cm}
+2 subgoals
+m, n1, n2 : nat
+le_n21 : n2 <= n1
+le_mn2 : m <= n2
+========================
+m <= n1
+
+subgoal 2 is: ...
+\end{coqout}
+
+Line 4 combines by transitivity the two hypotheses to conclude.  Since it closes the
+proof branch we use the prefix \C{by} to asserts the goal is solved and
+visually signal the end of the paragraph.  Line 5 commutes \C{max} and \C{||}.
+We can then conclude by copy-paste.
+
+
+To avoid copy-pasting, shrink the proof script and finally make the
+symmetry step visible we can resort to the \C{have} tactic.
+In this case the statement is a variation of what we need to prove.
+Remark that as for \C{Lemma}, we can place parameters, \C{x} and \C{y}
+here, before the \C{:} symbol.
+
+\begin{coq}{}{}
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+have th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
+  move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+  by apply: leq_trans le_my le_yx.
+by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+Qed.
+\end{coq}
+
+The proof for the \C{th_sym} sub proof is the text we copy-paste in the
+previous script, while here it is factored out.
+Once we have such extra fact in our context we reason by cases on
+the order relation and we conclude.  Remark that the last line instantiates
+\C{th_sym} \emph{in each branch} using the corresponding
+hypothesis on \C{n1} and \C{n2} generated by the case analysis.
+As expected the two instances are symmetric.
+
+\begin{coqout}{}{}
+2 subgoals
+m, n1, n2 : nat
+th_sym : forall x y : nat,
+         y <= x -> (m <= maxn x y) = (m <= x) || (m <= y)
+========================
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2) ->
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+
+subgoal 2 is:
+(m <= maxn n2 n1) = (m <= n2) || (m <= n1) ->
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+\end{coqout}
+This is exactly what is needed in the first branch of the case analysis.
+The last subgoal just requires commuting \C{max} and \C{||}.
+
+We can further improve the script.  For example we could rephrase
+the proof putting in front the justification of the symmetry, and
+then prove one case when we pick $x$ to be smaller than $y$.
+
+\begin{coq}{}{}
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+suff th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
+  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+by apply: leq_trans le_my le_yx.
+Qed.
+\end{coq}
+\index[ssr]{\C{suff} also \C{suffices}}
+The \C{suff} tactic (or \C{suffices})
+is like \C{have} but swaps the two goals.
+
+Note that here the sub proof is now the shortest paragraph.
+This is another recurrent characteristic of the proof script style
+we adopt in the \mcbMC{} library.
+
+There is still a good amount of repetition in the current script.
+In particular the main conjecture has been almost copy-pasted in
+order to invoke \C{have} or \C{suff}.  When this repetition
+is a severe problem, i.e. the statement to copy is large, one
+can resort to the \C{wlog} tactic (or \C{without loss}).
+
+\begin{coq}{}{}
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+wlog le_n21: n1 n2 / n2 <= n1  => [th_sym|].
+  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+by apply: leq_trans le_mn2 le_n21.
+Qed.
+\end{coq}
+\index[ssr]{\C{wlog} also \C{without loss}}
+
+Remark how \C{wlog} only needs the statement of the extra assumption,
+and which portion of the context needs to be abstracted, here \C{n1} and
+\C{n2}.  The sub goal to be proved is the following one.
+
+\begin{coqout}{}{}
+2 subgoals
+m, n1, n2 : nat
+th_sym : forall n1 n2 : nat, n2 <= n1 ->
+           (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+========================
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+
+
+subgoal 2 is:
+(m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+\end{coqout}
+
+To keep the script similar to the previous one, we named explicitly
+\C{th_sym}, to better link the final script to the previous attempts.
+This is rarely the case in proof scripts of the library, since one typically
+uses the \C{/(_ ...)} intro pattern to specialize the top of the stack.
+
+Shrinking proof scripts is a never ending game.  The impatient reader can
+jump to the next section to see
+how intro patterns can be used to squeeze the last two lines into a
+single one.  In the end, this proof script consists of three steps:
+the remark that we can
+assume \C{(n2 <= n1)} without losing generality; its justification in
+terms of totality of the order relation and commutativity of \C{max}
+and \C{||}; and the final proof, by transitivity, in the case when
+the \C{max} is \C{n1} due to the extra assumption.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Partially applied views}
+
+A less important, but very widespread, feature of the SSReflect
+proof language can be used to shrink the proof even further.
+In this proof script, we have named the fact \C{le_mn2} only for the
+purpose of referring to this fact in the transitivity step.
+
+
+\begin{coq}{}{}
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
+  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
+Qed.
+\end{coq}
+
+Remember that the statement of
+\C{leq_trans} is \C{(forall c a b, a <= c -> c <= b -> a <= b)} and
+we have used it to transform the top assumption \C{(m <= n2)}.  Note that
+the \C{leq_trans} expects a second proof argument, and that its type
+would fix \C{b}, that is otherwise unspecified.  If one puts a
+full stop just before the terminating \C{->}, to see the output of
+the view application, one sees the following stack:
+
+\begin{coq}{}{}
+(forall n, n1 <= n -> m <= n) -> m <= n1.
+\end{coq}
+
+Rewriting the top assumption fixes \C{n} to \C{n1}, trivializes
+the goal \C{(m <= n1)} to \C{true} and opens a trivial side
+condition \C{(n2 <= n1)}.
+
+The very compact idiom \C{/leq_trans->} is quite frequent in the
+\mcbMC{} library.
