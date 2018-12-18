@@ -6,10 +6,20 @@ Since proofs are just terms one could,
 in principle, use no proof language and directly input proof terms instead.
 Indeed this was the modus operandi in the pioneering work of
 De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
-The use of a dedicated proof language enables a higher level
-description of the formal proof being constructed. Importantly, it
+
+Still, the use of a dedicated proof language enables a higher level
+description of the formal proof being constructed.
+Here we details the tools the \mcbSSR{} proof language give us
+to tame bookkeeping, proof structuring and finally proof maintenance.
+
+
+In this chapter we describe two important aspects of formal proofs
+that can 
+Importantly, it
 provides support for taming the bookkeeping part of the activity of
 interactive proving.
+
+\section{maybe this should go back to the previous chapter, since it is CH}
 
   The proof commands we have mentioned in chapter~\ref{ch:proofs} can all be
 explained in terms of the proof terms they produce behind the scenes.
@@ -40,8 +50,6 @@ disjunction by applying \C{or\_introl} and \C{or\_intror} respectively;
 the witness \C{t} and, later, a proof that \C{t} validates the predicate.
 Finally \C{reflexivity} proves an equality by applying \C{erefl}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\section{Managing the proof context}
 The only primitive constructor that remains without an associated proof command
 is \C{(fun .. => ..)}.  Operationally, what the $\to_I$ and
 $\forall_I$ logical rule do is to introduce into the proof context a
@@ -50,8 +58,11 @@ by placing such items just after the name of the lemma being proved, or
 just after a \C{case:} or \C{elim:} proof command.  The current section
 expands on this subject covering the full management of the proof context.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Managing the proof context}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Goals as stacks}\label{ssec:stack}
+\section{Bookkeeping: Goals as stacks}\label{ssec:stack}
 \index[concept]{goal stack model}
 
 The presentation we gave so far of proof commands like \C{case: n => [|m]}
@@ -336,10 +347,6 @@ $~$
 3 * 2 = 3 + 3 -> 6 = 3 + 3
 \end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /(_ arg)} (specialization)}
-% [DG] Why is there an "=>" after the "move" in the above example?
-% Nothing is getting moved into the context. Without the "=>" it works
-% just as fine. I'm surprised it works with "=>", though!
-% assia: TODO
 
 The idea behind the syntax here is that when we apply a view \C{v} to
 the top stack item (say, \C{top}), by writing \C{/v}, we are
@@ -348,15 +355,10 @@ when we specialize the top stack item \C{top} to an object \C{x},
 by writing \C{/(_ x)}, we are forming the term \C{(top x)}.  The \C{_}
 is a placeholder for the top item, and is
 omitted in \C{/(v _)}.
-% [DG] Better "omitted in \C{/v}"?
-% assia: TODO
 
 When the top stack item is an equation, one can substitute it into
-the rest of the goal, using the tactics \C{<-}
-% [DG] Is "tactics" the right word here?
-% assia: TODO
-
-and \C{->} for right-to-left and left-to-right respectively.
+the rest of the goal, using \C{<-} and \C{->} for
+right-to-left and left-to-right respectively.
 
 \begin{coq-left}{}{width=4cm}
 move=> /(_ 3) <-.
@@ -450,8 +452,7 @@ subgoal 2 is:
 Note that listing context entry names inside curly braces purges them
 from the context. For instance the tactic \C{case: y \{odd\_y\}}
 clears the \C{odd\_y} fact. But this would lead to a dead end in the
-present proof, so let us come back to the proof of the
-implication~\ref{lst:stack2}.
+present proof, so we don't use it here.
 
 \index[ssr]{\C{tactic : ..}!\C{: \{name\}} (disposal)}
 
@@ -736,43 +737,47 @@ Being smaller than $m$, $p$ divides $m!$, hence to divide $m!+1$, $p$ should div
 $1$; that is not possible since $p$ is prime, hence greater than 1.
 \hfill$\square$
 
-We first show that any positive number smaller than $n$ divides $n!$.
 
-\begin{coq}{}{}
-Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
-Proof.
-case: m => //= m; elim: n => //= n IHn; rewrite ltnS leq_eqVlt.
-by case/orP=> [/eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
-Qed.
-\end{coq}
 
-After the first line the proof state is the following one:
+% We first show that any positive number smaller than $n$ divides $n!$.
+% 
+% \begin{coq}{}{}
+% Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
+% Proof.
+% case: m => //= m; elim: n => //= n IHn; rewrite ltnS leq_eqVlt.
+% by case/orP=> [/eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
+% Qed.
+% \end{coq}
+% 
+% After the first line the proof state is the following one:
+% 
+% \begin{coqout}{}{}
+% m, n : nat
+% IHn : m < n -> m.+1 %| n`!
+% ========================
+% (m == n) || (m < n) -> m.+1 %| (n.+1)`!
+% \end{coqout}
+% The case analysis rules out \C{(m = 0)}, and simplifies the hypothesis
+% to \C{(m <= n)}.  Recall that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
+% (y <= z))}; hence when the first inequality evaluates to true (e.g. when \C{x}
+% is 0) the conjunction simplifies to the second conjunct.  The \C{leq_eqVlt}
+% rewrite rule rephrases \C{<=} as a disjunction (the capital \C{V} letter
+% is reminiscent of $\lor$).
+% 
+% When we reason by cases on the top assumption, line 4, we face two goals, both
+% easy to solve if we look at the development of the factorial of \C{n.+1},
+% i.e., \D{(n.+1 * n`!)}.  The former amounts to showing that
+% \D{(n.+1 \%| n.+1 * n`!)}, while the latter to showing that \D{(m.+1 \%| n.+1 *
+% n`!)} under the (inductive) hypothesis that \D{(m.+1 \%| n`!)}.
+% 
+% What is paradigmatic in this little proof is the use of the \emph{goal stack
+% as a work space}.  In other words the proof script would be much more involved
+% if we started by introducing in the proof context all assumptions.
+% \\
+% 
+% We can now move to the proof of the main result.  
 
-\begin{coqout}{}{}
-m, n : nat
-IHn : m < n -> m.+1 %| n`!
-========================
-(m == n) || (m < n) -> m.+1 %| (n.+1)`!
-\end{coqout}
-The case analysis rules out \C{(m = 0)}, and simplifies the hypothesis
-to \C{(m <= n)}.  Recall that \C{(x <= y <= z)} is a notation for \C{((x <= y) &&
-(y <= z))}; hence when the first inequality evaluates to true (e.g. when \C{x}
-is 0) the conjunction simplifies to the second conjunct.  The \C{leq_eqVlt}
-rewrite rule rephrases \C{<=} as a disjunction (the capital \C{V} letter
-is reminiscent of $\lor$).
-
-When we reason by cases on the top assumption, line 4, we face two goals, both
-easy to solve if we look at the development of the factorial of \C{n.+1},
-i.e., \D{(n.+1 * n`!)}.  The former amounts to showing that
-\D{(n.+1 \%| n.+1 * n`!)}, while the latter to showing that \D{(m.+1 \%| n.+1 *
-n`!)} under the (inductive) hypothesis that \D{(m.+1 \%| n`!)}.
-
-What is paradigmatic in this little proof is the use of the \emph{goal stack
-as a work space}.  In other words the proof script would be much more involved
-if we started by introducing in the proof context all assumptions.
-\\
-
-We can now move to the proof of the main result.  We state it using a
+We state our theorem using a
 ``synonym'' of the exists quantifier that is specialized to carry two
 properties.  This way the statement is simpler to destruct: with just one
 case analysis we obtain the witness and the two properties.
@@ -780,10 +785,13 @@ We also resort to the following lemmas.
 
 \begin{coq}{}{title=Tools}
 Lemma fact_gt0 n : 0 < n`!.
+Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Lemma pdivP n : 1 < n -> exists2 p, prime p & p %| n,
 Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
 \end{coq}
+
+\noindent
 The first step is to prove that $m! + 1$ is greater than $1$, a triviality.
 Still it gives us the occasion to explain the \C{have} tactic, which lets us
 augment the proof context with a new fact, typically an intermediate step of
