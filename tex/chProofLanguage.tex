@@ -2,61 +2,87 @@
 \label{ch:script}
 
 
-Since proofs are just terms one could,
-in principle, use no proof language and directly input proof terms instead.
-Indeed this was the modus operandi in the pioneering work of
-De Bruijn on Automath (automating mathematics) in the seventies~\cite{nederpelt-94}.
+Since proofs are just terms one could, in principle, use no proof
+language and directly input proof terms instead.  Indeed this was the
+modus operandi in the pioneering work of De Bruijn on Automath
+(automating mathematics) in the seventies~\cite{nederpelt-94}.
 
 Still, the use of a dedicated proof language enables a higher level
-description of the formal proof being constructed.
-Here we details the tools the \mcbSSR{} proof language give us
-to tame bookkeeping, proof structuring and finally proof maintenance.
+description of the formal proof being constructed.  
+The \mcbSSR{} proof language give us tools to structure proofs and
+to tame bookeeping, a form of bureaucracy typical of formal proofs.
 
+Structure is given by diving proofs in blocks with a
+specific, declared, purpose and by factoring repetition such as
+symmetric or less general cases. The main tool logic gives us is the
+cut rule where the author of a proof identifies an intermediate
+step, or a generalization. The \C{have} and \C{without loss} tactics
+precisely cover this need.
 
-In this chapter we describe two important aspects of formal proofs
-that can 
-Importantly, it
-provides support for taming the bookkeeping part of the activity of
-interactive proving.
+Bookeeping is the ubiquitous activity of context management, that is
+naming or discarding assumptions in order to be able to track their
+lifetime, as well as massaging assumptions and goals as to please the
+formality requirements of Coq.  A paradigmatic bookkeeping example is
+destructing assumption of \C{(A && B)} in order to give distinct names
+to \C{A} and \C{B}: unlikely to be a pregnant step of the proof.
+The right language of intro-patterns together with goals-as-stacks model
+provide a very flexible tool quickly and succinctly deal with bookeeping.
 
-\section{maybe this should go back to the previous chapter, since it is CH}
+Structure and manageable size are key to the maintenance of proofs
+by a team of people.  Being small in size 
+helps maintenance since when computer code does not fit your screen one
+has hard times understanding it~\cite{Weinberg:1985:PCP:536771} and hence
+repairing it.
+Structure confines errors arising after a change to smaller text blocks, and
+declares what the original author of the proof being repaired
+was doing effectively implementing a form of check pointing and documentation.
+All that works best if the tactics used to fill in the blocks
+have a predictable behavior: fail early and locally when a change
+takes place in the proof context in which they were originally
+written.
 
-  The proof commands we have mentioned in chapter~\ref{ch:proofs} can all be
-explained in terms of the proof terms they produce behind the scenes.
-For example, \C{case: n} provides a much more compact syntax
-for \C{(match .. with .. end)} and it produces a
-\C{match} expression with the right
-shape by looking at the type of \C{n}.  If \C{n} is a natural number, then there
-are two branches; the one for the \C{S} constructor carries an argument of type
-\C{nat}, the other one is for \C{0} and binds no additional term.
-The \C{case:} tactic is general enough to work with any inductive data type
-and inductive predicate. Note that this tactic is known as
-\emph{destruction}, since it transforms an object of an inductive type
-back into the arguments that this object was constructed from (using
-the constructors of the type).
-% [DG] I've introduced the word "destruction", since you use it later
-% on.
+This chapter covers the tools to structure and tie proofs up and discusses
+some of the good practices that made the development of the \mcbMC{}
+library possible.
 
-The \C{apply:} tactic generates an application.  For example, \C{apply: addnC}
-generates the term \C{(addnC t1 t2)} by figuring out the correct values of
-\C{t1} and \C{t2}, or opening new goals when this cannot be done, i.e.,
-if the lemma takes in input proofs, like \C{contraL}.
-
-There is a list of proof commands that are shorthands for \C{apply:}
-and are only worth mentioning here briefly. \C{split} proves a conjunction
-by applying the \C{conj} constructor; \C{left} and \C{right} prove a
-disjunction by applying \C{or\_introl} and \C{or\_intror} respectively;
-\C{exists t} proves an existentially quantified formula by providing
-the witness \C{t} and, later, a proof that \C{t} validates the predicate.
-Finally \C{reflexivity} proves an equality by applying \C{erefl}.
-
-The only primitive constructor that remains without an associated proof command
-is \C{(fun .. => ..)}.  Operationally, what the $\to_I$ and
-$\forall_I$ logical rule do is to introduce into the proof context a
-new entry.  So far we either expressed this step at the beginning of proofs
-by placing such items just after the name of the lemma being proved, or
-just after a \C{case:} or \C{elim:} proof command.  The current section
-expands on this subject covering the full management of the proof context.
+% \section{maybe this should go back to the previous chapter, since it is CH}
+% 
+%   The proof commands we have mentioned in chapter~\ref{ch:proofs} can all be
+% explained in terms of the proof terms they produce behind the scenes.
+% For example, \C{case: n} provides a much more compact syntax
+% for \C{(match .. with .. end)} and it produces a
+% \C{match} expression with the right
+% shape by looking at the type of \C{n}.  If \C{n} is a natural number, then there
+% are two branches; the one for the \C{S} constructor carries an argument of type
+% \C{nat}, the other one is for \C{0} and binds no additional term.
+% The \C{case:} tactic is general enough to work with any inductive data type
+% and inductive predicate. Note that this tactic is known as
+% \emph{destruction}, since it transforms an object of an inductive type
+% back into the arguments that this object was constructed from (using
+% the constructors of the type).
+% % [DG] I've introduced the word "destruction", since you use it later
+% % on.
+% 
+% The \C{apply:} tactic generates an application.  For example, \C{apply: addnC}
+% generates the term \C{(addnC t1 t2)} by figuring out the correct values of
+% \C{t1} and \C{t2}, or opening new goals when this cannot be done, i.e.,
+% if the lemma takes in input proofs, like \C{contraL}.
+% 
+% There is a list of proof commands that are shorthands for \C{apply:}
+% and are only worth mentioning here briefly. \C{split} proves a conjunction
+% by applying the \C{conj} constructor; \C{left} and \C{right} prove a
+% disjunction by applying \C{or\_introl} and \C{or\_intror} respectively;
+% \C{exists t} proves an existentially quantified formula by providing
+% the witness \C{t} and, later, a proof that \C{t} validates the predicate.
+% Finally \C{reflexivity} proves an equality by applying \C{erefl}.
+% 
+% The only primitive constructor that remains without an associated proof command
+% is \C{(fun .. => ..)}.  Operationally, what the $\to_I$ and
+% $\forall_I$ logical rule do is to introduce into the proof context a
+% new entry.  So far we either expressed this step at the beginning of proofs
+% by placing such items just after the name of the lemma being proved, or
+% just after a \C{case:} or \C{elim:} proof command.  The current section
+% expands on this subject covering the full management of the proof context.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\section{Managing the proof context}
@@ -91,7 +117,7 @@ Let's start with the post-processing phase, called \emph{introduction pattern}.
 The postfix ``\C{=> ...}'' syntax can be used in conjunction with any proof
 command, and it performs a sequence of actions on the first
 assumption or variable that appears in the goal (i.e., on
-\C{A} if the goal has the form \C{A -> B -> C -> ...}, or on
+\C{A} if the goal has the form \C{A -> ...}, or on
 \C{x} if the goal has the form \C{forall x, ...}).
 With these looking glasses, the goal becomes a
 \emph{stack}. Take for example this goal:
@@ -144,7 +170,7 @@ $~$
 \end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> [ .. $\mid$ .. ]} (case)}
 
-We can place the \C{/=} switch to force the system to reduce the formulas on
+We can place the \C{/=} switch to tell \Coq{} to reduce the formulas on
 the stack, before introducing them in the context, and obtain:
 
 \begin{coq-left}{}{width=7cm}
@@ -163,10 +189,12 @@ $~$
 \end{coqout-right}
 
 We can also process an assumption through a lemma; when a lemma is
-used in this way, it is called a \emph{view}. This feature is of
-general interest, but it is especially useful in the context of boolean
-reflection, as described in section~\ref{sec:views}. For example,
-\C{prime\_gt1} states \C{(prime p -> 1 < p)} for any \C{p}, and we can
+used in this way, it is called a \emph{view}. 
+%This feature is of
+%general interest, but it is especially useful in the context of boolean
+%reflection, as described in section~\ref{sec:views}. For example,
+The
+\C{prime\_gt1} lemma states that \C{(prime p -> 1 < p)} for any \C{p}, and we can
 use it as a function to obtain a proof of \C{(1 < x)}  from a proof
 of \C{(prime x)}.
 \index[concept]{view}
@@ -221,15 +249,15 @@ new variable (which is legitimate, since the old \C{y} has been
 disposed of).
 
 Now, the fact that \C{y} is even is not needed to conclude, so we can
-discard it by giving it the \C{\_} dummy name.
+discard it by giving it the \C{\_} dummy name.~\footnote{
+If an assumption has already a name it can be discarded by
+writing its name in curly braces: e.g. \C{move=> \{x_gt1\}}.
+\index[ssr]{\C{tactic => ..}!\C{=> \{name\}} (disposal)}
+}
 
 \begin{coq}{}{}
 by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 \end{coq}
-
-The way to discard an already named assumption is to mention
-its name in curly braces, as \C{=> \{x_gt1\}}.
-\index[ssr]{\C{tactic => ..}!\C{=> \{name\}} (disposal)}
 
 We finally conclude with the \C{apply:} command. In the example just
 shown, we have used it with two arguments: a function and its last
@@ -248,12 +276,12 @@ Arguments m, n are implicit
 
 \C{apply:} automatically fills in the blanks between the function
 \C{ltn\_addl}
-(the lemma name) and the argument \C{x_gt1} provided.
+(the lemma name) and the given argument \C{x_gt1}.
 Since we are passing \C{x\_gt1}, the
 variable \C{m} picks the value \C{1}.  The conclusion of \C{ltn\_addl}
 hence unifies with \C{(2 < y.+1 + x)} because both \C{+} and \C{<} are
-defined as programs that compute: Namely, addition exposes a \C{.+1},
-thus reducing to \C{2 < (y+x).+1}; then \C{<} (or, better, the underlying
+defined as programs that compute: Namely, addition exposes a \C{.+1} by
+reducing to \C{2 < (y+x).+1}; then \C{<} (or, better, the underlying
 \C{<=}) eats a successor from both sides, leading to \C{1 < y + x},
 which looks like the conclusion of the lemma we apply.
 
@@ -278,7 +306,7 @@ Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 % about; it appears to be the double meaning of a
 % [ ... | ... | ... ] that is placed after the => tactical depending
 % on whether it is in the first position ("branching") or not
-% ("destructing"), as in §5.4 in the SSReflect manual. I cannot say
+% ("destructing"), as in §5.4 in the \mcbSSR{} manual. I cannot say
 % the manual completely clears things up for me, but at least it
 % sounds like what the gotcha is warning about. I think we need at
 % least one example of each of the possible meanings, along with an
@@ -286,7 +314,7 @@ Indeed in \C{case: n => [|m]} only one case analysis is performed.}
 % position (using the "-" switch?).
 %
 % On a lesser issue, the word "intro pattern" is used but not
-% explained; this holds even for the SSReflect manual! Is an intro
+% explained; this holds even for the \mcbSSR{} manual! Is an intro
 % pattern just anything that laeds to a new constant in the context?
 % assia : TODO
 
@@ -387,7 +415,7 @@ proof commands as \C{move}, \C{case} and \C{elim}
 
 \gotcha{The colon symbol in \C{apply:} is not the discharging operator.
 It is just a marker to distinguish the \C{apply:} tactic of
-SSReflect from the \C{apply} tactic of \Coq{}.
+\mcbSSR{} from the \C{apply} tactic of \Coq{}.
 Indeed the two tactics, while
 playing similar roles, behave differently~\cite[\S 5.2 and \S 5.3]{ssrman}.}
 
@@ -506,9 +534,8 @@ Last, one can push any term onto the stack -- whether or not this
 term appears in the context. For example,
 ``\C{move: (leqnn 7)}'' pushes on the stack
 the additional assumption \C{(7 <= 7)} (and thus
-``\C{move: (leqnn 7) => A}'' brings this assumption into the context
-under the name \C{A}). This
-will come handy in section~\ref{sec:strongind}.
+``\C{move: (leqnn 7) => leq77}'' brings this assumption into the context
+under the name \C{leq77}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Example: strengthening induction}
@@ -716,8 +743,8 @@ proof.  When proofs get longer \emph{structure} is the best ally in making
 them readable and maintainable.  Structuring proofs means identifying
 intermediate results, factoring similar lines of reasoning (e.g., symmetries),
 signaling crucial steps to the reader, and so on.  In short, a
-proof written in \Coq{} should not look too different from a proof
-written on paper.
+proof written in \Coq{} should share its structure and main steps
+with the same proof written on paper.
 
 The first subsection introduces the \C{have} tactic, that is the key
 to structure proofs into intermediate steps.  The second subsection
@@ -857,7 +884,7 @@ pointing out that a missing part of the proof can be obtained by symmetry.
 The worst thing one can do when formalizing such an argument on a computer
 is to use the worst invention of computer science: copy-paste.  The language of
 \Coq{} is sufficiently expressive to model symmetries, and the
-SSReflect proof language provides facilities to write symmetric arguments.
+\mcbSSR{} proof language provides facilities to write symmetric arguments.
 
 We prove the following characterization of the max of two natural numbers:
 \[
@@ -883,8 +910,9 @@ The proof uses the following lemmas.  Pay attention to the premise of
 \C{orb_idr}, which is an implication.
 
 \begin{coq}{}{title=Tools}
+Lemma orP {a b : bool} : a || b -> a \/ b.
 Lemma orb_idr (a b : bool) : (b -> a) -> a || b = a.
-Lemma maxn_idPl {m n} : reflect (maxn m n = m) (n <= m).
+Lemma maxn_idPl {m n} : n <= m -> maxn m n = m.
 Lemma leq_total m n : (m <= n) || (n <= m).
 \end{coq}
 
@@ -896,7 +924,7 @@ goals independently.
 
 \begin{coq}{}{}
 Proof.
-case/orP: (leq_total n2 n1) => [le_n21|le_n12].
+case: (orP (leq_total n2 n1)) => [le_n21|le_n12].
   rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
   by apply: leq_trans le_mn2 le_n21.
 rewrite maxnC orbC.
@@ -961,7 +989,7 @@ Proof.
 have th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
   move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
   by apply: leq_trans le_my le_yx.
-by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
 Qed.
 \end{coq}
 
@@ -997,7 +1025,7 @@ then prove one case when we pick $x$ to be smaller than $y$.
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 suff th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
-  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+  by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
 move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
 by apply: leq_trans le_my le_yx.
 Qed.
@@ -1020,7 +1048,7 @@ can resort to the \C{wlog} tactic (or \C{without loss}).
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 wlog le_n21: n1 n2 / n2 <= n1  => [th_sym|].
-  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+  by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
 rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
 by apply: leq_trans le_mn2 le_n21.
 Qed.
@@ -1062,7 +1090,7 @@ the \C{max} is \C{n1} due to the extra assumption.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Partially applied views}
 
-A less important, but very widespread, feature of the SSReflect
+A less important, but very widespread, feature of the \mcbSSR{}
 proof language can be used to shrink the proof even further.
 In this proof script, we have named the fact \C{le_mn2} only for the
 purpose of referring to this fact in the transitivity step.
@@ -1072,7 +1100,7 @@ purpose of referring to this fact in the transitivity step.
 Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
 Proof.
 wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
-  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
+  by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
 by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
 Qed.
 \end{coq}
@@ -1099,7 +1127,16 @@ The very compact idiom \C{/leq_trans->} is quite frequent in the
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof maintenance: a matter of style}
 
-MC developed over 6 years by 10 people since 2016 (Coq 8.1) and maintained for, at the time of writing 12 years.
+The main corpus of the \mcbMC{} library was developed over 6 years by 10
+people. It started from a few files from the Four Color Theorem in 2016 and, at
+the time of writing, is has been maintained for 12 years.
+
+The maintenance cost was relatively small thanks to the disciplined way
+in which the library was written and the design of the \mcbSSR{} proof
+language.
+
+proof commands were well defined, evolution was possible (1.3)
+proofs easy to repair thanks to structure and fail early and locally semantics.
 
 \subsection{Readability v.s. Compactness}
 
