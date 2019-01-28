@@ -885,8 +885,9 @@ have m1_gt1: 1 < m`! + 1.
 \end{coq}
 
 Its syntax is similar to the one of the \C{Lemma} command: it takes a name, a
-statement and starts a (sub) proof.  Since the proof is so short, we will
-put it on the same line, and remove the full stop.
+statement and starts a (sub) proof. 
+%Since the proof is so short, we will
+%put it on the same line, and remove the full stop.
 
 The next step is to use the \C{pdivP} lemma to gather a prime divisor of
 \D{m`!.+1}.  We end up with the following, rather unsatisfactory, script.
@@ -894,7 +895,8 @@ The next step is to use the \C{pdivP} lemma to gather a prime divisor of
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
 Proof.
-have m1_gt1: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+have m1_gt1: 1 < m`! + 1.
+  by rewrite addn1 ltnS fact_gt0.
 case: (pdivP m1_gt1) => [p pr_p p_dv_m1].
 \end{coq}
 
@@ -912,18 +914,20 @@ rearranged as follows.
 \begin{coq}{}{}
 Lemma prime_above m : exists2 p, m < p & prime p.
 Proof.
-have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1.
+  by rewrite addn1 ltnS fact_gt0.
 exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
 \end{coq}
 
-Here the first line obtains a prime \C{p} as desired, the second
+Here the first line obtains a prime \C{p} as desired, the third
 one begins to show it fits by contrapositive reasoning, and the
-third one, already commented in section~\ref{sec:quantifiedst}, concludes.
+last one, already commented in section~\ref{sec:quantifiedst}, concludes.
 
 As a general principle, in the proof script style we propose, a full
 line should represent a meaningful reasoning step (for a human being).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Order and max, a matter of symmetry}\label{sec:leqmax}
@@ -933,7 +937,8 @@ line should represent a meaningful reasoning step (for a human being).
 It is quite widespread in paper proofs to appeal to the reader's intelligence
 pointing out that a missing part of the proof can be obtained by symmetry.
 The worst thing one can do when formalizing such an argument on a computer
-is to use the worst invention of computer science: copy-paste.  The language of
+is to use the worst invention of computer science: copy-paste (i.e.
+duplication).  The language of
 \Coq{} is sufficiently expressive to model symmetries, and the
 \mcbSSR{} proof language provides facilities to write symmetric arguments.
 
@@ -998,7 +1003,7 @@ subgoal 2 is:
 \end{coqout}
 
 The first goal is simplified by
-rewriting with \C{maxn_idPl} (as we did in section~\ref{sec:viewtac}).
+rewriting with \C{maxn_idPl}. % (as we did in section~\ref{sec:viewtac}).
 Then \C{orb_idr} trivializes the main goal and generates a side condition with
 an extra hypothesis we name \C{le_mn2}.
 
@@ -1044,7 +1049,7 @@ by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
 Qed.
 \end{coq}
 
-The proof for the \C{th_sym} sub proof is the text we copy-paste in the
+The proof for \C{th_sym} is the text we were copy-pasting in the
 previous script, while here it is factored out.
 Once we have such extra fact in our context we reason by cases on
 the order relation and we conclude.  Remark that the last line instantiates
@@ -1178,25 +1183,68 @@ The very compact idiom \C{/leq_trans->} is quite frequent in the
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof maintenance: a matter of style}
 
-The main corpus of the \mcbMC{} library was developed over 6 years by 10
-people. It started from a few files from the Four Color Theorem in 2016 and, at
-the time of writing, is has been maintained for 12 years.
+The \mcbMC{} library started from a few files from the Four Color
+Theorem in 2006 and it was developed over 6 years by 10 people to
+support the formal proof of the Odd Order Theorem, completed in 2012.
+At the time of writing it has reached the size of nearly 100 files and
+100 KLOC, and has been maintained for over 12 years.
 
-The maintenance cost was relatively small thanks to the disciplined way
+During this period the library went under many iterations of cleanup
+and redesign.
+For example around 2009 the way algebraic structures are represented
+changed substantially with a major impact on most files. Similarly
+around 2011 the \mcbSSR{} proof language evolved substantially and the
+entire library was ported to the new features.
+
+In these occasions breakage happened, and will happen again in the future,
+since \Coq{} is actively developed and since nobody gets the definitions
+completely right at the first attempt in a formalization. Having to
+repair and adapt proof scripts is an activity one can hardly avoid.
+
+The maintenance cost was kept under control thanks to the disciplined way
 in which the library was written and the design of the \mcbSSR{} proof
-language.
+language.  In this section we cover a few aspects of formal proofs in the 
+part of the \mcbMC{} library and the Odd Order Theorem that we believe
+did contribute in a substantial way to its maintainability.
 
-proof commands were well defined, evolution was possible (1.3)
-proofs easy to repair thanks to structure and fail early and locally semantics.
+\subsection{Readability, compactness and handiness}
 
-\subsection{Readability v.s. Compactness}
+A desirable characteristic a formal proof should have is being
+readable.
 
-the first thing is to be able to read, some issues are UI related, some experience related, some approach related.
-readability is given by fwd steps, what proves them could be automatic or cryptic code, you can skip it, at least at the beginning. If the lemma is 1 line, then it is its statement that matters.
+It is not uncommon for novice users to try to achieve readability by
+writing a single instruction per line, and relying on the capability
+of user interfaces to step trough each and every step in order to
+understand what is going on.  The result is that they obtain lengthy
+proofs where it is hard to find any structure especially because, at a
+glance, one can hardly see the entire proof.  It is a bit like
+typesetting a book by breaking the line after each an every word: in
+order to find the action the subject is performing one would need to
+flip ten pages.  Their perception of readability is hence very biased
+toward the machine, since no human can tell what is going on in a
+particular line without actually asking the system to display the
+proof status.
 
-still you may need to repair it, hence to read it.
+The truth is probably closer to the following assertion:
+there are readable proof steps and more obscure ones. 
+
+An undoubtedly readable proof step is a forward step, asserting
+a statement, or at least, it is as readable as the statements of
+theorems are. It goes without saying that curating the way statements
+can be written plays a main role in readability.
+A related topic is the choice of meaningless names for theorems or
+hypotheses, e.g. \C{H7}. By asking \Coq{} to display one can see
+what the 7th hypothesis is about, but without that one can hardly
+imagine. A name like \C{leq_nm} seems a more suggestive name for an
+assumption stating that \C{n} is smaller than \C{m}.
+Similarly \C{n} is a good name for a number, \C{A} for a set or a
+matrix, and using \C{x7} for 
+
+
+Obscure proof steps are ...
 hints for reading/writing the cryptic part: symbols/short names VS named
 commands/meaningful steps.
+maybe one day made small by automation.
 
 rule of thumb: 1 line one step for the reader (it is up to you to make 1 step and not 20, it is up to ssr to let you write 1 line and not 20).
 
@@ -1204,7 +1252,7 @@ rule of thumb: 1 line one step for the reader (it is up to you to make 1 step an
 
 fwd steps define blocks that typically confine error.
 when you repair you start replaying from there.
-idiom of \C{have {H}H : ty} to refine H.
+idiom of \C{have \{H\}H : ty} to refine \C{H}.
 
 \subsection{Fail early and locally}
 
