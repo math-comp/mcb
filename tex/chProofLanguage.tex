@@ -1207,7 +1207,7 @@ language.  In this section we cover a few aspects of formal proofs in the
 part of the \mcbMC{} library and the Odd Order Theorem that we believe
 did contribute in a substantial way to its maintainability.
 
-\subsection{Readability, compactness and handiness}
+\subsection{Readability}
 
 A desirable characteristic a formal proof should have is being
 readable.
@@ -1238,46 +1238,135 @@ what the 7th hypothesis is about, but without that one can hardly
 imagine. A name like \C{leq_nm} seems a more suggestive name for an
 assumption stating that \C{n} is smaller than \C{m}.
 Similarly \C{n} is a good name for a number, \C{A} for a set or a
-matrix, and using \C{x7} for 
+matrix, while using \C{x7} for any of these is not going to help
+the reader.
 
+Obscure proof steps are not declarative, they act on a specific proof
+state and perform a precise manipulation, for example applying
+commutativity to the first addition on the right hand side of the
+goal. It goes without saying that, without seeing the actual goal, one
+can hardly understand what is going on.
+Another characteristic of these steps is the use of symbolic
+notations for some operations, such as getting rid of trivial goals
+via \C{//}. When these steps are involved one can only follow and understand
+a few steps without the help of \Coq{}, at best.  
+Still a few tricks to help reading these steps can be given. Symbols
+can be grayed out, the whole point of having symbolic notation is
+indeed to have a less intrusive syntax.  Then short names are likely
+to denote silly steps, e.g. \C{addnCA} to shuffle summands around.
+What is left is the salient contents of the obscure step.
 
-Obscure proof steps are ...
-hints for reading/writing the cryptic part: symbols/short names VS named
-commands/meaningful steps.
-maybe one day made small by automation.
+How much of that is tied to the technology we have today?
+While one can imagine a future where only declarative, readable, steps
+are part of a formal proof, and all their justifications can be
+silently omitted thanks to automation, we are not there yet. Also,
+explicit proof steps provide a solid ground for repair, while their
+absence may turn out to be an impeding factor for maintenance.
+User interfaces also play a role here. Today UIs for
+\Coq{} provide little support for reading long proofs. Better support
+would mitigate the need for short proofs, but could hardly get rid of
+it altogether.
 
-rule of thumb: 1 line one step for the reader (it is up to you to make 1 step and not 20, it is up to ssr to let you write 1 line and not 20).
-
-\subsection{Checkpoints}
-
-fwd steps define blocks that typically confine error.
-when you repair you start replaying from there.
-idiom of \C{have \{H\}H : ty} to refine \C{H}.
+A rule of thumb one can hardly imagine become irrelevant in the future
+is the following one: Structure proofs into lemmas or blocks
+as they are structured on paper. 
+Then, when filling the blocks, have one line of formal text perform
+one proof step for a human reader.  E.g. if two terms far away cancel
+out, it may take a full line to bring them close via associativity and
+commutativity: by running the full one can almost only observe the
+meaningful step.
 
 \subsection{Fail early and locally}
 
-this is the base semantics of tactic, there is no silent failure.
-still on can weaken the behavior by using try or ? in rewrite (beware).
-structuring the proof and using terminators such as by that assert the goal is solved avoid unsolved goals to silently reach the end of the proof without being noticed (where they come from?).
+There is some antagonism between being robust in face of changes
+and begin easy to repair. 
+The former is surely tantalizing and
+can even work at some extent, it can't possibly always work. The more
+sophisticated ``robustness'' is, the harder it may be to identify
+the root cause of the problem. The keyword is, in this case, heuristics.
+On the contrary the failure failure of a predictable, dumb, tools
+is likely to be easier to understand, if only because it is simpler
+and less sophisticated. The bet of the \mcbSSR{} that predictable
+failure leads to easy to repair proofs.
+
+Indeed, most \mcbSSR{} tactics fail early and locally. If they cannot operate
+as expected, they fail rather than silently perform a no operation or
+try to ``be smart'' and guess what one may have wanted to do.
+This helps errors to be discovered early in the proof script and hence
+localize where things actually broke. It is a matter of style to
+preserve this property when composing them. Indeed it is sometimes
+desirable to relax this behavior, but it has to be done with care.
+
+For example by applying the \C{?}
+modifier in rewrite rules. While this is very useful in practice,
+abusing this feature typically results in scripts that are hard to
+repair. The recurrent idiom is \C{rewrite lem1 ?lem2 // lem3}.
+Here \C{lem2} is used to trivialize a side condition of \C{lem1} that
+is then closed by \C{//}. If this is not the case anymore, for example
+because \C{lem1}'s side condition get's changed and \C{lem2} is not
+helping anymore and \C{//} cannot solve it, then
+\C{lem3} is likely to fail, since it is meant to apply to the main
+goal, and not a leftover side condition.
+Writing \C{rewrite lem1 ?lem2 ?lem3 //} can have the same meaning but
+is more fragile, since one would discover the breakage in the
+following line (after \C{lem1} all actions never fail).
+
+\subsection{Checkpoints}
+
+Forward steps in large proof play the role of checkpoints:
+when a proof breaks one can start replaying from the closest
+forward step since it is clear the proof state is the same
+the original author was seeing when he wrote the proof.
+
+A recurrent idiom is the one of refining an assumption by replacing
+it with a stronger one. For example to refine \C{H} one
+can write \C{have \{H\}H : refined_ty}.
+
+A related practice is the one of explicitly clearing hypothesis when
+they are not needed anymore. The first beneficial effect is the
+context
+as displayed by \Coq{} becomes smaller, easier to read.
+Also, by making the lifetime of context
+entries explicit, one can more easily see the dependencies among
+blocks, and that is a useful piece of information when one refactor
+proofs.
+To help keeping the context tidy, most
+tactics clear their arguments automatically, unless told
+otherwise. For example \C{apply: H} also removes \C{H} from the
+context; similarly \C{move: H} or \C{case: H}.
 
 \subsection{Large proofs}
 
-unfortunately splitting a large proof into small lemmas is a myth.
-it takes great effort and sometimes it is not just possible since
-the context is so large that one would inflate everything and obtain
-unreadable, unreusable, unnameable lemmas.
-using have and co give you similar syntax to the one of Lemma to
-locally define these factoids.
+Counter intuitively, large proofs cannot always be split into smaller
+lemmas. Or better, they can, but doing it mechanically 
+may be counterproductive.
 
-clean up the context. some tactics do it automatically (case and apply).
-the have {H}H idiom helps.
+In particular the more the proof context is rich, the harder is
+to hoist a sub result out of the main lemma. It's statement needs to
+copy much of of this context, in order to still be provable,
+and when a lemma has too many hypothesis it then becomes very hard to
+use. It is also very hard to give it a reasonable name outside the
+context it originated into.
 
-\subsection{Avoiding sources of randomness}
-the intros business.
-the super auto business.
-decision procedures are good.
-tactic language evolves conservatively, sitting on a reasonably well specified semantics.
+The \C{have} tactic and its siblings \C{suffices} and \C{wlog}
+provide syntactic facilities to state results
+compactly, sometimes even more compactly than what is typically allowed at the
+level of lemmas. For example by writing \C{have refl x : x = x} one
+gets to prove that \C{forall T (x : T), x = x} since the unresolved
+type of \C{x} does not generate an error but is rather quantified
+upfront.
 
 \subsection{Qed is not the end of the story}
 
-refactor, cleanup, improve...
+Unfortunately there is no free lunch: when a proof is accepted by
+\Coq{} it means it is correct but does not mean that it is readable or
+maintainable. As we argued so far that proof is going to eventually
+break, and repairing a tidy proof is much simpler than repairing a
+messy one.
+
+The only advantage we have compared to, say, cleaning up regular
+computer code, is that once a proof is complete and correct
+we can iterate small cleanup steps much faster. Indeed we can have
+\Coq{} check the proof after each and every step: If it checks,
+we did introduce no bug and we can move on with the next cleanup
+iteration.
