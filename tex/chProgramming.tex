@@ -2404,222 +2404,222 @@ adopted throughout the \mcbMC{} library.
 Each file in the \mcbMC{} library comes with a header documenting
 all concepts and associated notations it provides.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\section{Exercises}
-
-%%%%%%%%
-\begin{Exercise}[label=ex:triple,difficulty=0,title={The triple data type}]
-Define the triple data type such that the following notation
-applies.  Also define the projections.
-
-\begin{coq}{name=triple}{width=8cm}
-Notation "( a , b , c )" := (mk_triple a b c).
-Notation "p .1" := (fst p) (at level 2).
-Notation "p .2" := (snd p) (at level 2).
-Notation "p .3" := (thrd p) (at level 2).
-\end{coq}
-\begin{coq-left}{name=triple}{width=8cm}
-Compute (4, 5, 8).1.
-Compute (true, false, 1).2.
-Compute (2, true, false).3.
-\end{coq-left}
-\begin{coqout-right}{run=triple_run}{width=4cm}
- = 4 : nat
- = false : bool
- = false : bool
-\end{coqout-right}
-\coqrun{name=triple_run}{ssr,triple_solution,triple}
-
-Remark that the triple data type has to be polymorphic in order to
-be applicable to each of these combinations of natural numbers and
-booleans.
-\end{Exercise}
-
-%%%%%%%%
-\begin{Exercise}[label=ex:iteradd,difficulty=0,title={Addition with iteration}]
-Define a program computing the sum of two natural numbers
-using \C{iter}.
-\end{Exercise}
-
-%%%%%%%%
-\begin{Exercise}[label=ex:itermul,difficulty=0,title={Multiplication with iteration}]
-Define a program computing the product of two natural numbers
-using \C{iter}.
-\end{Exercise}
-
-%%%%%%%%
-\begin{Exercise}[label=ex:nth,difficulty=0,title={Find the n-th element}]
-Define a program taking a default value, a list and  a natural number \(n\).
-The program should return the \(n\)-th element of the list (counting
-from \(0\)) if \(n\)
-is smaller than the size of the list.  It should return
-the default value otherwise.
-
-\begin{coq-left}{name=nth}{width=7cm}
-Compute
-  nth 99 [:: 3; 7; 11; 22] 2.
-Compute
-  nth 99 [:: 3; 7; 11; 22] 7.
-\end{coq-left}
-\begin{coqout-right}{run=nth_run}{width=5cm}
- = 11
- : nat
- = 99
- : nat
-\end{coqout-right}
-\coqrun{name=nth_run}{ssr,nth}
-\end{Exercise}
-
-%%%%%%%%%
-\begin{Exercise}[label=ex:rev,difficulty=0,title={List reversal}]
-Define the program \C{rev} that reverses the order of the elements
-of a list.
-
-\begin{coq-left}{name=revtest}{width=5cm}
-Compute
-  rev [:: 1; 2; 3].
-\end{coq-left}
-\begin{coqout-right}{run=rev_run}{width=7cm}
- = [:: 3; 2; 1]
- : seq nat
-\end{coqout-right}
-\coqrun{name=rev_run}{ssr,revsolution,revtest}
-\end{Exercise}
-
-%%%%%%%%%%%%%
-\begin{Exercise}[label=ex:flatten,difficulty=1,title={List flattening}]
-Define the program \C{flatten} that takes a list of lists and returns
-their concatenation.  Don't write a recursive function; just reuse
-the concatenation function and one of the higher-order iterators
-seen so far.
-
-\begin{coq-left}{name=flatten}{width=7.3cm}
-Compute
- flatten [:: [:: 1; 2; 3]; [:: 4; 5]].
-\end{coq-left}
-\begin{coqout-right}{run=flatten_run}{width=5cm}
- = [:: 1; 2; 3; 4; 5]
- : seq nat
-\end{coqout-right}
-\coqrun{name=flatten_run}{ssr,flatten_solution,flatten}
-\end{Exercise}
-
-
-%%%%%%%%%
-\begin{Exercise}[label=ex:allwords,difficulty=2,title={All words of size n}]
-Define the \C{all\_words} program that takes in input a
-length \C{n} and a sequence of symbols \C{alphabet}.
-The program has to generate a list of all words (i.e., lists
-of symbols) of size \C{n} using the symbols from \C{alphabet}.
-
-\begin{coq-left}{name=allwords}{width=5.5cm}
-Compute
-  all_words 2 [:: 1; 2; 3].
-$~$
-$~$
-\end{coq-left}
-\begin{coqout-right}{run=allwords_run}{width=7cm}
- = [:: [:: 1; 1]; [:: 1; 2]; [:: 1; 3];
-       [:: 2; 1]; [:: 2; 2]; [:: 2; 3];
-       [:: 3; 1]; [:: 3; 2]; [:: 3; 3]]
- : seq (seq nat)
-\end{coqout-right}
-\coqrun{name=allwords_run}{ssr,allwords_solution,allwords}
-\end{Exercise}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Solutions}
-
-%%%%%%%%%%
-
-\begin{Answer}[ref=ex:triple]
-
-\begin{coq}{name=triple_solution}{}
-Inductive triple (A B C : Type) := mk_triple (a : A) (b : B) (c : C).
-Notation "( a , b , c )" := (mk_triple a b c).
-Definition fst  A B C (p : triple A B C) := let: (a, _, _) := p in a.
-Definition snd  A B C (p : triple A B C) := let: (_, b, _) := p in b.
-Definition thrd A B C (p : triple A B C) := let: (_, _, c) := p in c.
-\end{coq}
-
-\end{Answer}
-
-%%%%%%%%%%
-\begin{Answer}[ref=ex:iteradd]
-
-\begin{coq}{name=addniter}{}
-Definition addn n1 n2 := iter n1 S n2.
-\end{coq}
-\coqrun{name=addniter_run}{ssr,addniter}
-
-\end{Answer}
-
-%%%%%%%%%%
-\begin{Answer}[ref=ex:itermul]
-
-\begin{coq}{name=muln_solution}{}
-Definition muln n1 n2 := iter n1 (addn n2) 0.
-\end{coq}
-\coqrun{name=mulnsol_run}{ssr,muln_solution}
-
-\end{Answer}
-
-%%%%%%%%%%
-\begin{Answer}[ref=ex:nth]
-
-\begin{coq}{name=nth_solution}{}
-Fixpoint nth T (def : T) (s : seq T) n :=
-  if s is x :: tl then if n is u.+1 then nth def tl u else x else def.
-\end{coq}
-\coqrun{name=nthex_run}{ssr,nth_solution}
-
-\end{Answer}
-
-%%%%%%%%%%
-\begin{Answer}[ref=ex:rev]
-
-\begin{coq}{name=revsolution}{}
-Fixpoint catrev T (s1 s2 : seq T) :=
-  if s1 is x :: xs then catrev xs (x :: s2) else s2.
-
-Definition rev T (s : seq T) := catrev s [::].
-\end{coq}
-
-\end{Answer}
-
-%%%%%%%%%%%%%
-
-\begin{Answer}[ref=ex:flatten]
-
-\begin{coq}{name=flatten_solution}{}
-Definition flatten T (s : seq (seq T)) := foldr cat [::] s.
-\end{coq}
-
-\end{Answer}
-
-%%%%%%%%
-\begin{Answer}[ref=ex:allwords]
-
-\begin{coq}{name=allwords_solution}{}
-Definition all_words n T (alphabet : seq T) :=
-  let prepend x wl := [seq x :: w | w <- wl] in
-  let extend wl := flatten [seq prepend x wl | x <- alphabet] in
-  iter n extend [:: [::] ].
-\end{coq}
-
-Another possible solution~\footnote{suggested by Darij Grinberg.}:
-
-\begin{coq}{name=allwords_solution_dg}{}
-Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
-  if n is m.+1 then
-    flatten [seq [seq x :: w | w <- (all_words_alt m xs)] | x <- xs]
-  else nil :: nil.
-\end{coq}
-
-\end{Answer}
-
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newpage
+% \section{Exercises}
+% 
+% %%%%%%%%
+% \begin{Exercise}[label=ex:triple,difficulty=0,title={The triple data type}]
+% Define the triple data type such that the following notation
+% applies.  Also define the projections.
+% 
+% \begin{coq}{name=triple}{width=8cm}
+% Notation "( a , b , c )" := (mk_triple a b c).
+% Notation "p .1" := (fst p) (at level 2).
+% Notation "p .2" := (snd p) (at level 2).
+% Notation "p .3" := (thrd p) (at level 2).
+% \end{coq}
+% \begin{coq-left}{name=triple}{width=8cm}
+% Compute (4, 5, 8).1.
+% Compute (true, false, 1).2.
+% Compute (2, true, false).3.
+% \end{coq-left}
+% \begin{coqout-right}{run=triple_run}{width=4cm}
+%  = 4 : nat
+%  = false : bool
+%  = false : bool
+% \end{coqout-right}
+% \coqrun{name=triple_run}{ssr,triple_solution,triple}
+% 
+% Remark that the triple data type has to be polymorphic in order to
+% be applicable to each of these combinations of natural numbers and
+% booleans.
+% \end{Exercise}
+% 
+% %%%%%%%%
+% \begin{Exercise}[label=ex:iteradd,difficulty=0,title={Addition with iteration}]
+% Define a program computing the sum of two natural numbers
+% using \C{iter}.
+% \end{Exercise}
+% 
+% %%%%%%%%
+% \begin{Exercise}[label=ex:itermul,difficulty=0,title={Multiplication with iteration}]
+% Define a program computing the product of two natural numbers
+% using \C{iter}.
+% \end{Exercise}
+% 
+% %%%%%%%%
+% \begin{Exercise}[label=ex:nth,difficulty=0,title={Find the n-th element}]
+% Define a program taking a default value, a list and  a natural number \(n\).
+% The program should return the \(n\)-th element of the list (counting
+% from \(0\)) if \(n\)
+% is smaller than the size of the list.  It should return
+% the default value otherwise.
+% 
+% \begin{coq-left}{name=nth}{width=7cm}
+% Compute
+%   nth 99 [:: 3; 7; 11; 22] 2.
+% Compute
+%   nth 99 [:: 3; 7; 11; 22] 7.
+% \end{coq-left}
+% \begin{coqout-right}{run=nth_run}{width=5cm}
+%  = 11
+%  : nat
+%  = 99
+%  : nat
+% \end{coqout-right}
+% \coqrun{name=nth_run}{ssr,nth}
+% \end{Exercise}
+% 
+% %%%%%%%%%
+% \begin{Exercise}[label=ex:rev,difficulty=0,title={List reversal}]
+% Define the program \C{rev} that reverses the order of the elements
+% of a list.
+% 
+% \begin{coq-left}{name=revtest}{width=5cm}
+% Compute
+%   rev [:: 1; 2; 3].
+% \end{coq-left}
+% \begin{coqout-right}{run=rev_run}{width=7cm}
+%  = [:: 3; 2; 1]
+%  : seq nat
+% \end{coqout-right}
+% \coqrun{name=rev_run}{ssr,revsolution,revtest}
+% \end{Exercise}
+% 
+% %%%%%%%%%%%%%
+% \begin{Exercise}[label=ex:flatten,difficulty=1,title={List flattening}]
+% Define the program \C{flatten} that takes a list of lists and returns
+% their concatenation.  Don't write a recursive function; just reuse
+% the concatenation function and one of the higher-order iterators
+% seen so far.
+% 
+% \begin{coq-left}{name=flatten}{width=7.3cm}
+% Compute
+%  flatten [:: [:: 1; 2; 3]; [:: 4; 5]].
+% \end{coq-left}
+% \begin{coqout-right}{run=flatten_run}{width=5cm}
+%  = [:: 1; 2; 3; 4; 5]
+%  : seq nat
+% \end{coqout-right}
+% \coqrun{name=flatten_run}{ssr,flatten_solution,flatten}
+% \end{Exercise}
+% 
+% 
+% %%%%%%%%%
+% \begin{Exercise}[label=ex:allwords,difficulty=2,title={All words of size n}]
+% Define the \C{all\_words} program that takes in input a
+% length \C{n} and a sequence of symbols \C{alphabet}.
+% The program has to generate a list of all words (i.e., lists
+% of symbols) of size \C{n} using the symbols from \C{alphabet}.
+% 
+% \begin{coq-left}{name=allwords}{width=5.5cm}
+% Compute
+%   all_words 2 [:: 1; 2; 3].
+% $~$
+% $~$
+% \end{coq-left}
+% \begin{coqout-right}{run=allwords_run}{width=7cm}
+%  = [:: [:: 1; 1]; [:: 1; 2]; [:: 1; 3];
+%        [:: 2; 1]; [:: 2; 2]; [:: 2; 3];
+%        [:: 3; 1]; [:: 3; 2]; [:: 3; 3]]
+%  : seq (seq nat)
+% \end{coqout-right}
+% \coqrun{name=allwords_run}{ssr,allwords_solution,allwords}
+% \end{Exercise}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Solutions}
+% 
+% %%%%%%%%%%
+% 
+% \begin{Answer}[ref=ex:triple]
+% 
+% \begin{coq}{name=triple_solution}{}
+% Inductive triple (A B C : Type) := mk_triple (a : A) (b : B) (c : C).
+% Notation "( a , b , c )" := (mk_triple a b c).
+% Definition fst  A B C (p : triple A B C) := let: (a, _, _) := p in a.
+% Definition snd  A B C (p : triple A B C) := let: (_, b, _) := p in b.
+% Definition thrd A B C (p : triple A B C) := let: (_, _, c) := p in c.
+% \end{coq}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%%%
+% \begin{Answer}[ref=ex:iteradd]
+% 
+% \begin{coq}{name=addniter}{}
+% Definition addn n1 n2 := iter n1 S n2.
+% \end{coq}
+% \coqrun{name=addniter_run}{ssr,addniter}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%%%
+% \begin{Answer}[ref=ex:itermul]
+% 
+% \begin{coq}{name=muln_solution}{}
+% Definition muln n1 n2 := iter n1 (addn n2) 0.
+% \end{coq}
+% \coqrun{name=mulnsol_run}{ssr,muln_solution}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%%%
+% \begin{Answer}[ref=ex:nth]
+% 
+% \begin{coq}{name=nth_solution}{}
+% Fixpoint nth T (def : T) (s : seq T) n :=
+%   if s is x :: tl then if n is u.+1 then nth def tl u else x else def.
+% \end{coq}
+% \coqrun{name=nthex_run}{ssr,nth_solution}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%%%
+% \begin{Answer}[ref=ex:rev]
+% 
+% \begin{coq}{name=revsolution}{}
+% Fixpoint catrev T (s1 s2 : seq T) :=
+%   if s1 is x :: xs then catrev xs (x :: s2) else s2.
+% 
+% Definition rev T (s : seq T) := catrev s [::].
+% \end{coq}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%%%%%%
+% 
+% \begin{Answer}[ref=ex:flatten]
+% 
+% \begin{coq}{name=flatten_solution}{}
+% Definition flatten T (s : seq (seq T)) := foldr cat [::] s.
+% \end{coq}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%
+% \begin{Answer}[ref=ex:allwords]
+% 
+% \begin{coq}{name=allwords_solution}{}
+% Definition all_words n T (alphabet : seq T) :=
+%   let prepend x wl := [seq x :: w | w <- wl] in
+%   let extend wl := flatten [seq prepend x wl | x <- alphabet] in
+%   iter n extend [:: [::] ].
+% \end{coq}
+% 
+% Another possible solution~\footnote{suggested by Darij Grinberg.}:
+% 
+% \begin{coq}{name=allwords_solution_dg}{}
+% Fixpoint all_words_alt (T : Type) (n : nat) (xs : seq T) :=
+%   if n is m.+1 then
+%     flatten [seq [seq x :: w | w <- (all_words_alt m xs)] | x <- xs]
+%   else nil :: nil.
+% \end{coq}
+% 
+% \end{Answer}
+% 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% End of written part %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

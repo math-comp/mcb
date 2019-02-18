@@ -182,7 +182,7 @@ Inductive reflect (P : Prop) (b : bool) : Prop :=
 \index[coq]{\C{reflect}}
 
 We can prove that the statement \C{reflect P b} is actually equivalent
-to the double implication \C{bool_Prop_equiv}; see exercise~\ref{ex:iffp}.
+to the double implication \C{bool_Prop_equiv}. %; see exercise~\ref{ex:iffp}.
 
 Let us illustrate the benefits of this alternate specialized double
 implication:
@@ -376,7 +376,8 @@ subgoal 2 is:
  eqn m n -> m = n
 \end{coqout-right}
 
-The proof is now an easy induction, and is left as exercise~\ref{ex:eqnP}.
+In both cases the proof is now an easy induction on \C{m}.
+% , and is left as exercise~\ref{ex:eqnP}.
 
 % In fact the library does not feature the specialization \C{iffP_lr},
 % and the idiom to remember in order to prove a reflection lemma by
@@ -424,8 +425,9 @@ subgoal 2 is:
 \end{coqout-right}
 
 Note that \C{eqn}, being completely specified by \C{eqnP}, is not
-anymore part of the picture.  Finishing the proof is left as
-exercise~\ref{ex:eqnPinj}.
+anymore part of the picture. 
+%Finishing the proof is left as
+% exercise~\ref{ex:eqnPinj}.
 
 The latter example illustrates the convenience of combining an action
 on a goal, here breaking an equivalence into one subgoal per
@@ -1334,111 +1336,111 @@ is hard is to reconstruct the missing fields of a structure
 or compare two structures finding the minimum super structure.
 These tasks are mainly implemented with programming type inference.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exercises}
-
-%%%%%%%%
-\begin{Exercise}[label=ex:iffp,difficulty=0,title={reflect}]
-Prove the following lemmas.  In particular prove the first
-one with and without using \C{iffP}.
-
-\begin{coq}{}{}
-Lemma iffP_lr (P : Prop) (b : bool) :
-  (P -> b) -> (b -> P) -> reflect P b.
-Lemma iffP_rl (P : Prop) (b : bool) :
-  reflect P b -> ((P -> b) /\ (b -> P)).
-\end{coq}
-\end{Exercise}
-
-%%%%%%%
-\begin{Exercise}[label=ex:eqnP,difficulty=0,title={eqnP}]
-Finish this proof.
-
-\begin{coq}{}{}
-Lemma eqnP n m : reflect (n = m) (eqn n m).
-Proof.
-apply: (iffP idP).
-\end{coq}
-\end{Exercise}
-
-
-%%%%%%%
-\begin{Exercise}[label=ex:eqnPinj,difficulty=0,title={Injectivity to nat}]
-Finish this proof.
-
-\begin{coq}{}{}
-Lemma nat_inj_eq T (f : T -> nat) x y :
-  injective f -> reflect (x = y) (eqn (f x) (f y)).
-Proof.
-move=> f_inj; apply: (iffP eqnP).
-\end{coq}
-\end{Exercise}
-
-%%%%%%%
-\begin{Exercise}[label=ex:maxnidP,difficulty=0,title={Characterization of max}]
-Prove the following lemma.
-
-\begin{coq}{}{}
-Lemma maxn_idPl m n : reflect (maxn m n = m) (m >= n).
-\end{coq}
-\end{Exercise}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Solutions}
-
-%%%%%%%%%%
-\begin{Answer}[ref=ex:iffp]
-
-\begin{coq}{}{}
-Lemma iffP_lr (P : Prop) (b : bool) :
-  (P -> b) -> (b -> P) -> reflect P b.
-Proof.
-by case: b => [_ H|H _]; [left; apply H | right=> p; move: (H p)].
-(* with iffP: by move=> *; apply: (iffP idP). *)
-Qed.
-
-Lemma iffP_rl (P : Prop) (b : bool) :
-  reflect P b -> ((P -> b) /\ (b -> P)).
-Proof. by case: b; case=> p; split. Qed.
-\end{coq}
-
-\end{Answer}
-
-%%%%%%%%%
-\begin{Answer}[ref=ex:eqnP]
-
-\begin{coq}{}{}
-Lemma eqnP n m : reflect (n = m) (eqn n m).
-Proof.
-apply: (iffP idP) => [|->]; last by elim: m.
-by elim: n m => [[]|n IH [//|m] /IH ->].
-Qed.
-\end{coq}
-
-\end{Answer}
-
-
-%%%%%%%
-\begin{Answer}[ref=ex:eqnPinj]
-
-\begin{coq}{}{}
-Lemma nat_inj_eq T (f : T -> nat) x y :
-  injective f -> reflect (x = y) (eqn (f x) (f y)).
-Proof. by move=> f_inj; apply: (iffP eqnP) => [/f_inj|->]. Qed.
-\end{coq}
-
-\end{Answer}
-
-%%%%%%%
-\begin{Answer}[ref=ex:maxnidP]
-
-\begin{coq}{}{}
-Lemma maxn_idPl m n : reflect (maxn m n = m) (m >= n).
-Proof.
-by rewrite -subn_eq0 -(eqn_add2l m) addn0 -maxnE; apply: eqP.
-Qed.
-
-\end{coq}
-\end{Answer}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{Exercises}
+% 
+% %%%%%%%%
+% \begin{Exercise}[label=ex:iffp,difficulty=0,title={reflect}]
+% Prove the following lemmas.  In particular prove the first
+% one with and without using \C{iffP}.
+% 
+% \begin{coq}{}{}
+% Lemma iffP_lr (P : Prop) (b : bool) :
+%   (P -> b) -> (b -> P) -> reflect P b.
+% Lemma iffP_rl (P : Prop) (b : bool) :
+%   reflect P b -> ((P -> b) /\ (b -> P)).
+% \end{coq}
+% \end{Exercise}
+% 
+% %%%%%%%
+% \begin{Exercise}[label=ex:eqnP,difficulty=0,title={eqnP}]
+% Finish this proof.
+% 
+% \begin{coq}{}{}
+% Lemma eqnP n m : reflect (n = m) (eqn n m).
+% Proof.
+% apply: (iffP idP).
+% \end{coq}
+% \end{Exercise}
+% 
+% 
+% %%%%%%%
+% \begin{Exercise}[label=ex:eqnPinj,difficulty=0,title={Injectivity to nat}]
+% Finish this proof.
+% 
+% \begin{coq}{}{}
+% Lemma nat_inj_eq T (f : T -> nat) x y :
+%   injective f -> reflect (x = y) (eqn (f x) (f y)).
+% Proof.
+% move=> f_inj; apply: (iffP eqnP).
+% \end{coq}
+% \end{Exercise}
+% 
+% %%%%%%%
+% \begin{Exercise}[label=ex:maxnidP,difficulty=0,title={Characterization of max}]
+% Prove the following lemma.
+% 
+% \begin{coq}{}{}
+% Lemma maxn_idPl m n : reflect (maxn m n = m) (m >= n).
+% \end{coq}
+% \end{Exercise}
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Solutions}
+% 
+% %%%%%%%%%%
+% \begin{Answer}[ref=ex:iffp]
+% 
+% \begin{coq}{}{}
+% Lemma iffP_lr (P : Prop) (b : bool) :
+%   (P -> b) -> (b -> P) -> reflect P b.
+% Proof.
+% by case: b => [_ H|H _]; [left; apply H | right=> p; move: (H p)].
+% (* with iffP: by move=> *; apply: (iffP idP). *)
+% Qed.
+% 
+% Lemma iffP_rl (P : Prop) (b : bool) :
+%   reflect P b -> ((P -> b) /\ (b -> P)).
+% Proof. by case: b; case=> p; split. Qed.
+% \end{coq}
+% 
+% \end{Answer}
+% 
+% %%%%%%%%%
+% \begin{Answer}[ref=ex:eqnP]
+% 
+% \begin{coq}{}{}
+% Lemma eqnP n m : reflect (n = m) (eqn n m).
+% Proof.
+% apply: (iffP idP) => [|->]; last by elim: m.
+% by elim: n m => [[]|n IH [//|m] /IH ->].
+% Qed.
+% \end{coq}
+% 
+% \end{Answer}
+% 
+% 
+% %%%%%%%
+% \begin{Answer}[ref=ex:eqnPinj]
+% 
+% \begin{coq}{}{}
+% Lemma nat_inj_eq T (f : T -> nat) x y :
+%   injective f -> reflect (x = y) (eqn (f x) (f y)).
+% Proof. by move=> f_inj; apply: (iffP eqnP) => [/f_inj|->]. Qed.
+% \end{coq}
+% 
+% \end{Answer}
+% 
+% %%%%%%%
+% \begin{Answer}[ref=ex:maxnidP]
+% 
+% \begin{coq}{}{}
+% Lemma maxn_idPl m n : reflect (maxn m n = m) (m >= n).
+% Proof.
+% by rewrite -subn_eq0 -(eqn_add2l m) addn0 -maxnE; apply: eqP.
+% Qed.
+% 
+% \end{coq}
+% \end{Answer}

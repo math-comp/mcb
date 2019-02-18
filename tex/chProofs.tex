@@ -298,8 +298,8 @@ Lemma implybE a b : (a ==> b) = ~~ a || b.
 Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
 \end{coq}
 \coqrun{name=testorbA}{ssr,orbA,abort,abort,abort}
-Proving these identities (once we have learned to provide proofs)
-is left as an exercise (see exercise~\ref{ex:boolid}).
+% Proving these identities (once we have learned to provide proofs)
+% is left as an exercise (see exercise~\ref{ex:boolid}).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1320,8 +1320,9 @@ muln_eq0 : forall m n : nat,
 
 Quantifiers may also occur elsewhere in a statement, and not only in
 prenex position.  In the following example, we use the function
-\C{nth}, extracting the element of a sequence at a given position, which was
-the object of exercise~\ref{ex:nth}. This statement expresses that two
+\C{nth}, extracting the element of a sequence at a given position.
+%, which was the object of exercise~\ref{ex:nth}. 
+This statement expresses that two
 sequences with the same size and whose $n$-th elements coincide for any
 $n$ are the same. The second hypothesis, about the elements, is
 itself a quantified formula:
@@ -2656,143 +2657,143 @@ in the \mcbMC{} library:
 % lemmas: as we will see later, the order of the quantification may make
 % a lemma easier to use under certain circumstances.
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newpage
-\section{Exercises}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercise}[label=ex:boolid,difficulty=0,title={Truth tables}]
-
-Prove the following boolean tautologies:
-
-\begin{coq}{name=ex1}{}
-Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
-Lemma implybE a b : (a ==> b) = ~~ a || b.
-Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
-\end{coq}
-\coqrun{name=testex1}{ssr,ex1,abort,abort,abort}
-
-\end{Exercise}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercise}[label=ex:rewrite,difficulty=0,title={Rewriting}]
-
-Prove the following lemma by rewriting:
-
-\begin{coq}{name=ex2}{}
-Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
-\end{coq}
-\coqrun{name=testex2}{ssr,ex2,abort}
-The \C{(_ ^ _)} notation is attached to the \C{expn} function.
-
-\end{Exercise}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercise}[label=ex:induction,difficulty=1,title={Induction}]
-
-Prove the following lemma by induction:
-
-\begin{coq}{name=ex3}{}
-Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
-\end{coq}
-\coqrun{name=testex3}{ssr,ex3,abort}
-Recall that a local equation can be disposed of (after use)
-by prefixing its name with \C{\{\}}.
-
-\end{Exercise}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Exercise}[label=ex:induction2,difficulty=2,title={Multiple induction}]
-
-Prove the following lemma by induction.
-
-\begin{coq}{name=ex4}{}
-Definition all_words n T (alphabet : seq T) :=
-  let prepend x wl := [seq x :: w | w <- wl] in
-  let extend wl := flatten [seq prepend x wl | x <- alphabet] in
-  iter n extend [:: [::] ].
-Lemma size_all_words n T (alphabet : seq T) :
-  size (all_words n alphabet) = size alphabet ^ n.
-\end{coq}
-\coqrun{name=testex4}{ssr,ex4,abort}
-
-(where \C{all_words} is as defined in the solution of
-exercise~\ref{ex:allwords}).
-This requires two inductions: first on the length of words,
-then on the alphabet.  In this last case, a non-trivial
-sub expression has to be generalized just before starting
-the induction.
-
-\end{Exercise}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Solutions}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Answer}[ref=ex:boolid]
-
-\begin{coq}{name=sol1}{}
-Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
-Proof. by case: b1; case: b2; case: b3. Qed.
-Lemma implybE a b : (a ==> b) = ~~ a || b.
-Proof. by case: a; case: b. Qed.
-Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
-Proof. by case: a; case: b. Qed.
-\end{coq}
-\coqrun{name=testsol1}{ssr,sol1}
-\end{Answer}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Answer}[ref=ex:rewrite]
-
-\begin{coq}{name=sol2}{}
-Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
-Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
-\end{coq}
-\coqrun{name=testsol2}{ssr,sol2}
-\end{Answer}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Answer}[ref=ex:induction]
-
-\begin{coq}{name=sol3}{}
-Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
-Proof.
-elim: n => // n IHn.
-by rewrite expnS odd_mul {}IHn orKb.
-Qed.
-\end{coq}
-\coqrun{name=testsol3}{ssr,sol3}
-\end{Answer}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{Answer}[ref=ex:induction2]
-
-\begin{coq}{name=sol4}{}
-Definition all_words n T (alphabet : seq T) :=
-  let prepend x wl := [seq x :: w | w <- wl] in
-  let extend wl := flatten [seq prepend x wl | x <- alphabet] in
-  iter n extend [:: [::] ].
-
-Lemma size_all_words n T (alphabet : seq T) :
-  size (all_words n alphabet) = size alphabet ^ n.
-Proof.
-elim: n => [|n IHn]; first by rewrite expn0.
-rewrite expnS -{}IHn [in LHS]/all_words iterS -/(all_words _ _).
-elim: alphabet (all_words _ _) => //= w ws IHws aw.
-by rewrite size_cat IHws size_map mulSn.
-Qed.
-\end{coq}
-\coqrun{name=testsol4}{ssr,sol4}
-\marginnote{The second elim is a bit too much for ch2}
-\end{Answer}
-
-
-
-
-
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newpage
+% \section{Exercises}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Exercise}[label=ex:boolid,difficulty=0,title={Truth tables}]
+% 
+% Prove the following boolean tautologies:
+% 
+% \begin{coq}{name=ex1}{}
+% Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
+% Lemma implybE a b : (a ==> b) = ~~ a || b.
+% Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+% \end{coq}
+% \coqrun{name=testex1}{ssr,ex1,abort,abort,abort}
+% 
+% \end{Exercise}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Exercise}[label=ex:rewrite,difficulty=0,title={Rewriting}]
+% 
+% Prove the following lemma by rewriting:
+% 
+% \begin{coq}{name=ex2}{}
+% Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
+% \end{coq}
+% \coqrun{name=testex2}{ssr,ex2,abort}
+% The \C{(_ ^ _)} notation is attached to the \C{expn} function.
+% 
+% \end{Exercise}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Exercise}[label=ex:induction,difficulty=1,title={Induction}]
+% 
+% Prove the following lemma by induction:
+% 
+% \begin{coq}{name=ex3}{}
+% Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
+% \end{coq}
+% \coqrun{name=testex3}{ssr,ex3,abort}
+% Recall that a local equation can be disposed of (after use)
+% by prefixing its name with \C{\{\}}.
+% 
+% \end{Exercise}
+% 
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Exercise}[label=ex:induction2,difficulty=2,title={Multiple induction}]
+% 
+% Prove the following lemma by induction.
+% 
+% \begin{coq}{name=ex4}{}
+% Definition all_words n T (alphabet : seq T) :=
+%   let prepend x wl := [seq x :: w | w <- wl] in
+%   let extend wl := flatten [seq prepend x wl | x <- alphabet] in
+%   iter n extend [:: [::] ].
+% Lemma size_all_words n T (alphabet : seq T) :
+%   size (all_words n alphabet) = size alphabet ^ n.
+% \end{coq}
+% \coqrun{name=testex4}{ssr,ex4,abort}
+% 
+% (where \C{all_words} is as defined in the solution of
+% exercise~\ref{ex:allwords}).
+% This requires two inductions: first on the length of words,
+% then on the alphabet.  In this last case, a non-trivial
+% sub expression has to be generalized just before starting
+% the induction.
+% 
+% \end{Exercise}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Solutions}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Answer}[ref=ex:boolid]
+% 
+% \begin{coq}{name=sol1}{}
+% Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
+% Proof. by case: b1; case: b2; case: b3. Qed.
+% Lemma implybE a b : (a ==> b) = ~~ a || b.
+% Proof. by case: a; case: b. Qed.
+% Lemma negb_and (a b : bool) : ~~ (a && b) = ~~ a || ~~ b.
+% Proof. by case: a; case: b. Qed.
+% \end{coq}
+% \coqrun{name=testsol1}{ssr,sol1}
+% \end{Answer}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Answer}[ref=ex:rewrite]
+% 
+% \begin{coq}{name=sol2}{}
+% Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
+% Proof. by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn. Qed.
+% \end{coq}
+% \coqrun{name=testsol2}{ssr,sol2}
+% \end{Answer}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Answer}[ref=ex:induction]
+% 
+% \begin{coq}{name=sol3}{}
+% Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
+% Proof.
+% elim: n => // n IHn.
+% by rewrite expnS odd_mul {}IHn orKb.
+% Qed.
+% \end{coq}
+% \coqrun{name=testsol3}{ssr,sol3}
+% \end{Answer}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Answer}[ref=ex:induction2]
+% 
+% \begin{coq}{name=sol4}{}
+% Definition all_words n T (alphabet : seq T) :=
+%   let prepend x wl := [seq x :: w | w <- wl] in
+%   let extend wl := flatten [seq prepend x wl | x <- alphabet] in
+%   iter n extend [:: [::] ].
+% 
+% Lemma size_all_words n T (alphabet : seq T) :
+%   size (all_words n alphabet) = size alphabet ^ n.
+% Proof.
+% elim: n => [|n IHn]; first by rewrite expn0.
+% rewrite expnS -{}IHn [in LHS]/all_words iterS -/(all_words _ _).
+% elim: alphabet (all_words _ _) => //= w ws IHws aw.
+% by rewrite size_cat IHws size_map mulSn.
+% Qed.
+% \end{coq}
+% \coqrun{name=testsol4}{ssr,sol4}
+% \marginnote{The second elim is a bit too much for ch2}
+% \end{Answer}
+% 
+% 
+% 
+% 
+% 
 
 
 % To get a better feeling on how lemmas are named let's see some other

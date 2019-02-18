@@ -1446,3 +1446,48 @@ that some existing lemmas were re-proved inline (because one did not
 know they are already part of the library). As one can expect, avoid
 duplication is key to lower maintenance effort.
 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \newpage
+% \section{Exercises}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Exercise}[label=ex:have,difficulty=0,title={Have}]
+% 
+% Prove the following lemma
+% 
+% \begin{coq}{name=ex1}{}
+% Lemma maxn_idPl {m n} : n <= m -> maxn m n = m.
+% \end{coq}
+% 
+% following this chain of forward steps
+% 
+% \begin{align*}
+% n <= m &= n - m == 0 \\
+%        &= m + (n - m) == m + 0 \\
+%        &= m + (n - m) == m \\
+%        &= maxn~ m~ n == m 
+% \end{align*}
+% 
+% \end{Exercise}
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Solutions}
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \begin{Answer}[ref=ex:have]
+% 
+% \begin{coq}{}{}
+% Lemma maxn_idPl {m n} : n <= m -> maxn m n == m.
+% Proof.
+% move=> leq_nm.
+% have {leq_nm} sub_nm : n - m == 0.
+%   by apply: leq_nm.
+% have {sub_nm} add_m_sub_nm : m + (n - m) == m + 0.
+%   by rewrite eqn_add2l.
+% suffices: m + (n - m) == m.
+%   by rewrite maxnE.
+% by rewrite -[X in _ == X]addn0.
+% Qed.
+% \end{coq}
+% 
+% \end{Answer}
+% 
