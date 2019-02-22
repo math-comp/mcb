@@ -1,6 +1,74 @@
 \chapter{Type Theory}{}
 \label{ch:ttch}
 
+%% Summary of the 22/02 discussion:
+
+%% This chapter presents the foundational language used to formalize
+%% mathematics. It is both about the dependent type theory, as an
+%% alternative to say ZF set theory, and about the practice of
+%% formalization in the Calculus of Inductive Constructions, as
+%% implemented in the Coq proof assistant.
+
+%% The use of dependent type theory, as opposed to set theory, imposes
+%% some significant mind shifts, that we will try to illustrate.
+
+%% First, set theory has two layers (language of sets + propositions on
+%% one hand, 1st order deduction on the other). Here there is a single
+%% one, based on the concept of types.
+
+%% There is a single meta-statement, which is Gamma |- t : T which reads
+%% t has type T (in context Gamma). Type T can be seen as a name for a
+%% collection of terms, in which case, we can think of t : T as t \in
+%% T. Although as we will see this image has limitations.
+
+%% We start by describing informally the foundational language we will
+%% use to write statements, i.e. terms and types (and thus typing
+%% judgements). This is MLTT.
+
+%% This language can be used to craft sentences expressing that some
+%% terms are well-formed, like let n be a natural number, then n + n is
+%% also a natural number. This is quite different from set-theory (3 is a topology).
+
+%% In fact, the same language can be used to describe provability. If we
+%% transform ':' into '\in' we get reasonable math sentences. But
+%% beware, type are really well-formedness conditions, that can play
+%% against you. Example of sets as types, then the solution: -> put types
+%% at the right level, it is easier to sub-type than to super-type.
+
+%% Note that so far, we have no ``axioms'', the really interesting part of
+%% deduction. The analogue is inductives, which bring new language, and
+%% equational theories via the definition of functions by
+%% pattern-matching/fixpoints, and the reduction/conversion rule which
+%% build rewrite systems. Conversion provides built-in automation wrt to these
+%% rewrite systems. We could have more reduction than today.
+
+%% With our provability glasses, we also have data-structures for
+%% proofs. And we can say something about them (an example other than
+%% Hedberg?). And see Homotopy Type Theory. But sometimes this is
+%% annoying, for instance to define sub-types. One could have axioms. One
+%% could use SProp (in the future). Here we take benefit of Hedberg to
+%% have pleasant axiom-free subTypes. One can also craft specific inductives
+%% to describe interesting proof structures. Typically case analysis. Example of
+%% trichotomy? Boolean reflection is another example, which may also
+%% bring some automation. More inductive specs to come in the
+%% small scale reflection chapter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 %T he authors made the deliberate choice to postpone the presentation of
 % the mathematical foundations of the \Coq{} system and the formal
 % definition of its language. Instead, the previous chapters have
