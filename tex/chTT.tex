@@ -81,62 +81,104 @@ Check 3 : nat.
 \coqrun{name=r1}{ssr,check-3}
 
 
- In a context containing a certain variable \C{b} with type \C{bool}, the
- term \C{\~\~ b} has type \C{bool}:
+In a context containing a certain variable \C{n} with type \C{nat}, the
+term \C{n + n} has type \C{nat}:
 
-\begin{coq-left}{name=check-negb}{}
-Variable b : bool.
-Check ~~ b : bool.
+\begin{coq-left}{name=check-nn}{}
+Variable n : nat.
+Check n + n : bool.
 \end{coq-left}
 \begin{coqout-right}
-~~ b : bool
+n + n : nat
 \end{coqout-right}
-\coqrun{name=r2}{ssr,check-negb}
+\coqrun{name=r2}{ssr,check-nn}
 
 And \Coq{} complains if we try to verify the typing jugment asserting it
-has type \C{nat}. In this case, it even computes and displays the
+has type \C{bool}. In this case, it even computes and displays the
 correct type:
 
-\begin{coq-left}{name=check-negb}{}
-Variable b : bool.
-Check ~~ b : nat.
+\begin{coq-left}{name=check-nnbool}{}
+Fail Check n + n : bool.
 
 \end{coq-left}
 \begin{coqout-right}
-Error:
-The term "negb b" has type "bool" while it is expected to have type "nat".
+The term "n + n" has type "nat" while it is expected to have type "bool".
 \end{coqout-right}
-\coqrun{name=r2}{ssr,check-negb}
+\coqrun{name=r2}{ssr,chec-nnbool}
+
+In the same context, the term \C{(muln0 n)} has type \C{n * 0 = 0}: it
+is a proof of the corresponding assertion:
+
+\begin{coq-left}{name=check-negb}{}
+Variable n : nat.
+Check muln0 n : n * 0 = 0.
+
+\end{coq-left}
+\begin{coqout-right}
+muln0 n : n * 0 = 0
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-muln0}
+
+This last example is a typing judgement 
+$\Gamma \vdash t : T$ where the term $t$, here \C{(muln0 n)} is a
+proof. 
 
 
-
-Typing judgments are justified from typing rules, and these
-justifications form trees, akin to the proof trees of natural deduction.
-Before getting more precise about what contexts, terms and types are,
-let us emphasize a couple of important differences with set theory
-here: first, the typing judgment features explicit expressions for
-the term and the type, whereas the proof of a statement in first-order
-logic is seldom mentioned. Second, the term $t$ shall represent an
-arbitrary object of the mathematical discourse, like a number or a
-group, and not only a proof.
 
 
 \subsection{First types, terms and computations}\label{ssec:terms}
 
-Every expression we have manipulated so far is a \emph{term} of the
-Calculus of Inductive Constructions, and any term of this formalism
-has a type in the context in which it occurs.
+This section makes more precise what contexts, terms and types
+are. However, the description is restricted to a subset of Gallina,
+for the sake of the exposition. The exhaustive description of Gallina
+is available in \Coq{}'s reference manual~\cite{}.
 
-Terms are constructed via an inductive definition.
-We assume a countable infinite set of symbols available for names, so
-that it is always possible to exhibit a name distinct from a given
-arbitrary finite collection of names. This names are used to denote
-\emph{variables}, which are among the simplest, atomic terms.
-We shall also use this collection of names for constants (for instance
-to introduce definitions). Beside variables, the other atomic terms
-are  called \emph{sorts} and they are denoted using a distinct
-countable collection of symbols. The constants \C{Prop} and
-\C{Type} encountered in the previous chapters are sorts.
+As alluded to in the introduction, type theory avoids the distinction
+set theory makes between sets and propositions: type theory is based
+on a same and single collection of inductively defined terms. A
+judgment $\Gamma \vdash t : T$ relates two terms, $t$ and $T$ (in the
+context $\Gamma$), and $T$ is called a \emph{type} because it appears
+on the right of the $:$ symbol in a typing judgment. Term $T$ can be
+thought of as a collection of terms, and the judgment $t : T$ as the
+statement that ``term $t$ belongs to the collection $T$'', or $t\in
+T$. For instance, we have used in previous example assumptions of the
+form \C{n : nat} to model the sentence ``let $n$ be a natural number''.
+This set-theoretic analogy should be taken with a pinch of salt
+though. First, there is no way in set theory to introduce a term, even
+a variable, without simultaneously introducing its type. Things are
+different in set theory, where an object $a$ can be constructed without
+necessarily being casted as being the element of a super-set
+$A$. Second, a judgemnt is not a proposition, in the same sense as the
+set-theoretic sentence $t \in T$ would be. In particular, one cannot
+reason (internally) by case analysis on the type of
+$t$, or to disprove (internally) that $t : T$ for some particular $T$.
+
+
+We assume a collection of distinct names, used to denote atomic terms
+and called sorts. In \Coq{} syntax, 
+
+Terms are defined starting from two countable infinite set of
+symbols. The first collection is used to name  \emph{variables}
+available for names, so that it is always possible to exhibit a name
+distinct from a given arbitrary finite collection of names. This names
+are used to denote \emph{variables}. A separate collection of names is
+used
+
+\emph{sorts}, which are atomic types. Gallina has a countable
+collection of sorts, be we will only make use of sorts \C{Prop} and
+\C{Type}.\marginnote{Mind the  hierarchy.} In an empty context, the
+term \C{Prop} has type \C{Type}:
+
+\begin{coq-left}{name=check-prop}{}
+Check Prop.
+\end{coq-left}
+\begin{coqout-right}
+Prop : Type
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-prop}
+
+
+
 %% \C{Prop} and \C{Type}$_i$, for
 %% $i \in \mathbb{N}$\footnote{Coq has another sort \C{Set} but we do not
 %%   use it here.}.
@@ -150,8 +192,8 @@ countable collection of symbols. The constants \C{Prop} and
 %% $i \in \mathbb{N}$\footnote{Coq has
 %% another sort \C{Set} but we do not use it here.}.
 
-If \C{x} is a
-variable, and \C{T} and \C{U} are two terms, then \C{forall x : T, U} is
+If $x$ is a
+variable, and $T$ and $U$ are two terms, then $\forall x : T, U$ is
 also a term. In fact this term will be used as a type, and it
 represents a family of types \C{U} indexed by elements of type \C{T}.
 Importantly, if \C{x} does not occur in the term \C{U} as a

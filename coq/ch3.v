@@ -1,5 +1,21 @@
 From mathcomp Require Import all_ssreflect.
 
+
+Check 3 : nat.
+
+Section CheckNat.
+
+Variable n : nat.
+Check n + n : nat.
+
+Fail Check n + n : bool.
+
+Check muln0 n : n * 0 = 0.
+
+End CheckNat.
+
+Check Prop.
+
 Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
 Proof.
 elim: n {-2}n (leqnn n) =>[|n IHn]; first by case.
