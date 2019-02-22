@@ -20,7 +20,7 @@
 
 The \Coq{} proof assistant provides a formal language to describe
 mathematical statements and proofs, called
-\emph{Gallina} and based on a type theory called the
+\emph{Gallina}. The language is a dialect of the type theory called the
 \emph{Calculus of Inductive
   Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}. In this section, we
 provide some hints on the main features of this formalism. The
@@ -38,32 +38,78 @@ homotopy type theory~\cite{hottbook} describes a very close formalism.
 There exist several flavors of \emph{type theory} that can be used
 as a foundational language for mathematics, alternative to the
 flavors of set theory usually cited as the formal language of
-reference~\cite{bourbaki-sets}.
-The main difference between a type-theoretic framework and
-a set-theoretic one is the status of the deductive system used to
-represent reasoning in a formal way. Informally speaking, a
+reference~\cite{bourbaki-sets}. Informally speaking, a
 set-theoretic framework has two stages. First order logic provides
 the former layer: it describes the language of logical sentences and how
 these statements can be combined and proved. This language is then
 used in the second layer, to formulate the axioms of the particular
-theory of interest.
-On the contrary a type-theoretic framework is monolithic and the
-same language of types is used in a uniform way to describe
-mathematical objects, statements and proofs. \emph{Logical statements}
-are identified with some \emph{types} and their \emph{proofs} with
-\emph{terms}, or programs, having this type. Thus proving a statement
-consists in fact in constructing a term of the corresponding type. In
-set theory, the rules which govern the construction of
-grammatically correct statements are rather loose, and the goal of the
-game is to construct a proof for a given proposition, using
-first-order logic to combine the axioms of the theory.
-The analogue of the meta-statement that a given
-proposition has a proof is the meta-statement that a given term has a
-given type. Such a meta-statement is called a \emph{typing
-  judgment}. It is written:
+theory of interest. By contrast, proof assistants based on dependent
+type theory, like \Coq{}, embrace an approach coined
+\emph{propositions-as-types}~\cite{}, and use the same language of
+types in a uniform way to describe mathematical objects, mathematical
+assertions, and their proofs. 
+
+In set theory, the rules which govern the construction of
+well-formed, grammatically correct, statements are rather loose, and
+the goal of the game is to construct a proof for a given well-formed
+proposition, using first-order logic to combine the axioms of the
+theory. The first two chapters of the present book illustrate how
+types can be used to help classify, and clarify expressions passed to
+the checker. In fact, the language of types available in the Calculus
+of Inductive Constructions, and thus in  \Coq{}, is so expressive that
+\emph{logical statements} are identified with some \emph{types} and
+their \emph{proofs} with \emph{terms}, or programs, having this
+type. This way, proving a statement consists in fact in constructing a
+term of the corresponding type. The analogue of the meta-statement
+that a given proposition has a proof is the meta-statement that a
+given term has a given type. Such a meta-statement is called a
+\emph{typing judgment}. It is written:
 $$\Gamma \vdash t : T$$
 which means:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}.
+
+The \C{Check} command introduced in Chapter~\cite{ch:prog}
+can be used to verify that a certain typing jugment holds in the current
+context. For instance, term \C{3} has type \C{nat} in an empty context:
+
+\begin{coq-left}{name=check-3}{}
+Check 3 : nat.
+\end{coq-left}
+\begin{coqout-right}
+3 : nat
+\end{coqout-right}
+\coqrun{name=r1}{ssr,check-3}
+
+
+ In a context containing a certain variable \C{b} with type \C{bool}, the
+ term \C{\~\~ b} has type \C{bool}:
+
+\begin{coq-left}{name=check-negb}{}
+Variable b : bool.
+Check ~~ b : bool.
+\end{coq-left}
+\begin{coqout-right}
+~~ b : bool
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-negb}
+
+And \Coq{} complains if we try to verify the typing jugment asserting it
+has type \C{nat}. In this case, it even computes and displays the
+correct type:
+
+\begin{coq-left}{name=check-negb}{}
+Variable b : bool.
+Check ~~ b : nat.
+
+\end{coq-left}
+\begin{coqout-right}
+Error:
+The term "negb b" has type "bool" while it is expected to have type "nat".
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-negb}
+
+
+
 Typing judgments are justified from typing rules, and these
 justifications form trees, akin to the proof trees of natural deduction.
 Before getting more precise about what contexts, terms and types are,
@@ -81,27 +127,30 @@ Every expression we have manipulated so far is a \emph{term} of the
 Calculus of Inductive Constructions, and any term of this formalism
 has a type in the context in which it occurs.
 
+Terms are constructed via an inductive definition.
 We assume a countable infinite set of symbols available for names, so
 that it is always possible to exhibit a name distinct from a given
 arbitrary finite collection of names. This names are used to denote
-\emph{variables}, which are among the simplest, atomic terms. The
-other atomic terms are the \emph{sorts} \C{Prop} and \C{Type}$_i$, for
-$i \in \mathbb{N}$\footnote{Coq has another sort \C{Set} but we do not
-  use it here.}.
+\emph{variables}, which are among the simplest, atomic terms.
+We shall also use this collection of names for constants (for instance
+to introduce definitions). Beside variables, the other atomic terms
+are  called \emph{sorts} and they are denoted using a distinct
+countable collection of symbols. The constants \C{Prop} and
+\C{Type} encountered in the previous chapters are sorts.
+%% \C{Prop} and \C{Type}$_i$, for
+%% $i \in \mathbb{N}$\footnote{Coq has another sort \C{Set} but we do not
+%%   use it here.}.
+%% We % put aside inductive types until section~\ref{ssec:indtypes}, and
+%% now define
+%% inductively what the terms of the formalism are. We suppose that we
+%% have a countable infinite set of symbols available for names, so that it is
+%% always possible to exhibit a name distinct from a given arbitrary
+%% finite collection of names. The simplest, atomic, terms are the
+%% \emph{variables}, and the \emph{sorts} \C{Prop} and \C{Type}$_i$, for
+%% $i \in \mathbb{N}$\footnote{Coq has
+%% another sort \C{Set} but we do not use it here.}.
 
-
-
-We % put aside inductive types until section~\ref{ssec:indtypes}, and
-define
-inductively what the terms of the formalism are. We suppose that we
-have a countable infinite set of symbols available for names, so that it is
-always possible to exhibit a name distinct from a given arbitrary
-finite collection of names. The simplest, atomic, terms are the
-\emph{variables}, and the \emph{sorts} \C{Prop} and \C{Type}$_i$, for
-$i \in \mathbb{N}$\footnote{Coq has
-another sort \C{Set} but we do not use it here.}. We shall also
-use constants (for instance to introduce definitions). Constants and
-variables are represented using the pre-existing set of names. If \C{x} is a
+If \C{x} is a
 variable, and \C{T} and \C{U} are two terms, then \C{forall x : T, U} is
 also a term. In fact this term will be used as a type, and it
 represents a family of types \C{U} indexed by elements of type \C{T}.
