@@ -16,11 +16,11 @@ Structure is given by splitting large proofs in blocks with a
 specific, declared, purpose and by factoring repetition such as
 symmetric or less general cases. The main tool logic gives us is the
 cut rule where the author of a proof identifies an intermediate fact,
-or a generalization of goal. The \C{have} and \C{without loss} tactics
+or a generalization of the goal. The \C{have} and \C{without loss} tactics
 precisely cover this need.
 
 Bookeeping is the ubiquitous activity of context management, that is
-naming or discarding assumptions in order to track their lifetime tide
+naming or discarding assumptions in order to track their lifetime to tide
 the context up, as well as massaging assumptions and goals as to
 please the formality requirements of Coq.  A paradigmatic bookkeeping
 example is destructing assumption of \C{(A && B)} in order to give
@@ -1189,92 +1189,126 @@ support the formal proof of the Odd Order Theorem, completed in 2012.
 At the time of writing it has reached the size of nearly 100 files and
 100 KLOC, and has been maintained for over 12 years.
 
-During this period the library went under many iterations of cleanup
-and redesign.  For example around 2009 the way algebraic structures
-are represented changed substantially with a major impact on most
-files. Similarly around 2011 the \mcbSSR{} proof language evolved
-substantially and the entire library was ported to the new features.
-
-In these occasions breakage happened. And breakage and will happen
-again, for many reasons, some of which are not under the control of
-the author of formal proofs. For example \Coq{} is an actively
-developed research software, changes in behavior, for the better, are
-hard to avoid and do happen.  And even when the system does not
-change, proofs may break too: Nobody gets his definitions perfect at
-the first attempt in a formalization. Definitions and lemmas get
-improved over time.  As a conclusion having to repair and adapt proof
-scripts is an activity one can hardly avoid.
+During this maintenance period breakage did happen, and breakage will happen
+again in the future. Things break for many reasons, some of which are even not
+under the control of the author of a formal proof. First of all  \Coq{} is an
+actively developed research software and changes in behavior, for the better,
+are hard to avoid and do happen in practice. Second nobody gets his definitions
+perfect at the first attempt in a formalization. Definitions and lemmas get
+improved over time.  As a consequence having to repair and adapt proof scripts
+is an activity one can hardly avoid.  For example around 2009 the way algebraic
+structures are represented changed substantially with a major impact on most
+of the files.
 
 The maintenance cost of the  \mcbMC{} library and the proof of the
 Odd Order Theorem were kept under control thanks to the disciplined
-way in which the formal proofs were written.
+way in which the formal proofs are written.
 In this section we cover some of the aspects that we believe do
 contribute in a substantial way to write maintainable formal proofs.
+Coming up with a list of unobjectionable golden rules quite pretentious,
+and probably impossible to do, but we will anyway try to give some
+advices out of our experience. 
+
+The first and most important one is that formal proofs are just computer code
+about mathematical proofs, hence \emph{good practices in both domains}
+are likely to apply to formal proofs too.
+
+For example one can claim that a well written pen and paper proof makes evident
+and clear what is interesting and hides via suitable abstractions uninteresting
+details. Finding the right abstraction is crucial in formal proofs too, and the
+related concept of triviality is key to keep the desired level of abstraction.
+More specifically, each mathematical object comes with properties that are
+pervasively and silently used in each and every proof. In order to make a
+formal proof look like pen and paper one, this conciseness has to be retained,
+or the noise of formality risks to hide the salient part of the proof.
+
+A striking similarity lies in the usability of lemmas
+compared to the one of computer code procedures (functions, or methods).
+It is hard to invoke a procedure that requires
+passing too many arguments to it. Even worse if order (or name)
+of these arguments is hard to remember.
+In order to ease invoking procedures related data is often
+grouped in packages that are passed all together,
+and the order of arguments is standardizes across the whole codebase.
+Similarly the statement of a lemma can be designed so that it
+minimizes the information one has to explicitly provide
+in order to use it in conjunction with a specific tactic.
+
+Finally it is common sense to organize computer code
+in components with separate concerns and well defined interfaces:
+Unstructured code well known to be hard to read, understand and
+locally modify.
+Also mathematical theories are often organized and structured, for
+example by algebraic means. The axioms characterizing structures
+are not unlike interfaces for computer code.
+Identifying the right components and their interfaces is key in a library of
+formal proofs too and is the subject of Chapter~\ref{ch:hierarchy}.
 
 \subsection{On the readability of formal proofs}
 
-A desirable characteristic a formal proof should have is being
-readable, there is no questioning that: How can a proof be maintained if
+A desirable characteristic of formal proofs  readability,
+there is no questioning that: How can a proof be maintained if
 it cannot even be read.
 
 It is not uncommon for novice users to try to achieve readability by
 writing a single instruction per line, and relying on the capability
 of user interfaces to step trough each and every step in order to
-understand what is going on.  The result is that they obtain lengthy
-proofs where it is hard to find any structure especially because, at a
-glance, one can hardly see the entire proof (let's call these
-\emph{vertical proofs}).  It is a bit like
+understand what is going on. We call these proofs \emph{vertical proofs}:
+they are lengthy
+and their structure, when present, is hard to find
+because, at a glance, one can hardly look at the entire text.
+It is a bit like
 typesetting a book by breaking the line after each an every word: in
 order to find the action the subject is performing one would need to
 turn page.  
 Unfortunately lengthy proofs without an apparent structure are hard to
 maintain: even manipulating their text is cumbersome. The last, and
-most important observation drawn from horizontal proofs, is that it is
+most important observation drawn from vertical proofs, is that it is
 not the ``atomicity'' of steps that makes the proof readable, but
-rather the fact that goals, that is statements, are more readable than
-proof steps. \\
+rather the fact that goals, that are intermediate statements, are
+more readable than proof steps. \\
 Conversely, an expert \mcbSSR{} user is typically capable of squeezing
-into a single line so many steps that nobody could understand that
-one-liner, even if it requires no page flipping (these could be
-called \emph{horizontal proofs}).  The game of ``compressing proofs''
+into a single line so many steps that nobody could understand the
+resulting \emph{horizontal proof}, even if it requires no page flipping.
+The game of ``compressing proofs''
 is a typical exercise to learn the very articulate \mcbSSR{} proof
 language, and it is often
 mistaken by students as the recommended way of writing proofs in the
-large. Horizontal proofs are indeed shorter, hence handier to
-manipulate, but their poor readability is not helping maintenance.\\
-The funny thing is that the tension between horizontal and vertical
+large. Horizontal proofs are indeed short, hence handy to
+manipulate, but their poor readability is not always helping maintenance.\\
+The funny fact is that the tension between horizontal and vertical
 proofs is totally artificial: there is no need to pick one direction an only
 one in a proof. Indeed, in order to obtain readable and maintainable proof
 one can mix both styles! Another way to put it is that in a proof on
-can mix readable-but-lengthy and obscure-but-compact \emph{steps}.
+can mix readable-but-lengthy and obscure-but-compact steps.
 
 An undoubtedly \emph{readable proof step} is a declarative step asserting,
 in the proof text, a statement that holds. For example by using the
-\C{have} tactic. Such as step is as readable as the statements of
-theorems. It goes without saying that curating the way statements
+\C{have} tactic. This step is as readable as the statements of
+theorems is: It goes without saying that curating the way statements
 can be written plays a main role in readability. Moreover, given that
-the statement is part of the proof text, such a step need not
-the assistance of \Coq{} in order to be understood by a human.\\
+the statement is part of the proof text, one does not need
+the assistance of \Coq{} in order to see it.\\
 A very related source of unreadability
-is the choice of meaningless names for theorems or
-hypotheses, e.g. \C{H7}. By asking \Coq{} to display the goal one can see
-what the 7th hypothesis is about, but without that one can hardly
-imagine. A name like \C{leq_nm} seems a more suggestive name for an
+is the choice of meaningless names for theorems, variables or
+hypotheses, e.g. \C{H42}. By asking \Coq{} to display the goal one can see
+what the 42nd hypothesis is about, but without that one can hardly
+imagine. A name like \C{leq_nm} is a more suggestive name for an
 assumption stating that \C{n} is smaller than \C{m}.
 Similarly \C{n} is a good name for a number, \C{A} for a set or a
-matrix, while using \C{x7} for any of these is not going to help
-the reader what a statement is about.
+matrix, \C{s} for a sequence, and \C{G} for a group while \C{x7'}
+is not going to help the reader much.
 
-\emph{Obscure proof steps} are not declarative, they act on a specific proof
+\emph{Obscure proof steps} are not declarative: They act on a specific proof
 state and perform a precise manipulation. For example ``apply
 commutativity to the first addition on the right hand side of the
-goal''. Obviously, without seeing the actual goal, one cannot
+goal''. Without seeing the actual goal, one cannot
 understand what the precise action is actually achieving.
 Another characteristic of these steps is the use of symbolic
 notations for some operations, such as getting rid of trivial goals
-via \C{//}, that help squeezing even more actions in a single line. \\
+via \C{//}, that help squeezing even more actions in a single line.
 One can only follow and understand a few obscure steps without the help
-of \Coq{}.  
+of \Coq{}.\\
 Still a few tricks to help reading these steps can be given. Symbols
 can be grayed out, the whole point of having symbolic notation is
 indeed to have a less intrusive syntax for an uninteresting
@@ -1283,11 +1317,11 @@ In addition to that in the \mcbMC{} library short names are usually
 reserved for uninteresting theorems, e.g. \C{addnCA} to shuffle summands
 around. What is left is the salient contents of the obscure step.
 
-To sum up our view: readable proofs are structured by forward steps,
+To sum up our view: Readable proofs are structured by forward steps,
 and their length is kept under control by proving these steps in a
 compact way.
 
-Is this way of writing proofs tied to the technology we have today?
+Is this way of writing proofs tied to the technology we have today?\\
 While one can imagine a future where only declarative, readable, steps
 are part of a formal proof, and all their justifications can be
 silently omitted thanks to automation, we are clearly not there today.
@@ -1297,30 +1331,38 @@ drive the system, proved to be quite effective since they way the
 machine is guided is more direct and precise.  Also, and more
 importantly in the long term, explicit proof steps provide a solid
 ground for repair, while their absence may turn out to be an impeding
-factor for maintenance.\\
+factor for maintenance.
+
 An advice one can hardly imagine to become irrelevant in the future
-is the following one: Structure formal proofs as they are structured on paper.
-Then, when filling the blocks, have one line of formal text perform one
+is the following one. Structure formal proofs as they are structured on paper.
+Then, when filling the blocks, use one line of formal text to perform one
 meaningful proof step for a human reader, and use the best tools you have to
-achieve that: at worse the reader will ignore the text, and just see what
-happens. In other words giving a pace at which a proof should be read is yet
+achieve that: At worse, if the step is too obscure, the reader will ignore the text, and just see what happens by executing it.\\
+In other words giving a pace at which a proof should be read is yet
 another ingredient to obtain readable proofs.
 
 \subsection{Fail early and locally to ease repair}
 
-There is some antagonism between being robust in face of changes and
-begin easy to repair.  The former is surely tantalizing and can even
-work at some extent, but it can't possibly always work. The more
-sophisticated ``robustness'' is, the harder it may be to identify the
-root cause of the problem (ever heard the word heuristics?).  On the
-contrary the failure of a predictable, dumb, tool is likely to be
-easier to understand, if only because it is simpler and less
-sophisticated. The bet of the \mcbSSR{} proof language is that
-predictable failure leads to easy-to-repair proofs.
+There is a trade off between formal proofs that are robust in face of
+changes and formal proofs that are easy to repair. 
+With robustness we mean that the very same formal proof text
+works even if the statements of the invoked lemmas change.
+This is often achieved by making proof commands performs some automatic
+search that can compensate for the changes.
+The concept of a robust proof is surely tantalizing but we
+believe it is also a double-edge sword: The more
+sophisticated robustness is, the harder it can get to identify the
+root cause of the problem when things break (and sometimes they do, no
+matter how robust things are).  On the
+contrary the failure of a predictable, dumb, tool is easy
+to understand, if only because it is simpler and less
+sophisticated.\\
+The tenet of the \mcbSSR{} proof language is that
+predictable failure leads to easy to repair proofs.
 
-Indeed, most \mcbSSR{} tactics fail early and locally. If they cannot
+As a consequence most \mcbSSR{} tactics fail early and locally: If they cannot
 operate as expected, they fail rather than silently perform a no
-operation or try to ``be smart'' and guess what one may have wanted to
+operation or try to be smart and guess what one may have wanted to
 do.  This helps errors to be discovered early in the proof script and
 hence localize precisely where things actually broke. It is a matter
 of style and discipline to preserve this property when composing
@@ -1379,8 +1421,8 @@ Counter intuitively, large proofs cannot always be split into smaller
 lemmas. Or better, they can, but doing it mechanically 
 may be counterproductive.
 
-In particular the more the proof context is rich, the harder is
-to hoist a sub result out of the main lemma. It's statement needs to
+In particular the more the proof context gets rich of facts, the harder it is
+to hoist a sub result out of the enclosing lemma. Its statement has to
 copy much of of this context, in order to still be provable,
 and when a lemma has too many hypothesis it then becomes very hard to
 use. It is also very hard to give it a reasonable name outside the
@@ -1388,63 +1430,83 @@ context it originated into.
 
 The \C{have} tactic and its siblings \C{suffices} and \C{wlog}
 provide syntactic facilities to state results
-compactly, sometimes even more compactly than what is typically allowed at the
-level of lemmas. For example by writing \C{have refl x : x = x} one
+compactly in the middle of a proof, sometimes even more compactly than
+what is typically at the level of lemmas. 
+For example by writing \C{have refl x : x = x} one
 gets to prove that \C{forall T (x : T), x = x} since the unresolved
 type of \C{x} does not generate an error but is rather quantified
 upfront.
 
-Sometimes the phenomenon is even worse. Not only the proof is large,
-but also the statement is of a notable size. For example in
-Aschbacher, section 23, extremal groups (such as the dihedral groups) 
-are characterized by ``dictionaries'' of properties. The conjunction
-of dozens of properties is proved in a single lemma, since these
-properties share a great deal of their proofs. In this case the
-language of intro patterns lets one decompose on the fly the
-dictionary in order to access the property of interest, for example:
-\begin{coq}{}{}
-have [_ _ _ [_ _ maxG]] := dihedral2_structure n_gt1 genG isoG
-\end{coq}
-extracts the line 9 out of
-\begin{coq}{}{}
-Theorem dihedral2_structure :
-    n > 1 -> extremal_generators G 2 n (x, y) -> G \isog 'D_m ->
-  [/\ [/\ X ><| Y = G, {in G :\: X, forall t, #[t] = 2}
-        & {in X & G :\: X, forall z t, z ^ t = z^-1}],
-      [/\ G ^`(1) = <[x ^+ 2]>, 'Phi(G) = G ^`(1), #|G^`(1)| = r
-        & nil_class G = n.-1],
-      'Ohm_1(G) = G /\ (forall k, k > 0 -> 'Mho^k(G) = <[x ^+ (2 ^ k)]>),
-      [/\ yG :|: xyG = G :\: X, [disjoint yG & xyG]
-        & forall M, maximal M G = pred3 X My Mxy M]
-    & if n == 2 then (2.-abelem G : Prop) else
-  [/\ 'Z(G) = <[x ^+ r]>, #|'Z(G)| = 2,
-       My \isog 'D_q, Mxy \isog 'D_q
-     & forall U, cyclic U -> U \subset G -> #|G : U| = 2 -> U = X]].	
-\end{coq}
-\marginpar{maybe use the latex typesetting of this, and not the coq
-code (should be the same)}
+\subsection{On the usability of lemmas}
 
-\subsection{Qed is not the end of the story}
+The usability of lemmas contributes to maintenance only indirectly,
+that is by making proofs shorter. Still it plays a crucial role
+in a library so it is worth spending a few words on it.
 
-When a proof is accepted by \Coq{} it means it is correct.
-It is s mistake to think the proof is OK, and in particular that it
-is readable or maintainable. As we argued so far that proof is going
-to eventually break, and repairing a tidy proof is much simpler than
-repairing a messy one.
+Most of the lemmas in the \mcbMC{} libraries are equalities, meant to be
+used with the \C{rewrite} tactic. Let's take for example \C{(mul0n : forall n, 0 * n = 0)}. Two equivalent lemmas, mathematically speaking, are
+\C{(mulnm_n0 : forall n m, n = 0 -> n * m = 0)}
+and 
+\C{(mul0_0n : forall n, 0 = 0 * n)}.
 
-The only advantage we have compared to, say, cleaning up regular
-computer code, is that once a proof is complete and correct
-we can iterate small cleanup steps much faster. Indeed we can have
-\Coq{} check the proof after each and every step: If it checks,
-we did introduce no bug and we can move on with the next cleanup
-iteration.
+Let's see why \C{mul0n}, the one present in the library, is easier to use.
+The \C{rewrite} tactic uses the left hand side of the conclusion as
+a pattern and looks for sub terms of the goal that match. 
+The pattern
+provided by the \C{mul0n} is \C{(0 * \_)} and is quite precise, only the
+right hand side of the multiplication is unknown. Moreover the presence of
+\C{0} is very related to the meaning of the lemma, that shows it is
+the annihilator of multiplication.
 
-Unfortunately little support is given to the user to tidy proofs up by
-today's UIs, even for very recurrent steps such as avoid duplication
-within the current proof or across the library, that is figuring out
-that some existing lemmas were re-proved inline (because one did not
-know they are already part of the library). As one can expect, avoid
-duplication is key to lower maintenance effort.
+The pattern for
+\C{mulnm_n0} is, on the contrary, the very imprecise \C{(\_ * \_)}.
+This pattern is matched by any multiplication in the goal, including
+the ones where the left hand side is not (provably) zero. As a consequence
+one would need to drive \C{rewrite} manually, either by providing
+a more specific pattern or by specializing the lemma passing to it
+some arguments.
+
+The pattern for \C{mul0_0n} is \C{0}. While it is very precise
+\C{rewrite} does not know what to put in the resulting goal, that is
+it cannot find out what \C{n} is by just matching the pattern.
+As a consequence this argument has to be passed explicitly.
+Of course \C{mul0_0n} can be used right-to-left, but it requires the
+\C{$~$-}
+switch to \C{rewrite}. In some sense its ``default'' is wrong.
+
+By stating equalities with the most informative term on the left one
+obtains lemmas that easier to rewrite with, since their
+arguments and the sub term of the goal to be replaced are going to be
+found, automatically, by pattern matching.
+
+A similar line of reasoning can be applied to other tactics as well. For
+example \C{apply: lem} infers some of the arguments to \C{lem} by unifying the
+conclusion of its statement with the goal. The position of the arguments that
+are not inferable this way can be chosen so that it is easy to pass them
+explicitly.  For example \C{(leq_trans : forall y x z, x <= y -> y <= z -> x
+<= z)} quantifies first the variable that cannot be inferred by unifying the
+conclusion with the goal (since it does not occur in the conclusion).
+It is hence sufficient to write \C{(leq_trans m)} to specify the only
+missing piece of information.
+
+\subsection{Qed is not the shift bell}
+
+When a proof is finally accepted by \Coq{} it just means it is correct.
+It is a mistake to think that the proof is readable or maintainable.
+
+As we argued so far that proof is going to eventually break, and repairing a
+tidy proof is much simpler than repairing a messy one.  
+The advantage we have compared to, say, cleaning up regular computer code, is
+that once a proof is complete and correct we can iterate small cleanup steps
+much faster. Indeed we can have \Coq{} check the proof after each and every
+step: If it checks, we did introduce no error and we can move on with the next
+cleanup iteration.
+
+Unfortunately little support is given to the user to tidy proofs up by today's
+user interfaces, even for very recurrent steps.  Among all, one that is very
+frequent is the removal of duplication within the current proof or across the
+entire library.  It is quite frequent to end up re-proving, inline, an existing
+lemma when one does not know the lemma exists (or does not find it).
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \newpage
