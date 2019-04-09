@@ -102,25 +102,24 @@
 % Reasoning~\cite[Volume 2, chapter 18]{handbook-ar}.
 
 The \Coq{} proof assistant provides a formal language to describe
-mathematical statements and proofs, called
-\emph{Gallina}. The language is a dialect of the type theory called the
-\emph{Calculus of Inductive
-  Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}. In this section, we
-provide some hints on the main features of this formalism. The
-Calculus of Inductive Constructions is described formally in chapter 4
-of the reference manual of \Coq{}~\cite{Coq:manual}. The reference book on
-homotopy type theory~\cite{hottbook} describes a very close formalism.
-
-
+mathematical statements and proofs, called \emph{Gallina}. The
+language is a dialect of the type theory called the \emph{Calculus of
+  Inductive Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}, a
+descendent of so-called Martin-Löf intentionnal type theory. In this
+section, we provide some hints on the main features of this
+formalism. Gallina is described formally in chapter 4
+of the reference manual of \Coq{}~\cite{Coq:manual}. The first
+chapter of the reference book on homotopy type theory~\cite{hottbook},
+as well as its annex provide a presentation of Martin-Löf
+intentionnal type theory, which can be seen as a core subset of
+Gallina.
 
 \section{Terms, types, proofs}\label{sec:chi}
 
-
-
 \subsection{Propositions as types, proofs as programs}
-There exist several flavors of \emph{type theory} that can be used
-as a foundational language for mathematics, alternative to the
-flavors of set theory usually cited as the formal language of
+\emph{Type theory}, actually in several different flavors, can be used
+as a foundational language for mathematics. It is thus an alternative
+to the flavors of set theory usually cited as the formal language of
 reference~\cite{bourbaki-sets}. Informally speaking, a
 set-theoretic framework has two stages. First order logic provides
 the former layer: it describes the language of logical sentences and how
@@ -133,8 +132,8 @@ types in a uniform way to describe mathematical objects, mathematical
 assertions, and their proofs. 
 
 In set theory, the rules which govern the construction of
-well-formed, grammatically correct, statements are rather loose, and
-the goal of the game is to construct a proof for a given well-formed
+well-formed, grammatically correct, statements are rather loose.
+The goal of the game is to construct a proof for a given well-formed
 proposition, using first-order logic to combine the axioms of the
 theory. The first two chapters of the present book illustrate how
 types can be used to help classify, and clarify expressions passed to
@@ -148,11 +147,11 @@ that a given proposition has a proof is the meta-statement that a
 given term has a given type. Such a meta-statement is called a
 \emph{typing judgment}. It is written:
 $$\Gamma \vdash t : T$$
-which means:
+and read:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}.
 
-The \C{Check} command introduced in Chapter~\cite{ch:prog}
-can be used to verify that a certain typing jugment holds in the current
+A call to the \C{Check} command introduced in Chapter~\cite{ch:prog} 
+verifies that a certain typing jugment holds in the current
 context. For instance, term \C{3} has type \C{nat} in an empty context:
 
 \begin{coq-left}{name=check-3}{}
@@ -189,8 +188,10 @@ The term "n + n" has type "nat" while it is expected to have type "bool".
 \end{coqout-right}
 \coqrun{name=r2}{ssr,chec-nnbool}
 
-In the same context, the term \C{(muln0 n)} has type \C{n * 0 = 0}: it
-is a proof of the corresponding assertion:
+Our last exemple is a typing judgement  $\Gamma \vdash t : T$ where
+the term $t$ is a proof. Indeed, in the same context, the term
+\C{(muln0 n)} has type \C{n * 0 = 0} and is thus a proof of the
+corresponding equational assertion:
 
 \begin{coq-left}{name=check-negb}{}
 Variable n : nat.
@@ -202,10 +203,6 @@ muln0 n : n * 0 = 0
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-muln0}
 
-This last example is a typing judgement 
-$\Gamma \vdash t : T$ where the term $t$, here \C{(muln0 n)} is a
-proof. 
-
 
 
 
@@ -214,14 +211,14 @@ proof.
 This section makes more precise what contexts, terms and types
 are. However, the description is restricted to a subset of Gallina,
 for the sake of the exposition. The exhaustive description of Gallina
-is available in \Coq{}'s reference manual~\cite{}.
+is available in \Coq{}'s reference manual~\cite{Coq:manual}.
 
 As alluded to in the introduction, type theory avoids the distinction
 set theory makes between sets and propositions: type theory is based
 on a same and single collection of inductively defined terms. A
 judgment $\Gamma \vdash t : T$ relates two terms, $t$ and $T$ (in the
 context $\Gamma$), and $T$ is called a \emph{type} because it appears
-on the right of the $:$ symbol in a typing judgment. Term $T$ can be
+on the right of the column symbol in a typing judgment. Term $T$ can be
 thought of as a collection of terms, and the judgment $t : T$ as the
 statement that ``term $t$ belongs to the collection $T$'', or $t\in
 T$. For instance, we have used in previous example assumptions of the
@@ -231,27 +228,20 @@ though. First, there is no way in set theory to introduce a term, even
 a variable, without simultaneously introducing its type. Things are
 different in set theory, where an object $a$ can be constructed without
 necessarily being casted as being the element of a super-set
-$A$. Second, a judgemnt is not a proposition, in the same sense as the
+$A$. Second, a judgement is not a proposition, in the same sense as the
 set-theoretic sentence $t \in T$ would be. In particular, one cannot
 reason (internally) by case analysis on the type of
-$t$, or to disprove (internally) that $t : T$ for some particular $T$.
+$t$, or to disprove (internally) that $t : T$ for some particular
+$T$. Finally, as we shall see later in this section, substitution of
+equals does not behave the same for terms at the left of a column, and
+for those on the right, i.e., for types.
 
 
 We assume a collection of distinct names, used to denote atomic terms
-and called sorts. In \Coq{} syntax, 
-
-Terms are defined starting from two countable infinite set of
-symbols. The first collection is used to name  \emph{variables}
-available for names, so that it is always possible to exhibit a name
-distinct from a given arbitrary finite collection of names. This names
-are used to denote \emph{variables}. A separate collection of names is
-used
-
-\emph{sorts}, which are atomic types. Gallina has a countable
-collection of sorts, be we will only make use of sorts \C{Prop} and
-\C{Type}.\marginnote{Mind the  hierarchy.} In an empty context, the
-term \C{Prop} has type \C{Type}:
-
+and called \emph{sorts}.  Gallina has a countable collection of sorts,
+be we will only make use of sorts \C{Prop} and
+\C{Type}.\marginnote{Mind the  hierarchy.} Sorts are atomic types and
+in an empty context, the term \C{Prop} has type \C{Type}:
 \begin{coq-left}{name=check-prop}{}
 Check Prop.
 \end{coq-left}
@@ -260,7 +250,14 @@ Prop : Type
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-prop}
 
+Terms are defined starting from a countable infinite set of
+symbols. These names are used to name  \emph{variables}
+available for names, so that it is always possible to exhibit a name
+distinct from a given arbitrary finite collection of names. In \Coq{}
+syntax, we can use letters, or sequences of alpha-numeric characters
+for this purpose:
 
+%%%%% TODO HERE
 
 %% \C{Prop} and \C{Type}$_i$, for
 %% $i \in \mathbb{N}$\footnote{Coq has another sort \C{Set} but we do not
