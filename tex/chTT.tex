@@ -145,10 +145,24 @@ type. This way, proving a statement consists in fact in constructing a
 term of the corresponding type. The analogue of the meta-statement
 that a given proposition has a proof is the meta-statement that a
 given term has a given type. Such a meta-statement is called a
-\emph{typing judgment}. It is written:
+\emph{typing judgment}. It is a ternary relation, written using the
+\emph{turnstile} $\vdash$ symbol:
 $$\Gamma \vdash t : T$$
 and read:
-\emph{in the context $\Gamma$, the term $t$ has the type $T$}.
+\emph{in the context $\Gamma$, the term $t$ has the type $T$}. A
+context is a list of variables, each paired with a type, that can occur
+in $t$ and $T$. This typing judgement expresses that under the typing
+assumptions listed in the context $\Gamma$, $t$ and $T$ are
+well-formed, and moreover that term $t$ has type $T$. Example:
+
+$$x : \mathbb{N} \vdash x + x : \mathbb{N}$$
+
+
+The proof that a typing judgement is valid piles typing rules of the
+type theory, up to atomic ones like:
+
+$$x : T \vdash x : T$$
+
 
 A call to the \C{Check} command introduced in Chapter~\cite{ch:prog} 
 verifies that a certain typing jugment holds in the current
@@ -219,29 +233,30 @@ on a same and single collection of inductively defined terms. A
 judgment $\Gamma \vdash t : T$ relates two terms, $t$ and $T$ (in the
 context $\Gamma$), and $T$ is called a \emph{type} because it appears
 on the right of the column symbol in a typing judgment. Term $T$ can be
-thought of as a collection of terms, and the judgment $t : T$ as the
-statement that ``term $t$ belongs to the collection $T$'', or $t\in
-T$. For instance, we have used in previous example assumptions of the
+thought of as a label for a collection of terms, and the judgment $t : T$ as the
+statement that ``term $t$ belongs to the collection $T$'', or 
+$t\in T$. 
+For instance, we have used in previous example assumptions of the
 form \C{n : nat} to model the sentence ``let $n$ be a natural number''.
 This set-theoretic analogy should be taken with a pinch of salt
-though. First, there is no way in set theory to introduce a term, even
+though. First, there is no way in type theory to introduce a term, even
 a variable, without simultaneously introducing its type. Things are
 different in set theory, where an object $a$ can be constructed without
 necessarily being casted as being the element of a super-set
-$A$. Second, a judgement is not a proposition, in the same sense as the
+$A$. Second, a judgement is not a proposition in the same sense as the
 set-theoretic sentence $t \in T$ would be. In particular, one cannot
 reason (internally) by case analysis on the type of
-$t$, or to disprove (internally) that $t : T$ for some particular
+$t$, nor can we disprove (internally) that $t : T$ for some particular
 $T$. Finally, as we shall see later in this section, substitution of
 equals does not behave the same for terms at the left of a column, and
-for those on the right, i.e., for types.
+for those on the right ---types.
 
 
 We assume a collection of distinct names, used to denote atomic terms
 and called \emph{sorts}.  Gallina has a countable collection of sorts,
-be we will only make use of sorts \C{Prop} and
-\C{Type}.\marginnote{Mind the  hierarchy.} Sorts are atomic types and
-in an empty context, the term \C{Prop} has type \C{Type}:
+but in the present book, we will only make use of sorts \C{Prop} and
+\C{Type}. In an empty context, the term \C{Prop} has type \C{Type}:
+
 \begin{coq-left}{name=check-prop}{}
 Check Prop.
 \end{coq-left}
@@ -251,11 +266,27 @@ Prop : Type
 \coqrun{name=r2}{ssr,check-prop}
 
 Terms are defined starting from a countable infinite set of
-symbols. These names are used to name  \emph{variables}
-available for names, so that it is always possible to exhibit a name
-distinct from a given arbitrary finite collection of names. In \Coq{}
-syntax, we can use letters, or sequences of alpha-numeric characters
-for this purpose:
+symbols, called  \emph{variables}.
+It is thus always possible to exhibit a new variable
+distinct from a given arbitrary finite collection of variables. In \Coq{}
+syntax, we can use letters, or more generally sequences of
+alpha-numeric characters, to represent variables. For instance, the
+following command declares two variables of type \C{nat}, i.e. two
+natural numbers and one of type \C{{poly int}}, i.e. a polynomial in
+$\mathbb{X}[X]$:
+\begin{coq}{}{}
+Variables (n m : nat) (p : {poly int}).
+\end{coq}
+Hypotheses are themselves variables, and use the same collection of
+names. The following line assumes a hypothesis:
+\begin{coq}{}{}
+Hypothesis neq0 : n = 0.
+\end{coq}
+It is a synonym of:
+\begin{coq}{}{}
+Variable neq0 : n = 0.
+\end{coq}
+
 
 %%%%% TODO HERE
 
