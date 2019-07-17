@@ -481,7 +481,7 @@ stack item, called \C{top} here, of type \C{((n <= m) && (m <= k))} into
 \C{((n <= m) /\\ (m <= k))}.
 
 \begin{coq}{}{}
-Lemma elimTF (P Q : Prop) (b c : bool) :
+Lemma elimTF (P : Prop) (b c : bool) :
   reflect P b -> b = c -> if c then P else ~ P.
 \end{coq}
 \index[coq]{\C{elimTF}}
