@@ -420,7 +420,9 @@ The following section details the implementation of the sub-type kit.
 %\mcbLEARN{Declare a new subtype and derive eqType}
 %\mcbPROVIDE{usage of \lstinline/[subType for ...]/}
 %\mcbREQUIRE{}
-\subsection{The sub-type kit \mcbLEVELx{}}
+\subsection{The sub-type kit}
+
+\warntechnical{}
 
 When one has a base type T and a sub-type ST defined as a boolean
 sigma type, the \mcbMC{} library provides facilities to
@@ -1229,7 +1231,9 @@ an upper left square block of size 1, a row and a column of length $n-1$,
 and a square block of size $n-1$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Size casts \mcbLEVELx{}}\label{sec:castmx}
+\subsection{Size casts}\label{sec:castmx}
+
+\warntechnical{}
 
 Types containing values are a double edged sword.  While we have seen that
 they make the writing of matrix expressions extremely succinct, in
@@ -1304,7 +1308,10 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 \index[coq]{\C{conform_mx}}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Sorts and \C{reflect} \mcbLEVELxx{}}
+\subsubsection{Sorts and \C{reflect}}
+
+\warnverytechnical{}
+
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs
 from the one part of the \mcbMC{} library in a tiny detail.
