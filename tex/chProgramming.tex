@@ -1520,23 +1520,25 @@ In particular \Coq{} provides the infix notation \C{::} for
 n-ary operations obtained by the (right-associative)
 iteration of a single binary one. In
 particular \C{[::} begins the repetition
-of \C{::} and \C{]} ends it.  Elements are separated by \C{,} (comma)
+of \C{::} and \C{]} ends it.\\
+Elements are separated by \C{,} (comma)
 but for the last one separated by \C{&}.
 For example, the above \C{[:: 1, 2, 3 & l]} stands for
 \C{1 :: (2 :: (3 :: l))}.
-For another example, one
-can write  the boolean conjunction
-of three terms as \C{[&& true, false & true]}.\footnote{Some n-ary
-  notations use a different, but more evocative, last separator.  For
-  example one writes \C{[|| b1, b2 | b3]} and \C{[==> b1, b2 => b3]}.}
-\index[coq]{\C{["|"| .. , .. "| ..]}}
-\index[coq]{\C{[&& .. , .. & ..]}}
-\index[coq]{\C{[==> .. , .. => ..]}}
 For sequences that are \C{nil}-terminated, a very frequent case,
 the \mcbMC{} library provides an additional notation where all elements are
 separated by \C{;} (semi-colon) and the last element, \C{nil},
 is omitted.
-\index[coq]{\C{[seq .. ; ..]}}
+\index[coq]{\C{[seq .. ; ..]}}\\
+The \mcbMC{} library provides similar notations 
+to iterate contants other than \C{cons}.
+For example, one can write  the boolean conjunction
+of three terms as \C{[&& true, false & true]}, the 
+boolean disjunction as \C{[|| b1, b2 | b3]} and the boolean
+implication as \C{[==> b1, b2 => b3]}.
+\index[coq]{\C{["|"| .. , .. "| ..]}}
+\index[coq]{\C{[&& .. , .. & ..]}}
+\index[coq]{\C{[==> .. , .. => ..]}}
 
 Pattern matching can be used to define functions on sequences, like
 the following example which computes the first element of a non-empty
