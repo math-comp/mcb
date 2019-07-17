@@ -1409,15 +1409,17 @@ an empty list of type \C{(seq A)}. The \emph{type} of the output of
 this function hence depends on the \emph{value of this input}. The
 type of \C{nil} is thus not displayed with the arrow notation
 ``\C{.. -> ..}'' that we have used so far for the type of
-functions. It is rather written as follows:\marginnote{no explanation
-  of the \(\forall\) symbol and the {\tt forall} keyword.}
+functions. It is rather written as follows:
 
 \begin{coq}{name=type_of_nil}{}
   forall A : Type, seq A
 \end{coq}
 \index[coq]{\C{forall}}
 so as to \emph{bind} the value \C{A} of the argument in the type of
-the output. The same goes for the other constructor of \C{seq}, named
+the output. Even if the $\forall$ symbol is actually written and displayed as
+\verb+forall+ in Coq, in this book we typeset it usfollowing the standard
+mathematical notation for that quantifier.
+The same goes for the other constructor of \C{seq}, named
 \C{cons}.  This function actually takes three arguments: a type \C{A},
 a value in this type, and a value in the type \C{(seq A)}.  The type
 of \C{cons} is thus written as follows:
