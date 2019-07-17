@@ -751,7 +751,6 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 %\mcbPROVIDE{}
 %\mcbREQUIRE{}
 \section{Finite functions}
-\marginnote{FIXME: the data-structure of finite functions is about to change in the library. }
 
 In standard mathematics functions that are point wise equal are
 considered as equal.  This principle, that we call \emph{functional
@@ -767,7 +766,17 @@ is just a finite set of points, which can be represented by a finite
 sequence of values. The length of this sequence is the size of the
 domain. Pointwise equal finite functions have the same sequence of
 values, hence their representations are equal.
-The actual definition of the type of finite functions in the \mcbMC{}
+The actual definition\footnote{Since \mcbMC{} version 1.9 the definition
+of finite functions changed.
+The new implementation is based on a specific list-like data type indexed over
+the list of the elements of the domain. Thanks to this more sophisticated
+ecoding, the current Coq type checker acceps, for example, the following
+declaration of a 3-branch tree:
+\C{Inductive tree3 := Leaf of nat | Node of \{ffun 'I_3 -> tree3\}.}
+At the time of writing Coq rejects the declaration above with the definition
+of finite functions given in this section since the so called
+``positivity checker'' is too incomplete.}
+of the type of finite functions in the \mcbMC{}
 library uses this remark, plus the tricks explained in
 section~\ref{sec:phantom}:
 
