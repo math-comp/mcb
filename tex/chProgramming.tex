@@ -1464,7 +1464,7 @@ can be inferred.  This is
 the information meant by the message ``\C{Argument A is implicit and
   ..}''.  Every time users write \C{cons}, the system automatically
 inserts an argument in place of \C{A}, so that this argument does not
-need to be written (the argument is {\em implicit}).  It is then the
+need to be written: The argument is said to be {\em implicit}. It is then the
 job of the \Coq{} system to guess what this argument is when looking at
 the first explicit argument given to the function.  The same happens
 to the type argument of \C{nil} in the built-in version of \C{seq}
@@ -1494,7 +1494,11 @@ constant with \C{@} and pass all arguments explicitly, as in
 \C{(@cons nat 2 nil)} or \C{(@cons nat 2 (@nil nat))} or even
 \C{(@cons _ 2 (@nil _))}.
 
-This example, and the following ones, also show
+The reader should refer to the documentation of the \C{Arguments}
+command~\cite{Coq:manual} to know how to modify the implicit 
+status of an argument). 
+
+The previous example, and the following ones, also show
 that \Coq{} and the \mcbMC{} library provide
 a collection of notations for lists.
 
