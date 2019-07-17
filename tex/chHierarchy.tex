@@ -202,7 +202,8 @@ it possible to multiply in \lstinline/'I_p/ or have polynomials over
 \lstinline/'I_p/. Line 7 adds a \C{comRingType} commutative ring
 structure, which makes it possible to reorder products, or distribute
 evaluation over products of polynomials. Note that no mixin definition
-is needed for line 8 as only a single property is added.
+like the one at line 4 is needed to define \C{Zp_comRingType}:
+a single property is added.
 
 Constraining the shape of the modulus $p$ is a simple and robust way
 to enforce $p>1$: it standardizes the proofs of $p>0$ and $p>1$, which
@@ -565,7 +566,7 @@ Definition eqType := Equality.Pack class.
 \end{coq}
 
 Here \C{class} is just the explicit definition of the second component
-of the \lstinline/Section/ variable \C{cT : type}.
+of the section variable \C{cT : type}.
 
 Thanks to the \lstinline/Coercion/ declarations, the \C{eqType} definition is
 indeed the \C{eqType} structure associated to \C{cT}, with \C{sort}
@@ -612,7 +613,10 @@ Strictly speaking, the \mcbMC{} algebraic structures don't really
 they do.  We can use \C{eqType} and \C{choiceType} operations to test
 for 0 in fields, or choose a basis of a subspace, for example.
 Furthermore, this is essentially a free assumption, because the
-\mcbMC{} algebra mixins specify \emph{strict} identities, such as
+\mcbMC{} algebra mixins specify \emph{strict} identities,\footnote{Identities
+are said to be strict when they are stated using the equality predicate,
+unlike other equivalence relations such as the ones induced by a quotient.}
+ such as
 \C{associative add} on line 7 above. In the pure \mcbCIC{}, these can only
 be realized for concrete data types with a binary representation,
 which are both discrete and countable, hence are \C{choiceType}s.  On
@@ -971,7 +975,7 @@ Definition w2o (w : windrose) : 'I_4 :=
   | N => inord 0 | S => inord 1 | E => inord 2 | W => inord 3
   end.
 \end{coq}
-Remark how the \C{inord} constructor lets us postpone
+More generally, the \C{inord} constructor lets us postpone
 the (trivial by computation) proofs that 0, 1, 2, 3
 are smaller than 4.
 
