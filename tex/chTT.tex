@@ -105,21 +105,21 @@ The \Coq{} proof assistant provides a formal language to describe
 mathematical statements and proofs, called \emph{Gallina}. The
 language is a dialect of the type theory called the \emph{Calculus of
   Inductive Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}, a
-descendent of so-called Martin-Löf intentionnal type theory. In this
-section, we provide some hints on the main features of this
-formalism. Gallina is described formally in chapter 4
-of the reference manual of \Coq{}~\cite{Coq:manual}. The first
-chapter of the reference book on homotopy type theory~\cite{hottbook},
-as well as its annex provide a presentation of Martin-Löf
-intentionnal type theory, which can be seen as a core subset of
-Gallina.
+descendant of so-called Martin-Löf intentional type theory. In this
+chapter, we provide some hints on the main features of this
+formalism. The interested reader shall refer to the reference manual
+of \Coq{}~\cite{Coq:manual} for a formal definition of Gallina. %% The first
+%% chapter of the reference book on homotopy type theory~\cite{hottbook},
+%% as well as its annex provide a gentle presentation of Martin-Löf
+%% intentionnal type theory, which can be seen as a core subset of
+%% Gallina.
 
-\section{Terms, types, proofs}\label{sec:chi}
+%\section{Terms, types, proofs}\label{sec:chi}
 
-\subsection{Propositions as types, proofs as programs}
-\emph{Type theory}, actually in several different flavors, can be used
-as a foundational language for mathematics. It is thus an alternative
-to the flavors of set theory usually cited as the formal language of
+\section{Propositions as types, proofs as programs}\label{sec:patpap}
+\emph{Dependent type theory}, actually in several different flavors, can be used
+as a foundational language for mathematics. It thus provides an alternative
+to the flavors of set theory commonly invoked as the formal language of
 reference~\cite{bourbaki-sets}. Informally speaking, a
 set-theoretic framework has two stages. First order logic provides
 the former layer: it describes the language of logical sentences and how
@@ -142,30 +142,35 @@ of Inductive Constructions, and thus in  \Coq{}, is so expressive that
 \emph{logical statements} are identified with some \emph{types} and
 their \emph{proofs} with \emph{terms}, or programs, having this
 type. This way, proving a statement consists in fact in constructing a
-term of the corresponding type. The analogue of the meta-statement
+term of the corresponding type. Objects of the formalism are programs,
+and proofs are themselves objects of the formalism.
+
+In this setting, the analogue of the meta-statement
 that a given proposition has a proof is the meta-statement that a
 given term has a given type. Such a meta-statement is called a
 \emph{typing judgment}. It is a ternary relation, written using the
 \emph{turnstile} $\vdash$ symbol:
 $$\Gamma \vdash t : T$$
 and read:
-\emph{in the context $\Gamma$, the term $t$ has the type $T$}. A
-context is a list of variables, each paired with a type, that can occur
-in $t$ and $T$. This typing judgement expresses that under the typing
-assumptions listed in the context $\Gamma$, $t$ and $T$ are
-well-formed, and moreover that term $t$ has type $T$. Example:
+\emph{in the context $\Gamma$, the term $t$ has the type $T$}. A type
+is just a term, which is called a type when it occurs on the right
+hand-side of a column in a well-formed typing judgment, like $T$ in
+our case. A context is a list of variables, each paired with a type,
+that can occur in $t$ and $T$. This typing judgment expresses that
+under the typing assumptions listed in the context $\Gamma$, $t$ and
+$T$ are well-formed, and moreover that term $t$ has type $T$. Example:
 
 $$x : \mathbb{N} \vdash x + x : \mathbb{N}$$
 
 
-The proof that a typing judgement is valid piles typing rules of the
+The proof that a typing judgment is valid piles typing rules of the
 type theory, up to atomic ones like:
 
 $$x : T \vdash x : T$$
 
 
 A call to the \C{Check} command introduced in Chapter~\cite{ch:prog} 
-verifies that a certain typing jugment holds in the current
+verifies that a certain typing judgment holds in the current
 context. For instance, term \C{3} has type \C{nat} in an empty context:
 
 \begin{coq-left}{name=check-3}{}
@@ -176,9 +181,10 @@ Check 3 : nat.
 \end{coqout-right}
 \coqrun{name=r1}{ssr,check-3}
 
-
-In a context containing a certain variable \C{n} with type \C{nat}, the
-term \C{n + n} has type \C{nat}:
+The context of a typing judgment includes all the variables and
+hypothesis currently assumed, and validate these assumptions.
+For instance, in a context containing a certain variable \C{n} with
+type \C{nat}, the term \C{n + n} has type \C{nat}:
 
 \begin{coq-left}{name=check-nn}{}
 Variable n : nat.
@@ -189,7 +195,7 @@ n + n : nat
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-nn}
 
-And \Coq{} complains if we try to verify the typing jugment asserting it
+And \Coq{} complains if we try to verify the typing judgment asserting it
 has type \C{bool}. In this case, it even computes and displays the
 correct type:
 
@@ -200,10 +206,11 @@ Fail Check n + n : bool.
 \begin{coqout-right}
 The term "n + n" has type "nat" while it is expected to have type "bool".
 \end{coqout-right}
-\coqrun{name=r2}{ssr,chec-nnbool}
+\coqrun{name=r2}{ssr,check-nnbool}
 
-Our last exemple is a typing judgement  $\Gamma \vdash t : T$ where
-the term $t$ is a proof. Indeed, in the same context, the term
+Our last example is a typing judgment  $\Gamma \vdash t : T$ where
+the term $t$ is a proof. Indeed, again in a context containing a
+variable \C{n} of type \C{nat}, the term
 \C{(muln0 n)} has type \C{n * 0 = 0} and is thus a proof of the
 corresponding equational assertion:
 
@@ -217,33 +224,46 @@ muln0 n : n * 0 = 0
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-muln0}
 
+The context of a typing judgment logs all the variables and the facts
+currently assumed. It also registers the definitions available, like in:
+
+\begin{coq}{}{}
+Definition foo : nat := 1.
+Definition bar (n : nat) : bool := n == 0.
+\end{coq}
+Type annotations may be omitted when there is enough information to
+infer them. However, as a rule of thumb, it is usually a good practice
+to keep them for documentation purposes.
 
 
 
-\subsection{First types, terms and computations}\label{ssec:terms}
+\section{Terms, types, sorts}\label{sec:terms}
 
 This section makes more precise what contexts, terms and types
-are. However, the description is restricted to a subset of Gallina,
-for the sake of the exposition. The exhaustive description of Gallina
-is available in \Coq{}'s reference manual~\cite{Coq:manual}.
+are. Note that the description is restricted to a subset of Gallina,
+for the sake of the exposition. We refer again the reader looking for
+an exhaustive description to the corresponding chapter of \Coq{}'s
+reference manual~\cite{Coq:manual}.
 
 As alluded to in the introduction, type theory avoids the distinction
 set theory makes between sets and propositions: type theory is based
 on a same and single collection of inductively defined terms. A
-judgment $\Gamma \vdash t : T$ relates two terms, $t$ and $T$ (in the
+judgment $\Gamma \vdash t : T$ relates two \emph{terms}, $t$ and $T$ (in the
 context $\Gamma$), and $T$ is called a \emph{type} because it appears
 on the right of the column symbol in a typing judgment. Term $T$ can be
-thought of as a label for a collection of terms, and the judgment $t : T$ as the
-statement that ``term $t$ belongs to the collection $T$'', or 
+thought of as a label for a collection of terms, and the judgment
+$\Gamma \vdash t : T$, as the statement that (in context $\Gamma$)
+``term $t$ belongs to the collection $T$'', or even, to some extent,
 $t\in T$. 
 For instance, we have used in previous example assumptions of the
 form \C{n : nat} to model the sentence ``let $n$ be a natural number''.
+
 This set-theoretic analogy should be taken with a pinch of salt
 though. First, there is no way in type theory to introduce a term, even
 a variable, without simultaneously introducing its type. Things are
 different in set theory, where an object $a$ can be constructed without
 necessarily being casted as being the element of a super-set
-$A$. Second, a judgement is not a proposition in the same sense as the
+$A$. Second, a judgment is not a proposition in the same sense as the
 set-theoretic sentence $t \in T$ would be. In particular, one cannot
 reason (internally) by case analysis on the type of
 $t$, nor can we disprove (internally) that $t : T$ for some particular
@@ -253,9 +273,52 @@ for those on the right ---types.
 
 
 We assume a collection of distinct names, used to denote atomic terms
-and called \emph{sorts}.  Gallina has a countable collection of sorts,
-but in the present book, we will only make use of sorts \C{Prop} and
-\C{Type}. In an empty context, the term \C{Prop} has type \C{Type}:
+and called \emph{sorts}.  One of this sorts is called \C{Prop}, and it
+is the type of statements:
+
+\begin{coq-left}{name=check-eq}{}
+Check 7 = 7.
+\end{coq-left}
+\begin{coqout-right}
+7 = 7 : Prop
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-eq}
+
+As noted already in Chapter~\ref{ch:proofs}, a well formed statement
+is not necessary a provable one:
+
+\begin{coq-left}{name=check-eq}{}
+Check 7 = 9.
+\end{coq-left}
+\begin{coqout-right}
+7 = 9 : Prop
+\end{coqout-right}
+
+Types used as data-structures, to represent mathematical objects (as
+opposed to mathematical assertions), live in a distinct sort named
+\C{Set}:
+
+\begin{coq-left}{name=check-nat}{}
+Check nat.
+\end{coq-left}
+\begin{coqout-right}
+nat : Set
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-nat}
+
+Gallina moreover features a countable, cumulative hierarchy of sorts,
+displayed as \C{Type} and indexed by an integer variable which is by
+default hidden to the user.  In the following typing judgment:
+
+\begin{coq-left}{name=check-prop}{}
+Check Type.
+\end{coq-left}
+\begin{coqout-right}
+Type : Type
+\end{coqout-right}
+the instance of \C{Type} on the right side of the column has a greater
+index than the instance of \C{Type} on the left. In an empty context,
+the term \C{Prop} has type \C{Type} (for any value of the index) :
 
 \begin{coq-left}{name=check-prop}{}
 Check Prop.
@@ -265,249 +328,235 @@ Prop : Type
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-prop}
 
-Terms are defined starting from a countable infinite set of
+Similarly, \C{Set} has type \C{Type}:
+
+\begin{coq-left}{name=check-set}{}
+Check Set.
+\end{coq-left}
+\begin{coqout-right}
+Set : Type
+\end{coqout-right}
+\coqrun{name=r2}{ssr,check-set}
+
+Terms \C{nat}, \C{bool}, \C{Prop} are simple, atomic types, which can be used
+to build non-atomic ones. For instance, in Chapter~\ref{ch:proofs}, we
+met the type of functions from natural numbers to boolean, which is:
+
+\begin{coq-left}{name=check-bool-nat}{}
+Check nat -> bool.
+\end{coq-left}
+\begin{coqout-right}
+bool -> nat : Type
+\end{coqout-right}
+
+Similarly the type of addition over natural numbers is 
+\C{nat -> nat -> nat}, and the type of boolean negation is 
+\C{bool -> bool}.
+
+In Chapter~\ref{ch:prog}, we used a \emph{polymorphic} type to represent
+sequences of elements:
+
+\begin{coq}{name=seq_def}{}
+Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
+\end{coq}
+\coqrun{name=seq_run}{seq_def}
+
+Since \C{seq} builds a new type for each given instance of its
+parameter, it has the type of a function:
+
+\begin{coq-left}{name=check-seq}{}
+Check seq.
+\end{coq-left}
+\begin{coqout-right}
+seq : Type -> Type
+\end{coqout-right}
+
+Non-atomic terms are defined from a countable infinite set of
 symbols, called  \emph{variables}.
 It is thus always possible to exhibit a new variable
 distinct from a given arbitrary finite collection of variables. In \Coq{}
 syntax, we can use letters, or more generally sequences of
 alpha-numeric characters, to represent variables. For instance, the
 following command declares two variables of type \C{nat}, i.e. two
-natural numbers and one of type \C{{poly int}}, i.e. a polynomial in
-$\mathbb{X}[X]$:
+natural numbers and one of type \C{\{poly int\}}, i.e. a polynomial in
+$\mathbb{Z}[X]$:
+
 \begin{coq}{}{}
 Variables (n m : nat) (p : {poly int}).
 \end{coq}
-Hypotheses are themselves variables, and use the same collection of
-names. The following line assumes a hypothesis:
+
+Hypotheses are themselves variables, whose type represent the
+assumed statement. The following line assumes a hypothesis:
+
 \begin{coq}{}{}
 Hypothesis neq0 : n = 0.
 \end{coq}
-It is a synonym of:
+But it is just a synonym, with a more suggestive name, of:
 \begin{coq}{}{}
 Variable neq0 : n = 0.
 \end{coq}
 
+Of course, it is only possible to extend the current context with variables, or
+hypotheses, or definitions, with a well-formed type. As we have seen
+so far, well-formed types include atomic types, like \C{nat} or
+\C{Prop}, and function types like \C{nat -> bool}. In Gallina, it is
+also possible to define functions which build a \emph{type} for any
+\emph{value} of a given datatype:
+\begin{coq}{name=check-deptype}{}
+Variable t : nat -> Type.
+\end{coq}
 
-%%%%% TODO HERE
+Term \C{t} is called a \emph{dependent type}, as it constructs a
+family of types which depend on a parameter in a data type. For
+instance, \C{t} could be the type of lists of booleans with a
+prescribed length, \C{t n} being the type of lists of length
+\C{n}. Now such a dependent type can itself be used as the return type
+of a function, like in: 
 
-%% \C{Prop} and \C{Type}$_i$, for
-%% $i \in \mathbb{N}$\footnote{Coq has another sort \C{Set} but we do not
-%%   use it here.}.
-%% We % put aside inductive types until section~\ref{ssec:indtypes}, and
-%% now define
-%% inductively what the terms of the formalism are. We suppose that we
-%% have a countable infinite set of symbols available for names, so that it is
-%% always possible to exhibit a name distinct from a given arbitrary
-%% finite collection of names. The simplest, atomic, terms are the
-%% \emph{variables}, and the \emph{sorts} \C{Prop} and \C{Type}$_i$, for
-%% $i \in \mathbb{N}$\footnote{Coq has
-%% another sort \C{Set} but we do not use it here.}.
+\begin{coq}{name=check-depfun}{}
+Variable g : forall n : nat, t n.
+\end{coq}
 
-If $x$ is a
-variable, and $T$ and $U$ are two terms, then $\forall x : T, U$ is
-also a term. In fact this term will be used as a type, and it
-represents a family of types \C{U} indexed by elements of type \C{T}.
-Importantly, if \C{x} does not occur in the term \C{U} as a
-free variable, then this term is usually denoted \C{T -> U}: it is
-used for the type of functions having their argument of type \C{T} and
-their results of type \C{U}. For instance, there is no difference
-between \C{(nat -> bool)} and \C{(forall x : nat, bool)}, but the
-notation. In the case where \C{x} does occur in term \C{U}, the term
-\C{forall x : T, U} is called a \emph{dependent type}.
-\index[concept]{dependent type}
-If \C{x} is a variable and \C{T}, \C{u}
-are terms, then \C{(fun x:T => u)} is a term, which represents a function
-with argument \C{x} and body \C{u}. If \C{t} and \C{u} are terms then
-\C{(t u)} is also a term, which represents the application of (function)
-\C{t} to (its argument) \C{u}. Finally \C{let x := t in u} is a term
-if \C{t, u} are terms and \C{x} is a variable.
+For instance, \C{g n} could build the list of length \C{n} containing
+only \C{true} elements.
+Thus in Gallina, the return type of a function may depend on the
+\emph{value} of its argument: the prefix \C{forall n,} part of the
+type of \C{g} is a binder, which allows to describe the dependency in
+the return type. A type of the form \C{forall x, T} is called a
+\emph{product type}, or sometimes a $\Pi$-type. Note that a product
+type \C{forall x, T} is well-formed for any \C{T} of type \C{Type},
+\C{Set} or \C{Prop}, even when \C{T} does not depend on \C{x}. In this
+case, when the return type is constant in the argument, the product
+type is displayed with an arrow, as in:
+\index[concept]{dependent function space}
 
-A typing judgment $\Gamma \vdash t : T$ relates a
-context $\Gamma$ and two terms $t$ and $T$. As its name suggests,
-the context logs all the facts assumed at the moment when the term
-occurs. It can be empty but otherwise contains typed variables and
-typed definitions. A typed variable is a pair of a name and a
-type: for instance, after executing the command \C{Variable n : nat.},
-the context contains the pair (\C{n} : \C{nat}). A typed definition is
-a triple of a name, a term, and a type: for instance, after executing
-the command \C{Definition a : T := t.}, the context contains the
-triple (\C{a : T := t}). We have not yet defined what a
-type is, because it is a special case of term, defined using typing
-judgments. Actually, well-formed contexts and typing judgments are
-defined inductively and simultaneously.
+\begin{coq-left}{name=check-non-dep}{}
+Check forall x : nat, bool.
+\end{coq-left}
+\begin{coqout-right}
+nat -> bool : Set
+\end{coqout-right}
 
-Typing judgments with an empty context express the
-axiom rules of the formalism, like for instance the types of sorts:
-$$\vdash \C{Prop} : \C{Type}_1 \quad \vdash \C{Type}_i : \C{Type}_{i+1}.$$
-From now on and as the default display mode of \Coq{} does, we will leave
-the index of the sorts \C{Type}$_i$ implicit and just write \C{Type},
-as these indices do not play a significant role in what is presented
-in this book. A \emph{type} is a term which can be typed by a sort in
-a given context:
-$$\Gamma \vdash \C{T} : \C{Prop} \quad \textrm{ or}
-\quad \Gamma \vdash \C{T} : \C{Type}.$$
-Sorts are thus particular types and they are types of types.
-A \emph{well-formed context} is either an empty context, or the
-extension of an existing context with a pair \C{(x : T)}, where \C{x}
-is a fresh name and \C{T} is a type. As expected, a well-formed
-context provides a type to the variables it contains:
-$$\textrm{if } \Gamma \textrm{ is well-formed  and }
-\C{(x : T)} \in \Gamma \textrm{ then }
-\Gamma \vdash \C{x} : \C{T}.$$
-Contexts not only store global assumptions: they are also used to
-forge more complex typing judgments, for more complex types. For
-instance, the following rule explains how to construct non-atomic
-types:
-$$\textrm{if }\quad \Gamma \vdash T : \C{Type} \quad\textrm{ and }\quad
-\Gamma, x : T \vdash U : \C{Type} \quad\textrm{ then }\quad
-\Gamma \vdash \forall x : T, U : \C{Type}.$$
-The term $ \forall x : T, U : \C{Type}$ is the type of functions, as
-described by the rule:
-$$\textrm{if } \ \Gamma \vdash \forall x : T, U : \C{Type}
-\ \textrm{ and }\
-\Gamma, x : T \vdash t : U
-\ \textrm{ then }\
-\Gamma \vdash \C{fun x => t} : \forall x : T, U
-$$
-and the application of a function to an argument is well-typed only if
-their types agree:
-$$\textrm{if } \ \Gamma \vdash u : \forall x : T, U
-\ \textrm{ and }\
-\Gamma \vdash t : T
-\ \textrm{ then }\
-\Gamma \vdash u\ t : U[t/x]
-$$
-where $U[t/x]$ denotes the term obtained by substituting
-the variable $x$ by the term $t$ in the term $U$.
-
-Consider the simple tautology $A \rightarrow A$.
-The implication symbol~$\to$ can be understood as the logical symbol
-of implication but also as the symbol we used
-to represent the type of functions, in the non-dependent case. The
-term \C{(fun x : A => x)} represents the identity function for terms
-of type $A$ and is a program of type $A \rightarrow A$. If we consider
-that $A$ is a proposition, and that terms of type $A$ are proofs of
-$A$, this function is the identity function on proofs of $A$.
-More generally, the logical rules of implicative and universal
-statements can be decorated with terms, so that proofs of implications
-can be seen as functions transforming an arbitrary proof of the
-premise into a proof of the conclusion. The introduction rules
-respectively for the implication and the universal quantification can
-be written:
-
-\begin{center}
-\AxiomC{$A$}
-\noLine
-\UnaryInfC{$\vdots$}
-\noLine
-\UnaryInfC{$B$}
-\RightLabel{$\to_I$}
-\UnaryInfC{$A \to B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{$B$}
-\RightLabel{$\forall_I$ ($x$ fresh)}
-\UnaryInfC{$\forall x, B$}
-\DisplayProof
-\end{center}
-% [DG] What do you mean by "fresh" here? $x$ can definitely appear
-% in $B$. And shouldn't $x$ be typed in the context?
-This presentation, in the style of natural deduction, means that in
-order to prove $A \to B$ one can prove $B$ under the
-assumption $A$, and in order to prove $\forall x,B$ one can prove $B$
-for a fresh variable $x$. Let us now annotate these rules with terms
-whose typing rules coincide with these proof rules:
-
-\begin{center}
-\AxiomC{\C{x : }$~A$}
-\noLine
-\UnaryInfC{$\vdots$}
-\noLine
-\UnaryInfC{\C{b : }$~B$}
-\RightLabel{$\to_I$}
-\UnaryInfC{\C{(fun x : A => b) : }$~A \to B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{\C{b : }$~B$}
-\RightLabel{$\forall_I$}
-\UnaryInfC{\C{(fun x : A => b) : }$~\forall x, B$}
-\DisplayProof
-\end{center}
-
-Actually, the term \C{(fun .. => ..)} serves as a proof
-for both rules and in both cases the term \C{b} is a proof of $B$.
-The only difference is that $x$ is allowed to occur in $B$ only in the
-second rule.
-
-
-We now play the same game with the corresponding elimination rules:
-
-
-\begin{center}
-\AxiomC{$A \to B$}
-\AxiomC{$A$}
-\RightLabel{$\to_E$}
-\BinaryInfC{$B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{$\forall x, B$}
-\RightLabel{$\forall_E$ ($t$ is a term)}
-\UnaryInfC{$B[t/x]$}
-\DisplayProof
-\end{center}
-
-This time function application serves as a proof in both cases:
-
-\begin{center}
-\AxiomC{\C{f : }$~A \to B$}
-\AxiomC{\C{t : }$~A$}
-\RightLabel{$\to_E$}
-\BinaryInfC{\C{(f t) :}$~B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{\C{f : }$~\forall x : A, B$}
-\AxiomC{\C{t : }$~A$}
-\RightLabel{$\forall_E$}
-\BinaryInfC{\C{(f t) : }$~B[t/x]$}
-\DisplayProof
-\end{center}
-
-Universal quantification is not only useful to form types that
-play the role of propositions.  It can come handy to form data types
-too.  In the second part of this book (section~\ref{sec:matrix})
-we shall see how the matrix data type
-and the type of its multiplication function benefit from it.
+A term with a product (or arrow) type is a function, in the sense that
+it can be \emph{applied} to an argument, provided that the type of
+this argument agrees with the source of the function type:
 
 \begin{coq}{}{}
-matrix : Type -> nat -> nat -> Type.
-mulmx : forall R : Type, forall m n p : nat,
-  matrix R m n -> matrix R n p -> matrix R m p.
+Variable f : nat -> bool.
+Check f 3.
+Fail Check f true.
+
+(* g : forall n, t n *)
+Check g 3 : t 3.
 \end{coq}
 
-This time the data type of matrices exposes the size, and matrix multiplication
-can be given a type that rules out incompatible matrices and also describes
+The typing rule governing the application of functions to arguments is
+a emblematic example of the strict well-formedness conditions enforced
+by types on mathematical statements. This rule will rule out
+nonsensical assertions, like ``$\pi$ is equilateral'' or ``2 is a
+Banach space''. But the same rule shall also play a nastier role, for
+instance if the user wants to casually embed natural numbers into
+integers, and integer into rational numbers: working with these
+obvious inclusions might require an explicit cast in a typed setting,
+if $\mathbb{N}$, $\mathbb{Z}$, $\mathbb{Q}$ are represented by
+distinct types.
 
-the size of the resulting matrix in terms of the size of the input
-ones.\footnote{To be precise, \C{mulmx} also needs to take in input operations to
-add and multiply elements of \C{R}.  Such detail plays no role in the current
-discussion.}
 
-This is in fact a classic example of what is called a \emph{dependent type}: a
-data type depending on data, two natural numbers here.
-\index[concept]{dependent type}
+New functions are defined by \emph{abstracting} a variable in a term,
+as discussed in Chapter~\ref{ch:prog}. The resulting term has a
+product (or an arrow) type:
 
-Note that in this formalism, quantification can range on the proofs of
-a given statement, just like it can range on numbers. In this way, a
-statement may express
-a property shared by the proofs of a given statement. Such capability
-finds a rare, but
-crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}:
-All the proofs of a given equality statement between two booleans are
-indistinguishable.
+\begin{coq-left}{}{}
+Definition bar (n : nat) : bool := 
+  n == 0.
+Check bar.
+\end{coq-left}
+\begin{coqout-right}
+bar : nat -> bool
+\end{coqout-right}
 
-\begin{coq}{name=hedberg}{}
-Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
-\end{coq}
+Term \C{bar} has type \C{nat -> bool} because in the current context,
+augmented with a variable declaration \C{n : nat}, corresponding to
+the name and type of the argument, the body \C{n == 0} of the definition
+ has type \C{bool}.
+
+When a defined function is applied to its argument, the resulting term
+is \emph{computed} by substituting the bound variable for the value of the
+argument.
+
+\begin{coq-left}{}{}
+Definition bar (n : nat) : nat := n.
+
+Compute bar 4.
+\end{coq-left}
+\begin{coqout-right}
+= 4
+: nat
+\end{coqout-right}
+
+
+\section{Propositions, implication, universal quantification}\label{sec:propiuq}
+
+The sort \C{Prop} is the type of propositions. If \C{A} and \C{B} are
+two types in sort \C{Prop}, then \C{A -> B} is also a type, living in
+sort \C{Prop} as well. A term of type \C{A -> B} is a function, that
+transforms any term of type \C{A} into a term of type \C{B}, and that
+can be applied to any term of type \C{A}. It is a deep remark that the
+typing rules governing the construction of a term with an arrow type,
+and the application of such a term to another can be read as the
+introduction rule and elimination rule of the implication,
+respectively. This is an instance of the so-called Curry-Howard
+isomorphism. Let us see this remark at work on a few simple examples.
+
+
+{\huge TODO}
+
+The remark extends to universal quantification, whose introduction and
+elimination rules also coincide with the formation and application
+rules of a product type. Just like the constructive proof of an
+implication is a function transforming a arbitrary proof of the
+premise into a proof of the conclusion, a constructive proof of a
+universal statement is a family of proofs, indexed by the inhabitants
+of the type over which quantification takes place.
+
+{\huge TODO}
+
+%% Universal quantification is not only useful to form types that
+%% play the role of propositions.  It can come handy to form data types
+%% too.  In the second part of this book (section~\ref{sec:matrix})
+%% we shall see how the matrix data type
+%% and the type of its multiplication function benefit from it.
+
+%% \begin{coq}{}{}
+%% matrix : Type -> nat -> nat -> Type.
+%% mulmx : forall R : Type, forall m n p : nat,
+%%   matrix R m n -> matrix R n p -> matrix R m p.
+%% \end{coq}
+
+%% This time the data type of matrices exposes the size, and matrix multiplication
+%% can be given a type that rules out incompatible matrices and also describes
+
+%% the size of the resulting matrix in terms of the size of the input
+%% ones.\footnote{To be precise, \C{mulmx} also needs to take in input operations to
+%% add and multiply elements of \C{R}.  Such detail plays no role in the current
+%% discussion.}
+
+%% This is in fact a classic example of what is called a \emph{dependent type}: a
+%% data type depending on data, two natural numbers here.
+%% \index[concept]{dependent type}
+
+%% Note that in this formalism, quantification can range on the proofs of
+%% a given statement, just like it can range on numbers. In this way, a
+%% statement may express
+%% a property shared by the proofs of a given statement. Such capability
+%% finds a rare, but
+%% crucial use in \mcbMC{} that we discuss in chapter~\ref{ch:sigmabool}:
+%% All the proofs of a given equality statement between two booleans are
+%% indistinguishable.
+
+%% \begin{coq}{name=hedberg}{}
+%% Lemma bool_irrelevance (P Q : bool) : forall e1 e2 : P = Q, e1 = e2.
+%% \end{coq}
 
 
 The proofs-as-programs correspondence has a visible impact in the proofs
@@ -536,10 +585,12 @@ which express subtleties of the type system that are out of the scope of
 the present book, like the difference between the sorts \C{Prop} and
 \C{Type}.
 
+\section{Conversion}\label{sec:conv}
 
-We conclude this section by explaining a last rule of CIC, called the
-\emph{conversion rule}, which describes the status of computation in this
-framework. Computation is modeled by rewrite rules explaining how to
+The \emph{conversion (typing) rule} in Gallina describes the status of
+computation in this dependent type theory, and plays a fundamental
+role in the formalization choices adopted in the Mathematical
+Component libraries. Computation is modeled by rewrite rules explaining how to
 apply functions to their argument. For instance, the so-called
 $\beta$-reduction rule rewrites an application of the form
 $(\C{fun x => t}) u$ into $t[u/x]$: the formal argument
@@ -584,7 +635,7 @@ types are compared modulo computation as follows:
 \end{center}
 where $A \equiv A'$ denotes that $A$ and $A'$ are convertible.
 
-\subsection{Inductive types}\label{ssec:indtypes}
+\section{Inductive types}\label{ssec:indtypes}
 
 The formalism described in section~\ref{ssec:terms} is extended by
 the possibility of introducing
@@ -642,13 +693,14 @@ Fixpoint addn n m :=
 Note that guarded fixpoints always terminate, as a non-terminating
 term would allow proofs of absurdity (see section~\ref{ssec:indreason}).
 
-\subsection{More connectives}\label{ssec:moreconns}
-With inductive definitions it is possible to describe more data
+\section{More connectives}\label{sec:moreconns}
+We have seen in section~\ref{sec:propiuq} that functions, i.e.~terms
+with a product type, provide a datastructure for proofs of implication
+and universally quantified statements.
+Using inductive types, it is possible to describe more data
 structures than the mere functions %of the formalism
-described in
-section~\ref{ssec:terms}. These data structures and their typing rules
-are used to model logical connectives, like functions were used to
-model the proofs of implications and universal quantifications.
+described in section~\ref{ssec:terms}. These data structures and their
+typing rules are used to model every other logical connectives.
 
 For instance, the introduction and elimination rule of the conjunction
 connective are:
@@ -668,8 +720,9 @@ The first rule reads: to prove $A \wedge B$ one needs to prove both
 $A$ and $B$.  The second states that one proves $A$ whenever one is
 able to prove the stronger statement $A \wedge B$.
 
-In \Coq{} this connective is modeled by the following
-inductive definition:
+In \Coq{} this connective is modeled by the following inductive
+definition, which provides a type for pairs of proofs, of the
+parameter statements \C{A} and \C{B}:
 
 \begin{coq}{name=And}{}
 Inductive and (A B : Prop) : Prop := conj (pa : A) (pb : B).
@@ -692,8 +745,6 @@ of \C{and}:
 \begin{coq}{}{}
 Inductive prod (A B : Type) := pair (a : A) (b : B).
 \end{coq}
-The striking similarity illustrates how programs (and data) are used in \Coq{}
-to represent proofs.
 
 Pattern matching provides a way to express the elimination rule for
 conjunction as follows:
@@ -740,9 +791,8 @@ the predicate of being an odd prime number is expressed as
 \C{(fun x : nat => (odd x) && (prime x))}, and the statement expressing the
 existence of such a number is
 
-\C{(ex nat (fun x : nat => (odd x) && (prime x)))}, which (thanks
-to the \C{Notation} mechanism of \Coq{}) is parsed and
-
+\centerline{\C{(ex nat (fun x : nat => (odd x) && (prime x)))}} 
+which (thanks to the \C{Notation} mechanism of \Coq{}) is parsed and
 printed as the more familiar \C{(exists x : nat, odd x && prime x)}.
 
 It is worth summing up the many features of type theory that
@@ -862,16 +912,16 @@ Definition eq_ind A (P : A -> Prop) x (px : P x) y (e : x = y) : P y :=
 
 The notion of equality is one of the most intricate aspects of type
 theory; an in-depth study of it is out of the scope of this book.  The interested reader
-finds an extensive study of this subject in~\cite{hottbook}.  Later in this
-chapter we define and use other inductive types to take advantage
-of the ``automatic'' substitution of the implicit equations we see here:
-While \C{px} has type \C{(P x)}, it is accepted as an
-inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
-is automatically replaced by \C{x}.
+finds an extensive study of this subject in~\cite{hottbook}.  %% Later in this
+%% chapter we define and use other inductive types to take advantage
+%% of the ``automatic'' substitution of the implicit equations we see here:
+%% While \C{px} has type \C{(P x)}, it is accepted as an
+%% inhabitant of \C{(P y)} because inside the \C{match} the term \C{y}
+%% is automatically replaced by \C{x}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Inductive reasoning}\label{ssec:indreason}
+\section{Inductive reasoning}\label{sec:indreason}
 
 In chapter~\ref{ch:prog} we have seen how to build and use (call or destruct)
 anonymous functions and data types.  All these
@@ -943,60 +993,60 @@ The interested reader shall refer to~\cite{Coq:manual}.
 \index[concept]{positivity}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{On the status of Axioms}
-\label{sec:EM}
+%% \section{On the status of Axioms}
+%% \label{sec:EM}
 
-Not all valid reasoning principles can be represented by programs.
-For example, excluded middle --- i.e., the claim that
-\C{A \\/ ~~ A} for a given logical statement \C{A} ---
-can be proved by a program only when
-\C{A} is decidable, i.e., when we can write in \Coq{} a program
-to \C{bool} that tests if \C{A} holds or not.
-Excluded middle, in its generality, can only be \emph{axiomatized},
-i.e., assumed globally.
+%% Not all valid reasoning principles can be represented by programs.
+%% For example, excluded middle --- i.e., the claim that
+%% \C{A \\/ ~~ A} for a given logical statement \C{A} ---
+%% can be proved by a program only when
+%% \C{A} is decidable, i.e., when we can write in \Coq{} a program
+%% to \C{bool} that tests if \C{A} holds or not.
+%% Excluded middle, in its generality, can only be \emph{axiomatized},
+%% i.e., assumed globally.
 
-The \mcbMC{} library is axiom free.  This makes the library compatible
-with any combination of axioms that is known to be consistent with the
-Calculus of Inductive Constructions. Some formal developments in
-\Coq{} tend to assume the excluded middle axiom, even if the proofs
-formalized do not require it, to avoid (or postpone) proving the
-decidability of the predicates at play while still being able to
-reason by case analysis on their validity. By contrast, the \mcbMC{}
-library provides the decidability proofs when they exist. Moreover, the
-boolean reflection methodology, object of chapter~\ref{ch:boolrefl},
-provides tools to manipulate decidable predicates in a convenient way,
-with the same ease as in a formalism based on a classical logic.
+%% The \mcbMC{} library is axiom free.  This makes the library compatible
+%% with any combination of axioms that is known to be consistent with the
+%% Calculus of Inductive Constructions. Some formal developments in
+%% \Coq{} tend to assume the excluded middle axiom, even if the proofs
+%% formalized do not require it, to avoid (or postpone) proving the
+%% decidability of the predicates at play while still being able to
+%% reason by case analysis on their validity. By contrast, the \mcbMC{}
+%% library provides the decidability proofs when they exist. Moreover, the
+%% boolean reflection methodology, object of chapter~\ref{ch:boolrefl},
+%% provides tools to manipulate decidable predicates in a convenient way,
+%% with the same ease as in a formalism based on a classical logic.
 
-Yet sometimes it is not possible to provide a constructive proof of a
-statement. In this case, axioms like the excluded middle axiom can
-still be confined into ``boxes''. The purpose of these boxes is to
-delimit a local context in which the required axioms are
-available. Such a box is typically called a \emph{monad}
-in the theory of programming languages. Here is an example, for the
-axiom of excluded middle:
+%% Yet sometimes it is not possible to provide a constructive proof of a
+%% statement. In this case, axioms like the excluded middle axiom can
+%% still be confined into ``boxes''. The purpose of these boxes is to
+%% delimit a local context in which the required axioms are
+%% available. Such a box is typically called a \emph{monad}
+%% in the theory of programming languages. Here is an example, for the
+%% axiom of excluded middle:
 
-\begin{coq}{}{}
-Definition classically P : Prop := forall b : bool, (P -> b) -> b.
-Lemma classic_EM P : classically (decidable P).
-Lemma classicW P : P -> classically P.
-Lemma classic_bind P Q :
-  (P -> classically Q) -> classically P -> classically Q.
-\end{coq}
-\index[coq]{\C{classically}}
-\index[coq]{\C{classically_EM}}
-\index[coq]{\C{classicW}}
-\index[coq]{\C{classically_bind}}
-% [DG] If we mention monads, let's include their unit.
-%assia : TODO
-The \C{classically} box can only be opened when the statement to be
-proved in the current goal is a boolean, hence an instance of a
-decidable predicate. Inside such a box the excluded middle is
-made available by combining \C{classic_EM} and \C{classic_bind}.
-Nevertheless, when proving a statement that is not a boolean, like
-\C{exists n, ...}, one cannot access assumptions in the \C{classically} box.
+%% \begin{coq}{}{}
+%% Definition classically P : Prop := forall b : bool, (P -> b) -> b.
+%% Lemma classic_EM P : classically (decidable P).
+%% Lemma classicW P : P -> classically P.
+%% Lemma classic_bind P Q :
+%%   (P -> classically Q) -> classically P -> classically Q.
+%% \end{coq}
+%% \index[coq]{\C{classically}}
+%% \index[coq]{\C{classically_EM}}
+%% \index[coq]{\C{classicW}}
+%% \index[coq]{\C{classically_bind}}
+%% % [DG] If we mention monads, let's include their unit.
+%% %assia : TODO
+%% The \C{classically} box can only be opened when the statement to be
+%% proved in the current goal is a boolean, hence an instance of a
+%% decidable predicate. Inside such a box the excluded middle is
+%% made available by combining \C{classic_EM} and \C{classic_bind}.
+%% Nevertheless, when proving a statement that is not a boolean, like
+%% \C{exists n, ...}, one cannot access assumptions in the \C{classically} box.
 
-In other cases, axioms can be avoided by rephrasing the mathematics
-in a weaker setting.  A notable example in the \mcbMC{} library
-is the construction of the real closure of an Archimedean
-field~\cite{DBLP:conf/itp/Cohen12}.
+%% In other cases, axioms can be avoided by rephrasing the mathematics
+%% in a weaker setting.  A notable example in the \mcbMC{} library
+%% is the construction of the real closure of an Archimedean
+%% field~\cite{DBLP:conf/itp/Cohen12}.
 %\marginnote{TODO Cyril: say more about RCF}
