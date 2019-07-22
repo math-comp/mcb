@@ -480,16 +480,22 @@ augmented with a variable declaration \C{n : nat}, corresponding to
 the name and type of the argument, the body \C{n == 0} of the definition
  has type \C{bool}.
 
-When a defined function is applied to its argument, the resulting term
-is \emph{computed} by substituting the bound variable for the value of the
-argument.
+As we have seen in Chapter~\ref{ch:prog}, a function is defined by
+\emph{binding} its argument in a the body of its definition: in
+\C{bar}, the variable \C{n}, on the left of the \C{:=} delimiter, is
+bound in the body of the definiion, the \C{n} on the right of the \C{:=}
+delimiter. When a defined function is applied to its argument, the
+resulting term is \emph{computed} by substituting the bound variable
+for the value of the argument.
 
 \begin{coq-left}{}{}
 Definition bar (n : nat) : nat := n.
-
+Print bar.
 Compute bar 4.
 \end{coq-left}
 \begin{coqout-right}
+bar = fun n => n
+    : nat -> nat 
 = 4
 : nat
 \end{coqout-right}
@@ -505,11 +511,37 @@ can be applied to any term of type \C{A}. It is a deep remark that the
 typing rules governing the construction of a term with an arrow type,
 and the application of such a term to another can be read as the
 introduction rule and elimination rule of the implication,
-respectively. This is an instance of the so-called Curry-Howard
-isomorphism. Let us see this remark at work on a few simple examples.
+respectively. For instance, let us analyse a proof that modus ponens holds:
 
+\begin{coq}{}{}
+Lemma modus_ponens (A B : Prop) : (A -> B) -> A -> B.
+Proof.
+move=> hAB hA.
+apply: hAB.
+exact: hA.
+Qed.
+\end{coq}
+This proof starts by introducing the two hypotheses, 
+akin to the two arguments of a function. Then it builds a proof of 
+\C{B} which is the result of the function \C{hAB} applied to the argument \C{hA}.
+A variant is:
 
-{\huge TODO}
+\begin{coq}{}{}
+Lemma modus_ponens (A B : Prop) : (A -> B) -> A -> B.
+Proof.
+move=> hAB hA.
+exact: (hAB hA).
+Qed.
+\end{coq}
+
+A last variant, providing directly the proof, without interactive commands:
+
+\begin{coq}{}{}
+Lemma modus_ponens (A B : Prop) : (A -> B) -> A -> B.
+Proof.
+exact: (fun hAB hA => hAB hA).
+Qed.
+\end{coq}
 
 The remark extends to universal quantification, whose introduction and
 elimination rules also coincide with the formation and application
@@ -519,7 +551,7 @@ premise into a proof of the conclusion, a constructive proof of a
 universal statement is a family of proofs, indexed by the inhabitants
 of the type over which quantification takes place.
 
-{\huge TODO}
+
 
 %% Universal quantification is not only useful to form types that
 %% play the role of propositions.  It can come handy to form data types
@@ -578,12 +610,29 @@ For example,
 \C{(prime_gt0 p_pr)} is a proof that \C{(0 < p)} whenever
 \C{(p_pr : prime p)}.}
 
+However providing all the arguments of a certain lemma, which describe
+the precise instance useful in a proof, can be tedious. This is one of
+the duties of the language used in the interactive construction of
+proofs to leverage this bureaucracy. For instance the tactics
+\C{apply} and \C{rewrite} introduce in Chapter~\ref{ch:proofs} are
+design to guess the appropriate arguments for craft the
+corresponding instantiaion of their argument. This guess is based on
+matching and unification with the current goal, or with a pattern
+provided in argument.
+
+
+
+
 We refer the reader
 to the reference manual of \Coq{}~\cite{Coq:manual} for the other
 rules of the system, which are variants of the ones we presented or
 which express subtleties of the type system that are out of the scope of
 the present book, like the difference between the sorts \C{Prop} and
 \C{Type}.
+
+
+
+
 
 \section{Conversion}\label{sec:conv}
 
