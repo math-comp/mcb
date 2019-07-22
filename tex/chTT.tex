@@ -282,7 +282,7 @@ and called \emph{sorts}.  One of this sorts is called \C{Prop}, and it
 is the type of statements:
 
 \begin{coq-left}{name=check-eq}{}
-Check 7 = 7.
+Check 7 = 7 : Prop.
 \end{coq-left}
 \begin{coqout-right}
 7 = 7 : Prop
@@ -293,7 +293,7 @@ As noted already in Chapter~\ref{ch:proofs}, a well formed statement
 is not necessary a provable one:
 
 \begin{coq-left}{name=check-eq}{}
-Check 7 = 9.
+Check 7 = 9 : Prop.
 \end{coq-left}
 \begin{coqout-right}
 7 = 9 : Prop
@@ -304,7 +304,7 @@ opposed to mathematical assertions), live in a distinct sort named
 \C{Set}:
 
 \begin{coq-left}{name=check-nat}{}
-Check nat.
+Check nat : Set.
 \end{coq-left}
 \begin{coqout-right}
 nat : Set
@@ -313,33 +313,39 @@ nat : Set
 
 Gallina moreover features a countable, cumulative hierarchy of sorts,
 displayed as \C{Type} and indexed by an integer variable which is by
-default hidden to the user.  In the following typing judgment:
+default hidden to the user.  In the following typing judgment we tell Coq
+to print the index of \C{Type}:
 
 \begin{coq-left}{name=check-prop}{}
-Check Type.
+Set Printing Universes.
+Check Type : Type.
 \end{coq-left}
 \begin{coqout-right}
-Type : Type
+$~$
+Type@{U1} : Type@{U2} (* U1 < U2 *)
 \end{coqout-right}
+
 the instance of \C{Type} on the right side of the column has a greater
-index than the instance of \C{Type} on the left. In an empty context,
+index (named \C{U2} here) than the instance of \C{Type} on the left.
+
+In an empty context,
 the term \C{Prop} has type \C{Type} (for any value of the index) :
 
 \begin{coq-left}{name=check-prop}{}
-Check Prop.
+Check Prop : Type.
 \end{coq-left}
 \begin{coqout-right}
-Prop : Type
+Prop : Type@{U3} (* Prop < U3 *)
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-prop}
 
 Similarly, \C{Set} has type \C{Type}:
 
 \begin{coq-left}{name=check-set}{}
-Check Set.
+Check Set : Type.
 \end{coq-left}
 \begin{coqout-right}
-Set : Type
+Set : Type@{U4} (* Set < U3 *)
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-set}
 
@@ -347,12 +353,9 @@ Terms \C{nat}, \C{bool}, \C{Prop} are simple, atomic types, which can be used
 to build non-atomic ones. For instance, in Chapter~\ref{ch:proofs}, we
 met the type of functions from natural numbers to boolean, which is:
 
-\begin{coq-left}{name=check-bool-nat}{}
-Check nat -> bool.
-\end{coq-left}
-\begin{coqout-right}
-bool -> nat : Type
-\end{coqout-right}
+\begin{coq}{name=check-bool-nat}{}
+Check nat -> bool : Type.
+\end{coq}
 
 Similarly the type of addition over natural numbers is 
 \C{nat -> nat -> nat}, and the type of boolean negation is 
@@ -369,12 +372,9 @@ Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
 Since \C{seq} builds a new type for each given instance of its
 parameter, it has the type of a function:
 
-\begin{coq-left}{name=check-seq}{}
-Check seq.
-\end{coq-left}
-\begin{coqout-right}
-seq : Type -> Type
-\end{coqout-right}
+\begin{coq}{name=check-seq}{}
+Check seq : Type -> Type.
+\end{coq}
 
 Non-atomic terms are defined from a countable infinite set of
 symbols, called  \emph{variables}.
@@ -434,12 +434,9 @@ case, when the return type is constant in the argument, the product
 type is displayed with an arrow, as in:
 \index[concept]{dependent function space}
 
-\begin{coq-left}{name=check-non-dep}{}
-Check forall x : nat, bool.
-\end{coq-left}
-\begin{coqout-right}
-nat -> bool : Type
-\end{coqout-right}
+\begin{coq}{name=check-non-dep}{}
+Check forall x : nat, bool : Type.
+\end{coq}
 
 A term with a product (or arrow) type is a function, in the sense that
 it can be \emph{applied} to an argument, provided that the type of
@@ -447,8 +444,8 @@ this argument agrees with the source of the function type:
 
 \begin{coq}{}{}
 Variable f : nat -> bool.
-Check f 3.
-Fail Check f true.
+Check f 3 : bool.
+Fail Check f true : bool.
 
 (* g : forall n, t n *)
 Check g 3 : t 3.
@@ -470,14 +467,11 @@ New functions are defined by \emph{abstracting} a variable in a term,
 as discussed in Chapter~\ref{ch:prog}. The resulting term has a
 product (or an arrow) type:
 
-\begin{coq-left}{}{}
+\begin{coq}{}{}
 Definition bar (n : nat) : bool := 
   n == 0.
-Check bar.
-\end{coq-left}
-\begin{coqout-right}
-bar : nat -> bool
-\end{coqout-right}
+Check bar : nat -> bool.
+\end{coq}
 
 Term \C{bar} has type \C{nat -> bool} because in the current context,
 augmented with a variable declaration \C{n : nat}, corresponding to
@@ -525,6 +519,7 @@ apply: hAB.
 exact: hA.
 Qed.
 \end{coq}
+
 This proof starts by introducing the two hypotheses, 
 akin to the two arguments of a function. Then it builds a proof of 
 \C{B} which is the result of the function \C{hAB} applied to the argument \C{hA}.
