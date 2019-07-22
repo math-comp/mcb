@@ -1,4 +1,4 @@
-\chapter{Type Theory}{}
+\chapter{Dependent Type Theory}{}
 \label{ch:ttch}
 
 %% Summary of the 22/02 discussion:
@@ -101,11 +101,16 @@
 % shorter survey in the Handbook of Automated
 % Reasoning~\cite[Volume 2, chapter 18]{handbook-ar}.
 
-The \Coq{} proof assistant provides a formal language to describe
-mathematical statements and proofs, called \emph{Gallina}. The
-language is a dialect of the type theory called the \emph{Calculus of
-  Inductive Constructions} (CIC)~\cite{coquand:huet:88,CoPa89}, a
-descendant of so-called Martin-Löf intentional type theory. In this
+The formal language we use to write
+mathematical statements and proofs in the \Coq{} proof assistant
+is called \emph{Gallina}.
+This language is an evolution of the \emph{\mcbCIC{}}
+(CIC)~\cite{coquand:huet:88,CoPa89} implemented
+by the early versions of \Coq{} in the 80's. In turn, CIC is one of the many
+descendants of the intuitionistic type theory~\cite{ITT} Martin-Löf developed in
+the 70's. In order to avoid ambiguities with other type theories we refer to
+this family of formal systems using the term \emph{dependent type theory}.\\
+In this
 chapter, we provide some hints on the main features of this
 formalism. The interested reader shall refer to the reference manual
 of \Coq{}~\cite{Coq:manual} for a formal definition of Gallina. %% The first
@@ -117,7 +122,7 @@ of \Coq{}~\cite{Coq:manual} for a formal definition of Gallina. %% The first
 %\section{Terms, types, proofs}\label{sec:chi}
 
 \section{Propositions as types, proofs as programs}\label{sec:patpap}
-\emph{Dependent type theory}, actually in several different flavors, can be used
+\emph{Dependent type theory}, in its several different flavors, can be used
 as a foundational language for mathematics. It thus provides an alternative
 to the flavors of set theory commonly invoked as the formal language of
 reference~\cite{bourbaki-sets}. Informally speaking, a
@@ -127,7 +132,7 @@ these statements can be combined and proved. This language is then
 used in the second layer, to formulate the axioms of the particular
 theory of interest. By contrast, proof assistants based on dependent
 type theory, like \Coq{}, embrace an approach coined
-\emph{propositions-as-types}~\cite{}, and use the same language of
+\emph{propositions-as-types}~\cite{ch}, and use the same language of
 types in a uniform way to describe mathematical objects, mathematical
 assertions, and their proofs. 
 
@@ -169,7 +174,7 @@ type theory, up to atomic ones like:
 $$x : T \vdash x : T$$
 
 
-A call to the \C{Check} command introduced in Chapter~\cite{ch:prog} 
+A call to the \C{Check} command introduced in Chapter~\ref{ch:prog} 
 verifies that a certain typing judgment holds in the current
 context. For instance, term \C{3} has type \C{nat} in an empty context:
 
@@ -378,11 +383,10 @@ distinct from a given arbitrary finite collection of variables. In \Coq{}
 syntax, we can use letters, or more generally sequences of
 alpha-numeric characters, to represent variables. For instance, the
 following command declares two variables of type \C{nat}, i.e. two
-natural numbers and one of type \C{\{poly int\}}, i.e. a polynomial in
-$\mathbb{Z}[X]$:
+natural numbers and one of type \C{seq nat}, i.e. a list of numbers:
 
 \begin{coq}{}{}
-Variables (n m : nat) (p : {poly int}).
+Variables (n m : nat) (l : seq nat).
 \end{coq}
 
 Hypotheses are themselves variables, whose type represent the
@@ -434,7 +438,7 @@ type is displayed with an arrow, as in:
 Check forall x : nat, bool.
 \end{coq-left}
 \begin{coqout-right}
-nat -> bool : Set
+nat -> bool : Type
 \end{coqout-right}
 
 A term with a product (or arrow) type is a function, in the sense that
@@ -654,7 +658,7 @@ has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
 in the context $\Gamma$:
 
 \begin{center}
-\AxiomC{\C{t : }$~T$}
+\AxiomC{\C{t : }$~T'$}
 \AxiomC{$T \equiv T'$}
 \RightLabel{conversion}
 \BinaryInfC{\C{t :}$~T$}
