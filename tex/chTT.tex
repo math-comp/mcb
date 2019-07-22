@@ -602,7 +602,18 @@ $t_1$ and $t_2$ that are equal modulo computation rules are said to be
 \index[concept]{convertibility}
 system: If $T_1$ and $T_2$ are two convertible types and if a term $t$
 has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
-in the context $\Gamma$. This is the feature of the formalism that we
+in the context $\Gamma$:
+
+\begin{center}
+\AxiomC{\C{t : }$~T$}
+\AxiomC{$T \equiv T'$}
+\RightLabel{conversion}
+\BinaryInfC{\C{t :}$~T$}
+\DisplayProof
+\end{center}
+
+
+ This is the feature of the formalism that we
 have used in section~\ref{ssec:proofcomp}: The proofs of the
 statements \C{2 + 1 = 3} and \C{3 = 3} are the same, because the terms
 \C{2 + 1 = 3} and \C{3 = 3} are convertible.  In chapter~\ref{ch:prog} and~\ref{ch:proofs}
