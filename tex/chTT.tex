@@ -214,7 +214,7 @@ type \C{nat}, the term \C{n + n} has type \C{nat}:
 
 \begin{coq-left}{name=check-nn}{}
 Variable n : nat.
-Check n + n : bool.
+Check n + n : nat.
 \end{coq-left}
 \begin{coqout-right}
 n + n : nat
@@ -455,10 +455,13 @@ case, when the return type is constant in the argument, the product
 type is displayed with an arrow, as in:
 \index[concept]{dependent function space}
 
-\begin{coq}{name=check-non-dep}{}
+\begin{coq-left}{name=check-non-dep}{}
 Check forall x : nat, bool : Type.
-\end{coq}
-
+\end{coq-left}
+\begin{coqout-right}{name=check-non-dep}{}
+nat -> bool : Type
+\end{coqout-right}
+  
 A term with a product (or arrow) type is a function, in the sense that
 it can be \emph{applied} to an argument, provided that the type of
 this argument agrees with the source of the function type:
@@ -631,11 +634,11 @@ For example,
 \C{(p_pr : prime p)}.}
 
 However providing all the arguments of a certain lemma, which describe
-the precise instance useful in a proof, can be tedious. This is one of
+the precise instance useful in a proof, can be tedious. It is one of
 the duties of the language used in the interactive construction of
 proofs to leverage this bureaucracy. For instance the tactics
 \C{apply} and \C{rewrite} introduce in Chapter~\ref{ch:proofs} are
-design to guess the appropriate arguments for craft the
+designed to guess the appropriate arguments to craft the
 corresponding instantiaion of their argument. This guess is based on
 matching and unification with the current goal, or with a pattern
 provided in argument.
@@ -1001,7 +1004,7 @@ finds an extensive study of this subject in~\cite{hottbook}.  %% Later in this
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Inductive reasoning}\label{sec:indreason}
+\section{Inductive reasoning}\label{ssec:indreason}
 
 In chapter~\ref{ch:prog} we have seen how to build and use (call or destruct)
 anonymous functions and data types.  All these
