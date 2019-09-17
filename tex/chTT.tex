@@ -122,25 +122,45 @@ of \Coq{}~\cite{Coq:manual} for a formal definition of Gallina. %% The first
 %\section{Terms, types, proofs}\label{sec:chi}
 
 \section{Propositions as types, proofs as programs}\label{sec:patpap}
-\emph{Dependent type theory}, in its several different flavors, can be used
-as a foundational language for mathematics. It thus provides an alternative
-to the flavors of set theory commonly invoked as the formal language of
-reference~\cite{bourbaki-sets}. Informally speaking, a
+% \emph{Dependent type theory}, in its several different flavors, can be used
+% as a foundational language for mathematics. It thus provides an alternative
+% to the flavors of set theory commonly invoked as the formal language of
+% reference~\cite{bourbaki-sets}. Informally speaking, a
+% set-theoretic framework has two stages. First order logic provides
+% the former layer: it describes the language of logical sentences and how
+% these statements can be combined and proved. This language is then
+% used in the second layer, to formulate the axioms of the particular
+% theory of interest. By contrast, proof assistants based on dependent
+% type theory, like \Coq{}, embrace an approach coined
+% \emph{propositions-as-types}~\cite{ch}, and use the same language of
+% types in a uniform way to describe mathematical objects, mathematical
+% assertions, and their proofs. 
+
+Set theory commonly invoked as the foundational language for
+mathematics~\cite{bourbaki-sets}. Informally speaking, a
 set-theoretic framework has two stages. First order logic provides
 the former layer: it describes the language of logical sentences and how
 these statements can be combined and proved. This language is then
-used in the second layer, to formulate the axioms of the particular
-theory of interest. By contrast, proof assistants based on dependent
+used in the second layer to formulate the axioms of the particular
+theory of interest, for example the ones of Zermelo and Fraenkel.
+By contrast, proof assistants based on a flavor of dependent
 type theory, like \Coq{}, embrace an approach coined
 \emph{propositions-as-types}~\cite{ch}, and use the same language of
 types in a uniform way to describe mathematical objects, mathematical
 assertions, and their proofs. 
+The difference we highlight in this section are the rules that dictate
+which sentences and proofs are acceptable.
 
-In set theory, the rules which govern the construction of
+In set theory the rules which govern the construction of
 well-formed, grammatically correct, statements are rather loose.
-The goal of the game is to construct a proof for a given well-formed
+For example
+$x \in x$ is a valid sentence, where $x$ plays the role of
+both an element and as set. Still the
+goal of the game is to construct a proof for a given well-formed
 proposition, using first-order logic to combine the axioms of the
-theory. The first two chapters of the present book illustrate how
+theory, and nonsensical sentences supposedly have no proof.
+
+The first two chapters of the present book illustrate how
 types can be used to help classify, and clarify expressions passed to
 the checker. In fact, the language of types available in the Calculus
 of Inductive Constructions, and thus in  \Coq{}, is so expressive that
@@ -150,13 +170,14 @@ type. This way, proving a statement consists in fact in constructing a
 term of the corresponding type. Objects of the formalism are programs,
 and proofs are themselves objects of the formalism.
 
+\marginpar{meta is condusing here: take more time to talk about this}
 In this setting, the analogue of the meta-statement
 that a given proposition has a proof is the meta-statement that a
 given term has a given type. Such a meta-statement is called a
-\emph{typing judgment}. It is a ternary relation, written using the
-\emph{turnstile} $\vdash$ symbol:
+\emph{typing judgment}. It is a ternary relation written as follows:
+% using the \emph{turnstile} $\vdash$ symbol:
 $$\Gamma \vdash t : T$$
-and read:
+and reads:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}. A type
 is just a term, which is called a type when it occurs on the right
 hand-side of a column in a well-formed typing judgment, like $T$ in
