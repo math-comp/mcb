@@ -658,31 +658,32 @@ the present book, like the difference between the sorts \C{Prop} and
 
 
 \section{Conversion}\label{sec:conv}
-
 The \emph{conversion (typing) rule} in Gallina describes the status of
 computation in this dependent type theory, and plays a fundamental
 role in the formalization choices adopted in the Mathematical
 Component libraries. Computation is modeled by rewrite rules explaining how to
 apply functions to their argument. For instance, the so-called
 $\beta$-reduction rule rewrites an application of the form
-$(\C{fun x => t}) u$ into $t[u/x]$: the formal argument
+\C{(fun x => t) u} into $t[u/x]$: the formal argument
 $x$ is substituted by the actual argument $u$ in the body $t$ of the
 function. A similar computation rule models the computation of a term of
 the shape \C{(let x := u in t)} into $t[u/x]$. Two terms
 $t_1$ and $t_2$ that are equal modulo computation rules are said to be
-\emph{convertible}, and these terms are indistinguishable to the type
+\emph{convertible}, written $t_1{}\equiv{}t_2$, and these terms
+are indistinguishable to the type
 \index[concept]{convertibility}
-system: If $T_1$ and $T_2$ are two convertible types and if a term $t$
-has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
-in the context $\Gamma$:
+system. 
+% We write  If $T_1$ and $T_2$ are two convertible types and if a term $t$
+% has type $T_1$ in the context $\Gamma$, then $t$ also has type $T_2$
+% in the context $\Gamma$:
 
-\begin{center}
-\AxiomC{\C{t : }$~T'$}
-\AxiomC{$T \equiv T'$}
-\RightLabel{conversion}
-\BinaryInfC{\C{t :}$~T$}
-\DisplayProof
-\end{center}
+% \begin{center}
+% \AxiomC{\C{t : }$~T'$}
+% \AxiomC{$T \equiv T'$}
+% \RightLabel{conversion}
+% \BinaryInfC{\C{t :}$~T$}
+% \DisplayProof
+% \end{center}
 
 
  This is the feature of the formalism that we
@@ -699,24 +700,24 @@ variables: The term \C{(isT : true)}\footnote{In other words \C{isT} is a proof 
 \C{(0 < n.+1)}, as well as a proof of \C{(0 != p.+1)}.
 \index[coq]{\C{isT}}
 
-One can also benefit from convertibility whenever one applies a lemma;
-otherwise said, whenever the $\to_E$ and $\forall_E$ rules apply.
-These rules check that the argument has
-the ``right type'', i.e. the type of
-the premise or of the  bound variable respectively.
-At the cost of being more verbose we could have made explicit
-in, say, the typing for $\to_E$
-that
-types are compared modulo computation as follows:
-\begin{center}
-\AxiomC{\C{f : }$~A \to B$}
-\AxiomC{\C{a : }$~A'$}
-\AxiomC{$A \equiv A'$}
-\RightLabel{$\to_E$}
-\TrinaryInfC{\C{(f a) :}$~B$}
-\DisplayProof
-\end{center}
-where $A \equiv A'$ denotes that $A$ and $A'$ are convertible.
+% One can also benefit from convertibility whenever one applies a lemma;
+% otherwise said, whenever the $\to_E$ and $\forall_E$ rules apply.
+% These rules check that the argument has
+% the ``right type'', i.e. the type of
+% the premise or of the  bound variable respectively.
+% At the cost of being more verbose we could have made explicit
+% in, say, the typing for $\to_E$
+% that
+% types are compared modulo computation as follows:
+% \begin{center}
+% \AxiomC{\C{f : }$~A \to B$}
+% \AxiomC{\C{a : }$~A'$}
+% \AxiomC{$A \equiv A'$}
+% \RightLabel{$\to_E$}
+% \TrinaryInfC{\C{(f a) :}$~B$}
+% \DisplayProof
+% \end{center}
+% where $A \equiv A'$ denotes that $A$ and $A'$ are convertible.
 
 \section{Inductive types}\label{ssec:indtypes}
 
@@ -781,26 +782,27 @@ We have seen in section~\ref{sec:propiuq} that functions, i.e.~terms
 with a product type, provide a datastructure for proofs of implication
 and universally quantified statements.
 Using inductive types, it is possible to describe more data
-structures than the mere functions %of the formalism
-described in section~\ref{ssec:terms}. These data structures and their
+structures than mere functions. %of the formalism
+% described in section~\ref{ssec:terms}. 
+These data structures and their
 typing rules are used to model every other logical connectives.
 
-For instance, the introduction and elimination rule of the conjunction
-connective are:
-
-\begin{center}
-\AxiomC{$A$} \AxiomC{$B$}
-\RightLabel{$\wedge_I$}
-\BinaryInfC{$A \wedge B$}
-\DisplayProof
-\hspace{1cm}
-\AxiomC{$A \wedge B$}
-\RightLabel{$\wedge_E$ (left)}
-\UnaryInfC{$A$}
-\DisplayProof
-\end{center}
-The first rule reads: to prove $A \wedge B$ one needs to prove both
-$A$ and $B$.  The second states that one proves $A$ whenever one is
+For instance, the introduction rule of the conjunction
+connective
+% \begin{center}
+% \AxiomC{$A$} \AxiomC{$B$}
+% \RightLabel{$\wedge_I$}
+% \BinaryInfC{$A \wedge B$}
+% \DisplayProof
+% \hspace{1cm}
+% \AxiomC{$A \wedge B$}
+% \RightLabel{$\wedge_E$ (left)}
+% \UnaryInfC{$A$}
+% \DisplayProof
+% \end{center}
+reads: to prove $A \wedge B$ one needs to prove both
+$A$ and $B$. Conversely, the elimination rule states that one proves 
+$A$ whenever one is
 able to prove the stronger statement $A \wedge B$.
 
 In \Coq{} this connective is modeled by the following inductive
