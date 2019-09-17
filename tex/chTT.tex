@@ -188,7 +188,7 @@ $T$ are well-formed, and moreover that term $t$ has type $T$. Example:
 
 $$x : \mathbb{N} \vdash x + x : \mathbb{N}$$
 
-
+\marginpar{here proof is confusing since it is a meta-proof. Also we don't eplain what a "pile" of rlues is...}
 The proof that a typing judgment is valid piles typing rules of the
 type theory, up to atomic ones like:
 
@@ -251,15 +251,18 @@ muln0 n : n * 0 = 0
 \coqrun{name=r2}{ssr,check-muln0}
 
 The context of a typing judgment logs all the variables and the facts
-currently assumed. It also registers the definitions available, like in:
+currently assumed.
 
-\begin{coq}{}{}
-Definition foo : nat := 1.
-Definition bar (n : nat) : bool := n == 0.
-\end{coq}
-Type annotations may be omitted when there is enough information to
-infer them. However, as a rule of thumb, it is usually a good practice
-to keep them for documentation purposes.
+% Maybe move to the next section?
+%  It also registers the definitions available, like in:
+
+% \begin{coq}{}{}
+% Definition foo : nat := 1.
+% Definition bar (n : nat) : bool := n == 0.
+% \end{coq}
+% Type annotations may be omitted when there is enough information to
+% infer them. However, as a rule of thumb, it is usually a good practice
+% to keep them for documentation purposes.
 
 
 
@@ -291,8 +294,8 @@ different in set theory, where an object $a$ can be constructed without
 necessarily being casted as being the element of a super-set
 $A$. Second, a judgment is not a proposition in the same sense as the
 set-theoretic sentence $t \in T$ would be. In particular, one cannot
-reason (internally) by case analysis on the type of
-$t$, nor can we disprove (internally) that $t : T$ for some particular
+reason (internally) by case analysis on the meta-proof that
+$t$ has type $T$, nor can we disprove (internally) that $t$ has type $T$ for some particular
 $T$. Finally, as we shall see later in this section, substitution of
 equals does not behave the same for terms at the left of a column, and
 for those on the right ---types.
@@ -369,6 +372,9 @@ Check Set : Type.
 Set : Type@{U4} (* Set < U3 *)
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-set}
+
+\noindent
+\C{Set} is a name for the smallest element of the hierarchy of \C{Type}s.
 
 Terms \C{nat}, \C{bool}, \C{Prop} are simple, atomic types, which can be used
 to build non-atomic ones. For instance, in Chapter~\ref{ch:proofs}, we
