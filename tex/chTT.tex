@@ -136,26 +136,27 @@ of \Coq{}~\cite{Coq:manual} for a formal definition of Gallina. %% The first
 % types in a uniform way to describe mathematical objects, mathematical
 % assertions, and their proofs. 
 
-Set theory commonly invoked as the foundational language for
+Set theory is commonly invoked as the foundational language for
 mathematics~\cite{bourbaki-sets}. Informally speaking, a
 set-theoretic framework has two stages. First order logic provides
 the former layer: it describes the language of logical sentences and how
 these statements can be combined and proved. This language is then
 used in the second layer to formulate the axioms of the particular
-theory of interest, for example the ones of Zermelo and Fraenkel.
+theory of interest, for example the ones of Zermelo-Fraenkel set theory.
 By contrast, proof assistants based on a flavor of dependent
 type theory, like \Coq{}, embrace an approach coined
 \emph{propositions-as-types}~\cite{ch}, and use the same language of
 types in a uniform way to describe mathematical objects, mathematical
-assertions, and their proofs. 
-The difference we highlight in this section are the rules that dictate
-which sentences and proofs are acceptable.
+assertions, and their proofs.  As we shall see, there is a significant 
+difference in phrasing the rules dictating which sentences and proofs 
+are well-formed.
+
 
 In set theory the rules which govern the construction of
 well-formed, grammatically correct, statements are rather loose.
 For example
 $x \in x$ is a valid sentence, where $x$ plays the role of
-both an element and as set. Still the
+both an element and as set. Still, the
 goal of the game is to construct a proof for a given well-formed
 proposition, using first-order logic to combine the axioms of the
 theory, and nonsensical sentences supposedly have no proof.
@@ -188,13 +189,12 @@ $T$ are well-formed, and moreover that term $t$ has type $T$. Example:
 
 $$x : \mathbb{N} \vdash x + x : \mathbb{N}$$
 
-\marginpar{here proof is confusing since it is a meta-proof. Also we don't eplain what a "pile" of rlues is...}
-The proof that a typing judgment is valid piles typing rules of the
-type theory, up to atomic ones like:
+A typing judgment is valid if it is justified by combining the \emph{typing rules} of the
+type theory, up to atomic ones like this one:
 
 $$x : T \vdash x : T$$
 
-
+which asserts that a context assigns a type to each variable it contains.
 A call to the \C{Check} command introduced in Chapter~\ref{ch:prog} 
 verifies that a certain typing judgment holds in the current
 context. For instance, term \C{3} has type \C{nat} in an empty context:
