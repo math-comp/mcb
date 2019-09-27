@@ -57,7 +57,7 @@ in order to establish that \C{(has odd [:: 3; 2; 7]) =
 
 It is not possible to perform a similar case analysis in a proof
 using the alternative version \C{(s_has_aP : has_prop a x0 s)},
-since, as sketched in section~\ref{sec:EM}, excluded middle holds in
+since excluded middle holds in
 \Coq{} only for boolean tests.
 On the
 other hand, this phrasing of the hypothesis easily gives access to the
@@ -278,7 +278,7 @@ The next section is devoted to the proof and usage of more involved views.
 
 Reflection views are also used to specify types equipped with a
 \emph{decidable equality}, by showing that the equality predicate
-\C{eq} (seen in section~\ref{ssec:moreconns}) is implemented by a
+\C{eq} (seen in section~\ref{sec:moreconns}) is implemented by a
 certain boolean equality test. For instance, we can specify the
 boolean equality test on type \C{nat} implemented in
 chapter~\ref{ch:prog} as:
@@ -815,7 +815,7 @@ a recurrent pattern in the \mcbMC{} library.  Such class of inductive
 predicates is called ``spec'', for \emph{specification}.
 
 Spec predicates are inductive families with indexes, exactly
-as the \C{eq} predicate seen in section~\ref{ssec:moreconns}.
+as the \C{eq} predicate seen in section~\ref{sec:moreconns}.
 In particular their elimination rule encapsulates the notion
 of substitution, and that operation is performed automatically by
 the logic.

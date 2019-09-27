@@ -1134,8 +1134,8 @@ second argument is non-zero while the first argument is 0: in that
 case, the result of the function is zero.  Another possible view on
 \C{subn} it to see it as a subtraction operation on natural numbers,
 made total by providing a default value in the ``exceptional'' cases.
-We shall discuss totality of functions in more detail in
-Section~\ref{sec:total}.
+%We shall discuss totality of functions in more detail in
+%Section~\ref{sec:total}.
 
 % On paper, the expression \(m - n\), for $m, n \in
 % \mathbb{N}$, is usually understood as an integer, which is negative
@@ -1739,8 +1739,8 @@ first component: it can thus be obtained as \C{(3,true,4).1.2}. This is a
 consequence of representing tuples as nested pairs. If
 tuples of a certain fixed length are pervasive to a development, one
 may consider defining another specific container type for this
-purpose. See for instance exercise~\ref{ex:triple} for the definition
-of triples.
+purpose. %See for instance exercise~\ref{ex:triple} for the definition
+%of triples.
 
 We conclude this example with a remark on notations. After declaring
 such a notation for the type of pairs, the expression \C{(a * b)}
@@ -1761,8 +1761,9 @@ constructor. The \C{\%N} and \C{\%type} labels are said to be
 \index[concept]{record}\label{sec:records}
 
 Inductive types with a single constructor, like the type \C{pair} in
-section~\ref{sec:othercontainers} or the type \C{triple} of
-exercise~\ref{ex:triple}, provide a general pattern to define a type
+section~\ref{sec:othercontainers}, %or the type \C{triple} of
+%exercise~\ref{ex:triple}, 
+provide a general pattern to define a type
 which aggregates existing objects into a single packaged one. This
 need is so frequent that \Coq{} provides a specialized command
 to declare this class of data type, called \C{Record}.

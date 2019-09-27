@@ -829,8 +829,11 @@ Canonical finfun_eqType :=
 \end{coq}
 
 When the codomain is finite, the type of finite functions is itself
-finite.  This property is again inherited from tuples.  Recall
-the \C{all\_words} function, solution of exercise~\ref{ex:allwords}.
+finite.  This property is again inherited from tuples.  
+The \C{all\_words} program takes in input a
+length \C{n} and an alphabet (a sequence of symbols \C{(enum T)}) and
+generates a list of all words of size \C{n} using the symbols from the
+alphabet.
 
 \begin{coq}{}{}
 Definition tuple_enum (T : finType) n : seq (n.-tuple T) :=
