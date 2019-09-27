@@ -509,7 +509,7 @@ the name and type of the argument, the body \C{n == 0} of the definition
  has type \C{bool}.
 
 As we have seen in Chapter~\ref{ch:prog}, a function is defined by
-\emph{binding} its argument in a the body of its definition: in
+\emph{binding} its argument in the body of its definition: in
 \C{bar}, the variable \C{n}, on the left of the \C{:=} delimiter, is
 bound in the body of the definiion, the \C{n} on the right of the \C{:=}
 delimiter. When a defined function is applied to its argument, the
@@ -532,10 +532,11 @@ bar = fun n => n
 \section{Propositions, implication, universal quantification}\label{sec:propiuq}
 
 The sort \C{Prop} is the type of propositions. If \C{A} and \C{B} are
-two types in sort \C{Prop}, then \C{A -> B} is also a type, living in
-sort \C{Prop} as well. A term of type \C{A -> B} is a function, that
+two types in sort \C{Prop}, then \C{A -> B} is also a type, living as well in
+sort \C{Prop}. A term of type \C{A -> B} is a function, that
 transforms any term of type \C{A} into a term of type \C{B}, and that
-can be applied to any term of type \C{A}. It is a deep remark that the
+can be applied to any term of type \C{A}. This is the central typing
+rule of our formal system. It is a deep remark that the
 typing rules governing the construction of a term with an arrow type,
 and the application of such a term to another can be read as the
 introduction rule and elimination rule of the implication,
@@ -575,10 +576,13 @@ Qed.
 The remark extends to universal quantification, whose introduction and
 elimination rules also coincide with the formation and application
 rules of a product type. Just like the constructive proof of an
-implication is a function transforming a arbitrary proof of the
+implication is a function transforming an arbitrary proof of the
 premise into a proof of the conclusion, a constructive proof of a
 universal statement is a family of proofs, indexed by the inhabitants
-of the type over which quantification takes place.
+of the type over which quantification takes place. In this view, 
+a proof of the Pythagorean theorem is a family of proofs indexed by
+the collection of rectangular triangles.
+
 
 
 
@@ -627,9 +631,13 @@ pass \C{3} to \C{addn} and obtain \C{(addn 3)}, the function adding three, one
 can ``pass'' \C{3} to the lemma \C{addnC} and obtain a proof of the statement
 \C{(forall y, 3 + y = y + 3)}.  Remark that the argument passed to \C{addnC}
 shows up in the type of the resulting term \C{(addnC 3)}:  The type of the
-\C{addnC} program depends on the value the program is applied to.  That is the
-difference between the \emph{dependent function space} ($\forall$)
-and the standard function space ($\to$).
+\C{addnC} program \emph{depends} on the value the program is applied
+to.  Functions whose codomain type depend on the value of their input
+have a type of the form $\forall x : A, B$, where $x$ can occur in
+$B$. When $B$ does not depend on $x$ the same type is written
+$A\rightarrow B$, avoiding the useless introduction of a name $x$.
+The former is sometimes called the \emph{dependent function space}
+($\forall$) and the latter, the standard function space ($\to$).
 \index[concept]{dependent function space}
 
 \mantra{Lemma names can be used as functions, and you can pass
@@ -639,13 +647,12 @@ For example,
 \C{(prime_gt0 p_pr)} is a proof that \C{(0 < p)} whenever
 \C{(p_pr : prime p)}.}
 
-However providing all the arguments of a certain lemma, which describe
+Yet providing all the arguments of a given lemma, so as to describe
 the precise instance useful in a proof, can be tedious. It is one of
 the duties of the language used in the interactive construction of
-proofs to leverage this bureaucracy. For instance the tactics
-\C{apply} and \C{rewrite} introduce in Chapter~\ref{ch:proofs} are
-designed to guess the appropriate arguments to craft the
-corresponding instantiaion of their argument. This guess is based on
+proofs to leverage this bureaucracy. For instance, the tactics
+\C{apply} and \C{rewrite} introduced in Chapter~\ref{ch:proofs} are
+designed to guess some of these arguments. This guess is based on
 matching and unification with the current goal, or with a pattern
 provided in argument.
 
@@ -706,6 +713,10 @@ variables: The term \C{(isT : true)}\footnote{In other words \C{isT} is a proof 
 \C{(0 < n.+1)}, as well as a proof of \C{(0 != p.+1)}.
 \index[coq]{\C{isT}}
 
+\marginpar{Say here that computation can be used for automation? and
+  simpl? and that controlling it is a delicate issue?}
+
+
 % One can also benefit from convertibility whenever one applies a lemma;
 % otherwise said, whenever the $\to_E$ and $\forall_E$ rules apply.
 % These rules check that the argument has
@@ -727,14 +738,17 @@ variables: The term \C{(isT : true)}\footnote{In other words \C{isT} is a proof 
 
 \section{Inductive types}\label{ssec:indtypes}
 
-The formalism described in section~\ref{ssec:terms} is extended by
-the possibility of introducing
+Stricto sensu, in the formalism described in section~\ref{sec:terms},
+types are either sorts, like \C{Prop} and \C{Type}, or functional
+types constructed from these atomic ones. However, in the previous
+chapters, we have casually used other types like \C{nat} or \C{bool}
+and terms of these types like \C{O : nat} or \C{S : nat -> nat}.
+In fact, in the Calculus of Inductive Construction it is also possible
+to introduce new types -- and in fact new terms -- via
 \emph{inductive definitions}~\cite{CoPa89, Moh93}. We only provide a
 very brief overview of this subtle feature and again refer the reader
-to the reference manual for a precise definition.
-In chapter~\ref{ch:prog} we have used several examples of inductive
-data types like the data type \C{nat} and its constructors \C{O} and
-\C{S}, or the data type \C{option}, or various others.
+to the reference manual for a precise and formal account.
+
 An inductive definition simultaneously introduces
 several new objects into the context: a new type, in a given sort, and
 new terms for the constructors, with their types. For instance, the
@@ -750,14 +764,33 @@ inductive type \C{T} is always \C{T}. An inductive type may occur as
 the type of certain arguments of its constructors, like in the case of
 \C{S}. The only way to construct an inhabitant of an
 inductive type is to apply a constructor to sufficiently many
-arguments. Constructors are by definition injective functions.
+arguments:
+
+\marginpar{We cannot display the unset printing notations, and the
+  variable disappears as well. Would like to display the output too.}
+\begin{coq}{name=nat-term-examples}
+Unset Printing Notations.
+Variable n : nat.
+
+Check O.
+Check S O.
+Check S (S (S O)).
+Check S (S (S n)).
+
+\end{coq}
+
+Constructors are by definition injective functions: two terms
+featuring the same head constructor can only be equal if the arguments
+passed to this constructor are equal.\marginpar{Provide example/exercise}
 Moreover, two distinct constructors construct distinct
 terms; this is why a function with an argument of an inductive type can be
-described by pattern matching on this argument. For instance, in
-chapter~\ref{ch:prog}, we have defined the predecessor function by:
+described by \emph{pattern matching} on this argument. For instance, in
+chapter~\ref{ch:prog}, we have defined the non-zero test
+function \marginpar{Put match instead?} by:
+\index[concept]{pattern matching}
 
 \begin{coq}{name=predn}{}
-Definition predn n := if n is p.+1 then p else n.
+Definition non_zero n := if n is (S p) then true else false.
 \end{coq}
 where \C{if ... then ... else ...} is a notation for the special case of
 pattern matching with only two branches and one pattern. The definition of
@@ -780,8 +813,15 @@ Fixpoint addn n m :=
   | p.+1 => (addn p m).+1
   end.
 \end{coq}
-Note that guarded fixpoints always terminate, as a non-terminating
-term would allow proofs of absurdity (see section~\ref{ssec:indreason}).
+These fixpoints are said to be guarded because the corresponding
+function should always terminate: more precisely, the \C{Fixpoint}
+command expects termination to be visible from a syntactic criterium
+like ``all recursive calls happen on a strict sub-term''. Indeed, allowing
+non-terminating computations for well-typed terms would interact badly
+with the conversion rule, and ultimately lead to proofs of absurdity
+(see section~\ref{ssec:indreason}). \marginpar{And say something about
+non structural?}
+
 
 \section{More connectives}\label{sec:moreconns}
 We have seen in section~\ref{sec:propiuq} that functions, i.e.~terms
@@ -827,7 +867,9 @@ single constructor \C{conj} takes two
 arguments: a proof of \C{A} and a proof of \C{B}.
 Moreover \C{and} is polymorphic:
 \C{A} and \C{B} are parameters standing for arbitrary propositions.
-As a consequence it can model faithfully the logical rule \C{$\wedge_I$}.
+As a consequence, it models faithfully the introduction rule of
+conjunction, i.e. the rule govering the construction of proofs of
+conjunctive statements.
 
 Note that the definition of the pair data type,
 in section~\ref{sec:othercontainers}, is almost identical to the one
@@ -837,8 +879,9 @@ of \C{and}:
 Inductive prod (A B : Type) := pair (a : A) (b : B).
 \end{coq}
 
-Pattern matching provides a way to express the elimination rule for
-conjunction as follows:
+Pattern matching provides the elimination rule for
+conjunction, i.e. the (two) rules governing the construction of proofs
+using a conjunctive hypothesis. Here is left elimination rule:
 
 \begin{coq}{name=Ande1}{}
 Definition proj1 A B (p : A /\ B) : A :=
