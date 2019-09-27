@@ -1776,30 +1776,30 @@ is \C{(phantom Type (Equality.sort ?T))} versus
 we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Exercises}
-
-%%%%%%%%%%
-\begin{Exercise}[label=ex:sumoddsquare,difficulty=0,title={Sum of $2n$ odd numbers}]
-Show the following lemma using the theory of big operators
-
-\begin{coq}{name=bigop222}{}
-Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
-\end{coq}
-\end{Exercise}
-
-\subsection{Solutions}
-
-%%%%%%%%%
-\begin{Answer}[ref=ex:sumoddsquare]
-\begin{coq}{name=bigop222}{}
-Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
-Proof.
-elim: n => [|n IHn]; first by rewrite unlock.
-rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond /=.
-by rewrite {}IHn odd_double /= addn0 -addnn -!mulnn; ring.
-Qed.
-\end{coq}
-\end{Answer}
+% \section{Exercises}
+% 
+% %%%%%%%%%%
+% \begin{Exercise}[label=ex:sumoddsquare,difficulty=0,title={Sum of $2n$ odd numbers}]
+% Show the following lemma using the theory of big operators
+% 
+% \begin{coq}{name=bigop222}{}
+% Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
+% \end{coq}
+% \end{Exercise}
+% 
+% \subsection{Solutions}
+% 
+% %%%%%%%%%
+% \begin{Answer}[ref=ex:sumoddsquare]
+% \begin{coq}{name=bigop222}{}
+% Lemma sum_odd n : \sum_(0 <= i < n.*2 | odd i) i = n^2.
+% Proof.
+% elim: n => [|n IHn]; first by rewrite unlock.
+% rewrite doubleS big_mkcond 2?big_nat_recr // -big_mkcond /=.
+% by rewrite {}IHn odd_double /= addn0 -addnn -!mulnn; ring.
+% Qed.
+% \end{coq}
+% \end{Answer}
 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \mcbLEARN{difference with type classes, limitations}
