@@ -841,12 +841,19 @@ Fixpoint addn n m :=
 \end{coq}
 These fixpoints are said to be guarded because the corresponding
 function should always terminate: more precisely, the \C{Fixpoint}
-command expects termination to be visible from a syntactic criterium
-like ``all recursive calls happen on a strict sub-term''. Indeed, allowing
-non-terminating computations for well-typed terms would interact badly
-with the conversion rule, and ultimately lead to proofs of absurdity
-(see section~\ref{ssec:indreason}). \marginpar{And say something about
-non structural?}
+command expects termination to be visible from a syntactic
+criterium. For instance, in the case of \C{addn}, the recursive call
+happens on a strict subterm of the argument. Allowing
+non-terminating computations for well-typed terms would actually
+interact badly with the conversion rule, and ultimately lead to proofs
+of absurdity (see section~\ref{ssec:indreason}). When the termination
+argument of a function falls outside this syntactic guard condition,
+its definition usually involves an extra argument, witnessing the
+decreasing order relation. For a more detailed exposition of these
+techniques, see for instance the corresponding chapter in Bertot and
+Casteran's book~\cite{BC04}.
+
+
 
 
 \section{More connectives}\label{sec:moreconns}
