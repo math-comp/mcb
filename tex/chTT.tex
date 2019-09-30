@@ -766,8 +766,6 @@ the type of certain arguments of its constructors, like in the case of
 inductive type is to apply a constructor to sufficiently many
 arguments:
 
-\marginpar{We cannot display the unset printing notations, and the
-  variable disappears as well. Would like to display the output too.}
 \begin{coq}{name=nat-term-examples}{}
 Unset Printing Notations.
 Variable n : nat.
@@ -779,27 +777,55 @@ Check S (S (S n)).
 
 \end{coq}
 
+Note that for the sake of clarity, we do not make use in this section
+of the posfix  notations \C{n.+1} for term \C{(S n)}, \C{n.+2} for
+term \C{(S (S n))}, etc. so as to display constructors explicitely in examples.
+
 Constructors are by definition injective functions: two terms
 featuring the same head constructor can only be equal if the arguments
-passed to this constructor are equal.\marginpar{Provide example/exercise}
+passed to this constructor are equal. E.g., in the following goal:
+
+\begin{coqout}{name=nat-before-injection}{}
+n, m : nat
+eqSnSm : S n = S m
+========================
+G
+\end{coqout}
+
+where \C{G} is an arbitrary formula, it is possible to simplify
+hypothesis \C{eqSnSm}:
+
+\begin{coq-left}{name=nat-after-injection}{width=5cm}
+case: eqSnSm.
+$~$
+$~$
+$~$
+$~$
+\end{coq-left}
+\begin{coqout-right}{}{width=7cm}
+n, m : nat
+========================
+n = m -> G
+\end{coqout-right}
+
 Moreover, two distinct constructors construct distinct
 terms; this is why a function with an argument of an inductive type can be
 described by \emph{pattern matching} on this argument. For instance, in
 chapter~\ref{ch:prog}, we have defined the non-zero test
-function \marginpar{Put match instead?} by:
+function by:
 \index[concept]{pattern matching}
 
 \begin{coq}{name=predn}{}
 Definition non_zero n := if n is (S p) then true else false.
 \end{coq}
-where \C{if ... then ... else ...} is a notation for the special case of
-pattern matching with only two branches and one pattern. The definition of
-the terms of the formalism is in fact extended with the
-\C{match  ... with ... end} construction described in
-section~\ref{ssec:nat}. A special reduction rule expresses that
-pattern matching a term which features a certain constructor in head
-position reduces to the term in the corresponding branch of the case
-analysis.
+where we recall from Chapter~\ref{ch:prog} that \C{if ... then
+  ... else ...} is a notation for the special case of pattern matching
+with only two branches and one pattern. The definition of the terms of
+the formalism is in fact extended with the \C{match ... with ... end}
+construction described in section~\ref{ssec:nat}. A special reduction
+rule expresses that pattern matching a term which features a certain
+constructor in head position reduces to the term in the corresponding
+branch of the case analysis.
 
 The definition of the terms of CIC also includes so-called
 \emph{guarded fixpoints}, which represent functions with a recursive
@@ -810,7 +836,7 @@ instance when defining the addition of two natural numbers as:
 Fixpoint addn n m :=
   match n with
   | 0 => m
-  | p.+1 => (addn p m).+1
+  | S p => S (addn p m)
   end.
 \end{coq}
 These fixpoints are said to be guarded because the corresponding
