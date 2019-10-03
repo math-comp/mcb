@@ -1,0 +1,7 @@
+CIC, Gallina,...
+
+index, families, parameters
+
+syntax of inductives
+
+fixpoint, recursive
