@@ -1,0 +1,64 @@
+- renommer un y détruit par cas en y' avant de discuter la politique
+  de (re)nommage.
+-- ok
+
+- discussion sur la syntaxe d'un dependent revert: il y a deux choses,
+le dependent revert (ne pas nommer explicitement les éléments
+dépendants qui doivent être généralisés).
+
+case: y => gt [| y'] in Hy (dispo)
+case: !y => gt [| y']. (généraliserait tout ce qui dépend de y, a
+priori sans intro)
+case: !y => gt [| y'] in !*  (réintroduction avec les même noms)
+
+Pour le dernier, le ! pourrait être un délimiteur qui marque dans
+l'intro pattern le bloc qu'on doit réintroduire à l'identique
+
+- p88 Pas clair que pour notre discours move: (leqnn 77) est mieux que
+  have := (leqnn 777).
+Il faut dire, peut-être ailleurs, que l'intérêt du premier est qu'il
+  généralise toutes les occurrences. Ce qui n'est pas le point du
+  discours sur le pile de cet endroit.
+
+- Faire une passe d'uniformité sur le code inliné : des fois on a des
+  "", des fois non. Essayer le fond grisé à la markdown? 
+
+- En tout cas il faut supprimer les blocs à un seul caractère comme
+  ":", et mettre semi-column  à la place. A minima faire une macro
+  spécifique pour les symboles atomiques.
+
+- revenir globalement sur l'exo des stamps pour le remettre au dernier
+  cri de mathcomp
+
+- à voir si on discute/propose une alternative à la l.3 de
+  prime_above, p.92.
+
+- ds le même script, commenter la dernière ligne pour dire ce qu'elle
+  fait comme étape de preuve papier.
+
+- Section 4.2.2 : prévenir qu'on va plus généralement discuter bonnes
+  pratiques, et en particulier wlog mais pas que sinon on s'ennuie.
+
+- p93 (et ailleurs sans doute)
+Ce serait pertinent de montrer tout le contexte, en particulier pour
+voir la négation de l'hypothèse n2 <= n1.
+
+- p95
+On arrive pas à inférer le motif de la tactique. Peut-être un exemple
+à 3 variables, par exemple un exemple avec "colinear v1 v2 v3". Juste
+donner la ligne de wlog.
+
+-p96 : pourrait-on déccrire en une ligne ce que fait /leq_trans->
+
+- les arguments de 4.3 ne sont peut-être pas dans le bon ordre. Le
+  dernier, en tout cas la généralisation des defs est sans doute le
+  plus important. Arthur donne comme exemple une lib sur les graphes,
+  graduellement généralisée pour pondérer les données.
+
+- Placer les "preuves papiers" comme un idéal n'est pas pertinent pour
+  la meta-théorie de PL où ces preuves papiers ne sont pas un modèle.
+
+- Donner leur place aux procédures de normalisation.
+
+
+

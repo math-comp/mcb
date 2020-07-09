@@ -224,17 +224,17 @@ One could also examine \C{y}: it can't be \C{0}, since it would contradict
 the assumption saying that \C{y} is \C{odd}.
 
 \begin{coq-left}{}{width=7cm}
-move=> [x [//|y]] /= /prime_gt1-x_gt1.
+move=> [x [//|z]] /= /prime_gt1-x_gt1.
 $~$
 $~$
 $~$
 $~$
 \end{coq-left}
 \begin{coqout-right}{name=Stack2}{width=5cm}
- x, y : nat
+ x, z : nat
  x_gt1 : 1 < x
  ========================
- ~~ odd y -> 2 < y.+1 + x
+ ~~ odd z -> 2 < z.+1 + x
 \end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /view} (view application)}
 \index[ssr]{\C{tactic => ..}!\C{=> //} (close trivial goals)}
@@ -243,19 +243,22 @@ This time, the destruction of \C{y} generates two cases for the two
 branches; hence the \C{[ .. | .. ]} syntax.  In the first one, when
 \C{y} is \C{0},
 the \C{//} action solves the goal, by the trivial means
-of the \C{by []} terminator.  In the second branch we name \C{y} the
-new variable (which is legitimate, since the old \C{y} has been
-disposed of).
+of the \C{by []} terminator.  In the second branch we name \C{z} the
+new variable (the predecessor of what used to be called \C{y}).
+Since \C{y} is destructed we could have reused that name for
+its predecessor, as it is often done in the \mcbMC{} library.
+Recall the definition of \C{odd} \marginpar{odd is never given}:
+when applied to \C{z.+1} it simplifies to \C{\~\~ odd z}.
 
-Now, the fact that \C{y} is even is not needed to conclude, so we can
+Now, the fact that \C{z} is even is not needed to conclude, so we can
 discard it by giving it the \C{\_} dummy name.~\footnote{
-If an assumption has already a name it can be discarded by
+If an assumption has already a name, it can be discarded by
 writing its name in curly braces: e.g. \C{move=> \{x_gt1\}}.
 \index[ssr]{\C{tactic => ..}!\C{=> \{name\}} (disposal)}
 }
 
 \begin{coq}{}{}
-by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
+by move=> [x [//|z]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 \end{coq}
 
 We finally conclude with the \C{apply:} command. In the example just
@@ -277,11 +280,11 @@ Arguments m, n are implicit
 \C{ltn\_addl}
 (the lemma name) and the given argument \C{x_gt1}.
 Since we are passing \C{x\_gt1}, the
-variable \C{m} picks the value \C{1}.  The conclusion of \C{ltn\_addl}
-hence unifies with \C{(2 < y.+1 + x)} because both \C{+} and \C{<} are
+variable \C{m} takes the value \C{1}.  The conclusion of \C{ltn\_addl}
+hence unifies with \C{(2 < z.+1 + x)} because both \C{+} and \C{<} are
 defined as programs that compute: Namely, addition exposes a \C{.+1} by
-reducing to \C{2 < (y+x).+1}; then \C{<} (or, better, the underlying
-\C{<=}) eats a successor from both sides, leading to \C{1 < y + x},
+reducing to \C{2 < (z + x).+1}; then \C{<} (or, better, the underlying
+\C{<=}) eats a successor from both sides, leading to \C{1 < z + x},
 which looks like the conclusion of the lemma we apply.
 
 Here we have shown all possible actions one can perform in an intro
@@ -292,7 +295,9 @@ operator \C{=>}.  At the same time, a trivial sub-proof like this one
 should take no more than a line, and in that case one typically
 sacrifices readability in favor of compactness: what would you learn by
 reading a trivial proof?  Of course,
-finding the right balance only comes with experience.
+finding the right balance only comes with experience. As a rule
+of thumb: follow the granularity of how you wound naturally
+read your script to someone else.
 
 \gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
