@@ -106,7 +106,7 @@ mathematical statements and proofs in the \Coq{} proof assistant
 is called \emph{Gallina}.
 This language is an evolution of the \emph{\mcbCIC{}}
 (CIC)~\cite{coquand:huet:88,CoPa89} implemented
-by the early versions of \Coq{} in the 80's. In turn, CIC is one of the many
+in the early versions of \Coq{} in the 80's. In turn, CIC is one of the many
 descendants of the intuitionistic type theory~\cite{ITT} Martin-Löf developed in
 the 70's. In order to avoid ambiguities with other type theories we refer to
 this family of formal systems using the term \emph{dependent type theory}.\\
@@ -147,9 +147,9 @@ By contrast, proof assistants based on a flavor of dependent
 type theory, like \Coq{}, embrace an approach coined
 \emph{propositions-as-types}~\cite{ch}, and use the same language of
 types in a uniform way to describe mathematical objects, mathematical
-assertions, and their proofs.  As we shall see, there is a significant 
-difference in phrasing the rules dictating which sentences and proofs 
-are well-formed.
+assertions, and their proofs.
+As we shall see the rules dictating which sentences and proofs
+are well-formed are phrased quite differently in the two formal languages.
 
 
 In set theory the rules which govern the construction of
@@ -171,11 +171,10 @@ type. This way, proving a statement consists in fact in constructing a
 term of the corresponding type. Objects of the formalism are programs,
 and proofs are themselves objects of the formalism.
 
-\marginpar{meta is condusing here: take more time to talk about this}
-In this setting, the analogue of the meta-statement
-that a given proposition has a proof is the meta-statement that a
-given term has a given type. Such a meta-statement is called a
-\emph{typing judgment}. It is a ternary relation written as follows:
+% \marginpar{meta is condusing here: take more time to talk about this}
+In this setting the analogue of ``a proposition has a proof''
+is that ``a term has a given type''. Such a statement, called a
+\emph{typing judgment}, is a ternary relation written as follows:
 % using the \emph{turnstile} $\vdash$ symbol:
 $$\Gamma \vdash t : T$$
 and reads:
@@ -208,8 +207,8 @@ Check 3 : nat.
 \coqrun{name=r1}{ssr,check-3}
 
 The context of a typing judgment includes all the variables and
-hypothesis currently assumed, and validate these assumptions.
-For instance, in a context containing a certain variable \C{n} with
+hypothesis currently assumed. %, and validate these assumptions.
+For instance, in a context containing a variable \C{n} with
 type \C{nat}, the term \C{n + n} has type \C{nat}:
 
 \begin{coq-left}{name=check-nn}{}
@@ -217,17 +216,18 @@ Variable n : nat.
 Check n + n : nat.
 \end{coq-left}
 \begin{coqout-right}
+$~$
 n + n : nat
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-nn}
 
-And \Coq{} complains if we try to verify the typing judgment asserting it
-has type \C{bool}. In this case, it even computes and displays the
+\Coq{} complains if we try to verify the typing judgment asserting the
+same term has type \C{bool}. In this case, it even computes and displays the
 correct type:
 
 \begin{coq-left}{name=check-nnbool}{}
 Fail Check n + n : bool.
-
+$~$
 \end{coq-left}
 \begin{coqout-right}
 The term "n + n" has type "nat" while it is expected to have type "bool".
@@ -235,7 +235,7 @@ The term "n + n" has type "nat" while it is expected to have type "bool".
 \coqrun{name=r2}{ssr,check-nnbool}
 
 Our last example is a typing judgment  $\Gamma \vdash t : T$ where
-the term $t$ is a proof. Indeed, again in a context containing a
+the term $t$ is a proof. Indeed, in a context containing a
 variable \C{n} of type \C{nat}, the term
 \C{(muln0 n)} has type \C{n * 0 = 0} and is thus a proof of the
 corresponding equational assertion:
@@ -243,15 +243,28 @@ corresponding equational assertion:
 \begin{coq-left}{name=check-negb}{}
 Variable n : nat.
 Check muln0 n : n * 0 = 0.
-
 \end{coq-left}
 \begin{coqout-right}
+$~$
 muln0 n : n * 0 = 0
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-muln0}
 
-The context of a typing judgment logs all the variables and the facts
-currently assumed.
+% The context of a typing judgment logs not only the variables but
+% also the facts currently assumed. Indeed an assumption like
+% \C{p_pr} is a just a variable that has a statement as its type.
+% 
+% \begin{coq-left}{name=check-prime}{}
+% Variable p : nat
+% Variable p_pr : prime p
+% Check prime_gt0 p p_pr : 0 < p.
+% \end{coq-left}
+% \begin{coqout-right}
+% $~$
+% $~$
+% prime_gt0 p p_pr : 0 < p
+% \end{coqout-right}
+
 
 % Maybe move to the next section?
 %  It also registers the definitions available, like in:
@@ -269,8 +282,10 @@ currently assumed.
 \section{Terms, types, sorts}\label{sec:terms}
 
 This section makes more precise what contexts, terms and types
-are. Note that the description is restricted to a subset of Gallina,
-for the sake of the exposition. We refer again the reader looking for
+are. Note that,
+for the sake of the exposition,
+the description is restricted to a subset of Gallina.
+We refer again the reader looking for
 an exhaustive description to the corresponding chapter of \Coq{}'s
 reference manual~\cite{Coq:manual}.
 
@@ -279,12 +294,12 @@ set theory makes between sets and propositions: type theory is based
 on a same and single collection of inductively defined terms. A
 judgment $\Gamma \vdash t : T$ relates two \emph{terms}, $t$ and $T$ (in the
 context $\Gamma$), and $T$ is called a \emph{type} because it appears
-on the right of the column symbol in a typing judgment. Term $T$ can be
+on the right hand side of the column symbol in a typing judgment. Term $T$ can be
 thought of as a label for a collection of terms, and the judgment
 $\Gamma \vdash t : T$, as the statement that (in context $\Gamma$)
 ``term $t$ belongs to the collection $T$'', or even, to some extent,
 $t\in T$. 
-For instance, we have used in previous example assumptions of the
+For instance, we have used in previous examples assumptions of the
 form \C{n : nat} to model the sentence ``let $n$ be a natural number''.
 
 This set-theoretic analogy should be taken with a pinch of salt
@@ -294,11 +309,11 @@ different in set theory, where an object $a$ can be constructed without
 necessarily being casted as being the element of a super-set
 $A$. Second, a judgment is not a proposition in the same sense as the
 set-theoretic sentence $t \in T$ would be. In particular, one cannot
-reason (internally) by case analysis on the meta-proof that
+reason (internally) by case analysis on the proof that
 $t$ has type $T$, nor can we disprove (internally) that $t$ has type $T$ for some particular
 $T$. Finally, as we shall see later in this section, substitution of
 equals does not behave the same for terms at the left of a column, and
-for those on the right ---types.
+for those on the right --- types.
 
 
 We assume a collection of distinct names, used to denote atomic terms
@@ -363,7 +378,8 @@ Prop : Type@{U3} (* Prop < U3 *)
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-prop}
 
-Similarly, \C{Set} has type \C{Type}:
+\C{Set} happens to be a name for the smallest element of the
+hierarchy of \C{Type}:
 
 \begin{coq-left}{name=check-set}{}
 Check Set : Type.
@@ -373,17 +389,9 @@ Set : Type@{U4} (* Set < U3 *)
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-set}
 
-\noindent
-\C{Set} is a name for the smallest element of the hierarchy of \C{Type}s.
-
 Terms \C{nat}, \C{bool}, \C{Prop} are simple, atomic types, which can be used
 to build non-atomic ones. For instance, in Chapter~\ref{ch:proofs}, we
-met the type of functions from natural numbers to boolean, which is:
-
-\begin{coq}{name=check-bool-nat}{}
-Check nat -> bool : Type.
-\end{coq}
-
+met the type of functions from natural numbers to boolean, which is\C{nat -> bool}.
 Similarly the type of addition over natural numbers is 
 \C{nat -> nat -> nat}, and the type of boolean negation is 
 \C{bool -> bool}.
@@ -477,7 +485,7 @@ Variable f : nat -> bool.
 Check f 3 : bool.
 Fail Check f true : bool.
 
-(* g : forall n, t n *)
+Variable g : forall n, t n.
 Check g 3 : t 3.
 \end{coq}
 
@@ -487,7 +495,7 @@ by types on mathematical statements. This rule will rule out
 nonsensical assertions, like ``$\pi$ is equilateral'' or ``2 is a
 Banach space''. But the same rule shall also play a nastier role, for
 instance if the user wants to casually embed natural numbers into
-integers, and integer into rational numbers: working with these
+integers, or and integer into rational numbers: working with these
 obvious inclusions might require an explicit cast in a typed setting,
 if $\mathbb{N}$, $\mathbb{Z}$, $\mathbb{Q}$ are represented by
 distinct types.
@@ -511,7 +519,7 @@ the name and type of the argument, the body \C{n == 0} of the definition
 As we have seen in Chapter~\ref{ch:prog}, a function is defined by
 \emph{binding} its argument in the body of its definition: in
 \C{bar}, the variable \C{n}, on the left of the \C{:=} delimiter, is
-bound in the body of the definiion, the \C{n} on the right of the \C{:=}
+bound in the body of the definition, the \C{n} on the right of the \C{:=}
 delimiter. When a defined function is applied to its argument, the
 resulting term is \emph{computed} by substituting the bound variable
 for the value of the argument.
@@ -522,10 +530,9 @@ Print bar.
 Compute bar 4.
 \end{coq-left}
 \begin{coqout-right}
-bar = fun n => n
-    : nat -> nat 
-= 4
-: nat
+$~$
+bar = fun n => n : nat -> nat
+= 4 : nat
 \end{coqout-right}
 
 
@@ -537,10 +544,11 @@ sort \C{Prop}. A term of type \C{A -> B} is a function, that
 transforms any term of type \C{A} into a term of type \C{B}, and that
 can be applied to any term of type \C{A}. This is the central typing
 rule of our formal system. It is a deep remark that the
-typing rules governing the construction of a term with an arrow type,
-and the application of such a term to another can be read as the
-introduction rule and elimination rule of the implication,
-respectively. For instance, let us analyse a proof that modus ponens holds:
+typing rules for function formation and function application
+can be read as the
+introduction rule and elimination rule of logical implication,
+respectively.
+For instance, let us analyse a proof that modus ponens holds:
 
 \begin{coq}{}{}
 Lemma modus_ponens (A B : Prop) : (A -> B) -> A -> B.
@@ -634,7 +642,7 @@ shows up in the type of the resulting term \C{(addnC 3)}:  The type of the
 \C{addnC} program \emph{depends} on the value the program is applied
 to.  Functions whose codomain type depend on the value of their input
 have a type of the form $\forall x : A, B$, where $x$ can occur in
-$B$. When $B$ does not depend on $x$ the same type is written
+$B$. When $B$ does not depend on $x$ this type is written
 $A\rightarrow B$, avoiding the useless introduction of a name $x$.
 The former is sometimes called the \emph{dependent function space}
 ($\forall$) and the latter, the standard function space ($\to$).
@@ -676,10 +684,10 @@ computation in this dependent type theory, and plays a fundamental
 role in the formalization choices adopted in the Mathematical
 Component libraries. Computation is modeled by rewrite rules explaining how to
 apply functions to their argument. For instance, the so-called
-$\beta$-reduction rule rewrites an application of the form
-\C{(fun x => t) u} into $t[u/x]$: the formal argument
+$\beta$-reduction rule rewrites the application of a function to
+an argument \C{(fun x => t) u} into $t[u/x]$: the formal argument
 $x$ is substituted by the actual argument $u$ in the body $t$ of the
-function. A similar computation rule models the computation of a term of
+function. A similar rule models the computation of a term of
 the shape \C{(let x := u in t)} into $t[u/x]$. Two terms
 $t_1$ and $t_2$ that are equal modulo computation rules are said to be
 \emph{convertible}, written $t_1{}\equiv{}t_2$, and these terms
@@ -713,8 +721,19 @@ variables: The term \C{(isT : true)}\footnote{In other words \C{isT} is a proof 
 \C{(0 < n.+1)}, as well as a proof of \C{(0 != p.+1)}.
 \index[coq]{\C{isT}}
 
-\marginpar{Say here that computation can be used for automation? and
-  simpl? and that controlling it is a delicate issue?}
+It is out of scope for this book to detail other uses of
+conversion. We just mention that while the \mcbMC{} library takes
+advantage of conversion to deal with ``little'' computations like
+the ones above, the Coq system efficiently supports ``large''
+computations as well. One idiomatic example is found in the formal proof
+of the Four-Color theorem~\cite{Gonthier08}, another one in
+the implementation of the proof command \C{ring} that decides
+equalities in the
+homonymous algebraic structure~\cite{gregoire:hal-00819484}.
+
+
+%\marginpar{Say here that computation can be used for automation? and
+%  simpl? and that controlling it is a delicate issue?}
 
 
 % One can also benefit from convertibility whenever one applies a lemma;
@@ -755,13 +774,14 @@ new terms for the constructors, with their types. For instance, the
 command:
 
 \begin{coq}{}{}
-Inductive nat : Type := O : nat | S (n : nat).
+Inductive nat : Set := O : nat | S (n : nat).
 \end{coq}
-introduces a new type \C{nat : Type} and two new terms \C{(O : nat)} and
-\C{(S : nat -> nat)}. Constructors are functions, possibly of zero
-arguments like \C{O}, and the codomain of a constructor of the
-inductive type \C{T} is always \C{T}. An inductive type may occur as
-the type of certain arguments of its constructors, like in the case of
+introduces a new type \C{nat : Set} and two new terms \C{(O : nat)} and
+\C{(S : nat -> nat)}. Constructors of a type \C{T} are function symbols,
+possibly of zero arguments like \C{O}, and the codomain of their type is
+always \C{T}. The inductive type \C{T} may occur in
+the type of certain arguments of its constructors, like \C{nat}
+in the type of
 \C{S}. The only way to construct an inhabitant of an
 inductive type is to apply a constructor to sufficiently many
 arguments:
@@ -778,12 +798,14 @@ Check S (S (S n)).
 \end{coq}
 
 Note that for the sake of clarity, we do not make use in this section
-of the posfix  notations \C{n.+1} for term \C{(S n)}, \C{n.+2} for
-term \C{(S (S n))}, etc. so as to display constructors explicitely in examples.
+of the postfix  notations \C{n.+1} for term \C{(S n)}, \C{n.+2} for
+term \C{(S (S n))}, etc. so as to display constructors 
+explicitly in examples.
 
 Constructors are by definition injective functions: two terms
 featuring the same head constructor can only be equal if the arguments
 passed to this constructor are equal. E.g., in the following goal:
+\index[concept]{injectivity of constructors}
 
 \begin{coqout}{name=nat-before-injection}{}
 n, m : nat
@@ -841,8 +863,8 @@ Fixpoint addn n m :=
 \end{coq}
 These fixpoints are said to be guarded because the corresponding
 function should always terminate: more precisely, the \C{Fixpoint}
-command expects termination to be visible from a syntactic
-criterium. For instance, in the case of \C{addn}, the recursive call
+command expects termination to follow from a syntactic
+criterion. For instance, in the case of \C{addn}, the recursive call
 happens on a strict subterm of the argument. Allowing
 non-terminating computations for well-typed terms would actually
 interact badly with the conversion rule, and ultimately lead to proofs
@@ -851,7 +873,7 @@ argument of a function falls outside this syntactic guard condition,
 its definition usually involves an extra argument, witnessing the
 decreasing order relation. For a more detailed exposition of these
 techniques, see for instance the corresponding chapter in Bertot and
-Casteran's book~\cite{BC04}.
+Casteran's book~\cite[Chapter 14]{BC04}.
 
 
 
@@ -972,7 +994,7 @@ ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
 
 Both \C{ex} and \C{ex_intro} are parameterized by \C{(A : Type)}: as
 we have seen in chapter~\ref{ch:prog}, the \C{(forall A : Type)}
-quantification indicates that \C{ex} are \C{ex_intro} \C{polymorphic}
+quantification indicates that \C{ex} are \C{ex_intro} are polymorphic
 constants, that can be instantiated for any type. Both \C{ex} and
 \C{ex_intro} also have a parameter of type  \C{(A -> Prop)}: since it
 does not appear in the rest of the type of \C{ex}, this parameter is
@@ -986,7 +1008,7 @@ inductive declaration can be used on any formula. Finally, the
 quantifier, which binds a term variable \C{a} representing the witness
 of the existential statement for \C{P}.\\
 
-Let us also observe the inductive definition of the disjunction \C{or}
+We now look at the inductive definition of the disjunction \C{or}
 and its two constructors \C{or\_introl} and \C{or\_intror}.
 
 \begin{coq}{name=Or}{}
@@ -1092,14 +1114,15 @@ finds an extensive study of this subject in~\cite{hottbook}.  %% Later in this
 
 In chapter~\ref{ch:prog} we have seen how to build and use (call or destruct)
 anonymous functions and data types.  All these
-constructions have found counterparts in the Curry-Howard correspondence.
+constructions have found counterparts in the propositions-as-types correspondence.
 The only missing piece is recursive programs.  For example,
 \C{addn} was written by recursion on its first argument, and is a
 function taking as input two numbers and producing a third one.
 We can write programs by recursion that take as input, among regular  data,
 proofs and produce  other proofs as output.  Let's look at the
-induction principle for natural numbers through the looking glasses of the
-Curry-Howard isomorphism.
+induction principle for natural numbers through the looking glasses
+ of the
+propositions-as-types correspondence.
 
 \begin{coq}{}{width=3.5cm}
 About nat_ind.
@@ -1202,11 +1225,11 @@ Check oops (Hide oops).  (* : False *)
 \end{coq}
 Note how \C{oops} calls itself, as in the previous example,
 even if it is not a recursive function.
-Such restriction, called
-\emph{positivity condition}, is out of scope for this book.
-(Roughly speaking, it says that constructors for an inductive data
+Such restriction is called
+\emph{positivity condition} and,
+roughly speaking, it says that constructors for an inductive data
 type can only depend on maps \emph{to} the data type but not on maps
-\emph{from} it.)
+\emph{from} it.
 The interested reader shall refer to~\cite{Coq:manual}.
 \index[concept]{positivity}
 
