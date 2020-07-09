@@ -224,17 +224,17 @@ One could also examine \C{y}: it can't be \C{0}, since it would contradict
 the assumption saying that \C{y} is \C{odd}.
 
 \begin{coq-left}{}{width=7cm}
-move=> [x [//|y]] /= /prime_gt1-x_gt1.
+move=> [x [//|z]] /= /prime_gt1-x_gt1.
 $~$
 $~$
 $~$
 $~$
 \end{coq-left}
 \begin{coqout-right}{name=Stack2}{width=5cm}
- x, y : nat
+ x, z : nat
  x_gt1 : 1 < x
  ========================
- ~~ odd y -> 2 < y.+1 + x
+ ~~ odd z -> 2 < z.+1 + x
 \end{coqout-right}
 \index[ssr]{\C{tactic => ..}!\C{=> /view} (view application)}
 \index[ssr]{\C{tactic => ..}!\C{=> //} (close trivial goals)}
@@ -243,19 +243,22 @@ This time, the destruction of \C{y} generates two cases for the two
 branches; hence the \C{[ .. | .. ]} syntax.  In the first one, when
 \C{y} is \C{0},
 the \C{//} action solves the goal, by the trivial means
-of the \C{by []} terminator.  In the second branch we name \C{y} the
-new variable (which is legitimate, since the old \C{y} has been
-disposed of).
+of the \C{by []} terminator.  In the second branch we name \C{z} the
+new variable (the predecessor of what used to be called \C{y}).
+Since \C{y} is destructed we could have reused that name for
+its predecessor, as it is often done in the \mcbMC{} library.
+Recall the definition of \C{odd} \marginpar{odd is never given}:
+when applied to \C{z.+1} it simplifies to \C{\~\~ odd z}.
 
-Now, the fact that \C{y} is even is not needed to conclude, so we can
+Now, the fact that \C{z} is even is not needed to conclude, so we can
 discard it by giving it the \C{\_} dummy name.~\footnote{
-If an assumption has already a name it can be discarded by
+If an assumption has already a name, it can be discarded by
 writing its name in curly braces: e.g. \C{move=> \{x_gt1\}}.
 \index[ssr]{\C{tactic => ..}!\C{=> \{name\}} (disposal)}
 }
 
 \begin{coq}{}{}
-by move=> [x [//|y]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
+by move=> [x [//|z]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
 \end{coq}
 
 We finally conclude with the \C{apply:} command. In the example just
@@ -277,11 +280,11 @@ Arguments m, n are implicit
 \C{ltn\_addl}
 (the lemma name) and the given argument \C{x_gt1}.
 Since we are passing \C{x\_gt1}, the
-variable \C{m} picks the value \C{1}.  The conclusion of \C{ltn\_addl}
-hence unifies with \C{(2 < y.+1 + x)} because both \C{+} and \C{<} are
+variable \C{m} takes the value \C{1}.  The conclusion of \C{ltn\_addl}
+hence unifies with \C{(2 < z.+1 + x)} because both \C{+} and \C{<} are
 defined as programs that compute: Namely, addition exposes a \C{.+1} by
-reducing to \C{2 < (y+x).+1}; then \C{<} (or, better, the underlying
-\C{<=}) eats a successor from both sides, leading to \C{1 < y + x},
+reducing to \C{2 < (z + x).+1}; then \C{<} (or, better, the underlying
+\C{<=}) eats a successor from both sides, leading to \C{1 < z + x},
 which looks like the conclusion of the lemma we apply.
 
 Here we have shown all possible actions one can perform in an intro
@@ -292,7 +295,9 @@ operator \C{=>}.  At the same time, a trivial sub-proof like this one
 should take no more than a line, and in that case one typically
 sacrifices readability in favor of compactness: what would you learn by
 reading a trivial proof?  Of course,
-finding the right balance only comes with experience.
+finding the right balance only comes with experience. As a rule
+of thumb: follow the granularity of how you wound naturally
+read your script to someone else.
 
 \gotcha{The case intro pattern \C{[..|..]} obeys an exception: when it is the first
 item of an intro pattern, it does not perform a case analysis, but only branch
@@ -379,9 +384,8 @@ The idea behind the syntax here is that when we apply a view \C{v} to
 the top stack item (say, \C{top}), by writing \C{/v}, we are
 forming the term \C{(v top)}, whereas
 when we specialize the top stack item \C{top} to an object \C{x},
-by writing \C{/(_ x)}, we are forming the term \C{(top x)}.  The \C{_}
-is a placeholder for the top item, and is
-omitted in \C{/(v _)}.
+by writing \C{/(_ x)}, we are forming the term \C{(top x)}.
+The application of a view written \C{/v} is short for \C{/(v _)}.
 
 When the top stack item is an equation, one can substitute it into
 the rest of the goal, using \C{<-} and \C{->} for
@@ -506,7 +510,7 @@ subgoal 2 is:
  odd y'.+1 -> 2 < y'.+1 + x
 \end{coqout-right}
 
-At the left of the \C{:} operator one can also put a name for an
+At the left of the ``\C{:}'' operator one can also put a name for an
 equation that links the term at the top of the stack before and
 after the execution of the tactic. For example,
  \C{case E: y odd\_y => [|y']} leads to
@@ -532,9 +536,11 @@ the following two subgoals:
 Last, one can push any term onto the stack -- whether or not this
 term appears in the context. For example,
 ``\C{move: (leqnn 7)}'' pushes on the stack
-the additional assumption \C{(7 <= 7)} (and thus
-``\C{move: (leqnn 7) => leq77}'' brings this assumption into the context
-under the name \C{leq77}).
+the additional assumption \C{(7 <= 7)}.
+% and thus
+%``\C{move: (leqnn 7) => leq77}'' brings this assumption into the context
+%under the name \C{leq77}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Example: strengthening induction}
@@ -543,7 +549,7 @@ under the name \C{leq77}).
 \label{sec:strongind}
 
 As an exercise we show how the \C{elim} tactic combined with the bookkeeping
-operator \C{:} lets one perform, on the fly, a stronger variant of
+operator ``\C{:}'' lets one perform, on the fly, a stronger variant of
 induction called ``course of values'' or ``strong induction''.
 % [DG] I've never seen it called "course of values". Apparently this
 % name is mostly used in computability theory? But "strong induction"
@@ -859,15 +865,24 @@ We state our theorem using a
 ``synonym'' of the exists quantifier that is specialized to carry two
 properties.  This way the statement is simpler to destruct: with just one
 case analysis we obtain the witness and the two properties.
-We also resort to the following lemmas.
+
+\begin{coq}{}{title=Ex2}
+Inductive ex2 A P Q : Prop := ex_intro2 x of P x & Q x.
+Notation "exists2 x , p & q" := (ex2 (fun x => p) (fun x => q)).
+\end{coq}
+\index[coq]{\C{exists2}}
+
+We also resort to the following notations and lemmas.
 
 \begin{coq}{}{title=Tools}
+Notation "n `!" := (factorial n).
 Lemma fact_gt0 n : 0 < n`!.
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Lemma pdivP n : 1 < n -> exists2 p, prime p & p %| n,
 Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
 \end{coq}
+\index[coq]{\C{`!}}
 
 \noindent
 The first step is to prove that $m! + 1$ is greater than $1$, a triviality.
@@ -945,7 +960,7 @@ duplication).  The language of
 We prove the following characterization of the max of two natural numbers:
 \[
 \forall n_1, n_2, m, \quad m \le \max(n_1,n_2)
-\Leftrightarrow m \le n_1 \textrm{ or } m \le n_2
+\;\Leftrightarrow\; m \le n_1 \textrm{ or } m \le n_2
 \]
 
 The proof goes as follows: Without loss of generality we can assume that
@@ -967,8 +982,10 @@ The proof uses the following lemmas.  Pay attention to the premise of
 
 \begin{coq}{}{title=Tools}
 Lemma orP {a b : bool} : a || b -> a \/ b.
-Lemma orb_idr (a b : bool) : (b -> a) -> a || b = a.
+Lemma orb_idr (a b : bool) : (b -> a) -> (a || b) = a.
+Lemma orbC a b : a || b = b || a.
 Lemma maxn_idPl {m n} : n <= m -> maxn m n = m.
+Lemma maxnC m n : maxn m n = maxn n m.
 Lemma leq_total m n : (m <= n) || (n <= m).
 \end{coq}
 
@@ -1055,7 +1072,8 @@ Once we have such extra fact in our context we reason by cases on
 the order relation and we conclude.  Remark that the last line instantiates
 \C{th_sym} \emph{in each branch} using the corresponding
 hypothesis on \C{n1} and \C{n2} generated by the case analysis.
-As expected the two instances are symmetric.
+If we stop just before \C{; last rewrite ...} these are the (symmetric)
+goals:
 
 \begin{coqout}{}{}
 2 subgoals
@@ -1070,8 +1088,9 @@ subgoal 2 is:
 (m <= maxn n2 n1) = (m <= n2) || (m <= n1) ->
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
-This is exactly what is needed in the first branch of the case analysis.
-The last subgoal just requires commuting \C{max} and \C{||}.
+The instance of \C{th_sym} is is exactly what is needed in the
+first branch, while the last goal requires the commutativity of
+\C{max} and \C{||}.
 
 We can further improve the script.  For example we could rephrase
 the proof putting in front the justification of the symmetry, and
@@ -1097,7 +1116,7 @@ we adopt in the \mcbMC{} library.
 There is still a good amount of repetition in the current script.
 In particular the main conjecture has been almost copy-pasted in
 order to invoke \C{have} or \C{suff}.  When this repetition
-is a severe problem, i.e. the statement to copy is large, one
+is undesirable, i.e. the statement to copy is large, one
 can resort to the \C{wlog} tactic (or \C{without loss}).
 
 \begin{coq}{}{}
@@ -1111,27 +1130,29 @@ Qed.
 \end{coq}
 \index[ssr]{\C{wlog} also \C{without loss}}
 
-Remark how \C{wlog} only needs the statement of the extra assumption,
-and which portion of the context needs to be abstracted, here \C{n1} and
-\C{n2}.  The sub goal to be proved is the following one.
+Thanks to \C{wlog} one only needs to write the statement of the extra
+assumption, here \C{n2 <= n1}, and which portion of the context needs
+to be abstracted, here \C{n1} and \C{n2}.
+The two goals to be proved are the following ones:
 
 \begin{coqout}{}{}
-2 subgoals
 m, n1, n2 : nat
 th_sym : forall n1 n2 : nat, n2 <= n1 ->
            (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 ========================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
+\end{coqout}
 
-
-subgoal 2 is:
+\begin{coqout}{}{}
+m, n1, n2 : nat
+le_n21 : n2 <= n1
+========================
 (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
 
 To keep the script similar to the previous one, we named explicitly
-\C{th_sym}, to better link the final script to the previous attempts.
-This is rarely the case in proof scripts of the library, since one typically
-uses the \C{/(_ ...)} intro pattern to specialize the top of the stack.
+\C{th_sym}, but one typically leaves the assumption on the stack
+and omit the trailing intro pattern \C{=> [th_sym|]}.
 
 Shrinking proof scripts is a never ending game.  The impatient reader can
 jump to the next section to see
@@ -1148,8 +1169,10 @@ the \C{max} is \C{n1} due to the extra assumption.
 
 A less important, but very widespread, feature of the \mcbSSR{}
 proof language can be used to shrink the proof even further.
-In this proof script, we have named the fact \C{le_mn2} only for the
-purpose of referring to this fact in the transitivity step.
+In the previous proof script at line 5 we had to name \C{le_mn2}
+the new assumption only for the
+purpose of referring to it in the immediately following transitivity step.
+We can avoid this by using \C{leq_trans} as a view.
 
 
 \begin{coq}{}{}
@@ -1161,24 +1184,23 @@ by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
 Qed.
 \end{coq}
 
-Remember that the statement of
+The statement of
 \C{leq_trans} is \C{(forall c a b, a <= c -> c <= b -> a <= b)} and
-we have used it to transform the top assumption \C{(m <= n2)}.  Note that
+we use it to transform the top assumption \C{(m <= n2)} that fits in
+the place of the first proof argument \C{(a <= c)}.  Note that
 the \C{leq_trans} expects a second proof argument, and that its type
-would fix \C{b}, that is otherwise unspecified.  If one puts a
-full stop just before the terminating \C{->}, to see the output of
-the view application, one sees the following stack:
+would fix \C{b}, that is otherwise unspecified. As a result \C{b}
+stays quantified. We can put a
+full stop just before the terminating~ \C{->} in order to observe the shape of
+the top assumption before rewriting it:
 
 \begin{coq}{}{}
-(forall n, n1 <= n -> m <= n) -> m <= n1.
+(forall b, n2 <= b -> m <= b) -> m <= n1.
 \end{coq}
 
-Rewriting the top assumption fixes \C{n} to \C{n1}, trivializes
-the goal \C{(m <= n1)} to \C{true} and opens a trivial side
-condition \C{(n2 <= n1)}.
-
-The very compact idiom \C{/leq_trans->} is quite frequent in the
-\mcbMC{} library.
+Rewriting the top assumption left to right fixes \C{b} to \C{n1}, trivializes
+the goal \C{(m <= n1)} to \C{true} and opens the side
+condition \C{(n2 <= n1)} which is trivial.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Proof maintenance: a matter of style}
@@ -1205,7 +1227,7 @@ Odd Order Theorem were kept under control thanks to the disciplined
 way in which the formal proofs are written.
 In this section we cover some of the aspects that we believe do
 contribute in a substantial way to write maintainable formal proofs.
-Coming up with a list of unobjectionable golden rules quite pretentious,
+Coming up with a list of unobjectionable golden rules would be quite pretentious,
 and probably impossible to do, but we will anyway try to give some
 advices out of our experience. 
 
@@ -1234,11 +1256,11 @@ Similarly the statement of a lemma can be designed so that it
 minimizes the information one has to explicitly provide
 in order to use it in conjunction with a specific tactic.
 
-Finally it is common sense to organize computer code
+Finally, it is common sense to organize computer code
 in components with separate concerns and well defined interfaces:
-Unstructured code well known to be hard to read, understand and
+Unstructured code is  well known to be hard to read, understand and
 locally modify.
-Also mathematical theories are often organized and structured, for
+Also, mathematical theories are often organized and structured, for
 example by algebraic means. The axioms characterizing structures
 are not unlike interfaces for computer code.
 Identifying the right components and their interfaces is key in a library of
@@ -1261,7 +1283,7 @@ It is a bit like
 typesetting a book by breaking the line after each an every word: in
 order to find the action the subject is performing one would need to
 turn page.  
-Unfortunately lengthy proofs without an apparent structure are hard to
+Lengthy proofs without an apparent structure are hard to
 maintain: even manipulating their text is cumbersome. The last, and
 most important observation drawn from vertical proofs, is that it is
 not the ``atomicity'' of steps that makes the proof readable, but
@@ -1277,10 +1299,11 @@ mistaken by students as the recommended way of writing proofs in the
 large. Horizontal proofs are indeed short, hence handy to
 manipulate, but their poor readability is not always helping maintenance.\\
 The funny fact is that the tension between horizontal and vertical
-proofs is totally artificial: there is no need to pick one direction an only
-one in a proof. Indeed, in order to obtain readable and maintainable proof
-one can mix both styles! Another way to put it is that in a proof on
-can mix readable-but-lengthy and obscure-but-compact steps.
+proofs is totally artificial: there is no need to pick one direction and only
+one in a proof. Indeed, in order to obtain a readable and maintainable proof
+one can mix both styles! Another way to put it is that in a proof one
+can write readable-but-lengthy proof script for interesting steps
+and obscure-but-compact scripts to deal with the bureaucracy of side conditions.
 
 An undoubtedly \emph{readable proof step} is a declarative step asserting,
 in the proof text, a statement that holds. For example by using the
@@ -1390,8 +1413,8 @@ is harder to repair. In particular one would discover the breakage
 later, in the next line, since after \C{lem1} all actions never fail.
 Also, the next line is likely is going to be run on the side
 condition, and not the main goal. The person repairing the proof is
-hence put on the wrong track: the line he sees failing was not even
-written to operate on the goal he sees.
+hence put on the wrong track: the line that fails was not even
+written to operate on the goal she sees.
 
 \subsection{Checkpointing}
 
@@ -1429,7 +1452,7 @@ and state it outside the proof mode of the main result. Indeed, the
 statement of such an auxiliary lemma would probably need to include a
 large chunk of the big context, in order to remain provable. Besides
 the trouble of copy-pasting this portion of the context, a lemma with
-too many hypotheses soon becomes very hard to use, as instanciating
+too many hypotheses soon becomes very hard to use, as instantiating
 the latter becomes a technical issue. Last, it is often quite
 difficult to find an appropriate name for such artificial lemmas.
 
@@ -1502,8 +1525,8 @@ missing piece of information.
 
 \subsection{Qed is not the shift bell}
 
-When a proof is finally accepted by \Coq{} it just means it is correct.
-It is a mistake to think that the proof is readable or maintainable.
+When a proof is finally accepted by \Coq{} it just means it is correct:
+the absence of mistakes  mistake correct for readable or maintainable.
 
 As we argued so far that proof is going to eventually break, and repairing a
 tidy proof is much simpler than repairing a messy one.  
