@@ -1246,9 +1246,9 @@ formal proofs too and is the subject of Chapter~\ref{ch:hierarchy}.
 
 \subsection{On the readability of formal proofs}
 
-A desirable characteristic of formal proofs  readability,
+A desirable characteristic of formal proofs is readability,
 there is no questioning that: How can a proof be maintained if
-it cannot even be read.
+it cannot even be read?
 
 It is not uncommon for novice users to try to achieve readability by
 writing a single instruction per line, and relying on the capability
@@ -1337,9 +1337,11 @@ An advice one can hardly imagine to become irrelevant in the future
 is the following one. Structure formal proofs as they are structured on paper.
 Then, when filling the blocks, use one line of formal text to perform one
 meaningful proof step for a human reader, and use the best tools you have to
-achieve that: At worse, if the step is too obscure, the reader will ignore the text, and just see what happens by executing it.\\
-In other words giving a pace at which a proof should be read is yet
-another ingredient to obtain readable proofs.
+achieve that: At worse, if the step is too obscure, the reader will
+ignore the text, and just see what happens by executing it.\\
+In other words, the flow of a proof script should be homogeneous and
+distil human-readable information at a suitable, regular pace.
+
 
 \subsection{Fail early and locally to ease repair}
 
@@ -1417,18 +1419,21 @@ context; similarly \C{move: H} or \C{case: H}.
 
 \subsection{Large, monolithic, proofs: a fact of life}
 
-Counter intuitively, large proofs cannot always be split into smaller
-lemmas. Or better, they can, but doing it mechanically 
-may be counterproductive.
+Somehow counter-intuitively, large proofs cannot always be broken down
+into smaller lemmas. More precisely, chopping long proofs in an
+artificial manner is often counterproductive.
 
-In particular the more the proof context gets rich of facts, the harder it is
-to hoist a sub result out of the enclosing lemma. Its statement has to
-copy much of of this context, in order to still be provable,
-and when a lemma has too many hypothesis it then becomes very hard to
-use. It is also very hard to give it a reasonable name outside the
-context it originated into.
+In particular, as contexts grow larger, gathering numerous facts and
+local definitions, it becomes harder to extract an intermediate result
+and state it outside the proof mode of the main result. Indeed, the
+statement of such an auxiliary lemma would probably need to include a
+large chunk of the big context, in order to remain provable. Besides
+the trouble of copy-pasting this portion of the context, a lemma with
+too many hypotheses soon becomes very hard to use, as instanciating
+the latter becomes a technical issue. Last, it is often quite
+difficult to find an appropriate name for such artificial lemmas.
 
-The \C{have} tactic and its siblings \C{suffices} and \C{wlog}
+The \C{have} tactic, and its variants \C{suffices} and \C{wlog},
 provide syntactic facilities to state results
 compactly in the middle of a proof, sometimes even more compactly than
 what is typically at the level of lemmas. 
