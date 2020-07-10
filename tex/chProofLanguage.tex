@@ -1433,14 +1433,20 @@ too many hypotheses soon becomes very hard to use, as instanciating
 the latter becomes a technical issue. Last, it is often quite
 difficult to find an appropriate name for such artificial lemmas.
 
+The \C{pose} and \C{set} tactics provide facilities for stating local
+definitions in proof mode. In particular, the \C{set} tactic eases the
+definition of an abbreviation for a given subterm of the current goal,
+by allowing to describe the latter via a pattern. 
 The \C{have} tactic, and its variants \C{suffices} and \C{wlog},
-provide syntactic facilities to state results
-compactly in the middle of a proof, sometimes even more compactly than
-what is typically at the level of lemmas. 
-For example by writing \C{have refl x : x = x} one
-gets to prove that \C{forall T (x : T), x = x} since the unresolved
-type of \C{x} does not generate an error but is rather quantified
-upfront.
+provide syntactic facilities to state and use local definitions and
+lemmas to a main proofs, with similar features as the \C{Lemma}
+vernacular command (and its synonyms), like the automated introduction
+of named parameters. The \C{wlog} tactic goes one step further, and
+allows to describe the verbose cut statements hidden behind a
+\emph{without loss of generality} proof pattern by providing only the
+names of the hypotheses in the context which should be included in the
+generalization. This feature saves the user from an painful manual
+writing of the explicit cut statement.
 
 \subsection{On the usability of lemmas}
 
