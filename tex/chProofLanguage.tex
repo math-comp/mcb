@@ -384,9 +384,8 @@ The idea behind the syntax here is that when we apply a view \C{v} to
 the top stack item (say, \C{top}), by writing \C{/v}, we are
 forming the term \C{(v top)}, whereas
 when we specialize the top stack item \C{top} to an object \C{x},
-by writing \C{/(_ x)}, we are forming the term \C{(top x)}.  The \C{_}
-is a placeholder for the top item, and is
-omitted in \C{/(v _)}.
+by writing \C{/(_ x)}, we are forming the term \C{(top x)}.
+The application of a view written \C{/v} is short for \C{/(v _)}.
 
 When the top stack item is an equation, one can substitute it into
 the rest of the goal, using \C{<-} and \C{->} for
@@ -511,7 +510,7 @@ subgoal 2 is:
  odd y'.+1 -> 2 < y'.+1 + x
 \end{coqout-right}
 
-At the left of the \C{:} operator one can also put a name for an
+At the left of the ``\C{:}'' operator one can also put a name for an
 equation that links the term at the top of the stack before and
 after the execution of the tactic. For example,
  \C{case E: y odd\_y => [|y']} leads to
@@ -537,9 +536,11 @@ the following two subgoals:
 Last, one can push any term onto the stack -- whether or not this
 term appears in the context. For example,
 ``\C{move: (leqnn 7)}'' pushes on the stack
-the additional assumption \C{(7 <= 7)} (and thus
-``\C{move: (leqnn 7) => leq77}'' brings this assumption into the context
-under the name \C{leq77}).
+the additional assumption \C{(7 <= 7)}.
+% and thus
+%``\C{move: (leqnn 7) => leq77}'' brings this assumption into the context
+%under the name \C{leq77}.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Example: strengthening induction}
@@ -548,7 +549,7 @@ under the name \C{leq77}).
 \label{sec:strongind}
 
 As an exercise we show how the \C{elim} tactic combined with the bookkeeping
-operator \C{:} lets one perform, on the fly, a stronger variant of
+operator ``\C{:}'' lets one perform, on the fly, a stronger variant of
 induction called ``course of values'' or ``strong induction''.
 % [DG] I've never seen it called "course of values". Apparently this
 % name is mostly used in computability theory? But "strong induction"

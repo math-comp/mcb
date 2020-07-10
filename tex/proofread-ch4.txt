@@ -19,6 +19,8 @@ l'intro pattern le bloc qu'on doit réintroduire à l'identique
 Il faut dire, peut-être ailleurs, que l'intérêt du premier est qu'il
   généralise toutes les occurrences. Ce qui n'est pas le point du
   discours sur le pile de cet endroit.
+-- I remove the `move : t => H`, and leave this job to have later on.
+
 
 - Faire une passe d'uniformité sur le code inliné : des fois on a des
   "", des fois non. Essayer le fond grisé à la markdown? 
