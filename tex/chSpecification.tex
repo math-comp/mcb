@@ -33,13 +33,18 @@ Fixpoint has T (a : T -> bool) (s : seq T) : bool :=
 or we can use an alternate formula, like for instance:
 
 \begin{coq}{}{}
+Definition has_prop  T (a : T -> bool) (s : seq T) :=
+   exists x0 : T, exists i, i < size s /\ a (nth x0 s i)
+\end{coq}
+
+or the equivalent variant:
+
+\begin{coq}{}{}
 Definition has_prop  T (a : T -> bool) (x0 : T) (s : seq T) :=
    exists i, i < size s /\ a (nth x0 s i)
 \end{coq}
 
-(where we are assuming that \C{x0} is a given element of \C{T};
-otherwise, we can, e.g., quantify the whole statement by
-\C{exists (x0 : T)}).
+
 
 Term \C{(has a s)} is a boolean value.  It is hence
 easy to use it in a proof to perform a case
@@ -168,8 +173,8 @@ section~\ref{ch:ttch}, like for instance
 \C{(b = true /\\ P) \\/ (b = false /\\ ~ P)}, but again the bureaucracy
 would be non-negligible.
 
-A better solution is
-to use an ad hoc inductive definition that resembles a
+A first improvment on this naive approach consists in
+using an ad hoc inductive definition that resembles a
 disjunction of conjunctions: we inline the two constructors of a
 disjunction and each of these constructors has the two arguments of
 the conjunction's single constructor:
@@ -667,8 +672,7 @@ subgoal 2 is:
  (m <= maxn n1 n2) = (m <= n1) || (m <= n2)
 \end{coqout}
 
-The full proof of \C{leq_max} is quite interesting and will be
-detailed in section~\ref{sec:leqmax}.
+The full proof of \C{leq_max} has been discussed in detail in section~\ref{sec:leqmax}.
 
 % \marginnote{We could propose another exercise in next section in order
 % to factor this proof with a \C{wlog}.}
@@ -790,11 +794,9 @@ detailed in section~\ref{sec:leqmax}.
 
 \section{Advanced, practical, statements}
 
-As we have already hinted previously, the shape of a lemma is very important.
-There are many ways to express the same concept, but, unsurprisingly,
-one can be easier to access than the others.  In particular there are classes of
-lemmas that \emph{specify} a concept, and as a consequence shape the proofs
-involving such notion.
+In this section, we will further explore the possibility to improve
+the flow of formal proofs by refining the shape of the definitions
+specifying a given concept.
 
 % TODO: Not everything needs to be a tactic, the logic is powerful
 % enough to express special connectives that induce a line of
@@ -820,8 +822,8 @@ In particular their elimination rule encapsulates the notion
 of substitution, and that operation is performed automatically by
 the logic.
 
-If we look at \C{reflect}, and its use, one is very likely to substitute \C{b}
-for its value in each branch of the case.
+For instance, let us recall the definition of the \C{reflect}
+predicate proposed in Section~\ref{ssec:boolProp}.
 
 \begin{coq}{}{}
 Inductive reflect (P : Prop) (b : bool) : Prop :=
@@ -829,8 +831,13 @@ Inductive reflect (P : Prop) (b : bool) : Prop :=
 | ReflectF (np : ~ P) (e : b = false)
 \end{coq}
 
-This alternative formulation makes the equation implicitly stated and
-also automatically substituted during case analysis.
+
+When making use of this predicate in a proof, it is
+often the case that substituting \C{b} for its value in each branch of
+the case is needed right after the case analysis.
+
+The following alternative formulation makes the equation implicitly
+stated and also automatically substituted during case analysis.
 
 \begin{coq}{}{}
 Inductive reflect (P : Prop) : bool -> Prop :=
