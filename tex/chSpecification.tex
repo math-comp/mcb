@@ -993,6 +993,65 @@ definition/predicate under study but by the view/spec used to reason about it.}
 % \item Tuning of implicit arguments
 % \end{itemize}
 
+\section{Strong induction via inductive specs}
+\label{sec:ubnP}
+
+As we have seen in Section~\ref{ssec:indreason} the strong induction principle
+can be obtained from the regular one by choosing an appropriate value for
+the predicate. Recall that the \C{elim} tactic infers that predicate from the
+goal, so another way to specify the predicate is to \emph{load} the goal
+before performing the induction.
+For example if the goal is \C{(G n)} and one loads it to
+\C{(forall m, m <= n -> G m)} then he will have access to the
+induction hypothesis on all numbers smaller than \C{n} exactly as
+if he was using the strong induction principle.
+
+It is possible to
+do so very concisely using the discharging operator ``\C{:}''.
+In particular
+\begin{coq}{}{}
+move: {-2}n (leqnn n)
+\end{coq}{}{}
+does exactly what we need
+for a goal like \C{(G n)}: it first pushes to the stack \C{(n <= n)}
+and then pushes to the stack \C{n} capturing all occurrences but for
+the second one.
+The \mcbMC{} library provides a few tools to load the goal like this
+without recurring to occurrence selection, which can be tricky and fragile.
+
+The following inductive specification is crafted so that its only constructor
+holds as arguments exactly the items we pushed on the stack with the discharge
+operator.
+
+\begin{coq}{}{}
+Inductive ubn_geq_spec m : nat -> Type :=
+  UbnGeq n of n <= m : ubn_geq_spec m n.
+Lemma ubnPgeq m : ubn_geq_spec m m.
+Proof. by []. Qed.
+\end{coq}{}{}
+\index[coq]{\C{ubnPgeq}}
+
+As a consequence by performing a case analysis on \C{(ubnPgeq n)} one
+obtains the same effect of \C{move: {-2}n (leqnn n)}.
+
+\begin{coq}{}{}
+Lemma test_ubnP (G : nat -> Prop) n : G n.
+Proof.
+case: (ubnPgeq m).
+\end{coq}{}{}
+\begin{coqout}{}{}
+G : nat -> Prop
+n : nat
+============================
+forall m, m <= n -> G m
+\end{coqout}{}{}
+
+By varying the arguments of the inductive specification constructor one
+can tune the way the goal is loaded. The \mcbMC{} library
+provides a few inductive specifications like the one
+explained in this section, and their names contain the string
+``ubn'' for ``upper bound''.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Showcase: Euclidean division, simple and correct}\label{sec:edivn}
@@ -1045,21 +1104,19 @@ Proof.
 
 As one expects, \C{edivn} being a recursive program, its specification
 needs to be proved by induction.  Given that the recursive call is on
-the subtraction of the input, we need to perform a strong induction,
-as we did for the postage example in section~\ref{sec:strongind}.
+the subtraction of the input, we need to perform a strong induction.
 
 But let's start by dealing with the trivial case of a null divisor.
 
 \begin{coq}{}{}
-case: d => [//=|d /=] in ed *.
+rewrite -[m]/(0 * d + m).
+case: d => [//= | d /=] in ed *.
 rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
-rewrite -[m]/(0 * d.+1 + m).
-elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
-rewrite edivn_recE subn_if_gt; case: ifP => [le_dm|lt_md]; last first.
+case: (ubnPgeq m) @ed; elim: m 0 => [|m IHm] q [/=|n] leq_nm //.
+rewrite edivn_recE subn_if_gt; case: ifP => [le_dm ed|lt_md]; last first.
   by rewrite /= ltnS ltnNge lt_md eqxx.
-have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
-by rewrite /= mulSnr -addnA -subSS subnKC.
-Qed.
+rewrite -ltnS in le_dm; rewrite -(subnKC le_dm) addnA -mulSnr subSS.
+by apply: IHm q.+1 (n-d) _; apply: leq_trans (leq_subr d n) leq_nm.
 \end{coq}
 \index[ssr]{\C{tactic in name}}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
@@ -1079,23 +1136,27 @@ Line 4 performs a strong induction, also generalizing the initial
 value of the accumulator \C{0}, leading to the following goal:
 
 \begin{coqout}{}{}
-d, n : nat
-IHn : forall m n0 : nat, m <= n ->
-      let ed := edivn_rec d m n0 in
-        (ed.2 < d.+1) && (n0 * d.+1 + m == ed.1 * d.+1 + ed.2)
-m, q : nat
-le_mn : m < n.+1
-========================
-let ed := edivn_rec d m.+1 q in
-  (ed.2 < d.+1) && (q * d.+1 + m.+1 == ed.1 * d.+1 + ed.2)
+d, m : nat
+IHm : forall q n, n <= m ->
+  let ed := edivn_rec d n q in
+  (ed.2 < d.+1) && (q * d.+1 + n == ed.1 * d.+1 + ed.2)
+q, n : nat
+leq_nm : n < m.+1
+============================
+let ed := edivn_rec d n.+1 q in
+(ed.2 < d.+1) && (q * d.+1 + n.+1 == ed.1 * d.+1 + ed.2)
 \end{coqout}
-Note that the induction touches variables used in \C{ed} that
-is hence pushed on the goal stack.  The \C{@} modifier tells SSReflect
-to keep the body of the let-in.
+
+Note that the case analysis on \C{(ubnPgeq m)} needs to grab also
+the occurrence of \C{m} in the body of \C{ed}. To do so
+we push \C{ed} on the goal stack prior the case analysis.  The \C{@} modifier
+tells \mcbSSR{} to keep the body of the let-in, which would be otherwise
+deleted.
 
 Line 5 unfolds the recursive function and uses the following lemma to push the
 subtraction into the branches of the if statement. Then it reasons by cases
 on the guard of the if-then-else statement.
+
 %\marginnote{Should we embed this lemma in the unfolding equation?}
 
 \begin{coq}{}{}
@@ -1106,9 +1167,30 @@ Lemma subn_if_gt T m n F (E : T) :
 
 The else branch corresponds to the non-recursive case of
 the division algorithm and is trivially solved in line 6.
-The recursive call is done on \C{(m-d)}, hence the need for a strong
-induction.  In order to satisfy the premise of the induction hypothesis,
-line 7 shows that \C{(m - d <= n)}.  Line 8 concludes.
+We are left with this goal to prove:
+
+\begin{coqout}{}{}
+d, m : nat
+IHm : forall q n, n <= m ->
+  let ed := edivn_rec d n q in
+  (ed.2 < d.+1) && (q * d.+1 + n == ed.1 * d.+1 + ed.2)
+q, n : nat
+leq_nm : n < m.+1
+le_dm : d <= n
+ed := edivn_rec d (n - d) q.+1 : nat * nat
+============================
+(ed.2 < d.+1) && (q * d.+1 + n.+1 == ed.1 * d.+1 + ed.2)
+\end{coqout}
+
+Line 7 prepares the goal to accommodate the application of the induction
+hypothesis, instantiated at \C{q.+1} and \C{(n - d)}.
+
+\begin{coqout}{}{}
+(ed.2 < d.+1) && (q.+1 * d.+1 + (n - d) == ed.1 * d.+1 + ed.2)
+\end{coqout}
+
+Finally, line 8 uses the induction hypothesis and proves its premise
+\C{(m - d <= n)}.
 
 % \section{STOP HERE}
 %

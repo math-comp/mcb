@@ -1125,7 +1125,58 @@ Fixpoint nat_ind (P : nat -> Prop)
 
 The \Coq{} system generates this program automatically, as soon as
  the \C{nat} data type
-is defined.  Recall that recursive functions are checked for termination:
+is defined. 
+
+It is worth mentioning that this principle is general enough to
+prove the ``stronger'' induction principle that give access, in
+the inductive step, to the property \C{P} on all numbers
+small than \C{n.+1} and not just its predecessor.
+
+\begin{coq}{}{}
+Lemma strong_nat_ind (P : nat -> Prop)
+  (base : P 0)
+  (step : forall n, (forall m, m <= n -> P m) -> P n.+1) x : P x.
+\end{coq}{}{}
+
+In order to prove this statement it is sufficient to craft
+the right ``P'' for \c{nat_ind}.
+
+\begin{coq}{}{}
+Check (nat_ind (fun n => forall m, m <= n -> P m)).
+\end{coq}{}{}
+\begin{coqout}{}{}
+  (forall m, m <= 0 -> P m) ->
+  (forall n, (forall m, m <= n -> P m) -> forall m, m <= n.+1 -> P m) ->
+  forall n m, m <= n -> P m
+\end{coqout}{}{}
+
+If we fulfill the last premise with \C{(leqnn x : x <= x)} we obtain
+the following proof goals:
+
+\begin{coq}{}{}
+Proof.
+apply: (nat_ind (fun n => forall m, m <= n -> P m) _ _ x x (leqnn x)).
+\end{coq}{}{}
+\begin{coqout}{}{}
+  P : nat -> Prop
+  base : P 0
+  step : forall n : nat, (forall m : nat, m <= n -> P m) -> P n.+1
+  x : nat
+  ============================
+  forall m : nat, m <= 0 -> P m
+
+subgoal 2 is:
+ forall n : nat,
+ (forall m : nat, m <= n -> P m) -> forall m : nat, m <= n.+1 -> P m
+\end{coqout}{}{}
+
+The two goals follow from \C{base} and \C{step} respectively.
+Induction principles like this one can be used by giving their name to \C{elim} as in
+\C{elim/strong_nat_ind}. Still, strong induction is such a frequent
+proof step that the \mcbMC{} library provides dedicated idioms
+that we will detail in Section~\ref{sec:ubnP}.
+
+Finally, recall that recursive functions are checked for termination:
 Through the lenses of the proofs-as-programs correspondence, this means
 that the induction principle just coded is sound, i.e., based on a
 well-founded order relation.

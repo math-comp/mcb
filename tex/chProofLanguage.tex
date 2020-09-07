@@ -542,256 +542,272 @@ the additional assumption \C{(7 <= 7)}.
 %under the name \C{leq77}.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Example: strengthening induction}
-\index[concept]{induction!strong}
-\index[concept]{induction!curse of values}
-\label{sec:strongind}
-
-As an exercise we show how the \C{elim} tactic combined with the bookkeeping
-operator ``\C{:}'' lets one perform, on the fly, a stronger variant of
-induction called ``course of values'' or ``strong induction''.
-% [DG] I've never seen it called "course of values". Apparently this
-% name is mostly used in computability theory? But "strong induction"
-% appears very often.
-%assia : TODO
-
-Claim: every amount of postage that is at least 12 cents
-can be made from 4-cent and 5-cent stamps.  The proof in the inductive
-step goes as follows.  There are obvious solutions for a postage between
-12 and 15 cents, so we can assume it is at least 16 cents.  Since
-the postage amount is at least 16, by using a 4-cents stamp we are back
-at a postage amount that, by induction, can be obtained as claimed.\hfill$\square$
-
-The tricky step is that we want to apply the induction hypothesis not
-on $n-1$, as usual, but on $n-4$, since we know how to turn a
-solution for a stamping amount problem $n$ to one for a problem of
-size $n+4$ (by using a 4-cent stamp).
-The induction hypothesis provided by \C{nat_ind}
-is not strong enough.  However we can use the \C{:} operator
-to \emph{load the goal} before performing the induction.
-%\footnote{See further below for explanations.}
-\index[ssr]{\C{set name := term}}
-
-\begin{coq}{}{}
-Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
-Proof.
-elim: n {-2}n (leqnn n) =>[|n IHn]; first by case.
-\end{coq}
-
-Let's dissect this line 3. First of all,
-``\C{elim: n \{-2\}n (leqnn n).}'' is shorthand for
-``\C{move: (leqnn n). move: \{-2\}n. move: n. elim.}'' (the terms after the
-colon \C{:} are pushed to the stack, from right to left; and the
-\C{elim} tactic is applied afterwards to the top of the stack, which
-of course is the last term pushed to the stack). Let us see how these
-four steps transform the goal. At the beginning, the context and the
-goal are
-
-\begin{coqout}{}{width=11cm}
-  n : nat
-  ============================
-  11 < n -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n
-\end{coqout}
-
-The first of our
-four steps (``\C{move: (leqnn n)}'') pushes the additional
-assumption \C{n <= n} onto the stack (since \C{(leqnn n)} provides
-its proof); we are thus left with
-
-\begin{coqout}{}{width=11cm}
-  n : nat
-  ============================
-  n <= n -> 11 < n -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n
-\end{coqout}
-
-The second step (``\C{move: \{-2\}n}'') is more interesting. Recall
-that \C{move:} usually ``generalizes'' a variable (i.e., takes a
-variable appearing in the context, and binds it by the universal
-quantifier, so that the goal becomes a for-all statement). The prefix
-\C{\{-2\}} means ``all except for the 2nd occurrence in the goal''; so
-the idea is
-to generalize ``all except for the 2nd occurrence of $n$''. Of course,
-this implies that $n$ still has to remain in the context (unlike for
-``\C{move: n}''), so the
-bound variable of the universal quantifier has to be a fresh
-variable, picked automatically by \Coq{}. For example, \Coq{} might
-pick \C{n0} for its name, and so the state after the second step will
-be:
-
-\begin{coqout}{}{width=11cm}
-  n : nat
-  ============================
-  forall n0 : nat,
-  n0 <= n -> 11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
-\end{coqout}
-
-Notice how the \C{n} in ``\C{n0 <= n}'' has remained un-generalized,
-since it was the 2nd occurrence of $n$ before the second step.
-
-The third step (``\C{move: n}'') merely moves the \C{n} from the
-context to the goal. Thus, after the three ``\C{move}'' steps, we are
-left with proving the following claim:
-
-\begin{coqout}{}{}
-forall n n0 : nat,
-  n0 <= n -> 11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
-\end{coqout}
-
-The \C{elim} now applies induction on the top of the stack, which
-is \C{n}. The corresponding induction hypothesis \C{IHn} is:
-
-\begin{coqout}{}{}
-IHn : forall n0 : nat,
-      n0 <= n ->
-      11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
-\end{coqout}
-
-Of course, the \C{n} here is not the original \C{n}, but the new
-\C{n} introduced in the \C{=>[|n IHn]} pattern.
-
-The proof continues like that:
-
-\lstset{firstnumber=4}
-\begin{coq}{}{}
-do 12! [ case; first by [] ]. (* < 12c *)
-case; first by exists 3, 0.   (* 12c = 3 * 4c *)
-case; first by exists 2, 1.   (* 13c = 2 * 4c + 1 * 5c *)
-case; first by exists 1, 2.   (* 14c = 1 * 4c + 2 * 5c *)
-case; first by exists 0, 3.   (* 15c = 3 * 5c *)
-move=> m'; set m := _.+1; move=> mn m11.
-\end{coq}
-\lstset{firstnumber=1}
-
-Line 4 repeats a tactic 12 times using the \C{do 12!} tactical.
-This deals with the 12 cases where \C{n0} is not greater than 11.
-\index[ssr]{\C{do n"!} (iteration)}
-
-Lines from 5 to 8 provide solutions for 12, 13, 14 and 15 cents.
-At line 9, just after the \C{move=> m'} step, the goal is the following one:
-
-\begin{coqout}{}{}
-1 subgoal
-  
-  n : nat
-  IHn : forall n0 : nat, n0 <= n -> 
-	  11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
-  m' : nat
-  ============================
-  m'.+3.+4.+4.+4 < n.+1 ->
-    11 < m'.+4.+4.+4.+4 ->
-      exists s4 s5 : nat, s4 * 4 + s5 * 5 = m'.+4.+4.+4.+4
-\end{coqout}
-
-This goal is hard to read because of the many \C{.+1} piling
-up. \mcbMC{} has the notations \C{.+1},
-\C{.+2}, \C{.+3} and \C{.+4} pre-defined, but not \C{.+5} and higher,
-hence what could be in principle displayed as \C{.+15} is actually
-displayed as \C{.+3.+4.+4.+4}.
-
-We resort to the \C{set m := _.+1} tactic to build an abbreviation
-named \C{m} for the terms that match the pattern \C{_.+1}. As for the
-\C{rewrite} tactic, the goals is traversed from left to right, outside
-in, in order to find a term that matches the pattern.
-
-The first term encountered is \C{m'.+3.+4.+4.+4.+1}. Recall that
-the \C{<} infix notation hides an \C{.+1} on the left. Once
-the term above is extracted from its context the notation
-for \C{<} does not apply anymore: the abbreviation 
-displays as \C{(m := m'.+4.+4.+4.+4 : nat)} in the context,
-and the top assumption as \C{m <= n.+1}.
-
-After naming \C{mn} and \C{m11} the goal is the following one"
-
-\begin{coqout}{}{}
-  n : nat
-  IHn : forall n0 : nat, n0 <= n ->
-          11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
-  m' : nat
-  m := m'.+4.+4.+4.+4 : nat
-  mn : m <= n.+1
-  m11 : 11 < m
-  ============================
-  exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
-\end{coqout}
-
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \subsection{Example: strengthening induction}
+% \index[concept]{induction!strong}
+% \index[concept]{induction!curse of values}
+% \label{sec:strongind}
 % 
-% Line 9 uses the \C{set} proof command to define a new
-% constant in the context. For example, ``\C{set a := 24 * 11.}'' would
-% create a new ``\C{a := 24 * 11 : nat}'' item in the context. The
-% command also tries to substitute the newly-defined constant for its
-% appearances in the goal; for example, ``\C{set a := 11.}'' would not
-% only create a new ``\C{a := 11 : nat}'' in the context, but also
-% replace the ``\C{11 < m'.+4.+4.+4.+4}'' in the goal\footnote{Don't be
-% surprised by the fact that an addition of 16 is circumscribed by four
-% additions of 4. By default, \mcbMC{} has the notations \C{.+1},
-% \C{.+2}, \C{.+3} and \C{.+4} pre-defined, but not \C{.+5} and higher.}
-% by an ``\C{a < m'.+4.+4.+4.+4}''. In our example above
-% (``\C{set m := _.+1}''), we are using the
-% \C{set} command with a wildcard; this captures the first term of the
-% form \C{_.+1} appearing in the goal and denotes it by \C{m}, replacing
-% it by \C{m} on the goal. In our case, this first term is
-% \C{m'.+4.+4.+4.+4} (which is just syntactic sugar for
-% \C{m'.+1.+1.....} with 16 appearances of \C{.+1})\footnote{This is
-% slightly counterintuitive, as you
-% might instead believe it to be \C{m'.+3.+4.+4.+4}. But keep in mind
-% that \C{m'.+3.+4.+4.+4 < n.+1} is just syntactic sugar for
-% \C{m'.+4.+4.+4.+4 <= n.+1}.},
-% % [DG] I hope I got these subtleties right. That said, I think it
-% % would be better to first introduce the "set" tactic in a less
-% % confusing example.
+% As an exercise we show how the \C{elim} tactic combined with the bookkeeping
+% operator ``\C{:}'' lets one perform, on the fly, a stronger variant of
+% induction called ``course of values'' or ``strong induction''.
+% % [DG] I've never seen it called "course of values". Apparently this
+% % name is mostly used in computability theory? But "strong induction"
+% % appears very often.
 % %assia : TODO
-% and so the name \C{m} is given to this term. We could have achieved
-% the same goal using ``\C{set m := m'.+4.+4.+4.+4}''.
-% \par
-% Further details about the \C{set} tactic can be found in
-% \cite[\S 4.2]{ssrman}; let us only mention the (by now) habitual
-% variant \C{set a := \{k\}(pattern)}, which defines a new constant
-% \C{a} to equal the first subterm of the goal that matches the pattern
-% \C{pattern}, but then replaces \emph{only the \(k\)-th} appearance
-% of this subterm in the goal by \C{a}. As usual, if the
-% pattern-matching algorithm keeps finding the wrong subterms, it is
-% always possible to completely specify the subterm, leaving no
-% wildcards.
-
-The proof continues as follows:
-
-\lstset{firstnumber=10}
-\begin{coq}{}{}
-case: (IHn (m-4) _ isT) => [|s4 [s5 def_m4]].
-  by rewrite leq_subLR (leq_trans mn) // addSnnS leq_addl.
-by exists s4.+1, s5; rewrite mulSn -addnA def_m4 subnKC.
-Qed.
-\end{coq}
-\lstset{firstnumber=1}
-
-Line 10 instantiates the induction hypothesis with the value
-\C{(m-4)}, with a placeholder for a missing proof of \C{(m-4 < n)},
-and with a proof that \C{(11 < m-4)}. The proof given for
-\C{(11 < m-4)} can be just \C{isT} since the type \C{(11 < m-4)} 
-\emph{computes} to \C{true} since the value of \C{m} is larger than 11.
-The missing proof
-of \C{(m-4 < n)}  becomes the first
-subgoal, solved at line 11.
-
-The induction hypothesis yields
-\C{exists s4 s5 : nat, s4 * 4 + s5 * 5 = m-4}. The introduction
-pattern in line 10 gives names to the values of \C{s4} and \C{s5}
-whose existence is thus guaranteed, and named \C{def_m4} the
-assumption
-\C{s4 * 4 + s5 * 5 = m-4}. In other words, it gives names \C{s4} and
-\C{s5} to the quantities of 4-cent and 5-cent stamps needed to cover
-the amount of postage \C{(m-4)}, as well as to the fact that they do
-cover this exact amount of postage. The intro pattern to name
-\C{s5} needs an extra destructing pattern (square bracket) because
-\C{(exists s4 s5, ...)} is just a notation for
-\C{(exists s4, exists s5, ...)} hence two existential
-quantifiers need to be actually dealt with.
-
-Line 12 gives the final solution: by using one extra 4 cents stamp
-we can appeal to the induction hypothesis.
-
-
+% 
+% Claim: every amount of postage that is at least 12 cents
+% can be made from 4-cent and 5-cent stamps.  The proof in the inductive
+% step goes as follows.  There are obvious solutions for a postage between
+% 12 and 15 cents, so we can assume it is at least 16 cents.  Since
+% the postage amount is at least 16, by using a 4-cents stamp we are back
+% at a postage amount that, by induction, can be obtained as claimed.\hfill$\square$
+% 
+% The tricky step is that we want to apply the induction hypothesis not
+% on $n-1$, as usual, but on $n-4$, since we know how to turn a
+% solution for a stamping amount problem $n$ to one for a problem of
+% size $n+4$ (by using a 4-cent stamp).
+% The induction hypothesis provided by \C{nat_ind}
+% is not strong enough.  However we can use the \C{:} operator
+% to \emph{load the goal} before performing the induction.
+% %\footnote{See further below for explanations.}
+% \index[ssr]{\C{set name := term}}
+% 
+% \begin{coq}{}{}
+% Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
+% Proof.
+% have [m leq_mn] := ubnPgeq n; elim: n => // n IHn in m leq_mn *; first by case: n => [|n] in IHn *.
+% do 12! [ case: m => //= m in leq_mn * ] => _.
+% case: m => [|m] in leq_mn *; first by exists 3, 0.
+% case: m => [|m] in leq_mn *; first by exists 2, 1.
+% case: m => [|m] in leq_mn *; first by exists 1, 2.
+% case: m => [|m] in leq_mn *; first by exists 0, 3.
+% case: (IHn ((16+m) - 4) _ isT) => [|s4 [s5 def_m4]].
+%   by rewrite leq_subLR (leq_trans leq_mn) // addSnnS leq_addl.
+% by exists s4.+1, s5; rewrite mulSn -addnA def_m4 subnKC.
+% Qed.
+% \end{coq}
+% 
+% 
+% \begin{coq}{}{}
+% Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
+% Proof.
+% elim: n {-2}n (leqnn n) =>[|n IHn]; first by case.
+% \end{coq}
+% 
+% Let's dissect this line 3. First of all,
+% ``\C{elim: n \{-2\}n (leqnn n).}'' is shorthand for
+% ``\C{move: (leqnn n). move: \{-2\}n. move: n. elim.}'' (the terms after the
+% colon \C{:} are pushed to the stack, from right to left; and the
+% \C{elim} tactic is applied afterwards to the top of the stack, which
+% of course is the last term pushed to the stack). Let us see how these
+% four steps transform the goal. At the beginning, the context and the
+% goal are
+% 
+% \begin{coqout}{}{width=11cm}
+%   n : nat
+%   ============================
+%   11 < n -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n
+% \end{coqout}
+% 
+% The first of our
+% four steps (``\C{move: (leqnn n)}'') pushes the additional
+% assumption \C{n <= n} onto the stack (since \C{(leqnn n)} provides
+% its proof); we are thus left with
+% 
+% \begin{coqout}{}{width=11cm}
+%   n : nat
+%   ============================
+%   n <= n -> 11 < n -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n
+% \end{coqout}
+% 
+% The second step (``\C{move: \{-2\}n}'') is more interesting. Recall
+% that \C{move:} usually ``generalizes'' a variable (i.e., takes a
+% variable appearing in the context, and binds it by the universal
+% quantifier, so that the goal becomes a for-all statement). The prefix
+% \C{\{-2\}} means ``all except for the 2nd occurrence in the goal''; so
+% the idea is
+% to generalize ``all except for the 2nd occurrence of $n$''. Of course,
+% this implies that $n$ still has to remain in the context (unlike for
+% ``\C{move: n}''), so the
+% bound variable of the universal quantifier has to be a fresh
+% variable, picked automatically by \Coq{}. For example, \Coq{} might
+% pick \C{n0} for its name, and so the state after the second step will
+% be:
+% 
+% \begin{coqout}{}{width=11cm}
+%   n : nat
+%   ============================
+%   forall n0 : nat,
+%   n0 <= n -> 11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
+% \end{coqout}
+% 
+% Notice how the \C{n} in ``\C{n0 <= n}'' has remained un-generalized,
+% since it was the 2nd occurrence of $n$ before the second step.
+% 
+% The third step (``\C{move: n}'') merely moves the \C{n} from the
+% context to the goal. Thus, after the three ``\C{move}'' steps, we are
+% left with proving the following claim:
+% 
+% \begin{coqout}{}{}
+% forall n n0 : nat,
+%   n0 <= n -> 11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
+% \end{coqout}
+% 
+% The \C{elim} now applies induction on the top of the stack, which
+% is \C{n}. The corresponding induction hypothesis \C{IHn} is:
+% 
+% \begin{coqout}{}{}
+% IHn : forall n0 : nat,
+%       n0 <= n ->
+%       11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
+% \end{coqout}
+% 
+% Of course, the \C{n} here is not the original \C{n}, but the new
+% \C{n} introduced in the \C{=>[|n IHn]} pattern.
+% 
+% The proof continues like that:
+% 
+% \lstset{firstnumber=4}
+% \begin{coq}{}{}
+% do 12! [ case; first by [] ]. (* < 12c *)
+% case; first by exists 3, 0.   (* 12c = 3 * 4c *)
+% case; first by exists 2, 1.   (* 13c = 2 * 4c + 1 * 5c *)
+% case; first by exists 1, 2.   (* 14c = 1 * 4c + 2 * 5c *)
+% case; first by exists 0, 3.   (* 15c = 3 * 5c *)
+% move=> m'; set m := _.+1; move=> mn m11.
+% \end{coq}
+% \lstset{firstnumber=1}
+% 
+% Line 4 repeats a tactic 12 times using the \C{do 12!} tactical.
+% This deals with the 12 cases where \C{n0} is not greater than 11.
+% \index[ssr]{\C{do n"!} (iteration)}
+% 
+% Lines from 5 to 8 provide solutions for 12, 13, 14 and 15 cents.
+% At line 9, just after the \C{move=> m'} step, the goal is the following one:
+% 
+% \begin{coqout}{}{}
+% 1 subgoal
+%   
+%   n : nat
+%   IHn : forall n0 : nat, n0 <= n -> 
+% 	  11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
+%   m' : nat
+%   ============================
+%   m'.+3.+4.+4.+4 < n.+1 ->
+%     11 < m'.+4.+4.+4.+4 ->
+%       exists s4 s5 : nat, s4 * 4 + s5 * 5 = m'.+4.+4.+4.+4
+% \end{coqout}
+% 
+% This goal is hard to read because of the many \C{.+1} piling
+% up. \mcbMC{} has the notations \C{.+1},
+% \C{.+2}, \C{.+3} and \C{.+4} pre-defined, but not \C{.+5} and higher,
+% hence what could be in principle displayed as \C{.+15} is actually
+% displayed as \C{.+3.+4.+4.+4}.
+% 
+% We resort to the \C{set m := _.+1} tactic to build an abbreviation
+% named \C{m} for the terms that match the pattern \C{_.+1}. As for the
+% \C{rewrite} tactic, the goals is traversed from left to right, outside
+% in, in order to find a term that matches the pattern.
+% 
+% The first term encountered is \C{m'.+3.+4.+4.+4.+1}. Recall that
+% the \C{<} infix notation hides an \C{.+1} on the left. Once
+% the term above is extracted from its context the notation
+% for \C{<} does not apply anymore: the abbreviation 
+% displays as \C{(m := m'.+4.+4.+4.+4 : nat)} in the context,
+% and the top assumption as \C{m <= n.+1}.
+% 
+% After naming \C{mn} and \C{m11} the goal is the following one"
+% 
+% \begin{coqout}{}{}
+%   n : nat
+%   IHn : forall n0 : nat, n0 <= n ->
+%           11 < n0 -> exists s4 s5 : nat, s4 * 4 + s5 * 5 = n0
+%   m' : nat
+%   m := m'.+4.+4.+4.+4 : nat
+%   mn : m <= n.+1
+%   m11 : 11 < m
+%   ============================
+%   exists s4 s5 : nat, s4 * 4 + s5 * 5 = m
+% \end{coqout}
+% 
+% % 
+% % Line 9 uses the \C{set} proof command to define a new
+% % constant in the context. For example, ``\C{set a := 24 * 11.}'' would
+% % create a new ``\C{a := 24 * 11 : nat}'' item in the context. The
+% % command also tries to substitute the newly-defined constant for its
+% % appearances in the goal; for example, ``\C{set a := 11.}'' would not
+% % only create a new ``\C{a := 11 : nat}'' in the context, but also
+% % replace the ``\C{11 < m'.+4.+4.+4.+4}'' in the goal\footnote{Don't be
+% % surprised by the fact that an addition of 16 is circumscribed by four
+% % additions of 4. By default, \mcbMC{} has the notations \C{.+1},
+% % \C{.+2}, \C{.+3} and \C{.+4} pre-defined, but not \C{.+5} and higher.}
+% % by an ``\C{a < m'.+4.+4.+4.+4}''. In our example above
+% % (``\C{set m := _.+1}''), we are using the
+% % \C{set} command with a wildcard; this captures the first term of the
+% % form \C{_.+1} appearing in the goal and denotes it by \C{m}, replacing
+% % it by \C{m} on the goal. In our case, this first term is
+% % \C{m'.+4.+4.+4.+4} (which is just syntactic sugar for
+% % \C{m'.+1.+1.....} with 16 appearances of \C{.+1})\footnote{This is
+% % slightly counterintuitive, as you
+% % might instead believe it to be \C{m'.+3.+4.+4.+4}. But keep in mind
+% % that \C{m'.+3.+4.+4.+4 < n.+1} is just syntactic sugar for
+% % \C{m'.+4.+4.+4.+4 <= n.+1}.},
+% % % [DG] I hope I got these subtleties right. That said, I think it
+% % % would be better to first introduce the "set" tactic in a less
+% % % confusing example.
+% % %assia : TODO
+% % and so the name \C{m} is given to this term. We could have achieved
+% % the same goal using ``\C{set m := m'.+4.+4.+4.+4}''.
+% % \par
+% % Further details about the \C{set} tactic can be found in
+% % \cite[\S 4.2]{ssrman}; let us only mention the (by now) habitual
+% % variant \C{set a := \{k\}(pattern)}, which defines a new constant
+% % \C{a} to equal the first subterm of the goal that matches the pattern
+% % \C{pattern}, but then replaces \emph{only the \(k\)-th} appearance
+% % of this subterm in the goal by \C{a}. As usual, if the
+% % pattern-matching algorithm keeps finding the wrong subterms, it is
+% % always possible to completely specify the subterm, leaving no
+% % wildcards.
+% 
+% The proof continues as follows:
+% 
+% \lstset{firstnumber=10}
+% \begin{coq}{}{}
+% case: (IHn (m-4) _ isT) => [|s4 [s5 def_m4]].
+%   by rewrite leq_subLR (leq_trans mn) // addSnnS leq_addl.
+% by exists s4.+1, s5; rewrite mulSn -addnA def_m4 subnKC.
+% Qed.
+% \end{coq}
+% \lstset{firstnumber=1}
+% 
+% Line 10 instantiates the induction hypothesis with the value
+% \C{(m-4)}, with a placeholder for a missing proof of \C{(m-4 < n)},
+% and with a proof that \C{(11 < m-4)}. The proof given for
+% \C{(11 < m-4)} can be just \C{isT} since the type \C{(11 < m-4)} 
+% \emph{computes} to \C{true} since the value of \C{m} is larger than 11.
+% The missing proof
+% of \C{(m-4 < n)}  becomes the first
+% subgoal, solved at line 11.
+% 
+% The induction hypothesis yields
+% \C{exists s4 s5 : nat, s4 * 4 + s5 * 5 = m-4}. The introduction
+% pattern in line 10 gives names to the values of \C{s4} and \C{s5}
+% whose existence is thus guaranteed, and named \C{def_m4} the
+% assumption
+% \C{s4 * 4 + s5 * 5 = m-4}. In other words, it gives names \C{s4} and
+% \C{s5} to the quantities of 4-cent and 5-cent stamps needed to cover
+% the amount of postage \C{(m-4)}, as well as to the fact that they do
+% cover this exact amount of postage. The intro pattern to name
+% \C{s5} needs an extra destructing pattern (square bracket) because
+% \C{(exists s4 s5, ...)} is just a notation for
+% \C{(exists s4, exists s5, ...)} hence two existential
+% quantifiers need to be actually dealt with.
+% 
+% Line 12 gives the final solution: by using one extra 4 cents stamp
+% we can appeal to the induction hypothesis.
+% 
+% 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Structuring proofs, by examples}
 
