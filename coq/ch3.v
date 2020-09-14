@@ -77,3 +77,22 @@ Definition strong_nat_ind (P : nat -> Prop)
        end)
     n
   n (leqnn n : n <= n).
+
+Axiom P : nat -> Prop.
+Check (nat_ind (fun n => forall m, m <= n -> P m)).
+(*
+: (forall m : nat, m <= 0 -> P m) ->
+(forall n : nat,
+ (forall m : nat, m <= n -> P m) -> forall m : nat, m <= n.+1 -> P m) ->
+forall n m : nat, m <= n -> P m
+*)
+Lemma  strong_nat_ind2 (P : nat -> Prop)
+  (base : P 0)
+  (step : forall n, (forall m, m <= n -> P m) -> P n.+1) n : P n.
+Proof.
+apply: (nat_ind (fun n => forall m, m <= n -> P m) _ _ n n) => // {n}.
+  by case=> [_| //]; exact: base.
+move=> n IHn; case=> [_|m Hm]; first by exact: base.
+apply: step=> j Hjm; apply: IHn.
+apply: leq_trans Hjm Hm.
+Qed.
