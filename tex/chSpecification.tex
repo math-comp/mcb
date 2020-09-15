@@ -970,6 +970,33 @@ definition/predicate under study but by the view/spec used to reason about it.}
 % \item Tuning of implicit arguments
 % \end{itemize}
 
+\section{Strong induction via inductive specs}
+\label{sec:ubnP}
+
+As we have seen in \ref{ssec:indreason} the strong induction principle can be
+obtained from the regular one by choosing an appropriate value for
+the predicate. The \C{elim} tactic infers that predicate from the goal,
+so another way to specify the predicate is to \emph{load} the goal
+before performing the induction.
+
+For example if the goal is \C{G n} and one loads it to
+\C{forall m, m <= n -> G m} then he will have access to the
+induction hypothesis on all numbers smaller than n exactly as
+if he was using the strong induction principle.
+
+The \mcbMC{} library provides a few tools to load the goal like this.
+
+\begin{coq}{}{}
+Inductive ubn_leq_spec m : nat -> Type := UbnLeq n of m <= n : ubn_leq_spec m n.
+Lemma ubnPleq m : ubn_leq_spec m m.
+Proof. by []. Qed.
+\end{coq}{}{}
+
+Explain what happens when you do
+\C{case: (ubnPleq n)}
+
+Real example in the following section
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Showcase: Euclidean division, simple and correct}\label{sec:edivn}
@@ -1028,15 +1055,14 @@ as we did for the postage example in section~\ref{sec:strongind}.
 But let's start by dealing with the trivial case of a null divisor.
 
 \begin{coq}{}{}
-case: d => [//=|d /=] in ed *.
+rewrite -[m]/(0 * d + m).
+case: d => [//= | d /=] in ed *.
 rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
-rewrite -[m]/(0 * d.+1 + m).
-elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
-rewrite edivn_recE subn_if_gt; case: ifP => [le_dm|lt_md]; last first.
+case: (ubnPgeq m) @ed; elim: m 0 => [|m IHm] q [/=|n] leq_nm //.
+rewrite edivn_recE subn_if_gt; case: ifP => [le_dm ed|lt_md]; last first.
   by rewrite /= ltnS ltnNge lt_md eqxx.
-have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
-by rewrite /= mulSnr -addnA -subSS subnKC.
-Qed.
+rewrite -ltnS in le_dm; rewrite -(subnKC le_dm) addnA -mulSnr.
+by apply: IHm q.+1 (n-d) _; apply: leq_trans (leq_subr d n) leq_nm.
 \end{coq}
 \index[ssr]{\C{tactic in name}}
 Line 1 handles the case of \C{d} being zero.  The ``\C{in E...}'' suffix
@@ -1052,6 +1078,7 @@ and makes the invariant of the division loop explicit replacing
 \C{m} by \C{(0 * d.+1 + m)}.  Recall the case \C{d} being \C{0} has
 already been handled.
 
+TODO: fix
 Line 4 performs a strong induction, also generalizing the initial
 value of the accumulator \C{0}, leading to the following goal:
 

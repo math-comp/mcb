@@ -88,9 +88,10 @@ forall n m : nat, m <= n -> P m
 *)
 Lemma  strong_nat_ind2 (P : nat -> Prop)
   (base : P 0)
-  (step : forall n, (forall m, m <= n -> P m) -> P n.+1) n : P n.
+  (step : forall n, (forall m, m <= n -> P m) -> P n.+1) x : P x.
 Proof.
-apply: (nat_ind (fun n => forall m, m <= n -> P m) _ _ n n) => // {n}.
+apply: (nat_ind (fun n => forall m, m <= n -> P m) _ _ x x (leqnn x)).
+  Show.
   by case=> [_| //]; exact: base.
 move=> n IHn; case=> [_|m Hm]; first by exact: base.
 apply: step=> j Hjm; apply: IHn.
