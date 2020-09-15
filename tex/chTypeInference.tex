@@ -200,10 +200,10 @@ In the light of that, we observe that every time we apply the identity
 function to a term we can omit to specify its first argument,
 since \Coq{} is able to infer it and complete the input term for us.
 This phenomenon is so frequent that one can ask the system to insert
-the right number of \lstinline/_/ for him.  For more details
+the right number of \lstinline/_/ for him. Here
+we only provide a simple example. For more details
 % see section~\ref{sec:declaringimpl} or
-refer to~\cite[``Extensions of Gallina'']{Coq:manual}.  Here
-we only provide a simple example.
+refer to~\cite[``Extensions of Gallina'']{Coq:manual}.  
 
 \begin{coq-left}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
 Arguments id {A} a.
@@ -219,11 +219,16 @@ id 3 : nat
 
 The \lstinline/Arguments/ directive ``documents'' the constant
 \lstinline/id/.  In this case it just marks the argument that has to
-be considered as implicit by surrounding it with curly braces.
+be considered as implicit by surrounding it with curly braces. In our
+case, argument \C{A} is thus declared as implicit.
 The declaration of implicit arguments can be locally disabled by
 prefixing the name of the constant with the \lstinline/@/ symbol.
+The command \C{About} provides the user with the type of a given
+constant, and with the status, implicit or not, of each argument of
+the constant.
 
-Another piece of information that is often left implicit is
+
+Another piece of information that is often not explict is
 the type of abstracted or quantified variables.
 
 \begin{coq-left}{name=infarg}{title=Omitting type annotations,width=7cm}
@@ -306,7 +311,15 @@ type of \lstinline/prime_gt1/ where we substitute \mcbimpl{p} for
 well typed, its type is \lstinline/(1 < q)/ and the placeholder
 has been set to be \lstinline{q}.
 As we did for the identity function, we can declare the \lstinline/p/
-argument of \lstinline/prime_gt1/ as implicit.
+argument of \lstinline/prime_gt1/ as implicit: this is actually the
+case in the library. In this case, the script is:
+
+\begin{coq}{}{}
+have q_gt1 := prime_gt1 pr_q.
+exact: ltnW q_gt1.
+Qed.
+\end{coq}
+
 Choosing a good  declaration of implicit arguments for lemmas is
 tricky and requires one to think ahead how the lemma is used.
 % section~\ref{sec:declaringimpl} is dedicated to that.
@@ -796,20 +809,18 @@ a comparison function compatible with Leibniz equality
 
 The \C{Equality} module enclosing the record acts as a name space:
 \C{type}, \C{sort},
-\C{eq} and \C{axiom}, three very generic words, are here
+\C{op} and \C{axiom}, four very generic words, are here
 made local to the \C{Equality} name space becoming, respectively,
 \C{Equality.type}, \C{Equality.sort}, \C{Equality.op} and \C{Equality.axiom}.
 
-As in section~\ref{sec:eqtype}, the record plays the role of
-a relation and its \C{sort} component is again the only field
-that drives canonical structure inference. Following
-a terminology typical of object-oriented programming languages,
-the set of operations (and properties) that define an interface is
-called a \emph{class}.  In the next chapter, we are going to re-use already
-defined classes in order to build new ones by mixing-in additional
-properties (typically called axioms).
-Hence the definition of \C{eqType} in the
-\mcbMC{} library is closer to the following one:
+As in section~\ref{sec:eqtype}, the record plays the role of a
+relation and its \C{sort} component is again the only field that
+drives canonical structure inference. The set of operations (and
+properties) that define an interface is called a \emph{class}.  In the
+next chapter, we are going to re-use already defined classes in order
+to build new ones by mixing-in additional properties (typically called
+axioms).  Hence the definition of \C{eqType} in the \mcbMC{} library
+is closer to the following one:
 
 \begin{coq}{name=eqtype}{title=The real definition of eqType}
 Module Equality.
@@ -1022,8 +1033,8 @@ Fixpoint mem_seq s x :=
 
 Like we did for the overloaded \C{==} notation, we can define the
 \C{\\in} (and \C{\\notin}) infix notation.  We can then easily
-define what a duplicate-free sequence is, and how to enforce such
-property.
+define what a duplicate-free sequence is, as well as a procedure for
+removing duplicates from a sequence. 
 
 \begin{coq}{name=uniq}{}
 Fixpoint uniq s :=
@@ -1216,9 +1227,19 @@ the generic theory of iterated operations.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The generic notation for \C{foldr}}
 
-The generic notation for iterated operations has to be attached to
-something more specific than \C{foldr} in order to clearly identify
-all components
+The generic notation for iterated operations has to be attached to a
+slightly specific variant of the \C{foldr} iterator, in order to
+clearly identify all components. This variant, called \C{bigop}, 
+takes as argument a range \C{(r : seq I)}, a neutral element
+\C{(op : R)}, and a binary operation \C{(op : R -> R -> R)}, to be
+iterated. Note that the type of the elements in the range are not the
+same as the type of the arguments of the iterated operation. Indeed,
+\C{bigop} also uses a function \C{(F : I -> R)}, as well as a
+filtering predicate \C{(P : pred I)}, to construct the actual
+iteration range. In the end, \C{bigop} filters the range \C{r} using
+predicate \C{P}, and precomposes by the function \C{F} before
+iterating the binary operation \C{op}. And \C{idx} is the value output
+when the filtered range is empty.
 
 \begin{coq}{name=bigop2}{}
 Definition bigop R I idx op r (P : pred I) (F : I -> R) : R :=
@@ -1713,30 +1734,13 @@ Qed.
 %\mcbREQUIRE{Canonical}
 %\mcbPROVIDE{Phantom}
 
-\section{Querying canonical structures}\label{sec:phantom}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Ad-hoc polymorphism}
 
-\warntechnical{}
-
-It is possible to  ask \Coq{} if a certain term does validate an
-interface.  For example, to check if \C{addn} forms a monoid one can
-\C{Check [law of addn]}.  A notation of this kind exists for any
-interface, for example \C{[eqType of nat]} is another valid query to
-check if \C{nat} is equipped with a canonical comparison function.
-
-This mechanism can also be used to craft notations that assert
-if one of their arguments validates an interface.  For example
-imagine one wants to define the concept of finite set as an
-alias of \C{(seq T)} but such that only values for \C{T} being
-\C{eqType}s are accepted.
-
-The rest of this section introduces the general mechanism of phantom
-types used to trigger canonical structure resolution.
-
+\warnverytechnical{}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%555
 \subsection{Phantom types}
 
-\warnverytechnical{}
+
 
 First of all, canonical structure resolution kicks in during
 unification that in turn is used to compare types.  Types are
@@ -1775,6 +1779,27 @@ The unification problem arising for the last argument of \C{set\_of}
 is \C{(phantom Type (Equality.sort ?T))} versus
 \C{(phantom Type nat)}, that in turn contains the sub problem
 we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
+
+\subsection{Querying canonical structures}\label{sec:phantom}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\warntechnical{}
+
+It is possible to  ask \Coq{} if a certain term does validate an
+interface.  For example, to check if \C{addn} forms a monoid one can
+\C{Check [law of addn]}.  A notation of this kind exists for any
+interface, for example \C{[eqType of nat]} is another valid query to
+check if \C{nat} is equipped with a canonical comparison function.
+
+This mechanism can also be used to craft notations that assert
+if one of their arguments validates an interface.  For example
+imagine one wants to define the concept of finite set as an
+alias of \C{(seq T)} but such that only values for \C{T} being
+\C{eqType}s are accepted.
+
+The rest of this section introduces the general mechanism of phantom
+types used to trigger canonical structure resolution.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{Exercises}
