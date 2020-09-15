@@ -156,35 +156,40 @@ $x$ is a unique name).
 %\mcbLEARN{type and term inference}
 %\mcbREQUIRE{have, move, exact}
 %\mcbPROVIDE{Arguments (setting implicit)}
-\section{Recap: type inference by example}
+\section{Type inference by example}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Most of the code we have discussed so far uses some amount of type
+inference. In this section, we go over a few elementary examples, so
+as to clarify them.
 
-Let us start with the simplest example one could imagine: defining the
-polymorphic identity function and checking its application to
+For once, let us start with an example of code meant to be executed in
+a \Coq{} session before \emph{importing any library, nor positioning any
+global option}. This example is one of the simplest possible: it
+defines the polymorphic identity function and checks its application to
 \lstinline/3/.
 
 \begin{coq-left}{name=exid}{width=8cm,title=Polymorphic identity}
-Definition id A (a : A) : A := a.
-Check (id nat 3).
-Check (id _ 3).
+Definition idfun A (a : A) : A := a.
+Check (idfun nat 3).
+Check (idfun _ 3).
 \end{coq-left}
 \coqrun{name=r1}{exid}
 \begin{coqout-right}{run=r1}{title=Response,width=4cm}
 $~$
-id nat 3 : nat
-id nat 3 : nat
+idfun nat 3 : nat
+idfun nat 3 : nat
 \end{coqout-right}
 
 In the expression \lstinline/(id nat 3)/ no subterm was omitted,
-therefore \Coq{} accepted the term and printed its type.  In the third
-line, even if the subterm \lstinline/nat/ was omitted, \Coq{} accepted
-the term.  Type inference found a value for the placeholder
-for us by proceeding in the following way:  it traversed the term
-recursively from left to right, ensuring that the type of each
+therefore \Coq{} accepts the term and prints its type.  In the third
+line, even if the subterm \lstinline/nat/ is omitted, \Coq{} accepts
+the term.  Type inference finds a value for the placeholder
+for the user by proceeding in the following way:  it traverses the term
+recursively from left to right, ensures that the type of each
 argument of the application had the type expected by the function.  In
 particular \lstinline/id/ takes two arguments.
 The former argument is expected to have type \lstinline/Type/ and the
-user left such argument implicit (we name it \mcbimpl{A}).   Type
+user leaves such argument implicit (we name it \mcbimpl{A}).   Type
 inference imposes that \mcbimpl{A} has type \lstinline/Type/, and this
 constraint is satisfiable.  The algorithm continues checking the
 remaining argument.  According to the definition of \lstinline/id/ the type of
@@ -196,17 +201,17 @@ to be true \mcbimpl{A} has to be assigned the value \lstinline/nat/.
 As a result the system prints the input term, where the placeholder
 has been replaced by the value type inference assigned to it.
 
-In the light of that, we observe that every time we apply the identity
-function to a term we can omit to specify its first argument,
-since \Coq{} is able to infer it and complete the input term for us.
-This phenomenon is so frequent that one can ask the system to insert
-the right number of \lstinline/_/ for him. Here
+In the light of this process, it becomes clear that every time we
+apply the identity function to a term, we can omit to specify its
+first argument, since \Coq{} is able to infer it and complete the
+input term for us.  This phenomenon is so common that one can ask
+the system to insert the right number of \lstinline/_/ for us. Here
 we only provide a simple example. For more details
 % see section~\ref{sec:declaringimpl} or
 refer to~\cite[``Extensions of Gallina'']{Coq:manual}.  
 
 \begin{coq-left}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
-Arguments id {A} a.
+Arguments idfun {A} a.
 Check (id 3).
 Check (@id nat 3).
 \end{coq-left}
@@ -223,10 +228,28 @@ be considered as implicit by surrounding it with curly braces. In our
 case, argument \C{A} is thus declared as implicit.
 The declaration of implicit arguments can be locally disabled by
 prefixing the name of the constant with the \lstinline/@/ symbol.
-The command \C{About} provides the user with the type of a given
-constant, and with the status, implicit or not, of each argument of
-the constant.
 
+Very often, it is possible de to determine the most plausible status
+of each argument, explicit or implicit, using a heuristic. Such a
+heuristic is applied in a systematic way when a global option is
+declared: every definition posterior to the declaration may feature
+implicit arguments even if not \C{Argument} command is used to declare
+them mannualy. This has been the case so far, and in the rest of the
+section and of the book, we will work again under the assumption that
+following the global options have been set, in accordance with
+Chapter~\ref{ssec:runcoq}:
+
+\begin{coq}
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+\end{coq}
+
+Of course, the \C{Argument} command remains useful on specific cases
+when a finer, manual tuning of implicit arguments remains needed.
+The command \C{About} provides the user with the type of
+a given constant, and with the status, implicit or not, of each
+argument of the constant.
 
 Another piece of information that is often not explict is
 the type of abstracted or quantified variables.
