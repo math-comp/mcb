@@ -72,6 +72,10 @@ Lemma edivn_recE d m q :
     if m - d is m'.+1 then edivn_rec d m' q.+1 else (q, m).
 Proof. by elim: m. Qed.
 
+Lemma test (G : nat -> Prop) m : G m.
+Proof.
+case: (ubnPgeq m). Show.
+
 Lemma edivnP m d (ed := edivn m d) :
   ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
 Proof.
