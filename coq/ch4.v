@@ -72,17 +72,21 @@ Lemma edivn_recE d m q :
     if m - d is m'.+1 then edivn_rec d m' q.+1 else (q, m).
 Proof. by elim: m. Qed.
 
+Lemma test (G : nat -> Prop) m : G m.
+Proof.
+case: (ubnPgeq m). Show.
+
 Lemma edivnP m d (ed := edivn m d) :
   ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
 Proof.
-case: d => [|d /=] in ed *; first by rewrite eqxx.
+rewrite -[m]/(0 * d + m).
+case: d => [//= | d /=] in ed *.
 rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
-rewrite -[m]/(0 * d.+1 + m).
-elim: m {-2}m 0 (leqnn m) @ed => [[]//=|n IHn [//=|m]] q le_mn.
-rewrite edivn_recE subn_if_gt; case: ifP => [le_dm|lt_md]; last first.
+case: (ubnPgeq m) @ed; elim: m 0 => [|m IHm] q [/=|n] leq_nm //.
+rewrite edivn_recE subn_if_gt; case: ifP => [le_dm ed|lt_md]; last first.
   by rewrite /= ltnS ltnNge lt_md eqxx.
-have /(IHn _ q.+1) : m - d <= n by rewrite (leq_trans (leq_subr d m)).
-by rewrite /= mulSnr -addnA -subSS subnKC.
+rewrite -ltnS in le_dm; rewrite -(subnKC le_dm) addnA -mulSnr.
+by apply: IHm q.+1 (n-d) _; apply: leq_trans (leq_subr d n) leq_nm.
 Qed.
 
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
