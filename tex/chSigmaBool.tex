@@ -45,8 +45,8 @@ easy invariant and relieving the proof text from boring details.
 The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
 that we have already seen in the previous chapter in their general
 form of records.
-For example, one can define the type \C{'I_7} as $\Sigma_{(n:nat)} n
-< 7$.  Since proofs are terms, one can
+For example, one can define the type \C{'I_7} as the $\Sigma$-type $\Sigma_{(n:nat)} n
+< 7$ which pairs a natural number $n$ and proof that it is smaller than $7$.  Since proofs are terms, one can
 pack together objects and proofs of some properties to
 represent the objects that have those properties.  For example $3$,
 when seen as an inhabitant of \C{'I_7}, is represented by a dependent
@@ -400,9 +400,9 @@ The \mcbMC{} library provides a \emph{sub-type kit} to let one
 write just the following text:
 
 \begin{coq}{name=subt}{}
-Canonical tuple_subType := Eval hnf in [subType for tval].
-Definition tuple_eqMixin := Eval hnf in [eqMixin of n.-tuple T by <:].
-Canonical tuple_eqType := Eval hnf in EqType (n.-tuple T) tuple_eqMixin.
+Canonical tuple_subType := [subType for tval].
+Definition tuple_eqMixin := [eqMixin of n.-tuple T by <:].
+Canonical tuple_eqType := EqType (n.-tuple T) tuple_eqMixin.
 \end{coq}
 
 Line 1 registers \C{tval} as a canonical projection to obtain a known
@@ -422,7 +422,7 @@ The following section details the implementation of the sub-type kit.
 %\mcbREQUIRE{}
 \subsection{The sub-type kit}
 
-\warntechnical{}
+%\warntechnical{}
 
 When one has a base type T and a sub-type ST defined as a boolean
 sigma type, the \mcbMC{} library provides facilities to
@@ -439,8 +439,8 @@ Canonical tuple_subType := Eval hnf in [subType for tval].
 As we will see in the next section, the \C{subType} structure provides
 a generic notation \C{val} for the projector of a sub-type (i.e.,
 \C{tval} for \C{tuple}), with an overloaded injectivity lemma
-\lstinline/val_inj/ saying that two objects equal in ST are also equal
-in T.
+\lstinline/val_inj/ saying that two objects equal in T are also equal
+in ST.
 
 In addition to the generic projection, we get a generic static
 constructor \C{Sub}, which takes a value in the type \C{T} and a proof.
@@ -466,7 +466,7 @@ Here is a few example uses, using \C{tuple}:
 Variables (s : seq nat) (t : 3.-tuple nat).
 Hypothesis size3s : size s == 3.
 Let t1 : 3.-tuple nat := Sub s size3s.
-Let s2 := if insub s is Some t then val (t : 3.-tuple nat) else nil.
+Let t2 := if insub s is Some t then val (t : 3.-tuple nat) else nil.
 Let t3 := insubd t s. (* : 3.-tuple nat *)
 \end{coq}
 
@@ -752,7 +752,7 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 %\mcbREQUIRE{}
 \section{Finite functions}
 
-In standard mathematics functions that are point wise equal are
+In standard mathematics, functions that are point wise equal are
 considered as equal.  This principle, that we call \emph{functional
 extensionality}, is compatible with the \mcbCIC{} but is not built-in.
 At the time of writing, only very recent variations of CIC,
@@ -778,11 +778,12 @@ of finite functions given in this section since the so called
 ``positivity checker'' is too incomplete.}
 of the type of finite functions in the \mcbMC{}
 library uses this remark, plus the tricks explained in
-section~\ref{sec:phantom}:
+section~\ref{sec:phantom}
 
 \begin{coq}{name=subtdecl2}{}
 Section FinFunDef.
-Variables (aT : finType) (rT : Type).
+Variable (aT : finType). (* domain type *)
+Variable (rT : Type). (* codomain type *)
 
 Inductive finfun_type : Type := Finfun of #|aT|.-tuple rT.
 Definition finfun_of of phant (aT -> rT) := finfun_type.
@@ -1245,7 +1246,7 @@ and a square block of size $n-1$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Size casts}\label{sec:castmx}
 
-\warntechnical{}
+%%\warntechnical{}
 
 Types containing values are a double edged sword.  While we have seen that
 they make the writing of matrix expressions extremely succinct, in
@@ -1322,7 +1323,7 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Sorts and \C{reflect}}
 
-\warnverytechnical{}
+%\warnverytechnical{}
 
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs

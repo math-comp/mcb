@@ -273,7 +273,7 @@ Canonical Zp_finRingType := [finRingType of 'I_p].
 
 While using and populating a structure hierarchy is fairly
 straightforward, creating a robust and efficient hierarchy can be more
-difficult. In this section we explain \emph{telescopes}, one of the
+difficult. In this section we explain \emph{telescopes}~\cite{Bruijn91}, one of the
 simpler ways of implementing a structure hierarchy.  Telescopes
 suffice for most simple --- tree-like and shallow --- hierarchies, so
 new users do not necessarily need expertise with the more
@@ -311,9 +311,10 @@ simplification rules such as
     \big[op/idx]_(i <- r | P i) idx = idx
 \end{coq}
 
-Because the \C{Monoid} hierarchy is small, there is no need to bundle
-the \C{Monoid.law} properties in a mixin. It thus takes only one line
-to declare an instance for the boolean ``and'' operator \C{andb}
+Because the \C{Monoid} structure is at the bottom of the hierarchy,
+there is no need to bundle the \C{Monoid.law} properties in a
+mixin. It thus takes only one line to declare an instance for the
+boolean ``and'' operator \C{andb}
 
 \begin{coq}{name=telescope12}{}
 Canonical andb_monoid := Law andbA andTb andbT.
@@ -435,7 +436,7 @@ checking heuristics for deep hierarchies.
 \section{Packed classes}\label{sec:packed}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\warntechnical{}
+%\warntechnical{}
 
 The type structure hierarchy for the \mcbMC{} library is both deep
 (up to 11 levels) and non-linear. It is not uncommon for an algebraic
@@ -776,7 +777,7 @@ for its algebraic predicate hierarchy).
 \section{Parameters and constructors}\label{sec:phant}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\warnverytechnical{}
+%\warnverytechnical{}
 
 We have noted already that structure instances are often hard to
 provide explicitly because it is intended they always be inferred.
@@ -1008,10 +1009,12 @@ Canonical windrose_countType := CountType windrose windrose_countMixin.
 Definition windrose_finMixin := PcanFinMixin pcan_wo4.
 Canonical windrose_finType := FinType windrose windrose_finMixin.
 \end{coq}
-Only one tiny detail is left on the side.  To use \C{windrose}
-in conjunction with \C{\\in} and \C{#|...|}, the type declaration has
-to be tagged as a \C{predArgType} as follows.
-\index[coq]{\C{preArgType}}
+Only one tiny detail has been left on the side so far.  To use
+\C{windrose} in conjunction with the \C{\\in} infix notation or with
+the notation \C{#|...|} for cardinality, the type declaration has to
+be tagged as an instance of the \C{predArgType} structure, for types
+which model a predicate, as it is the one which supports the latter
+notations. It can be done as follows.  \index[coq]{\C{preArgType}}
 
 \begin{coq}{}{}
 Inductive windrose : predArgType := N | S | E | W.
