@@ -1,0 +1,92 @@
+Page 69: implemented by ou bien implemented in ?
+-- ok
+
+use the same language of types in a uniform way to describe both mathematical objects
+-- no
+
+“there is a significant difference”, on voit pas bien la différence avec quoi, je pense que vous faites référence à théorie des types/théorie des ensembles mais çà pourrait être dit plus clairement.
+-- ok
+
+E: \maginpar about meta statement
+-- reworded
+
+Page 70: usually written as follows
+that the term $t$ has type $T$
+-- ?
+
+and validate these assumptions: je vois pas trop ce que vous voulez dire, je me demande si ce morceau de phrase est nécessaire.
+-- ok
+
+E: And Coq -> Coq
+E: it -> the same term
+E: certain variable -> variable
+E: Indeed, again -> Indeed
+E: The context of a typing judgement... -> New example, I hope I got
+    the intended meaning of the sentence
+	XXX on a second though, I removed this, since it is well explained later
+-- done
+
+Page 71: for the sake of the exposition, je le mettrais plus après Note that, for the sake of exposition
+-- ok
+
+right side -> right hand side
+-- ok
+
+E: meta-proof -> proof, see the marginpar rewording (no more meta)
+-- done
+
+Page 73: quand vous parlez de l’application d’une fonction à un argument, est-ce que çà vaudrait pas le coup de parler de l’application d’une fonction à un type et d’expliquer la différence avec les langages habituels ou le polymorphisme 
+-- no
+
+Page 74:
+It is a deep remark …. respectively. Je trouve la phrase un peu longue. 
+-- ok
+
+Page 74: Est-ce qu’il faudrait mentionner la sémantique de Heyting Kolmogorov ?
+-- ?
+
+Page 75: the same type is written -> this type is written
+-- ok
+
+Parler des _ pour éviter de donner tous les arguments ?
+-- no
+
+Page 75 “describes the status” je trouve l’expression bizarre. Peut- être que vous pourriez développer un peu en comparant à une preuve de 1000+1000= 2000 en théorie des ensembles.
+
+an application -> an application of a function to an argument
+-- ok
+
+t[u/x] est-ce que la notation a été introduite avant?  Je pense que le concept de substitution est rarement enseigné quand on parle pas de lambda calcul, donc je pense qu’il faudrait expliquer un peu plus ici en prenant un exemple et mettre l’explication avant la notation.
+-- no, done in ch1
+
+E: comment marginpar about (I guess) full scale reflection.
+
+EN bas de la page 75, est-ce qu’il ne faudrait pas parler de la différence entre Prop et bool ? et dire que MathComp choisit d’utiliser bool dès que c’est possible.
+-- no
+
+Page 76 et à d’autres endroits: quand vous pointez vers Coq Art ou le manuel Coq, çà pourrait être bien d’indiquer le chapitre.
+-- ...
+
+Page 76: posfix -> postfix
+-- ok
+
+Page 76: Constructors are by definition injective functions : c’est pas tout à fait par définition non ? c’est grâce au pattern matching ?
+-- no
+
+Page 77: to be visible from a syntactic point a view -> Je trouve le mot visible pas clair: termination can be inferred using a syntactic criterion ? 
+-- ok
+
+PAge 77: faire une remarque clarifiant le fait que and est un type inductif non récursifs, donc pas vraiment inductifs.
+-- no
+
+Page 78: ex are exintro polymorphic -> typo dans cette ligne
+-- ok
+
+Page 80: fin de 3.6 est-ce qu’il faudrait pas une phrase ou deux mentionnant les problèmes de l’égalité en Coq, parler d’extensionnalité ? quotient ?
+-- no
+
+Page 80 à propos de oups. Pour moi c’est pas très clair de pourquoi çà permet de prouver faux et je trouve bizarre d’utiliser du verbatim avec un Check pour du code qui fonctionne pas.				
+	Dans mon cours de M1 j’ai mis cette exemple emprunté à Benjamin Werner je crois:					
+Fixpoint toto (b :bool) : bool := negb (;toto b).
+On dérive facilement la contradiction.
+-- ?
