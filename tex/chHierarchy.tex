@@ -157,10 +157,12 @@ canonical instance. After line 2 all the additive algebra provided in
 \lib{ssralg} becomes applicable to \lstinline/'I_p/; for example \C{0}
 denotes the zero element, and \C{i + 1} denotes the successor of \C{i} mod $p$.
 
+\mantra{
 The \C{ZmodMixin} constructor infers the operations \C{Zp_add}, etc.,
 from the identities \C{Zp_add0z}, etc.. Providing an explicit definition
 for the mixin, rather than inlining it in line 2, is important as it
 speeds up type checking, which never need to open the mixin bundle.
+}
 
 The first argument to the instance constructor \C{ZmodType} is
 somewhat redundant, but documents precisely the type for which this
@@ -515,10 +517,13 @@ Structure type := Pack {sort; _ : class_of sort}.
 %   We've also removed patches addressing historical inefficiencies on
 %   the \Coq{} kernel heuristics, in particular a redundant copy of the
 %   \C{sort} field appended to the \C{type} structure.}
-
-The main operation provided by the \C{choiceType} structure \C{T} is a
+The mixin provides a specific, depth-based,
+strategy, the \C{find} operator, for searching and electing a
+witness. The second argument of this operator, of type \C{nat} acts as
+a ``fuel'' auxiliary argument, and bounds the depth of the search.
+But the main operation provided by the \C{choiceType} structure \C{T} is a
 choice function for decidable predicates
-\C{(choose : pred T -> T -> T)} satisfying:
+\C{(choose : pred T -> T -> T)} satisfying the following properties:
 
 
 \begin{coq}{name=packed21}{}
@@ -526,12 +531,9 @@ Lemma chooseP P x0 : P x0 -> P (choose P x0).
 Lemma choose_id P x0 y0 : P x0 -> P y0 -> choose P x0 = choose P y0.
 Lemma eq_choose P Q : P =1 Q -> choose P =1 choose Q.
 \end{coq}
-
 %\marginnote{Say more about choice in exercises, like W lemmas.}
-The mixin actually specifies a specific, depth-based,
-strategy for searching and electing a witness: \C{choose} can be
-defined using \C{find} and the axiom of countable
-choice, which is derivable in \mcbCIC{}% \footnote{behind the
+The \C{choose} operation can be
+defined using the \C{find} operator provided by the interface, and its properties follow from the axiom of countable choice, which is derivable in \mcbCIC{}% \footnote{behind the
 % \C{\{m|..\}} notation lies the \C{sig} dependent pair.  Such an inductive
 % data type is a copy of the existential quantifier but is
 % declared as a data type rather than a
@@ -546,10 +548,11 @@ choice, which is derivable in \mcbCIC{}% \footnote{behind the
 Lemma find_ex_minn (P : pred nat)  :
   (exists n, P n) -> {m | P m & forall n, P n -> n >= m}.
 \end{coq}
-The stronger requirement
-makes it possible to compose \C{choiceType}s, so that pairs or
-sequences of \C{choiceType}s are also \C{choiceType}s.  This subtlety
-is detailed in the comments of the \lib{choice} file.
+Requiring a \C{find} operator is stronger than requiring a \C{choose}
+operator: this strengthened requirement makes it possible to compose
+\C{choiceType}s, so that pairs or sequences of \C{choiceType}s are
+also \C{choiceType}s.  This subtlety is detailed in the comments of
+the \lib{choice} file.
 
 An important difference to telescopes is that the definition of
 \C{Choice.type} does not link it directly to \C{eqType}: a
@@ -621,8 +624,9 @@ unlike other equivalence relations such as the ones induced by a quotient.}
 \C{associative add} on line 7 above. In the pure \mcbCIC{}, these can only
 be realized for concrete data types with a binary representation,
 which are both discrete and countable, hence are \C{choiceType}s.  On
-the other hand, the ``classical \mcbCIC{}'' axioms needed to construct,
-e.g., real numbers, imply that all types are \C{choiceType}s.
+the other hand, postulating that any type is endowed with a
+structure of \C{choiceType} is a consistent extension to the Calculus
+of Inductive Constructions.
 
 Similarly to the definition of \lstinline/eq_op/ in \lib{eqtype}, the
 operations afforded by \C{zmodType} are defined just after the
@@ -642,8 +646,8 @@ scope. Only the notations are
 exported from \C{GRing}, as these definitions are intended to remain
 private.
 
-\gotcha{If you see an undocumented \lstinline/GRing.something/,
-  then you have broken an abstraction barrier}
+%% \gotcha{If you see an undocumented \lstinline/GRing.something/,
+%%   then you have broken an abstraction barrier}
 
 The next structure in the hierarchy encapsulates nontrivial rings.
 Imposing the non-triviality condition $1 \neq 0$ is a compromise:
@@ -759,7 +763,7 @@ also~\cite[section 5]{mahboubi:hal-00816703}).
 If a new structure $S$ extends structures that are further apart in
 the hierarchy more than one such additional link may be needed:
 precisely one for each pair of structures whose join is~$S$. For example,
-\C{unitRingAlgebraType} requires three such links, while
+\C{unitRingType} requires three such links, while
 \C{finFieldType} in library \C{finalg} requires 11. It is highly
 advisable to map out the hierarchy when simultaneously extending
 multiple structures.
@@ -858,7 +862,8 @@ Definition phant_id T1 T2 v1 v2 := phantom T1 v1 -> phantom T2 v2.
 \end{coq}
 
 For example, each packed class contains exactly the same definition of
-the clone constructor, following the introduction of
+the clone constructor\footnote{More precisely, the situation is slightly different
+  in the case of structure with a parameter, like modules.}, following the introduction of
 section variables \C{T} and~\C{cT}, and the definition of \C{class}:
 
 \begin{coq}{name=phant21}{}
