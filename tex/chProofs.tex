@@ -1122,7 +1122,7 @@ factors into \C{(m * (n1 - n2) == 0)}. But this is equivalent to one
 of the arguments of the product being zero. And \C{(n1 - n2 == 0)}
 means \C{(n1 <= n2)}.
 
-The first step is performed using the following equation:
+The first step is performed using the following equation:\label{leqE}
 
 \begin{coq}{name=LeqDef}{}
 Lemma leqE m n : (m <= n) = (m - n == 0).
@@ -1853,7 +1853,7 @@ nat_ind : forall P : nat -> Prop,
 
 Here \C{P} is quantified exactly as \C{n} is, but its type is a bit more
 complex and deserves an explanation.  As we have seen in the first
-chapter, the \C{->} denotes the type of functions; hence \C{P} is a\marginpar{There is a problem with the \C{-} macro when the first character is -, which cancels the space that precedes it}
+chapter, the ~\C{->} denotes the type of functions; hence \C{P} is a
 function from \C{nat} to \C{Prop}.  Recall that \C{Prop} is the type
 of \emph{propositions}, i.e., something we may want to prove.  In the
 light of that, \C{P} is a function producing a proposition out of a natural
@@ -2178,9 +2178,7 @@ The sequence ``\C{// /=}'' can be collapsed into \C{//=}.
 Another form of simplification that is often needed is the
 unfolding of a definition.
 For example, the lemma \C{leqE} that we used in
-\marginpar{When reading the text, I thought that \C{leqE} did exist.  I
-think we should avoid misleading readers like that.}
-the proof of \C{leq_mul2l} back in section~\ref{sec:multirew}
+the proof of \C{leq_mul2l} back in page~\pageref{leqE}
 does not exist in the library, and there is no name associated to this
 equation. It is simply the definition of \C{leq}, and we actually do
 not need to state a lemma in order to relate

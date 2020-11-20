@@ -20,7 +20,7 @@ in an unconventional way.  As a consequence, this book provides a
 non-standard presentation of \Coq{}, putting upfront the formalization
 choices and the proof style that are the pillars of the library.
 
-This books targets two classes of public.  On the one hand, newcomers,
+This book targets two classes of public.  On the one hand, newcomers,
 even the more mathematically inclined ones, %may
 find a soft
 introduction to the programming
@@ -123,7 +123,7 @@ giving canonical solutions to otherwise unsolvable problems.
 Such solutions typically involve notions and theorems that
 are part of the \mcbMC{} library.  By programming type inference
 one can hence teach \Coq{} the contents of the library.  The system
-is then able to reconstruct the non-trivial missing pieces of information,
+is then able to reconstruct non-trivial missing pieces of information,
 as the informed reader typically does when reading a mathematical text.
 
 Formalized knowledge is organized by means of interfaces (in the spirit of
@@ -178,7 +178,7 @@ IHn : \sum_(0 <= i < n.+1) i = (n * n.+1) %/ 2
 \sum_(0 <= i < n.+2) i = (n.+1 * n.+2) %/ 2
 \end{coqout}
 
-Names of components one can \C{Require} in \Coq{} are written
+Names of library components one can \C{Require} in \Coq{} are written
 like \lib{ssreflect} or \lib{fintype}.
 
 \subsection*{Running examples in the \Coq{} system}
@@ -200,8 +200,8 @@ provided under the name \texttt{coqide}.  The \Coq{} community also develops
 alternative approaches to integrate \Coq{} in their preferred programming
 environment.  For instance, there exist special extensions of \Coq{} for the
 popular \texttt{Emacs} programming editor (known as \texttt{Proof General})
-and for the \texttt{Eclipse} programming environment
-(known as \texttt{coqoon}).  These extensions and similar projects can easily
+and for the \texttt{Visual Studio Code} programming environment
+(known as \texttt{vscoq}).  These extensions and similar projects can easily
 be found by a search on the Internet.
 
 When starting a \Coq{} session, a few commands must be sent to the \Coq{}
