@@ -1554,8 +1554,7 @@ Lemma example m p : prime p -> p %| m `! + 1 -> m < p.
 \end{coq}
 \coqrun{name=testexp}{ssr,exp,abort}
 
-where \D{p \%| m`!} stands for ``\C{p} divides the factorial of \C{m}''.\marginpar{there is a problem with the factorial notation at the beginning
-of this line}
+where \D{p \%| m`!} stands for ``\C{p} divides the factorial of \C{m}''.
 
 The first step of our formal proof will be to give a name to the
 hypothesis \C{(prime p)}, which means that we add it to the

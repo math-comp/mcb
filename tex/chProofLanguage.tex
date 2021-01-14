@@ -247,8 +247,12 @@ of the \C{by []} terminator.  In the second branch we name \C{z} the
 new variable (the predecessor of what used to be called \C{y}).
 Since \C{y} is destructed we could have reused that name for
 its predecessor, as it is often done in the \mcbMC{} library.
-Recall the definition of \C{odd} \marginpar{odd is never given}:
-when applied to \C{z.+1} it simplifies to \C{\~\~ odd z}.
+In fact, the boolean predicate \C{odd} is defined by case analysis,
+and induction, on its argument of type \C{nat}:
+\begin{coq}{}{}
+Fixpoint odd n := if n is n'.+1 then ~~ odd n' else false.
+\end{coq}
+Therefore, when applied to \C{z.+1}, it simplifies to \C{\~\~ odd z}.
 
 Now, the fact that \C{z} is even is not needed to conclude, so we can
 discard it by giving it the \C{\_} dummy name.~\footnote{
