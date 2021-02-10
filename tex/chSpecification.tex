@@ -1031,19 +1031,19 @@ Proof. by []. Qed.
 \end{coq}{}{}
 \index[coq]{\C{ubnPgeq}}
 
-As a consequence by performing a case analysis on \C{(ubnPgeq n)} one
-obtains the same effect of \C{move: {-2}n (leqnn n)}.
+As a consequence by performing a case analysis on \C{(ubnPgeq m)} one
+obtains the same effect of \C{move: {-2}m (leqnn m)}.
 
 \begin{coq}{}{}
-Lemma test_ubnP (G : nat -> Prop) n : G n.
+Lemma test_ubnP (G : nat -> Prop) m : G m.
 Proof.
 case: (ubnPgeq m).
 \end{coq}{}{}
 \begin{coqout}{}{}
 G : nat -> Prop
-n : nat
+m : nat
 ============================
-forall m, m <= n -> G m
+forall n, n <= m -> G n
 \end{coqout}{}{}
 
 By varying the arguments of the inductive specification constructor one
