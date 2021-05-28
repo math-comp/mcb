@@ -1,23 +1,20 @@
-  </div> <!-- /#document     -->
-  </div> <!-- /#code-wrapper -->
-  </div> <!-- /#ide-wrapper  -->
+        </textarea>
+      </div>
+    </div>
+  </div>
 
-  <script src="./jscoq/js/jscoq-loader.js" type="text/javascript"></script>
+  <!-- jsCoq configuration part -->
   <script type="text/javascript">
-    var coq;
 
-    loadJsCoq('./jscoq/')
-              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/runmode"))
-              .then(loadJs("./jscoq/external/CodeMirror/addon/runmode/colorize"))
-              .then( function () {
-                  var coqInline = document.getElementsByClassName("inline-coq");
-                  CodeMirror.colorize(coqInline); })
-              .then( function () {
-                  coq = new CoqManager (coqdoc_ids,
-                                       { base_path: './jscoq/', init_pkgs: ['init'] }
-                  );
-              });
+    var jscoq_ids  = ['coq-code'];
+    var jscoq_opts = {
+        prelude:   true,
+        base_path: './node_modules/jscoq/',
+        editor:    { mode: { 'company-coq': true }, keyMap: 'default' },
+        init_pkgs: ['init'],
+        all_pkgs:  ['coq', 'mathcomp']
+    };
+
+    JsCoq.start(jscoq_opts.base_path, './node_modules', jscoq_ids, jscoq_opts);
   </script>
 </body>
-</html>
-

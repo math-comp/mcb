@@ -2,14 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>Using jsCoq with NPM (a template)</title>
 
-    <link rel="stylesheet" href="jscoq/external/bootstrap.min.css" />
-
-    <title>Use Coq in Your Browser: The Js Coq Theorem Prover Online IDE!</title>
+    <!-- important: this will not work from *within* the jsCoq package dir; -->
+    <!-- this template is meant to be copied to your project dir and edited -->
+    <script src="node_modules/jscoq/ui-js/jscoq-loader.js"></script>
   </head>
 
-<body>
+<body class="jscoq-main">
   <div id="ide-wrapper" class="toggled">
-  <div id="code-wrapper">
-  <div id="document">
+    <div id="code-wrapper">
+      <div id="document">
 
