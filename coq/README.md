@@ -40,5 +40,5 @@ in the directory and also index.html.
 
 ## Homepages
 
-Link to the [homepage of the book](https://math-comp.github.io/mcb)
-Link to the [homepage of jsCoq](https://coq.vercel.app)
+* Link to the [homepage of the book](https://math-comp.github.io/mcb)
+* Link to the [homepage of jsCoq](https://coq.vercel.app)
