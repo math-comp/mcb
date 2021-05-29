@@ -1,0 +1,21 @@
+{
+  "name": "mcb-snippets",
+  "description": "Code snippets for Mathematical Components book",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "jscoq": "^0.12.3",
+    "@jscoq/mathcomp": "^0.12.3"
+  },
+  "keywords": [
+    "mathcomp",
+    "ssreflect",
+    "coq",
+    "Mathematical Components"
+  ],
+  "author": "",
+  "license": "Attribution-NonCommercial 4.0 International"
+}
