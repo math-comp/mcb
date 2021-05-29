@@ -27,7 +27,7 @@ directory.
 * Navigate your browser to http://127.0.0.1:8010/ , you should see the list of
 snippets by chapters.
 
-## Contributing
+## Editing/Contributing
 
 ### Updating the code snippests
 * Edit chapter snippet file (in example, ch7.1.v).
