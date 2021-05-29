@@ -27,14 +27,16 @@ directory.
 * Navigate your browser to http://127.0.0.1:8010/ , you should see the list of
 snippets by chapters.
 
-## Updating the code snippests
+## Contributing
+
+### Updating the code snippests
 * Edit chapter snippet file (in example, ch7.1.v).
 * Type `rm ch7.1.html && make ch7.1.html`.
 * Or alternatively type `make clean && make` to recreate all html snippet files
 in the directory (and also index.html).
 * Refresh page in your browser (if you need it).
 
-## Updating the list of snippets (index.html)
+### Updating the list of snippets (index.html)
 * Add/Remove snippet file (in example, ch7.1.v).
 * Open Makefile. You will the list of chapter files at the top of the Makefile.
 * Add/Remove file name from the list.
