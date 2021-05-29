@@ -18,11 +18,12 @@ Module DefTupleOf.
     size (rev [seq 2 * x | x <- rev t]) = size t.
   Proof. rewrite !size_tuple. Admitted.
 
-  Notation "X (*...*)" := (let x := X in let y := _ in x)
-                            (at level 100, format "X (*...*)").
-  Notation "[LHS 'of' equation ]" := (let LHS := _ in let _infer_LHS := equation : LHS = _ in LHS)
-                                       (at level 4).
-  Notation "[unify X 'with' Y ]" := (let unification := erefl _ : X = Y in True).
+  Notation "X (*...*)" := 
+    (let x := X in let y := _ in x) (at level 100, format "X (*...*)").
+  Notation "[LHS 'of' equation ]" := 
+    (let LHS := _ in let _infer_LHS := equation : LHS = _ in LHS) (at level 4).
+  Notation "[unify X 'with' Y ]" := 
+    (let unification := erefl _ : X = Y in True).
   
   Fail Check forall T n (t : n.-tuple T),
       let LHS := [LHS of size_tuple _] in
@@ -47,3 +48,7 @@ Module DefTupleOf.
   Canonical cons_tuple x (t : n.-tuple A) : n.+1.-tuple A :=
     Tuple (cons_tupleP t x).
 End DefTupleOf.
+
+Example just_tuple n (t : n.-tuple nat) :
+  size (rev [seq 2 * x | x <- rev t]) = size t.
+Proof. by rewrite !size_tuple. Qed.
