@@ -1,4 +1,4 @@
-files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7.v ch7.1.v ch7.2.v
+files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7.v ch7.1.v ch7.2.v ch7.3.v
 
 all: $(files:%.v=%.html) index.html
 
