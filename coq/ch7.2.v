@@ -56,6 +56,7 @@ Module Chapter721.
     (fun x px => erefl x)).
 End Chapter721.
 
-(* Module Chapter722. *)
+Module Chapter722.
   Theorem eq_irrelevance (T : eqType) (x y : T) : forall e1 e2 : x = y, e1 = e2.
-(* End Chapter722. *)
+  Proof. Admitted.
+End Chapter722.
