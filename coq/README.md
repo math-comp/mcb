@@ -3,7 +3,7 @@
 Code snippets are intended to be viewed using jsCoq, but you also can just open
 selected `.v` file in your favorite Galina code editor. To view pages in your 
 browser locally you need install `coq`, `mathcomp`, then do `npm install` and
-`node app.js` run node applicaion (app.js) and then open link 
+`node app.js` to run node applicaion (app.js) and then open link 
 http://127.0.0.1:8010/ in your browser. A bit more detailed instructions are 
 provided below.
 
