@@ -1,4 +1,4 @@
-# This is the "Mathematical Components" book's code listings for jsCoq.
+# The "Mathematical Components" book code listings for jsCoq.
 
 Code snippets are intended to be viewed using jsCoq, but you also can just open
 selected `.v` file in your favorite Galina code editor. To view pages in your 
