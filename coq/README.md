@@ -38,7 +38,7 @@ in the directory (and also index.html).
 
 ### Updating the list of snippets (index.html)
 * Add/Remove snippet file (in example, ch7.1.v).
-* Open Makefile. You will the list of chapter files at the top of the Makefile.
+* Open Makefile. You will see the list of chapter files at the top of the Makefile.
 * Add/Remove file name from the list.
 * Type `rm index.html && make index.html` to generate new index.html.
 * Or alternatively type `make clean && make` to recreate all html snippet files
