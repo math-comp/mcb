@@ -43,5 +43,6 @@ Definition tnth T n (t : n.-tuple T) (i : 'I_n) : T :=
   nth (tnth_default t i) t i.
 
 Definition enum_rank (T : finType) : T -> 'I_#|T|.
+Admitted.
 
 

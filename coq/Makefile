@@ -1,6 +1,7 @@
-files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7.v ch7.1.v ch7.2.v ch7.3.v ch7.4.v ch7.5.v
+files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7_1.v ch7_2.v ch7_3.v ch7_4.v ch7_5.v  ch8.v
 
 all: $(files:%.v=%.html) index.html
+	for f in $(files); do coqc $$f || exit 1; done
 
 ch%.html: ch%.v
 	cat jscoq_header.html > $@
