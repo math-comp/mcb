@@ -12,7 +12,7 @@ Structure subType : Type := SubType {
   _ : forall x Px, val (@Sub x Px) = x
 }.
 End SubTypeKit.
-Implicit Arguments SubType [T P].
+Arguments SubType [T P].
 
 Notation "[ 'xsubType' 'for' v ]" :=
   (SubType _ v _ 

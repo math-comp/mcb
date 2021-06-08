@@ -1,10 +1,11 @@
-files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7.v
+files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7_1.v ch7_2.v ch7_3.v ch7_4.v ch7_5.v  ch8.v
 
-all: $(files:%.v=%.html)
+all: $(files:%.v=%.html) index.html
+	for f in $(files); do coqc $$f || exit 1; done
 
 ch%.html: ch%.v
 	cat jscoq_header.html > $@
-	echo "<h1>Chapter $*</h1><div><textarea id='coq'>" >> $@
+	echo "<h1>Chapter $*</h1><div><textarea id='coq-code'>" >> $@
 	cat $< >> $@
 	echo >> $@
 	echo "</textarea></div>" >> $@
@@ -13,6 +14,17 @@ ch%.html: ch%.v
 	echo "</script>" >> $@
 	cat jscoq_footer.html >> $@
 
-clean:
-	rm -f $(files:%.v=%.html)
+index.html:
+	cat index_header.html > $@
+	for file in $(files) ; do \
+		echo -n "<a href=\"" >> $@ ; \
+		echo -n $$file | sed "s/\.v/\.html/" >> $@ ; \
+		echo -n "\">" >> $@ ; \
+                echo -n "Chapter " >> $@ ; \
+                echo -n $$file | sed "s/\.v//" >> $@ ; \
+                echo "</a><br> " >> $@ ; \
+	done
+	cat index_footer.html >> $@
 
+clean:
+	rm -f $(files:%.v=%.html) index.html
