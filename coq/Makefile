@@ -6,7 +6,7 @@ check:
 	for f in $(files); do coqc $$f || exit 1; done
 
 ch%.html: ch%.v
-	cat jscoq_header.html > $@
+	cat jscoq_header.htpl > $@
 	echo "<h1>Chapter $*</h1><div><textarea id='coq-code'>" >> $@
 	cat $< >> $@
 	echo >> $@
@@ -14,10 +14,10 @@ ch%.html: ch%.v
 	echo "<script type='text/javascript'>" >> $@
 	echo "var coqdoc_ids = ['coq'];" >> $@
 	echo "</script>" >> $@
-	cat jscoq_footer.html >> $@
+	cat jscoq_footer.htpl >> $@
 
 index.html:
-	cat index_header.html > $@
+	cat index_header.htpl > $@
 	for file in $(files) ; do \
 		echo -n "<a href=\"" >> $@ ; \
 		echo -n $$file | sed "s/\.v/\.html/" >> $@ ; \
@@ -26,7 +26,7 @@ index.html:
                 echo -n $$file | sed "s/\.v//" >> $@ ; \
                 echo "</a><br> " >> $@ ; \
 	done
-	cat index_footer.html >> $@
+	cat index_footer.htpl >> $@
 
 clean: cclean
 	rm -f $(files:%.v=%.html) index.html

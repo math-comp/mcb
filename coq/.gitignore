@@ -1,8 +1,7 @@
-ch*.html
+*.html
 *.vok
 *.vos
 *.glob
 *.aux
-index.html
 package-lock.json
 node_modules
