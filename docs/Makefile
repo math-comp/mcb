@@ -1,4 +1,4 @@
-all: book.pdf jscoq coq artwork revision
+all: book.pdf coq artwork revision
 
 .PHONY: revision
 revision:
