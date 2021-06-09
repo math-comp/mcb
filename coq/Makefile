@@ -16,8 +16,8 @@ ch%.html: ch%.v
 	echo "</script>" >> $@
 	cat jscoq_footer.htpl >> $@
 
-index.html:
-	cat index_header.htpl > $@
+chapterlist.html:
+	echo > $@
 	for file in $(files) ; do \
 		echo -n "<a href=\"" >> $@ ; \
 		echo -n $$file | sed "s/\.v/\.html/" >> $@ ; \
@@ -26,10 +26,12 @@ index.html:
                 echo -n $$file | sed "s/\.v//" >> $@ ; \
                 echo "</a><br> " >> $@ ; \
 	done
-	cat index_footer.htpl >> $@
+
+index.html: chapterlist.html
+	cat index.htpl | sed '/-*- CHAPTER_LIST -*-/r chapterlist.html' > $@
 
 clean: cclean
-	rm -f $(files:%.v=%.html) index.html
+	rm -f $(files:%.v=%.html) chapterlist.html index.html
 
 # clean compilation artifacts
 cclean:

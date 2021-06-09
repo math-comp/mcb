@@ -8,3 +8,7 @@
   <body>
     <h1>These are available mathcomp book code listings by chapters</h1>
     <div class="listings-container">
+    <!-- -*- CHAPTER_LIST -*- -->
+    </div>
+  </body>
+</html>
