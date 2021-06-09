@@ -1,4 +1,0 @@
-(function(a){var
-f=31587,e=joo_global_object.jsoo_runtime;function
-d(a,b){return a.length==1?a(b):e.caml_call_gen(a,[b])}var
-b=e.caml_get_global_data(),c=b[23189],g=b[31580],h=b[31581],i=b[31582],j=b[31583],k=b[31584],l=b[31585],m=b[31586],n=b[f];d(c[12],b[31579]);d(c[12],g);d(c[12],h);d(c[12],i);d(c[12],j);d(c[12],k);d(c[12],l);d(c[12],m);d(c[12],n);e.caml_register_global(f,[0]);return 0});
