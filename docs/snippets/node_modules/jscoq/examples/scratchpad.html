@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <meta name="description" content="An Online IDE for the Coq Theorem Prover" />
+    <link rel="icon" href="../ui-images/favicon.png">
+
+    <title>jsCoq – The Coq Theorem Prover Online IDE</title>
+    <style>
+      /* Allow some extra scroll space at the bottom & to the right */
+      .CodeMirror-lines {
+        padding-bottom: 75% !important;
+        padding-right: 40px !important;
+      }
+    </style>
+  </head>
+
+<body class="jscoq-main">
+  <div id="ide-wrapper" class="toggled" data-filename="scratchpad.v">
+    <!-- Editor and panel are created here by CoqManager -->
+  </div>
+
+  <script src="../ui-js/jscoq-loader.js" type="text/javascript"></script>
+  <script type="text/javascript">
+
+    var jscoq_opts = {
+        all_pkgs:  ['coq', 'mathcomp', 'extlib', 'simpleio', 'equations', 
+                    'elpi', 'quickchick', 'software-foundations',
+                    'hahn', 'paco', 'snu-sflib', 'promising'],
+        file_dialog: true,
+        implicit_libs: true,
+        editor: { mode: { 'company-coq': true } }
+    };
+
+    /* Global reference */
+    var coq, last_filename = localStorage['scratchpad.last_filename'];
+
+    if (last_filename)
+      document.getElementById('ide-wrapper')
+              .setAttribute('data-filename', last_filename);
+
+    JsCoq.start(jscoq_opts).then(res => {
+      coq = res;
+      var q = new URLSearchParams(location.search);
+      if (q.has('project')) coq.openProject(q.get('project'));
+      if (q.has('share')) coq.openCollab(q.get('share'));
+    });
+
+    window.addEventListener('beforeunload', () => {
+      var sp = coq.provider.snippets[0];
+      localStorage['scratchpad.last_filename'] = sp.filename;
+    });
+  </script>
+</body>
+</html>

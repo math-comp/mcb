@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>Using jsCoq with NPM (a template)</title>
+
+    <!-- important: this will not work from *within* the jsCoq package dir; -->
+    <!-- this template is meant to be copied to your project dir and edited -->
+    <script src="node_modules/jscoq/ui-js/jscoq-loader.js"></script>
+  </head>
+
+<body class="jscoq-main">
+  <div id="ide-wrapper" class="toggled">
+    <div id="code-wrapper">
+      <div id="document">
+
+<h1>Chapter 7.1 | n-tuples, lists with an invariant on the length</h1><div><textarea id='coq-code'>
+From mathcomp Require Import all_ssreflect.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
+Module DefTupleOf.
+  Structure tuple_of n T := Tuple { tval :> seq T; _ : size tval == n }.
+  Notation "n .-tuple T" := (tuple_of n T) (at level 2).
+
+  Lemma size_tuple T n (t : n.-tuple T) : size t = n.
+  Proof. by case: t => s /= /eqP. Qed.
+
+  Example seq_on_tuple n (t : n.-tuple nat) :
+    size (rev [seq 2 * x | x <- rev t]) = size t.
+  Proof. by rewrite map_rev revK size_map. Qed.
+
+  Example just_tuple_attempt n (t : n.-tuple nat) :
+    size (rev [seq 2 * x | x <- rev t]) = size t.
+  Proof. rewrite !size_tuple. Admitted.
+
+  Notation "X (*...*)" := 
+    (let x := X in let y := _ in x) (at level 100, format "X (*...*)").
+  Notation "[LHS 'of' equation ]" := 
+    (let LHS := _ in let _infer_LHS := equation : LHS = _ in LHS) (at level 4).
+  Notation "[unify X 'with' Y ]" := 
+    (let unification := erefl _ : X = Y in True).
+  
+  Fail Check forall T n (t : n.-tuple T),
+      let LHS := [LHS of size_tuple _] in
+      let RDX := size (rev t) in
+      [unify LHS with RDX].  
+
+  Variables (n : nat) (A B : Type).
+
+  Lemma rev_tupleP (t : n.-tuple A) : size (rev t) == n.
+  Proof. by rewrite size_rev size_tuple. Qed.
+
+  Canonical rev_tuple (t : n.-tuple A) := Tuple (rev_tupleP t).
+
+  Lemma map_tupleP (f : A -> B) (t : n.-tuple A) : size (map f t) == n.
+  Proof. by rewrite size_map size_tuple. Qed.
+
+  Canonical map_tuple (f : A -> B) (t : n.-tuple A) := Tuple (map_tupleP f t).
+
+  Lemma cons_tupleP (t : n.-tuple A) x : size (x :: t) == n.+1.
+  Proof. by rewrite /= size_tuple. Qed.
+
+  Canonical cons_tuple x (t : n.-tuple A) : n.+1.-tuple A :=
+    Tuple (cons_tupleP t x).
+End DefTupleOf.
+
+Example just_tuple n (t : n.-tuple nat) :
+  size (rev [seq 2 * x | x <- rev t]) = size t.
+Proof. by rewrite !size_tuple. Qed.
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsCoq configuration part -->
+  <script type="text/javascript">
+
+    var jscoq_ids  = ['coq-code'];
+    var jscoq_opts = {
+        prelude:   true,
+        base_path: './node_modules/jscoq/',
+        editor:    { mode: { 'company-coq': true }, keyMap: 'default' },
+        init_pkgs: ['init'],
+        all_pkgs:  ['coq', 'mathcomp']
+    };
+
+    JsCoq.start(jscoq_opts.base_path, './node_modules', jscoq_ids, jscoq_opts);
+  </script>
+</body>

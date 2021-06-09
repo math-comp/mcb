@@ -12,7 +12,7 @@ book.pdf:
 	make -C ../tex all && cp ../tex/book.pdf .
 
 coq:
-	make -C ../coq && cp ../coq/ch*.html .
+	make -C ../coq && cp -r ../coq/ch*.html ../coq/index.html ../coq/node_modules snippets
 
 artwork:
 	cp ../artwork/cover/cover-front-web.png .

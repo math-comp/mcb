@@ -1,0 +1,20 @@
+{
+  "name": "codemirror-tex-input",
+  "version": "1.0.0",
+  "description": "This addon provides a completion hint for CodeMirror which allows to use the backslash key `\\` to compose Unicode characters in TeX style.",
+  "main": "demo/tex-input.html",
+  "directories": {
+    "doc": "doc"
+  },
+  "keywords": [
+    "CodeMirror",
+    "TeX",
+    "Hints"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ejgallego/CodeMirror-TeX-input.git"
+  },
+  "author": "Emilio Jesús Gallego Arias",
+  "license": "ISC"
+}

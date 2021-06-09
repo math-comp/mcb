@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>Using jsCoq with NPM (a template)</title>
+
+    <!-- important: this will not work from *within* the jsCoq package dir; -->
+    <!-- this template is meant to be copied to your project dir and edited -->
+    <script src="node_modules/jscoq/ui-js/jscoq-loader.js"></script>
+  </head>
+
+<body class="jscoq-main">
+  <div id="ide-wrapper" class="toggled">
+    <div id="code-wrapper">
+      <div id="document">
+
+<h1>Chapter 7.7 | Permutations</h1><div><textarea id='coq-code'>
+From mathcomp Require Import all_ssreflect.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
+Module Chapter77.
+
+  Variable (T : finType).
+
+  Inductive perm_of : Type :=
+    Perm (pval : {ffun T -> T}) & injective pval.
+  Definition pval p := let: Perm f _ := p in f.
+  Notation "{ 'perm' T }" := (perm_of T).
+
+  (* Canonical perm_subType := Eval hnf in [subType for pval]. *)
+  (* Definition perm_eqMixin := Eval hnf in [eqMixin of perm_type by <:]. *)
+  (* Canonical perm_eqType := Eval hnf in EqType perm_type perm_eqMixin. *)
+  (* Definition perm_finMixin := [finMixin of perm_type by <:]. *)
+  (* Canonical perm_finType := Eval hnf in FinType perm_type perm_finMixin. *)
+
+  Notation "''S_' n" := {perm 'I_n} (at level 200).
+
+  (* Definition perm_on (S : {set T}) : pred {perm T} := *)
+  (*   fun s => [set x | s x != x] \subset S. *)
+  (* Lemma card_perm A : #|perm_on A| = #|A| `!. *)
+End Chapter77.
+
+
+
+
+
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsCoq configuration part -->
+  <script type="text/javascript">
+
+    var jscoq_ids  = ['coq-code'];
+    var jscoq_opts = {
+        prelude:   true,
+        base_path: './node_modules/jscoq/',
+        editor:    { mode: { 'company-coq': true }, keyMap: 'default' },
+        init_pkgs: ['init'],
+        all_pkgs:  ['coq', 'mathcomp']
+    };
+
+    JsCoq.start(jscoq_opts.base_path, './node_modules', jscoq_ids, jscoq_opts);
+  </script>
+</body>

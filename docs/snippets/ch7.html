@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>Using jsCoq with NPM (a template)</title>
+
+    <!-- important: this will not work from *within* the jsCoq package dir; -->
+    <!-- this template is meant to be copied to your project dir and edited -->
+    <script src="node_modules/jscoq/ui-js/jscoq-loader.js"></script>
+  </head>
+
+<body class="jscoq-main">
+  <div id="ide-wrapper" class="toggled">
+    <div id="code-wrapper">
+      <div id="document">
+
+<h1>Chapter 7</h1><div><textarea id='coq-code'>
+From mathcomp Require Import all_ssreflect perm fingroup.
+
+Inductive windrose : predArgType := N | S | E | W.
+
+Definition w2o w : 'I_4 :=
+  match w with
+  | N => inord 0
+  | S => inord 1
+  | E => inord 2
+  | W => inord 3
+  end.
+
+Definition o2w (o : 'I_4) :=
+  match val o with
+  | 0 => N
+  | 1 => S
+  | 2 => E
+  | 3 => W
+  | _ => N
+  end.
+
+Lemma pcan_wo4 : cancel w2o o2w.
+Proof. by case; rewrite /o2w /= inordK. Qed.
+
+Definition windrose_eqMixin := CanEqMixin pcan_wo4.
+Canonical windrose_eqType := EqType windrose windrose_eqMixin.
+Definition windrose_choiceMixin := CanChoiceMixin pcan_wo4.
+Canonical windrose_choiceType := ChoiceType windrose windrose_choiceMixin.
+Definition windrose_countMixin := CanCountMixin pcan_wo4.
+Canonical windrose_countType := CountType windrose windrose_countMixin.
+Definition windrose_finMixin := CanFinMixin pcan_wo4.
+Canonical windrose_finType := FinType windrose windrose_finMixin.
+
+Check [finType of windrose].
+
+Lemma ord4_is_w : cancel o2w w2o.
+Proof.
+move=> x; apply: val_inj; case: x.
+by do 5! [ case=> [?|//]; first by rewrite /= inordK ].
+Qed.
+
+Lemma test : (N != S) && (N \in windrose) && (#| windrose | == 4).
+Proof.
+case: eqP => //= _; rewrite -[4]card_ord.
+rewrite -(card_image (can_inj pcan_wo4)).
+apply/eqP; apply: eq_card=> o; rewrite inE.
+by apply/imageP; exists (o2w o) => //=; rewrite ord4_is_w.
+Qed.
+
+
+
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsCoq configuration part -->
+  <script type="text/javascript">
+
+    var jscoq_ids  = ['coq-code'];
+    var jscoq_opts = {
+        prelude:   true,
+        base_path: './node_modules/jscoq/',
+        editor:    { mode: { 'company-coq': true }, keyMap: 'default' },
+        init_pkgs: ['init'],
+        all_pkgs:  ['coq', 'mathcomp']
+    };
+
+    JsCoq.start(jscoq_opts.base_path, './node_modules', jscoq_ids, jscoq_opts);
+  </script>
+</body>

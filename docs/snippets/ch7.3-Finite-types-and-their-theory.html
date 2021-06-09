@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>Using jsCoq with NPM (a template)</title>
+
+    <!-- important: this will not work from *within* the jsCoq package dir; -->
+    <!-- this template is meant to be copied to your project dir and edited -->
+    <script src="node_modules/jscoq/ui-js/jscoq-loader.js"></script>
+  </head>
+
+<body class="jscoq-main">
+  <div id="ide-wrapper" class="toggled">
+    <div id="code-wrapper">
+      <div id="document">
+
+<h1>Chapter 7.3 | Finite types and their theory</h1><div><textarea id='coq-code'>
+From mathcomp Require Import all_ssreflect.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
+Notation count_mem x := (count [pred y | y == x]).
+
+Module finite.
+  Definition axiom (T : eqType) (e : seq T) :=
+    forall x : T, count_mem x e = 1.
+
+  Record mixin_of (T : eqType) := Mixin {
+    enum : seq T;
+    _ : @axiom T enum;                                  
+  }.
+End finite.
+
+(* Definition mytype_finMixin := Finite.Mixin mytype_enum mytype_enumP. *)
+(* Canonical mytype_finType := @Finite.Pack mytype mytype_finMixin. *)
+
+(* Lemma myenum_uniq : uniq myenum. *)
+(* Lemma mem_myenum : forall x : T, x \in myenum. *)
+(* Definition mytype_finMixin := Finite.UniqFinMixin myenum_uniq mem_myenum. *)
+
+Lemma cardT (T : finType) : #|T| = size (enum T).
+Proof. Admitted.
+Lemma forallP (T : finType) (P : pred T) : reflect (forall x, P x) [forall x, P x].
+Proof. Admitted.
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsCoq configuration part -->
+  <script type="text/javascript">
+
+    var jscoq_ids  = ['coq-code'];
+    var jscoq_opts = {
+        prelude:   true,
+        base_path: './node_modules/jscoq/',
+        editor:    { mode: { 'company-coq': true }, keyMap: 'default' },
+        init_pkgs: ['init'],
+        all_pkgs:  ['coq', 'mathcomp']
+    };
+
+    JsCoq.start(jscoq_opts.base_path, './node_modules', jscoq_ids, jscoq_opts);
+  </script>
+</body>

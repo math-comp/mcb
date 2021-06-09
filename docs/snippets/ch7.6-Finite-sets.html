@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+    <title>Using jsCoq with NPM (a template)</title>
+
+    <!-- important: this will not work from *within* the jsCoq package dir; -->
+    <!-- this template is meant to be copied to your project dir and edited -->
+    <script src="node_modules/jscoq/ui-js/jscoq-loader.js"></script>
+  </head>
+
+<body class="jscoq-main">
+  <div id="ide-wrapper" class="toggled">
+    <div id="code-wrapper">
+      <div id="document">
+
+<h1>Chapter 7.6 | Finite sets</h1><div><textarea id='coq-code'>
+From mathcomp Require Import all_ssreflect.
+Set Implicit Arguments.
+Unset Strict Implicit.
+Unset Printing Implicit Defensive.
+
+Module finSetDef.
+  Variable T : finType.
+
+  Inductive set_type : Type := FinSet of {ffun pred T}.
+  Definition finfun_of_set A := let: FinSet f := A in f.
+
+  Canonical set_subType := Eval hnf in [newType for finfun_of_set].
+  Definition set_eqMixin := Eval hnf in [eqMixin of set_type by <:].
+  Canonical set_eqType := Eval hnf in EqType set_type set_eqMixin.
+  (* Definition set_finMixin := [finMixin of set_type by <:]. *)
+  (* Canonical set_finType := Eval hnf in FinType set_type set_finMixin. *)
+End finSetDef.
+
+Notation "{ ’set’ T }" := (set_type T).  
+
+Lemma setP (T : finType) (A B : {set T}): A =i B <-> A = B. Admitted.
+
+Lemma example (T : finType) (x : T) (A : {set T}) :
+  (A \subset x |: A) && (A :==: A :&: A) && (x \in [set y | y == x]). Admitted.
+
+Lemma setCP (T : finType) x (A : {set T}) :
+  reflect (~ x \in A) (x \in ~: A). Admitted.
+
+Lemma subsets_disjoint (T : finType) (A B : {set T}) :
+  (A \subset B) = [disjoint A & ~: B]. Admitted.
+
+Definition powerset (T : finType) (D : {set T}) :
+  {set {set T}} := [set A : {set T} | A \subset D].
+
+Lemma card_powerset (T : finType) (A : {set T}) :
+  #|powerset A| = 2 ^ #|A|. Admitted.
+
+</textarea></div>
+<script type='text/javascript'>
+var coqdoc_ids = ['coq'];
+</script>
+        </textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- jsCoq configuration part -->
+  <script type="text/javascript">
+
+    var jscoq_ids  = ['coq-code'];
+    var jscoq_opts = {
+        prelude:   true,
+        base_path: './node_modules/jscoq/',
+        editor:    { mode: { 'company-coq': true }, keyMap: 'default' },
+        init_pkgs: ['init'],
+        all_pkgs:  ['coq', 'mathcomp']
+    };
+
+    JsCoq.start(jscoq_opts.base_path, './node_modules', jscoq_ids, jscoq_opts);
+  </script>
+</body>
