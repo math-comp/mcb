@@ -1,11 +1,14 @@
 # The "Mathematical Components" book code listings for jsCoq.
 
-Code snippets are intended to be viewed using jsCoq, but you also can just open
-selected `.v` file in your favorite Galina code editor. To view pages in your 
-browser locally you need install `coq`, `mathcomp`, then do `npm install` and
-`node app.js` to run node applicaion (app.js) and then open link 
+Code snippets are intended to be viewed using jsCoq (actual version is
+<a href="https://math-comp.github.io/snippets">here</a>), but you also can just
+open selected `.v` file in your favorite Galina code editor. To view pages in 
+your browser locally you need install `coq`, `mathcomp`, then do `npm install` 
+and `node app.js` to run node applicaion (app.js) and then open link 
 http://127.0.0.1:8010/ in your browser. A bit more detailed instructions are 
 provided below.
+
+You can view jscoq snippets <a href="https://math-comp.github.io/snippets">here</a>.
 
 ## Installation & Run
 
