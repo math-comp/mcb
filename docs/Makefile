@@ -22,5 +22,12 @@ coq:
 artwork:
 	cp ../artwork/cover/cover-front-web.png .
 
-clean:
-	rm book.pdf cover-front-web.png index.html chapterlist.html chapters.txt snippets/ch*.html snippets/index.html
+iclean:
+	rm index.html chapterlist.html chapters.txt
+
+sclean: iclean
+	rm -rf snippets
+	mkdir snippets
+
+clean: sclean
+	rm book.pdf cover-front-web.png snippets/ch*.html
