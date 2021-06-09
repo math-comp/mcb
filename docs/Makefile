@@ -25,7 +25,7 @@ artwork:
 iclean:
 	rm index.html chapterlist.html chapters.txt
 
-sclean: iclean
+sclean:
 	rm -rf snippets
 	mkdir snippets
 
