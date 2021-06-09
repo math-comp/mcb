@@ -23,7 +23,7 @@ artwork:
 	cp ../artwork/cover/cover-front-web.png .
 
 iclean:
-	rm index.html chapterlist.html chapters.txt
+	rm -f index.html chapterlist.html chapters.txt
 
 sclean:
 	rm -rf snippets
