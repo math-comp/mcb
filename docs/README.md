@@ -9,3 +9,6 @@ up index-related files, then `make sclean` to clean up the `snippets/`
 directory, and then `make index.html` to generate new index.html. Then one 
 needs to commit the changes including `index.htpl`, `index.html`, and
 the `snippets/` directory.
+
+To update all parts of the index.html file one needs type 
+`make clean && make all`.

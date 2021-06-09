@@ -29,5 +29,5 @@ sclean: iclean
 	rm -rf snippets
 	mkdir snippets
 
-clean: sclean
-	rm book.pdf cover-front-web.png snippets/ch*.html
+clean: iclean sclean
+	rm book.pdf cover-front-web.png
