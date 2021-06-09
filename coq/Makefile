@@ -16,22 +16,31 @@ ch%.html: ch%.v
 	echo "</script>" >> $@
 	cat jscoq_footer.htpl >> $@
 
-chapterlist.html:
-	echo > $@
+chapters.txt:
 	for file in $(files) ; do \
-		echo -n "<a href=\"" >> $@ ; \
 		echo -n $$file | sed "s/\.v/\.html/" >> $@ ; \
-		echo -n "\">" >> $@ ; \
-                echo -n "Chapter " >> $@ ; \
-                echo -n $$file | sed "s/\.v//" >> $@ ; \
-                echo "</a><br> " >> $@ ; \
+                echo -n "@@@" >> $@ ; \
+                echo $$file | sed "s/^ch//" | sed "s/\.v//" >> $@ ; \
 	done
+
+chapterlist.html: chapters.txt
+	awk -F@@@ '{printf "<a href=\"%s\">Chapter %s</a><br>\n", $$1, $$2}' $^ > $@
+
+	# echo > $@
+	# for line in $(files) ; do \
+	# 	echo -n "<a href=\"" >> $@ ; \
+	# 	echo -n $$file | sed "s/\.v/\.html/" >> $@ ; \
+	# 	echo -n "\">" >> $@ ; \
+        #         echo -n "Chapter " >> $@ ; \
+        #         echo -n $$file | sed "s/\.v//" >> $@ ; \
+        #         echo "</a><br> " >> $@ ; \
+	# done
 
 index.html: chapterlist.html
 	cat index.htpl | sed '/-*- CHAPTER_LIST -*-/r chapterlist.html' > $@
 
 clean: cclean
-	rm -f $(files:%.v=%.html) chapterlist.html index.html
+	rm -f $(files:%.v=%.html) chapters.txt chapterlist.html index.html
 
 # clean compilation artifacts
 cclean:
