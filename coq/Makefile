@@ -1,6 +1,8 @@
 files=ch0.v  ch1.v  ch2.v  ch3.v  ch4.v  ch6.v  ch7_1.v ch7_2.v ch7_3.v ch7_4.v ch7_5.v  ch8.v
 
-all: $(files:%.v=%.html) index.html
+all: check $(files:%.v=%.html) index.html
+
+check:
 	for f in $(files); do coqc $$f || exit 1; done
 
 ch%.html: ch%.v
@@ -26,5 +28,9 @@ index.html:
 	done
 	cat index_footer.html >> $@
 
-clean:
+clean: cclean
 	rm -f $(files:%.v=%.html) index.html
+
+# clean compilation artifacts
+cclean:
+	rm -f $(files:%.v=%.vo) $(files:%.v=%.vok) $(files:%.v=%.vos) $(files:%.v=.%.aux) $(files:%.v=%.glob)
