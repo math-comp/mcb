@@ -1,4 +1,4 @@
-# The "Mathematical Components" book code listings for jsCoq.
+# The Mathematical Components book code listings for jsCoq.
 
 Code snippets are intended to be viewed using jsCoq (actual version is
 <a href="https://math-comp.github.io/snippets">here</a>), but you also can just

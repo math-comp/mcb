@@ -6,7 +6,7 @@ index.html: chapterlist.html
 		sed 's/<!--date-->.*/<!--date-->(last update $(shell date))/' > $@
 
 chapterlist.html: chapters.txt
-	awk -F@@@ '{printf "<a href=\"snippets/%s\">Chapter %s</a><br>\n", $$1, $$2}' $^ > $@
+	awk -F@@@ 'BEGIN { prev = "" } { if (prev != "") { printf "%s, ", prev }; prev = sprintf("<a href=\"snippets/%s\">Ch%s</a>",$$1,$$2) } END { printf "%s.<br/>", prev }' $^ > $@
 
 chapters.txt: coq
 	cp ../coq/chapters.txt .
