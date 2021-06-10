@@ -22,8 +22,7 @@ You can view jscoq snippets <a href="https://math-comp.github.io/snippets">here<
 * Put files from https://github.com/math-comp/mcb/tree/master/coq to selected
 directory.
 * Open terminal and navigate to the selected directory.
-* Type `npm install` to install dependences.
-* Type `make` to create .html files.
+* Type `make` to create the .html files and install the dependencies via npm.
 
 ### Run
 * Type `node app.js` to ask Node.js to serve files.
