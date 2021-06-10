@@ -1,11 +1,9 @@
-all: index.html artwork revision
-
-.PHONY: revision
-revision:
-	sed 's/<!--date-->.*/<!--date-->(last update $(shell date))/' -i index.html
+all: index.html artwork
 
 index.html: chapterlist.html
-	cat index.htpl | sed '/-*- CHAPTER_LIST -*-/r chapterlist.html' > $@
+	cat index.htpl | \
+		sed '/-*- CHAPTER_LIST -*-/r chapterlist.html' | \
+		sed 's/<!--date-->.*/<!--date-->(last update $(shell date))/' > $@
 
 chapterlist.html: chapters.txt
 	awk -F@@@ '{printf "<a href=\"snippets/%s\">Chapter %s</a><br>\n", $$1, $$2}' $^ > $@
@@ -27,4 +25,4 @@ sclean:
 	mkdir snippets
 
 clean: iclean sclean
-	rm book.pdf cover-front-web.png
+	rm cover-front-web.png
