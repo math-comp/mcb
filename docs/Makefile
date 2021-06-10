@@ -13,6 +13,7 @@ chapters.txt: coq
 
 coq:
 	make -C ../coq && cp -r ../coq/ch*.html ../coq/index.html ../coq/node_modules snippets
+	find snippets/node_modules -name README.md -delete
 
 artwork:
 	cp ../artwork/cover/cover-front-web.png .
