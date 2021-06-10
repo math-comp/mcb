@@ -1,11 +1,8 @@
-all: book.pdf index.html artwork revision
+all: index.html artwork revision
 
 .PHONY: revision
 revision:
 	sed 's/<!--date-->.*/<!--date-->(last update $(shell date))/' -i index.html
-
-book.pdf:
-	make -C ../tex all && cp ../tex/book.pdf .
 
 index.html: chapterlist.html
 	cat index.htpl | sed '/-*- CHAPTER_LIST -*-/r chapterlist.html' > $@
