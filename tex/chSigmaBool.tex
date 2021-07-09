@@ -594,7 +594,7 @@ Canonical mytype_finType := @Finite.Pack mytype mytype_finMixin.
 \end{coq}
 
 Given that the most recurrent way of showing that an enumeration
-validates \C{Finite.axiom} is by proving that it is both duplicate free
+validates \C{Finite.axiom} is by proving that it is both duplicate-free
 and exhaustive, a convenience mixin constructor is provided.
 
 \begin{coq}{name=fintype}{title=Declare a finType}
@@ -771,7 +771,7 @@ The actual definition\footnote{Since \mcbMC{} version 1.9 the definition
 of finite functions changed.
 The new implementation is based on a specific list-like data type indexed over
 the list of the elements of the domain. Thanks to this more sophisticated
-ecoding, the current Coq type checker acceps, for example, the following
+ecoding, the current Coq type checker accepts, for example, the following
 declaration of a 3-branch tree:
 \C{Inductive tree3 := Leaf of nat | Node of \{ffun 'I_3 -> tree3\}.}
 At the time of writing Coq rejects the declaration above with the definition
@@ -808,7 +808,7 @@ or build a finite function from a regular function.
 
 \begin{coq}{name=subtdecl}{}
 Definition fun_of_fin aT rT f x := tnth (@fgraph aT rT f) (enum_rank x).
-Coercion fun_of_fin : finfun >-> FunClass.
+Coercion fun_of_fin : finfun >-> Funclass.
 Definition finfun aT rT f := @Finfun aT rT (codom_tuple f).
 Notation "[ 'ffun' x : aT => F ]" := (finfun (fun x : aT => F))
 \end{coq}

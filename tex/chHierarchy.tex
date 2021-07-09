@@ -592,7 +592,7 @@ Canonical Exports.eqType.
 \end{coq}
 
 Line 1 merely lets us explicitly use a \C{choiceType} where an
-\C{eqType} is expected, which is rare as structures are almost alway
+\C{eqType} is expected, which is rare as structures are almost always
 implicit and inferred.  It is line 2 that really lets \C{choiceType}
 extend \C{eqType}, because it makes it possible to use any
 \emph{element} \C{(T : choiceType)} as an element of an \C{eqType},
@@ -733,7 +733,7 @@ Record class_of (R : Type) : Type := Class {
 Structure type := Pack {sort; _ : class_of sort}.
 \end{coq}
 \index[coq]{\C{comRingType}}
-The two structures that are coumpounded this way can be declared
+The two structures that are compounded this way can be declared
 indifferently as \C{base} or as \C{mixin}.
 Since we construct explicitly the links between structures with the
 packed class pattern, the fact that the hierarchy is no longer a tree
@@ -858,7 +858,7 @@ Notation lmodType R := (type (Phant R)).
 allows us to write \C{(V : lmodType (int * rat))}. Indeed, type inference
 fills in the unsightly expression
 \lstinline/(pair_ringType int_ringType rat_ringType)/ for \C{R}. This elaboration happens when
-solving the unification problem triggerd by the need to unify
+solving the unification problem triggered by the need to unify
 \C{(Phant ?)} with \C{(int * rat)}.
 
 
