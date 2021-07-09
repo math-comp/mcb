@@ -305,7 +305,7 @@ This set-theoretic analogy should be taken with a pinch of salt
 though. First, there is no way in type theory to introduce a term, even
 a variable, without simultaneously introducing its type. Things are
 different in set theory, where an object $a$ can be constructed without
-necessarily being casted as being the element of a super-set
+necessarily being cast as being the element of a super-set
 $A$. Second, a judgment is not a proposition in the same sense as the
 set-theoretic sentence $t \in T$ would be. In particular, one cannot
 reason (internally) by case analysis on the proof that
@@ -877,7 +877,7 @@ Casteran's book~\cite[Chapter 14]{BC04}.
 
 \section{More connectives}\label{sec:moreconns}
 We have seen in section~\ref{sec:propiuq} that functions, i.e.~terms
-with a product type, provide a datastructure for proofs of implication
+with a product type, provide a data structure for proofs of implication
 and universally quantified statements.
 Using inductive types, it is possible to describe more data
 structures than mere functions. %of the formalism
@@ -920,7 +920,7 @@ arguments: a proof of \C{A} and a proof of \C{B}.
 Moreover \C{and} is polymorphic:
 \C{A} and \C{B} are parameters standing for arbitrary propositions.
 As a consequence, it models faithfully the introduction rule of
-conjunction, i.e. the rule govering the construction of proofs of
+conjunction, i.e. the rule governing the construction of proofs of
 conjunctive statements.
 
 Note that the definition of the pair data type,
@@ -1150,7 +1150,7 @@ is defined.
 It is worth mentioning that this principle is general enough to
 prove the ``stronger'' induction principle that give access, in
 the inductive step, to the property \C{P} on all numbers
-small than \C{n.+1} and not just its predecessor.
+smaller than \C{n.+1} and not just its predecessor.
 
 \begin{coq}{}{}
 Lemma strong_nat_ind (P : nat -> Prop)
@@ -1243,7 +1243,7 @@ The interested reader shall refer to~\cite{Coq:manual}.
 %% Excluded middle, in its generality, can only be \emph{axiomatized},
 %% i.e., assumed globally.
 
-%% The \mcbMC{} library is axiom free.  This makes the library compatible
+%% The \mcbMC{} library is axiom-free.  This makes the library compatible
 %% with any combination of axioms that is known to be consistent with the
 %% Calculus of Inductive Constructions. Some formal developments in
 %% \Coq{} tend to assume the excluded middle axiom, even if the proofs

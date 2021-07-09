@@ -868,14 +868,14 @@ We recall that this makes \C{a} and \C{b} implicit, hence
 writing \C{andP} is equivalent to \C{(@andP _ _)}, a term whose type
 is \C{(reflect (_ /\\ _) (_ && _))}.  The value of the index of the
 inductive family, to be replaced by \C{true} and \C{false} in the
-respective branches of a case analysi, is thus
+respective branches of a case analysis, is thus
 a pattern \C{(_ && _)}. Therefore, the goal is searched for an instance of
 such pattern.  The matching algorithm used to find an instance of this
 pattern is the same as one used by the \C{rewrite} tactic, for the
-instanciation of rewrite rules.
+instantiation of rewrite rules.
 
 
-The following proof script illustrates how to deal with a boolen
+The following proof script illustrates how to deal with a boolean
 conjunction \C{a && b}, which appears in the premise of a boolean
 implication, almost as conveniently as if it were a conjunction in
 \C{Prop}.
@@ -971,7 +971,7 @@ separating the equality case. The \C{ltngtP} lemma is designed for that.
 \index[coq]{\C{ltngtP}}
 
 In practice lines of reasoning consisting in a specific branching of
-a proof can often be modelled by an appropriate spec lemma.
+a proof can often be modeled by an appropriate spec lemma.
 
 \mantra{The structure of the proof shall not be driven by the syntax of the
 definition/predicate under study but by the view/spec used to reason about it.}
@@ -1357,7 +1357,7 @@ At line number 2 the term \lstinline/(a x)/ is a boolean.  The
 This notational trick is reminiscent of Kronecker's $\delta$ notation.
 Similarly, in the last line the membership test is turned into
 a number, that is shown to be equivalent to the count of any
-element in a list that is duplicate free.
+element in a list that is duplicate-free.
 
 % Another example of a coercion that is related to the running example
 % of the current chapter is \lstinline/sort/.  Typically the projection

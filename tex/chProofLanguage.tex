@@ -10,7 +10,7 @@ modus operandi in the pioneering work of De Bruijn on Automath
 Still, the use of a dedicated proof language enables a higher level
 description of the formal proof being constructed.  
 The \mcbSSR{} proof language give us tools to structure proofs and
-to tame bookeeping, a form of bureaucracy typical of formal proofs.
+to tame bookkeeping, a form of bureaucracy typical of formal proofs.
 
 Structure is given by splitting large proofs in blocks with a
 specific, declared, purpose and by factoring repetition such as
@@ -19,7 +19,7 @@ cut rule where the author of a proof identifies an intermediate fact,
 or a generalization of the goal. The \C{have} and \C{without loss} tactics
 precisely cover this need.
 
-Bookeeping is the ubiquitous activity of context management, that is
+Bookkeeping is the ubiquitous activity of context management, that is
 naming or discarding assumptions in order to track their lifetime to tide
 the context up, as well as massaging assumptions and goals as to
 please the formality requirements of Coq.  A paradigmatic bookkeeping
@@ -27,7 +27,7 @@ example is destructing assumption of \C{(A && B)} in order to give
 distinct names to \C{A} and \C{B}: unlikely to be a pregnant step of
 the proof.  The language of intro-patterns together with then
 goal-as-stack model provides a very flexible tool to
-succinctly deal with bookeeping.
+succinctly deal with bookkeeping.
 
 Structure and manageable size are key to the maintenance of proofs by
 a team of people.  Being small in size helps maintenance since when
@@ -1249,7 +1249,7 @@ In this section we cover some of the aspects that we believe do
 contribute in a substantial way to write maintainable formal proofs.
 Coming up with a list of unobjectionable golden rules would be quite pretentious,
 and probably impossible to do, but we will anyway try to give some
-advices out of our experience. 
+advice out of our experience.
 
 The first and most important one is that formal proofs are just computer code
 about mathematical proofs, hence \emph{good practices in both domains}
@@ -1262,7 +1262,7 @@ related concept of triviality is key to keep the desired level of abstraction.
 More specifically, each mathematical object comes with properties that are
 pervasively and silently used in each and every proof. In order to make a
 formal proof look like pen and paper one, this conciseness has to be retained,
-or the noise of formality risks to hide the salient part of the proof.
+or the noise of formality risks hiding the salient part of the proof.
 
 A striking similarity lies in the usability of lemmas
 compared to the one of computer code procedures (functions, or methods).
@@ -1383,7 +1383,7 @@ meaningful proof step for a human reader, and use the best tools you have to
 achieve that: At worse, if the step is too obscure, the reader will
 ignore the text, and just see what happens by executing it.\\
 In other words, the flow of a proof script should be homogeneous and
-distil human-readable information at a suitable, regular pace.
+distill human-readable information at a suitable, regular pace.
 
 
 \subsection{Fail early and locally to ease repair}
