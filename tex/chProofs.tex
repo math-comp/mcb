@@ -566,7 +566,7 @@ identity. Statements like
 \C{(0 + n = n)} or \C{(0 < n.+1)} can be proved in a similar way, but
 also \C{(2 + n = n.+2)}, which requires several steps of computation.
 
-Last, the \C{by} tactical turns its argument into a \emph{terminating
+Lastly, the \C{by} tactical turns its argument into a \emph{terminating
 tactic} --- and thus  \C{by []} is such a terminating tactic. A tactic
 is said to be terminating if, whenever it does not solve the goal
 completely, it
@@ -2470,7 +2470,7 @@ m, n1, n2 : nat
 \coqrun{name=Foldrun}{ssr,Fold,show,abort}
 \index[ssr]{\C{rewrite}! \C{-[term]/(term)} (changing)}
 
-Last, an equation local to the proof context, like an
+Lastly, an equation local to the proof context, like an
 induction hypothesis, can be disposed of after using it by
 prefixing its name with \C{\{\}}.  For example
 \C{rewrite -\{\}IHn} rewrites with \C{IHn} right to
