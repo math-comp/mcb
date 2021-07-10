@@ -1,0 +1,32 @@
+name: 'build'
+on:
+  pull_request:
+  push:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code base
+        if: github.event_name == 'push'
+        uses: actions/checkout@v2.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Check out code base
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v2.3.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: cachix/install-nix-action@v12
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - run: NIXPKGS_ALLOW_UNFREE=1 nix-build
+      - name: "Copy book"
+        run: "cp result/share/book.pdf ."
+      - name: "Upload artifact to GitHub"
+        uses: actions/upload-artifact@v2
+        with:
+          name: book.pdf
+          path: book.pdf

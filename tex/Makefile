@@ -12,7 +12,7 @@ all: gitrev
 gitrev:
 	date -R > gitrev
 	echo , >> gitrev
-	git describe --tags >> gitrev
+	if [ -d ../.git ]; then git describe --tags >> gitrev;  fi
 
 clean:
 	rm -rf .*/rt *.aux *.bbl *.bcf *.idx *.out *.toc *.ilg *.ind *.listing *.ptc *.run.xml
