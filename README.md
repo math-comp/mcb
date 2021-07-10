@@ -1,4 +1,9 @@
 # This is the "Mathematical Components" book.
+[![build](https://github.com/math-comp/mcb/actions/workflows/build.yml/badge.svg)](https://github.com/math-comp/mcb/actions/workflows/build.yml)
+
+To build the book using Nix, run `nix-build`.  Alternatively you may
+fetch the latest artifact produced by the CI for the master branch
+[here](https://github.com/math-comp/mcb/actions?query=branch%3Amaster).
 
 The `tex/` directory contains the sources.  TexLive 2014 is
 known to work.
