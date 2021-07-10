@@ -764,9 +764,9 @@ The tactic ``\C{case: n => [|k]}''  can be decomposed into two components,
 separated by the arrow \C{=>}.  The left block ``\C{case: n}'' indicates
 that we  perform a case analysis action, on term \C{(n : nat)}, while the right
 block ``\C{[|k]}'' is an \emph{introduction pattern}. The brackets
-surround slots separated by vertical pipes, and each slot allows to
+surround slots separated by vertical pipes, and each slot allows us to
 name the parameters to be introduced in each subgoal created by the
-case analysis, in order.
+case analysis in order.
 
 As type \C{nat} has two constructors, the introduction pattern \C{[|k]}
 of our case analysis command uses two slots: the last one introduces

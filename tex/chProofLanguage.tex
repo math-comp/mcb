@@ -1463,7 +1463,7 @@ context; similarly \C{move: H} or \C{case: H}.
 \subsection{Large, monolithic, proofs: a fact of life}
 
 Somehow counter-intuitively, large proofs cannot always be broken down
-into smaller lemmas. More precisely, chopping long proofs in an
+into smaller lemmas. In fact, chopping up long proofs in an
 artificial manner is often counterproductive.
 
 In particular, as contexts grow larger, gathering numerous facts and
@@ -1485,7 +1485,7 @@ provide syntactic facilities to state and use local definitions and
 lemmas to a main proofs, with similar features as the \C{Lemma}
 vernacular command (and its synonyms), like the automated introduction
 of named parameters. The \C{wlog} tactic goes one step further, and
-allows to describe the verbose cut statements hidden behind a
+allows one to describe the verbose cut statements hidden behind a
 \emph{without loss of generality} proof pattern by providing only the
 names of the hypotheses in the context which should be included in the
 generalization. This feature saves the user from an painful manual
@@ -1545,15 +1545,15 @@ missing piece of information.
 
 \subsection{Qed is not the shift bell}
 
-When a proof is finally accepted by \Coq{} it just means it is correct:
-the absence of mistakes  mistake correct for readable or maintainable.
+When a proof is finally accepted by \Coq{} it just means that it is
+correct---the absence of mistakes does not imply readability or maintainability.
 
-As we argued so far that proof is going to eventually break, and repairing a
-tidy proof is much simpler than repairing a messy one.  
+As we have argued so far, a proof is eventually going to break, and repairing a
+tidy proof is much easier than repairing a messy one.
 The advantage we have compared to, say, cleaning up regular computer code, is
 that once a proof is complete and correct we can iterate small cleanup steps
 much faster. Indeed we can have \Coq{} check the proof after each and every
-step: If it checks, we did introduce no error and we can move on with the next
+step: If it's accepted, we introduced no errors and can move on with the next
 cleanup iteration.
 
 Unfortunately little support is given to the user to tidy proofs up by today's
