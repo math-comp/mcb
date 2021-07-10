@@ -723,14 +723,14 @@ rewrite [pat]lem [in pat2]lem2 [X in pat3]lem3
   Rewrite the subterms selected by the pattern \C{pat} with \C{lem}.
   Then in the subterms selected by the pattern \C{pat2}
   match the pattern inferred from the left hand side of \C{lem2} and
-  rewrite the terms selected by it. Last, in the sub terms selected by
-  \C{pat3} rewrite with \C{lem3} the sub terms identified by \C{X} exactly
+  rewrite the terms selected by it. Lastly, in the subterms selected by
+  \C{pat3} rewrite with \C{lem3} the subterms identified by \C{X} exactly
 
 \begin{cheat}
 rewrite {3}[in X in pat1]lem1
 \end{cheat}
   Like in \C{rewrite [X in pat1]lem1} but use the pattern
-  inferred from \C{lem1} to identify the sub terms of \C{X} to be
+  inferred from \C{lem1} to identify the subterms of \C{X} to be
   rewritten. Of these terms, rewrite only the third one. Example:
   \C{rewrite {3}[in X in f _ X]E.}
 
@@ -783,31 +783,31 @@ rewrite 3?lem2 // {hyp} => x px
 \item[key] The head symbol of a pattern
 \end{description}
 
-The sub terms selected by a pattern:
+The subterms selected by a pattern:
 \begin{enumerate}
 \item the goal is traversed outside in, left to right, looking for
       verbatim occurrences of the key
-\item the sub terms whose key matches verbatim are higher order
+\item the subterms whose key matches verbatim are higher order
       matched (i.e. up to definition unfolding and recursive function
       computation) against the pattern
-\item if the matching fails, the next sub term whose key matches is tried
-\item if the matching succeeds, the sub term is considered to be the
+\item if the matching fails, the next subterm whose key matches is tried
+\item if the matching succeeds, the subterm is considered to be the
       (only) instance of the pattern
-\item the sub terms selected by the pattern are then all the copies of the
+\item the subterms selected by the pattern are then all the copies of the
       instance of the pattern
 \item these copies are searched looking again at the key, and higher order
       comparing the arguments pairwise
 \end{enumerate}
 
 Note: occurrence numbers can be combined with patterns. They refer
-to the list of of sub terms selected by the (last) pattern (i.e. they
+to the list of of subterms selected by the (last) pattern (i.e. they
 are processed at the very end).
 
 \begin{cheat}
 set n := {2 4}(_ + b)
 \end{cheat}
   Put in the context a local definition named \C{n} for the
-  second and fourth occurrences of the sub terms selected by the
+  second and fourth occurrences of the subterms selected by the
   pattern \C{(_ + b)}
 
 \begin{cheatout}

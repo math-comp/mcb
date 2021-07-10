@@ -566,7 +566,7 @@ identity. Statements like
 \C{(0 + n = n)} or \C{(0 < n.+1)} can be proved in a similar way, but
 also \C{(2 + n = n.+2)}, which requires several steps of computation.
 
-Last, the \C{by} tactical turns its argument into a \emph{terminating
+Lastly, the \C{by} tactical turns its argument into a \emph{terminating
 tactic} --- and thus  \C{by []} is such a terminating tactic. A tactic
 is said to be terminating if, whenever it does not solve the goal
 completely, it
@@ -764,9 +764,9 @@ The tactic ``\C{case: n => [|k]}''  can be decomposed into two components,
 separated by the arrow \C{=>}.  The left block ``\C{case: n}'' indicates
 that we  perform a case analysis action, on term \C{(n : nat)}, while the right
 block ``\C{[|k]}'' is an \emph{introduction pattern}. The brackets
-surround slots separated by vertical pipes, and each slot allows to
+surround slots separated by vertical pipes, and each slot allows us to
 name the parameters to be introduced in each subgoal created by the
-case analysis, in order.
+case analysis in order.
 
 As type \C{nat} has two constructors, the introduction pattern \C{[|k]}
 of our case analysis command uses two slots: the last one introduces
@@ -2470,7 +2470,7 @@ m, n1, n2 : nat
 \coqrun{name=Foldrun}{ssr,Fold,show,abort}
 \index[ssr]{\C{rewrite}! \C{-[term]/(term)} (changing)}
 
-Last, an equation local to the proof context, like an
+Lastly, an equation local to the proof context, like an
 induction hypothesis, can be disposed of after using it by
 prefixing its name with \C{\{\}}.  For example
 \C{rewrite -\{\}IHn} rewrites with \C{IHn} right to
@@ -2924,7 +2924,7 @@ in the \mcbMC{} library:
 % \end{coq}
 %
 % Fails because \C{addnC} flips \C{0} with \C{(a + b)}, then
-% \C{add0n} finds no matching sub term.  In any case the proof
+% \C{add0n} finds no matching subterm.  In any case the proof
 % is wrong, commutativity has to be employed to flip \C{a} and \C{b},
 % or \C{b} and \C{a}, but not \C{0}.  If one wants to keep the rules
 % in that order he needs to drive \Coq{} by better specifying the
