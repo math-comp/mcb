@@ -1505,7 +1505,7 @@ and
 
 Let's see why \C{mul0n}, the one present in the library, is easier to use.
 The \C{rewrite} tactic uses the left hand side of the conclusion as
-a pattern and looks for sub terms of the goal that match. 
+a pattern and looks for subterms of the goal that match.
 The pattern
 provided by the \C{mul0n} is \C{(0 * \_)} and is quite precise, only the
 right hand side of the multiplication is unknown. Moreover the presence of
@@ -1530,7 +1530,7 @@ switch to \C{rewrite}. In some sense its ``default'' is wrong.
 
 By stating equalities with the most informative term on the left one
 obtains lemmas that easier to rewrite with, since their
-arguments and the sub term of the goal to be replaced are going to be
+arguments and the subterm of the goal to be replaced are going to be
 found, automatically, by pattern matching.
 
 A similar line of reasoning can be applied to other tactics as well. For
