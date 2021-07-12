@@ -23,7 +23,7 @@ functions encountered in the mathematical tradition of set theory.
 % mathematical objects.
 
 This chapter provides code snippets that can be loaded in a Coq session,
-after the header described at the the end of the introduction chapter.
+after the header described at the end of the introduction chapter.
 These snippets should be loaded in order and without
 omission to avoid mistakes that would take too long to explain
 at this introductory level.
@@ -115,7 +115,7 @@ language.  A function is never described by providing extensively the
 graph as a subset of the cartesian product of the input and the output.
 \index[concept]{abstraction}
 
-While expression \C{(fun n => n + 1)} describes an operation
+While the expression \C{(fun n => n + 1)} describes an operation
 without giving it a name, the usual mathematical practice would be to
 rely on a sentence like {\em consider the function \(f\) from {\(\mathbb{N}\)}
 to {\(\mathbb{N}\)} which maps \(n\) to \(n + 1\)}, or on a written
@@ -273,11 +273,12 @@ is however too early to be
 more precise about this normalization strategy. This would indeed
 require describing in more details the formalism underlying the
 \Coq{} system, which we do only in chapter~\ref{ch:ttch}. The
-interested reader should actually refer to \cite[section
+interested reader can consult \cite[section
 5.3.7, ``Performing computations'']{Coq:manual} for
-the official documentation of \C{compute}.
+the official documentation of the underlying \C{vm_compute}
+tactic.
 For now, we suggest to keep only the intuition that this
-normalization procedure provides the ``expected value'' of a
+normalization procedure provides the ``explicit result'' of a
 computation.
 
 \index[concept]{computation}
@@ -293,7 +294,7 @@ arguments:
 Definition g (n : nat) (m : nat) : nat := n + m * 2.
 \end{coq}
 \coqrun{name=def_g_attempt_run}{def_g_attempt}
-In fact, for the sake of compactness, contiguous arguments of one and
+In fact, for the sake of compactness, consecutive arguments of one and
 the same
 type can be grouped and share the same type annotation, so that the
 above definition is better written:
@@ -327,11 +328,11 @@ The first two occurrences of \C{nat} in the response
  {\em a multiple
  argument function is a single argument function that returns a
  function}.  This idea that multiple argument functions can be
-represented using single argument functions (rather, for instance, than
+represented using single argument functions (rather than, for instance,
 tuples of arguments) is called {\em currying} and will play a special
 role in chapter~\ref{ch:ttch}. For now, let us just insist on the fact
-that in \Coq{}, functions with several arguments are not represented
-with a tuple of arguments.
+that in \Coq{}, functions with several arguments are not usually
+represented with a tuple of arguments.
 \index[concept]{currying of functions}
 
 
@@ -390,7 +391,7 @@ g 3 : nat -> nat
 \index[concept]{partial application}
 \index[concept]{typing an application}
 
-Now function \C{g} can be applied to the numbers \C{2} and \C{3}, as
+Now, the function \C{g} can be applied to the numbers \C{2} and \C{3}, as
 in \C{g 2 3}. This results in a term of type \C{nat}, the type of the
 outputs of \C{g}, and we can even compute this value:
 
@@ -404,8 +405,8 @@ Compute g 2 3.
 
 Term \C{(g 2 3)} actually reads \C{((g 2) 3)} and features three
 nested sub-expressions. The symbol \C{g} is the deepest
-sub-expression and it is applied to \C{2} in \C{(g 2)}. The value of
-this sub-expression is a function, which can be written:
+sub-expression and is applied to \C{2} in \C{(g 2)}. The value of
+this sub-expression \C{(g 2)} is a function, which can be written:
 
 \begin{coq}{name=step1}{}
 fun m => 2 + m * 2
@@ -420,8 +421,8 @@ Finally, \C{(g 2 3)} is in turn the application of the latter function to
 \end{coq}
 \coqrun{name=step2run}{check,step2,dot}
 
-by substituting the bound variable \C{m} in \C{fun m => 2 + m * 2} by
-the value \C{3}.
+by substituting the value \C{3} for the bound variable \C{m} in
+\C{fun m => 2 + m * 2}.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -487,10 +488,10 @@ Compute repeat_twice f 2.
 \end{coqout-right}
 \coqrun{name=eval_repeat_twice_f_two_run}{exdef,repeat_twice_def,eval_repeat_twice_f_two}
 
-Expression \C{(repeat_twice f 2)} actually reads
+The expression \C{(repeat_twice f 2)} actually reads
 \C{((repeat_twice f) 2)} and features three nested sub-expressions separated by
 spaces. The symbol \C{repeat_twice} is the deepest
-sub-expression and it is applied to \C{f} in \C{(repeat_twice f)}.
+sub-expression and is applied to \C{f} in \C{(repeat_twice f)}.
 According to the definition of the \C{repeat_twice} function, the value of
 this sub-expression is a function, which is then applied to \C{2}.
 % The value of the
@@ -500,7 +501,7 @@ The resulting expression is \C{(f (f 2))}, and given the
 definition of \C{f}, this expression can also
 be read as \C{((2 + 1) + 1)}.  Thus, after computation, the result is \C{4}.
 
-Function  \C{repeat_twice} is an instance of a function with several
+The function  \C{repeat_twice} is an instance of a function with several
 arguments: as illustrated in section~\ref{sec:fun-sev-args}, its
 partial application to a single argument provides a well-formed
 function, from \C{nat} to \C{nat}:
@@ -513,9 +514,10 @@ repeat_twice f : nat -> nat
 \end{coqout-right}
 \coqrun{name=check_repeat_twice_f_two_run}{exdef,repeat_twice_def,check_repeat_twice_f_two}
 
-Now looking at the type of \C{repeat_twice} and adding redundant parentheses
+Now, looking at the type of \C{repeat_twice} itself
+(and adding redundant parentheses for clarity),
 we obtain \C{(|==(nat -> nat)==| -> (|--nat--| -> nat))}:
-once the first argument
+Thus, once the first argument
 \C{(f : |==nat -> nat==|)} is passed, we obtain a term the type of which is
 the right hand side of the main arrow, that is \C{(|--nat--| -> nat)}.
 By passing another argument, like \C{(2 : |--nat--|)}, we obtain an expression
@@ -539,24 +541,23 @@ while it is expected to have type "nat".
 \subsection{Local definitions}
 
 The process of abstraction described at the beginning of this section
-can be seen as the introduction of a name, the one used for the bound
-variable, in place of a sub-expression that may appear at
-several occurrences. For instance, in expression
+can be seen as the introduction of a name -- the one used for the
+bound variable -- in place of a sub-expression that may appear at
+several occurrences. For instance, in the expression
 \C{(fun x => x + x + x) B}, we use the variable \C{x} as an
 abbreviation for \C{B}. It is specially useful when \C{B} happens to
 be a very large expression: readability is improved by avoiding the
-repetition of \C{B}, which may otherwise obfuscate the triplicate
-pattern. In the \Coq{}
-language, declaring such an abbreviation can be made even more
-readable by bringing closer the name of the abbreviation \C{x} and the
-expression it refers to:
+repetition of \C{B}, which may otherwise obfuscate the triplication
+pattern.  An alternative way of declaring such an abbreviation in
+\Coq{} uses the following syntax (which is more readable, as it
+defines the meaning of the abbreviation \C{x} before it is used):
 
 \begin{coq}{name=let}{}
 let x := B in
    x + x + x
 \end{coq}
 
-In this expression the variable \C{x} is {\em bound} and can be used in
+In this expression, the variable \C{x} is {\em bound} and can be used in
 the text that comes after the \C{in} keyword.
 Variants of this syntax make it possible to state the
 type ascribed to the variable \C{x}, which may come handy when the
@@ -600,17 +601,17 @@ and symbols of a given language
 that respects the prescribed arities of
 the operations. For instance, the expression:
 \[(\top \vee \bot) \wedge b\]
-is a well formed expression in the language $\{\top, \bot,\vee,\wedge\}$ of
-boolean arithmetic, while expression:
+is a well-formed expression in the language $\{\top, \bot,\vee,\wedge\}$ of
+boolean arithmetic, while the expression:
 \[ 0 + x \times (S\ 0) \]
-is a well formed expression in the language $\{0,S, +, \times\}$ of
+is a well-formed expression in the language $\{0,S, +, \times\}$ of
 Peano arithmetic.  These languages are usually equipped with
 behavior rules, expressed in the form of equality axioms, like
 \[\top \vee b = \top \qquad \hbox{or} \qquad 0 + x = x\]
 In
-practice, these axioms confer a distinctive status on
-the symbols $\top$ and $\bot$ for booleans, and to the symbols $0$ and
-$S$ for natural numbers. More precisely, any variable-free boolean expression
+practice, these axioms confer a distinctive status upon
+the symbols $\top$ and $\bot$ for booleans, and upon the symbols $0$ and
+$S$ for natural numbers.  More precisely, any variable-free boolean expression
 is equal to either $\top$ or $\bot$ modulo these axioms, and any
 variable-free expression in Peano arithmetic is equal either to $0$ or
 to an iterated application of the symbol $S$ to $0$.  In both
@@ -660,7 +661,7 @@ Inductive bool := true | false.
 \coqrun{name=bool_run}{bool}
 \index[vernac]{\C{Inductive}}
 
-It is actually one of the simplest possible inductive definitions,
+This is one of the simplest possible inductive definitions,
 with only base cases, and no inductive cases. This
 declaration states explicitly that there are exactly two
 elements in type \C{bool}: the distinct constants \C{true} and \C{false},
@@ -713,14 +714,14 @@ Compute twoVthree false.
 \coqrun{name=eval_twoVthree_run}{definetwoVthree,eval_twoVthree}
 
 As illustrated on this example,
-the \C{compute} command rewrites any term of the shape
-\C{if true then t1 else t2} into \C{t1} and %any term
-of the shape
+the \C{Compute} command rewrites any term of the shape
+\C{if true then t1 else t2} into \C{t1} and rewrites
+any term of the shape
 \C{if false then t1 else t2} into \C{t2}.
 
-We can then use this basic operation to describe the other elements
-that we usually consider as parts of the boolean language, usually
-at least conjunction, written \C{&&} and disjunction, written \C{||}.
+We can then use this basic operation to describe the simplest binary
+operations that we usually consider as parts of the boolean language:
+conjunction, written \C{&&}, and disjunction, written \C{||}.
 We first define these as functions, as follows:
 
 \begin{coq}{name=define_andb_orb}{}
@@ -732,7 +733,7 @@ Definition orb  (b1 b2 : bool) := if b1 then true else b2.
 and then the notations \C{&&} and \C{||} are attached to these
 two functions, respectively.
 
-For any choice of values \C{b1}, \C{b2}, and \C{b3} it appends that
+For any choice of values \C{b1}, \C{b2}, and \C{b3},
 the expressions \C{b1 && (b2 && b3)} and \C{(b1 && b2) && b3} always
 compute to the same result.  In this sense, the conjunction operation
 is associative.  We shall see in chapter~\ref{ch:proofs} that this
@@ -795,11 +796,11 @@ of this chapter, we call such a term a \emph{numeral}.
 
 The \mcbMC{} library provides a few notations to make the use of the
 constructor \C{S} more intuitive to read.  In particular, if \C{x}
-is a value of type \C{nat}, \C{x.+1} is another way to write
+is a value of type \C{nat}, then \C{x.+1} is another way to write
 \C{(S x)}.  The ``\C{.+1}'' notation binds stronger than function
 application, rendering some parentheses unnecessary:
 assuming  that \C{f} is a function of type
-\C{nat -> nat} the expression \C{(f n.+1)} reads
+\C{nat -> nat}, the expression \C{(f n.+1)} reads
 \C{(f (S n))}.  Notations are also provided for \C{S (S n)}, written
 \C{n.+2}, and so on until \C{n.+4}.
 
