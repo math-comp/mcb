@@ -569,15 +569,15 @@ types equipped with a finite enumeration.
 
 \begin{coq}{name=fintype}{title=Interface for finite types}
 Notation count_mem x := (count [pred y | y == x]).
-Module finite.
+Module Finite.
 Definition axiom (T : eqType) (e : seq T) :=
   forall x : T, count_mem x e = 1.
 
 Record mixin_of (T : eqType) := Mixin {
   enum : seq T;
-  _ : axiom T enum;
+  _ : axiom enum;
 }
-End finite.
+End Finite.
 \end{coq}
 
 The axiom asserts that any inhabitant of \C{T} occurs exactly once

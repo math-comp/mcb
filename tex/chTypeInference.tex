@@ -1509,7 +1509,7 @@ Lemma big_nat_recr n m F : m <= n ->
 \end{coq}
 \coqrun{name=uniqp2}{ssr,bigop}
 
-If we print such statement once the \C{Section MonoidProperties} is
+If we print such a statement once the \C{Section MonoidProperties} is
 closed, we see the requirement affecting the operation \C{op} explicitly.
 
 \begin{coqout}{}{}
@@ -1523,7 +1523,7 @@ big_nat_recr :
 Note that wherever the operation \C{op} occurs, we also find
 the \C{Monoid.operator} projection.
 
-To make this lemma available on the addition on natural numbers,
+To make this lemma available for addition on natural numbers,
 we need to declare the canonical monoid structure on \C{addn}.
 
 \begin{coq}{name=natmonoid}{}
@@ -1596,7 +1596,7 @@ Similarly, induction lemmas can be found with \C{ Search "ind"
 "big"};  index exchange lemmas with \C{ Search "exchange" "big"};
 lemmas pulling out elements from the iteration
 with \C{ Search "rec" "big"}; lemmas  working on the filter condition
-with \C{ Search "cond" "big"}, etc\ldots
+with \C{ Search "cond" "big"}, and so on.
 
 
 Finally the \mcbMC{} user is advised to read the contents of the
@@ -1633,7 +1633,7 @@ Lemma sum_0 n :
 \end{coq}
 
 To solve these problems we craft a box, \C{BigBody}, with
-separate compartments for each sub component.  Such box will
+separate compartments for each sub component.  Such a box will
 be used under a single binder and will hold an occurrence of the
 bound variable even if it is unused in the predicate and in the
 general term.
