@@ -263,7 +263,7 @@ type, and the \lib{fintype} library declares a corresponding \C{finType}
 structure instance. This means that \lstinline/'I_p/ should also have
 an instance of the \C{finRingType} join structure (for \C{p} of the
 right shape). This is not automatic, but thanks to the cloning
-constructor requires only one line in \lib{zmodp}.
+constructor it requires only one line in \lib{zmodp}.
 
 \begin{coq}{name=zp8}{}
 Canonical Zp_finRingType := [finRingType of 'I_p].
@@ -539,8 +539,8 @@ The \C{choose} operation can be
 defined using the \C{find} operator provided by the interface, and its
 properties follow from the axiom of countable choice. Indeed, although
 the choice axiom is not provable in general in \mcbCIC{}, its
-restriction to countable type can be proved.
-which is derivable in \mcbCIC{}% \footnote{behind the
+restriction to countable types is provable.
+% \footnote{behind the
 % \C{\{m|..\}} notation lies the \C{sig} dependent pair.  Such an inductive
 % data type is a copy of the existential quantifier but is
 % declared as a data type rather than a
@@ -549,7 +549,6 @@ which is derivable in \mcbCIC{}% \footnote{behind the
 % the existential witness \C{n}.  In other words the proof in
 % input is only used to justify the termination of the
 % search for \C{m}.}
-.
 
 \begin{coq}{}{}
 Lemma find_ex_minn (P : pred nat)  :
@@ -976,7 +975,7 @@ for a description of this technique.
 
 The sub-type kit of chapter~\ref{ch:sigmabool} is not the only
 way to easily add instances to the library.  For example
-imagine we are interested to define the type of a wind rose and attach
+imagine we are interested in defining the type of a wind rose and attach
 to it the theory of finite types.
 
 \begin{coq}{}{}
