@@ -889,11 +889,10 @@ Definition larger_than_4 n :=
 \end{coq}
 \coqrun{name=larger_than4_run}{ssr,larger_than4}
 
-On the other hand, if we want to describe a different computation for
-three different cases and use variables in more than one case, we
-must either awkwardly nest several ``\C{if .. then .. else}'' blocks
-inside each other, or (better) use the more general
-``\C{match .. with .. end}'' syntax.  Here is an example:
+The ``\C{if .. then .. else}'' syntax is just a particular case
+of the more general ``\C{match .. with .. end}'' construct,
+which allows us to separate several (not just two) cases.
+Here is an example:
 
 \begin{coq}{name=awkward5}{}
 Definition three_patterns n :=
@@ -977,7 +976,7 @@ The above code defining \C{same_bool} is parsed as follows:
 Definition same_bool b1 b2 :=
   match b1 with
   | true => match b2 with true => true | _ => false end
-  | false => match b2 with false => true | _ => false end
+  | false => match b2 with true => false | _ => true end
   end.
 \end{coq}
 \coqrun{name=awk7_run}{ssr,awkward7}
@@ -1321,7 +1320,7 @@ expected to have type "nat".
 
 As expected, \C{listn} %elements of this data type
 cannot hold boolean values.
-So, if we need to manipulate a list of booleans,
+So if we need to manipulate a list of booleans
 we have to define a similar data type:
 \C{listb}.
 
@@ -1386,7 +1385,7 @@ Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
 
 
 The name \C{seq} refers to (finite) ``sequences'', also called
-``lists''. This definition describes the type
+``lists''. This definition actually describes the type
 of lists as a {\em polymorphic type}. This means that there is a
 different type \C{(seq A)} for each possible choice of type \C{A}.  For example
 \C{(seq nat)} is the type of sequences of natural numbers, while
