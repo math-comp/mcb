@@ -791,7 +791,8 @@ notations we have used so far are only a parsing and display
 facility provided to the user for readability: \C{O} is displayed
 $0$, \C{(S O)} is displayed $1$, etc.  Users can also type decimal
 numbers to describe values in type \C{nat}: these are automatically
-translated into terms built (only) with \C{O} and \C{S}. In the rest
+translated into terms built (only) with \C{O} and \C{S} (for example,
+\C{4} is parsed as \C{(S (S (S (S O))))}). In the rest
 of this chapter, we call such a term a \emph{numeral}.
 
 The \mcbMC{} library provides a few notations to make the use of the
@@ -832,7 +833,7 @@ Definition non_zero n := if n is p.+1 then true else false.
 %
 
 The function \C{non_zero} returns the boolean value \C{false} if its
-argument is \C{0}, and \C{true} otherwise. In this definition \C{p.+1} is a
+argument is \C{0}, and \C{true} otherwise. In this definition, \C{p.+1} is a
 pattern: The value bound to the name \C{p} mentioned in this pattern is not
 known in advance. This value is actually computed at the moment the
 argument \C{n} provided to the function is matched against the
@@ -855,17 +856,20 @@ The \C{Compute} command rewrites any term of the shape
 
 The symbols that are allowed in a pattern are essentially restricted
 to the constructors, here \C{O} and \C{S}, and to variable names.
-Thanks to notations however, a pattern can also contain
+Thanks to notations, however, a pattern can also contain
 occurrences of the notation ``\C{.+1}'' which represents \C{S}, and
 decimal numbers, which represent the corresponding terms built with
 \C{S} and \C{O}.  When a variable name occurs, this variable can be
-reused in the result part, as in:
+used in the result part (after \C{then}), as in:
 
 \begin{coq}{name=pred}{}
 Definition pred n := if n is p.+1 then p else 0.
 \end{coq}
 \coqrun{name=pred_run}{ssr}
 \index[coq]{\C{predn} |seealso {\C{.-1}}}
+
+This function \C{pred} computes the predecessor \(n-1\) of a
+nonzero natural number \(n\), defaulting to \(0\) if \(n = 0\).
 
 Observe that in the definitions of functions \C{predn} and
 \C{non_zero}, we did omit the type of the input \C{n}: matching
@@ -886,9 +890,10 @@ Definition larger_than_4 n :=
 \coqrun{name=larger_than4_run}{ssr,larger_than4}
 
 On the other hand, if we want to describe a different computation for
-three different cases and use variables in more than one case, we need
-the more general ``\C{match .. with .. end}'' syntax.  Here is an
-example:
+three different cases and use variables in more than one case, we
+must either awkwardly nest several ``\C{if .. then .. else}'' blocks
+inside each other, or (better) use the more general
+``\C{match .. with .. end}'' syntax.  Here is an example:
 
 \begin{coq}{name=awkward5}{}
 Definition three_patterns n :=
@@ -909,23 +914,26 @@ arbitrarily large number of {\em pattern matching rules} of the form
 separated by the \C{|} symbol.  Optionally one can
 prefix the first pattern matching rule with \C{|}, in order to make each line
 begin with \C{|}. Each pattern matching rule results in a new rewrite
-rule available to the \C{compute} command.
+rule available to the \C{Compute} command.
 \index[concept]{pattern matching}
 All
 the pattern matching rules are tried successively against the input.  The
 patterns may overlap, but the result is given by the first pattern that
 matches.
-For instance with the function \C{three_patterns}, if the input is
+For instance, with the function \C{three_patterns}, if the input is
 \C{2}, in other words \C{0.+1.+1}, the first
 rule cannot match, because this would require that \C{0} matches
-\C{u.+1.+1.+1} and we know that \(0\) is not the successor of any
-natural number; when it comes to the second rule \C{0.+1.+1} matches
+\C{u.+1.+1.+1.+1.+1} and we know that \(0\) is not the successor of any
+natural number; when it comes to the second rule, \C{0.+1.+1} matches
 \C{v.+1}, because the rightmost \C{.+1} in the value of \C{2} matches
-the rightmost \C{.+1} part in the pattern and \C{0.+1} matches the \C{v} part
-in the pattern.
+the rightmost \C{.+1} part in the pattern and \C{0.+1} matches the \C{v}
+part in the pattern.  The third rule is thus ignored.
+We could have just as well replaced the third rule by ``\C{w => n}'',
+since all nonzero natural numbers are covered by the first two rules.
 
-A fundamental principle is enforced by \Coq{} on case analysis:
-\emph{exhaustiveness}.  The patterns must cover all constructors of
+\Coq{} requires the list of patterns used in the
+``\C{match .. with .. end}'' construct to be
+\emph{exhaustive}: i.e., the patterns must cover all constructors of
 the inductive type.  For example, the following definition is
 rejected by \Coq{}.
 
@@ -969,7 +977,7 @@ The above code defining \C{same_bool} is parsed as follows:
 Definition same_bool b1 b2 :=
   match b1 with
   | true => match b2 with true => true | _ => false end
-  | false => match b2 with true => false | _ => true end
+  | false => match b2 with false => true | _ => false end
   end.
 \end{coq}
 \coqrun{name=awk7_run}{ssr,awkward7}
@@ -981,7 +989,7 @@ Definition same_bool b1 b2 :=
 \index[concept]{recursion}
 
 Using constructors and pattern matching, it is possible to add or
-subtract one, but not to describe the addition or subtraction of
+subtract \(1\), but not to describe the addition or subtraction of
 arbitrary numbers. For this purpose, we resort to recursive
 definitions. The addition operation is defined in the
 following manner:
@@ -995,16 +1003,15 @@ Fixpoint addn n m :=
 \index[coq]{\C{addn}}
 As this example illustrates, the keyword for defining a recursive
 function in \Coq{} is \C{Fixpoint}: the function being
-defined, here called \C{addn}, is used in the definition of the
-function \C{addn} itself.  This text expresses that the value of
-\C{(addn p.+1 m)} is
+defined, here called \C{addn}, is used in its own definition.
+This text expresses that the value of \C{(addn p.+1 m)} is
 \C{(addn p m).+1} and that the value \C{(addn 0 m)} is \C{m}.
 This first equality may
 seem redundant, but there is progress when reading this equality from
 left to right: an addition with \C{p.+1} as the first argument
 is explained with the help of addition with \C{p} as the first
-argument, and \C{p} is a smaller number than \C{p.+1}.  When considering the
-expression \C{(addn 2 3)}, we can know the value by performing the following
+argument, and \C{p} is a smaller number than \C{p.+1}.  For instance,
+we can obtain the value of \C{(addn 2 3)} by performing the following
 computation:
 \begin{tabbing}
 \C{adfasdfasdfafafafafafaf}\=\kill
@@ -1020,16 +1027,16 @@ the \C{(addn n m)} program simply stacks \C{n} times the successor symbol
 on top of \C{m}.
 
 If we reflect again on the discussion of Peano arithmetic, as in
-Section~\ref{sec:data}, we see that addition is provided by the definition of
-\C{addn}, and the usual axioms of Peano arithmetic, namely:
-\[S~ x + y = S (x + y) \qquad 0 + x = x \]
+Subsection~\ref{ssec:nat}, we see that addition is provided by the
+definition of \C{addn}, and the usual axioms of Peano arithmetic, namely:
+\[S~ x + y = S (x + y) \qquad \text{ and } \qquad 0 + x = x \]
 are actually provided by the computation behavior of the function,
 namely by the ``then'' branch and the ``else'' branch respectively.
 Therefore, Peano arithmetic is really provided by \Coq{} in two steps,
 first by providing the type of natural numbers and its constructors
 thanks to an \emph{inductive type definition}, and then by providing
 the operations as defined functions (usually recursive functions as in
-the case of addition).  The axioms are not constructed explicitly,
+the case of addition).  The axioms are not imposed explicitly,
 but they appear as part of the behavior of the addition function.  In
 practice, it will be possible to create theorems whose statements are
 exactly the axioms of Peano arithmetic, using the tools provided in
@@ -1060,7 +1067,7 @@ When writing recursive functions, the \Coq{} system imposes the
 constraint that the described computation must be \emph{guaranteed to
 terminate}.  The reason for this requirement is sketched in
 section~\ref{ssec:indreason}.
-This guarantee is obtained by analyzing the description of the
+This guarantee is obtained by analyzing the definition of the
 function, making sure that recursive calls always happen on a
 given argument that decreases.
 Termination is obvious when the recursive calls happen
@@ -1127,7 +1134,10 @@ Fixpoint subn m n : nat :=
 \end{coq}
 \coqrun{name=sub_run}{ssr,sub}
 \index[coq]{\C{subn}}
-Number $m$ is less or equal to number $n$ if and only if \C{(subn m n)} is
+Mathematically, \C{(subn m n)} returns \(m-n\) if \(m \geq n\)
+and \(0\) otherwise.
+Thus, the number $m$ is less or equal to number $n$ if and only if
+\C{(subn m n)} is
 zero. Here as well, this subtraction is already defined in the
 libraries, but we play the game of re-defining our own version.
 % From a mathematical point of view, this definition can be quite
@@ -1138,9 +1148,10 @@ the first argument.  This % is exactly what one would expect when the
 % second argument is 0; but this
 rule thus also covers the case where the
 second argument is non-zero while the first argument is 0: in that
-case, the result of the function is zero.  Another possible view on
-\C{subn} it to see it as a subtraction operation on natural numbers,
-made total by providing a default value in the ``exceptional'' cases.
+case, the result of the function is zero.  We can view
+\C{subn} as a subtraction operation on natural numbers, artificially
+made total by providing a default value in the cases where it would
+normally produce a negative number.
 %We shall discuss totality of functions in more detail in
 %Section~\ref{sec:total}.
 
@@ -1310,8 +1321,8 @@ expected to have type "nat".
 
 As expected, \C{listn} %elements of this data type
 cannot hold boolean values.
-So if we need to
-manipulate a list of booleans we have to define a similar data type:
+So, if we need to manipulate a list of booleans,
+we have to define a similar data type:
 \C{listb}.
 
 \begin{coq}{name=listb_def}{}
@@ -1375,7 +1386,7 @@ Inductive seq (A : Type) := nil | cons (hd : A) (tl : seq A).
 
 
 The name \C{seq} refers to (finite) ``sequences'', also called
-``lists''. This definition actually describes the type
+``lists''. This definition describes the type
 of lists as a {\em polymorphic type}. This means that there is a
 different type \C{(seq A)} for each possible choice of type \C{A}.  For example
 \C{(seq nat)} is the type of sequences of natural numbers, while
