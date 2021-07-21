@@ -169,15 +169,15 @@ defines the polymorphic identity function and checks its application to
 \lstinline/3/.
 
 \begin{coq-left}{name=exid}{width=8cm,title=Polymorphic identity}
-Definition idfun A (a : A) : A := a.
-Check (idfun nat 3).
-Check (idfun _ 3).
+Definition id A (a : A) : A := a.
+Check (id nat 3).
+Check (id _ 3).
 \end{coq-left}
 \coqrun{name=r1}{exid}
 \begin{coqout-right}{run=r1}{title=Response,width=4cm}
 $~$
-idfun nat 3 : nat
-idfun nat 3 : nat
+id nat 3 : nat
+id nat 3 : nat
 \end{coqout-right}
 
 In the expression \lstinline/(id nat 3)/ no subterm was omitted,
@@ -211,7 +211,7 @@ we only provide a simple example. For more details
 refer to~\cite[``Extensions of Gallina'']{Coq:manual}.  
 
 \begin{coq-left}{name=impl-arg-id}{title=Setting implicit arguments,width=6cm}
-Arguments idfun {A} a.
+Arguments id {A} a.
 Check (id 3).
 Check (@id nat 3).
 \end{coq-left}
