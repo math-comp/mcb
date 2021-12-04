@@ -1,6 +1,6 @@
 # The Mathematical Components book code listings for jsCoq.
 
-You can view jscoq snippets <a href="https://math-comp.github.io/snippets">here</a>
+You can view jscoq snippets <a href="https://math-comp.github.io/mcb/snippets/">here</a>
 just by open link in browser. Or it is possible to download and open usual .v file in
 your favorite Galina editor.
 
