@@ -302,7 +302,8 @@ Definition all_words n T (alphabet : seq T) :=
 Eval compute in all_words 2 [:: 1; 2; 3].
 
 
-(******** Code below is not in the book already ********)
+(* Code below is not anymore in the book and given here for *)
+(* additional examples.                                     *)
 
 (** Exercises *************************************** *)
 
