@@ -175,8 +175,8 @@ Fail Definition oops (hf : hidden) : False := let: Hide f := hf in f hf.
 Fail Check oops (Hide oops). (* : False *)
 
 
-(* Definitions below are not anymore in the book and given here as *)
-(* additional examples.                                            *)
+(* Code below is not in the book anymore and given here as *)
+(* additional examples.                                    *)
 
 Lemma stamps n : 12 <= n -> exists s4 s5, s4 * 4 + s5 * 5 = n.
 Proof.
