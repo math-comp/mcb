@@ -294,6 +294,9 @@ Qed.
 
 (******** Code below is not in the book already ********)
 
+(* Code below is not anymore in the book and given here for *)
+(* additional examples.                                     *)
+
 (** Exercises *)
 
 Lemma orbA b1 b2 b3 : b1 || (b2 || b3) = b1 || b2 || b3.
