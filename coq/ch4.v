@@ -1,5 +1,78 @@
 From mathcomp Require Import all_ssreflect.
 
+
+(* 4.1.1 Pulling from the stack *)
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => xy pr_x odd_y.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] pr_x odd_y.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= pr_x odd_y.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= /prime_gt1-x_gt1 odd_y.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x [//|z]] /= /prime_gt1-x_gt1.
+Abort.
+
+Print odd.
+(* Fixpoint odd n := if n is n'.+1 then ~~ odd n' else false. *)
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  by move=> [x [//|z]] /= /prime_gt1-x_gt1 _; apply: ltn_addl x_gt1.
+Qed.
+
+About ltn_addl.
+
+
+(* 4.1.2 Working on the stack *)
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= /prime_gt1.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= /prime_gt1/ltnW.
+Abort.
+
+Goal (forall n, n * 2 = n + n) -> 6 = 3 + 3.
+  move => /(_ 3).
+Abort.
+
+Goal (forall n, n * 2 = n + n) -> 6 = 3 + 3.
+  move => /(_ 3) <-.
+Abort.
+
+
+(* 4.1.3 Pushing to the stack *)
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= /prime_gt1-x_gt1 odd_y.
+  move: y odd_y.
+  case.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= /prime_gt1-x_gt1 odd_y.
+  case: y odd_y.
+Abort.
+
+Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
+  move => [x y] /= /prime_gt1-x_gt1 odd_y.
+  case: y odd_y => [|y'].
+Abort.
+
+
+(* 4.2.1 Primes, a never ending story *)
+
+
 Module reflect1.
 
 Inductive reflect (P : Prop) b :=
