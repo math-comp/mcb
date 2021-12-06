@@ -3,10 +3,10 @@ From mathcomp Require Import all_ssreflect.
 
 (* 5 Inductive specifications *)
 
-Fixpoint has T (a : T -> bool) (s : seq T) : bool :=
-  if s is x :: s' then a x || has _ a s' else false.
+Fixpoint has' T (a : T -> bool) (s : seq T) : bool :=
+  if s is x :: s' then a x || has' _ a s' else false.
 
-Definition has_prop T (a : T -> bool) (x0 : T) (s : seq T) :=
+Definition has_prop' T (a : T -> bool) (x0 : T) (s : seq T) :=
   exists i, i < size s /\ a (nth x0 s i).
 
 
@@ -157,3 +157,52 @@ Lemma test_ubnP (G : nat -> Prop) m : G m.
 Proof.
   case: (ubnPgeq m).
 Admitted.
+
+
+(* 5.4 Showcase: Euclidean division, simple and correct *)
+
+Definition edivn_rec d :=
+  fix loop m q := if m - d is m'.+1 then loop m' q.+1 else (q, m).
+
+Definition edivn m d := if d > 0 then edivn_rec d.-1 m 0 else (0, m).
+
+Lemma edivn_recE d m q :
+  edivn_rec d m q = if m - d is m'.+1 then edivn_rec d m' q.+1 else (q,m).
+Proof. by case: m. Qed.
+
+Lemma edivnP m d (ed := edivn m d) :
+  ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
+Proof.
+  rewrite -[m]/(0 * d + m).
+  case: d => [//= | d /=] in ed *.
+  rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
+  case: (ubnPgeq m) @ed; elim: m 0 => [|m IHm] q [/=|n] leq_nm //.
+  rewrite edivn_recE subn_if_gt; case: ifP => [le_dm ed|lt_md]; last first.
+    by rewrite /= ltnS ltnNge lt_md eqxx.
+  rewrite -ltnS in le_dm; rewrite -(subnKC le_dm) addnA -mulSnr subSS.
+  by apply: IHm q.+1 (n-d) _; apply: leq_trans (leq_subr d n) leq_nm.
+Qed.
+
+Lemma subn_if_gt T m n F (E : T) :
+  (if m.+1 - n is m'.+1 then F m' else E) =
+  (if n <= m then F (m - n) else E). Admitted.
+
+
+(* 5.5 Notational aspects of specifications *)
+
+Lemma example3 : prime 17. Admitted.
+
+Definition is_true b := b = true.
+
+Coercion is_true : bool >-> Sortclass. (* Prop *)
+
+Fixpoint count (a : pred nat) (s : seq nat) :=
+  if s is x :: s' then a x + count a s' else 0.
+
+Lemma count_uniq_mem (s : seq nat) x :
+  uniq s -> count (pred1 x) s = has (pred1 x) s. Admitted.
+
+Definition zerolist n := mkseq (fun _ => 0) n.
+Coercion zerolist : nat >-> seq.
+Check 2 :: true == [:: 2; 0].
+
