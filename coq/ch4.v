@@ -2,6 +2,7 @@ From mathcomp Require Import all_ssreflect.
 
 
 (* 4.1.1 Pulling from the stack *)
+
 Goal forall xy, prime xy.1 -> odd xy.2 -> 2 < xy.2 + xy.1.
   move => xy pr_x odd_y.
 Abort.
