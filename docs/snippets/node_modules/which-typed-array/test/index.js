@@ -3,7 +3,7 @@
 var test = require('tape');
 var whichTypedArray = require('../');
 var isCallable = require('is-callable');
-var hasSymbols = typeof Symbol === 'function' && typeof Symbol('foo') === 'symbol';
+var hasToStringTag = require('has-tostringtag/shams')();
 var generators = require('make-generator-function')();
 var arrows = require('make-arrow-function').list();
 var forEach = require('foreach');
@@ -72,7 +72,7 @@ test('Arrow functions', { skip: arrows.length === 0 }, function (t) {
 	t.end();
 });
 
-test('@@toStringTag', { skip: !hasSymbols || !Symbol.toStringTag }, function (t) {
+test('@@toStringTag', { skip: !hasToStringTag }, function (t) {
 	forEach(typedArrayNames, function (typedArray) {
 		if (typeof global[typedArray] === 'function') {
 			var fakeTypedArray = [];
