@@ -72,106 +72,82 @@ Abort.
 
 (* 4.2.1 Primes, a never ending story *)
 
+(* Inductive ex2 A P Q : Prop := ex_intro2 x of P x & Q x. *)
+(* Notation "exists2 x , p & q" := (ex2 (fun x => p) (fun x => q)). *)
 
-Module reflect1.
+(* Notation "n ` !" := (factorial n). *)
+(* Lemma fact_gt0 n : 0 < n`!. *)
+(* Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!. *)
+(* Lemma pdivP n : 1 < n -> exists2 p, prime p & p %| n, *)
+(* Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n). *)
+(* Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false. *)
 
-Inductive reflect (P : Prop) b :=
- | RT (p : P) (e : b)
- | RF (p : ~ P) (e : b = false).
-
-Lemma andP (b1 b2 : bool) : reflect (b1 /\ b2) (b1 && b2).
-Proof.
-by case: b1; case: b2; [ left | right => //= [[l r]] ..].
-Qed.
-
-Lemma orP (b1 b2 : bool) : reflect (b1 \/ b2) (b1 || b2).
-Proof.
-case: b1; case: b2; [ left; by [ move | left | right ] .. |].
-by right=> // [[l|r]].
-Qed.
-
-Lemma implyP (b1 b2 : bool) : reflect (b1 -> b2) (b1 ==> b2).
-Proof.
-by case: b1; case: b2; [ left | right | left ..] => //= /(_ isT).
-Qed.
-
-End reflect1.
-
-Definition bool_Prop_equiv (P : Prop) (b : bool) := b = true <-> P.
-
-Lemma test_bool_Prop_equiv b P : bool_Prop_equiv P b -> P \/ ~ P.
-Proof.
-case: b; case => hlr hrl.
-  by left; apply: hlr.
-by right => hP; move: (hrl hP).
-Qed.
-
-Lemma iffP_lr (P : Prop) (b : bool) :
-  (P -> b) -> (b -> P) -> reflect P b.
-Proof.
-by move=> *; apply: (iffP idP).
-Qed.
-
-Lemma iffP_rl (P : Prop) (b : bool) :
-  reflect P b -> ((P -> b) /\ (b -> P)).
-Proof. by case: b; case=> p; split. Qed.
-
-Lemma eqnP {n m : nat} :
-  reflect (n = m) (eqn n m).
-Proof.
-apply: (iffP idP) => [|->]; last by elim: m.
-by elim: n m => [[]|n IH [//|m] /IH ->].
-Qed.
-
-Lemma nat_inj_eq T (f : T -> nat) x y :
-  injective f ->
-    reflect (x = y) (eqn (f x) (f y)).
-Proof. by move=> f_inj; apply: (iffP eqnP) => [/f_inj|-> //]. Qed.
-
-Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
-Proof.
-wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
-  by case/orP: (leq_total n2 n1) => /th_sym; last rewrite maxnC orbC.
-by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
-Qed.
-
-Definition edivn_rec d := 
-  fix loop m q := if m - d is m'.+1 then loop m' q.+1 else (q, m).
-
-Definition edivn m d := if d > 0 then edivn_rec d.-1 m 0 else (0, m).
-
-Lemma edivn_recE d m q :
-  edivn_rec d m q =
-    if m - d is m'.+1 then edivn_rec d m' q.+1 else (q, m).
-Proof. by elim: m. Qed.
-
-Lemma test (G : nat -> Prop) m : G m.
-Proof.
-case: (ubnPgeq m). Show.
+Goal forall m, exists2 p, m < p & prime p.
+  move => m; have m1_gt1 : 1 < m`! + 1.
+    by rewrite addn1 ltnS fact_gt0.
 Abort.
 
-Lemma edivnP m d (ed := edivn m d) :
-  ((d > 0) ==> (ed.2 < d)) && (m == ed.1 * d + ed.2).
-Proof.
-rewrite -[m]/(0 * d + m).
-case: d => [//= | d /=] in ed *.
-rewrite -[edivn m d.+1]/(edivn_rec d m 0) in ed *.
-case: (ubnPgeq m) @ed; elim: m 0 => [|m IHm] q [/=|n] leq_nm //.
-rewrite edivn_recE subn_if_gt; case: ifP => [le_dm ed|lt_md]; last first.
-  by rewrite /= ltnS ltnNge lt_md eqxx.
-rewrite -ltnS in le_dm; rewrite -(subnKC le_dm) addnA -mulSnr.
-by apply: IHm q.+1 (n-d) _; apply: leq_trans (leq_subr d n) leq_nm.
-Qed.
-
-Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
-Proof.
-case: m => //= m; elim: n => //= n IHn; rewrite ltnS leq_eqVlt.
-by case/orP=> [/eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
-Qed.
+Goal forall m, exists2 p, m < p & prime p.
+  move => m; have m1_gt1 : 1 < m`! + 1.
+    by rewrite addn1 ltnS fact_gt0.
+  case: (pdivP m1_gt1) => [p pr_p p_dv_m1].
+Abort.
 
 Lemma prime_above m : exists2 p, m < p & prime p.
 Proof.
-have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
-exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
-by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
+  have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1.
+    by rewrite addn1 ltnS fact_gt0.
+  exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
+  by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
+Qed.
+
+
+(* 4.2.2 Order and max, a matter of symmetry *)
+
+(* Lemma orP {a b : bool} : a || b -> a \/ b. *)
+(* Lemma orb_idr (a b : bool) : (b -> a) -> (a || b) = a. *)
+(* Lemma orbC a b : a || b = b || a. *)
+(* Lemma maxn_idPl {m n} : n <= m -> maxn m n = m. *)
+(* Lemma maxnC m n : maxn m n = maxn n m. *)
+(* Lemma leq_total m n : (m <= n) || (n <= m). *)
+
+Lemma leq_max4 m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+  case: (orP (leq_total n2 n1)) => [le_n21|le_n12].
+  rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+    by apply: leq_trans le_mn2 le_n21.
+  rewrite maxnC orbC.
+  rewrite (maxn_idPl le_n12) orb_idr // => le_mn1.
+    by apply: leq_trans le_mn1 le_n12.
+Qed.
+
+Lemma leq_max3 m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+  have th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
+  move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+    by apply: leq_trans le_my le_yx.
+  by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
+Qed.
+
+Lemma leq_max2 m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+  suff th_sym x y: y <= x -> (m <= maxn x y) = (m <= x) || (m <= y).
+    by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
+  move=> le_yx; rewrite (maxn_idPl le_yx) orb_idr // => le_my.
+  by apply: leq_trans le_my le_yx.
+Qed.
+
+Lemma leq_max1 m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+  wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
+    by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
+  rewrite (maxn_idPl le_n21) orb_idr // => le_mn2.
+    by apply: leq_trans le_mn2 le_n21.
+Qed.
+
+Lemma leq_max m n1 n2 : (m <= maxn n1 n2) = (m <= n1) || (m <= n2).
+Proof.
+  wlog le_n21: n1 n2 / n2 <= n1 => [th_sym|].
+    by case: (orP (leq_total n2 n1)) => /th_sym; last rewrite maxnC orbC.
+  by rewrite (maxn_idPl le_n21) orb_idr // => /leq_trans->.
 Qed.
