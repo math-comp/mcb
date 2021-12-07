@@ -8,3 +8,8 @@ rewrite big_nat_recr //= IHn addnC -divnMDl //.
 by rewrite mulnS muln1 -addnA -mulSn -mulnS.
 Qed.
 
+(* Recommended headers *)
+(* From mathcomp Require Import all_ssreflect. *)
+(* Set Implicit Arguments. *)
+(* Unset Strict Implicit. *)
+(* Unset Printing Implicit Defensive. *)
