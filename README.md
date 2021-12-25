@@ -6,7 +6,7 @@ To build the book using Nix, run
 ```ShellSession
 # without flakes, check out the repo first
 $ NIXPKGS_ALLOW_UNFREE=1 nix-build
-$ with flakes
+# with flakes
 $ NIXPKGS_ALLOW_UNFREE=1 nix build github:math-comp/mcb --impure
 ```
 
