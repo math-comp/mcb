@@ -375,10 +375,10 @@ $~$
 n : nat
 m : nat
 ===================
- m = n -> eqn m n
+ eqn m n -> m = n
 
 subgoal 2 is:
- eqn m n -> m = n
+ m = n -> eqn m n
 \end{coqout-right}
 
 In both cases the proof is now an easy induction on \C{m}.
