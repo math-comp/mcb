@@ -1256,7 +1256,7 @@ The generic notation for iterated operations has to be attached to a
 slightly specific variant of the \C{foldr} iterator, in order to
 clearly identify all components. This variant, called \C{bigop}, 
 takes as argument a range \C{(r : seq I)}, a neutral element
-\C{(op : R)}, and a binary operation \C{(op : R -> R -> R)}, to be
+\C{(idx : R)}, and a binary operation \C{(op : R -> R -> R)}, to be
 iterated. Note that the type of the elements in the range are not the
 same as the type of the arguments of the iterated operation. Indeed,
 \C{bigop} also uses a function \C{(F : I -> R)}, as well as a
