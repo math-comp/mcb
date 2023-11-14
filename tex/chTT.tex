@@ -991,7 +991,7 @@ ex_intro : forall A : Type, forall P : A -> Prop, forall a : A, P a -> ex A P.
 
 Both \C{ex} and \C{ex_intro} are parameterized by \C{(A : Type)}: as
 we have seen in chapter~\ref{ch:prog}, the \C{(forall A : Type)}
-quantification indicates that \C{ex} are \C{ex_intro} are polymorphic
+quantification indicates that \C{ex} and \C{ex_intro} are polymorphic
 constants, that can be instantiated for any type. Both \C{ex} and
 \C{ex_intro} also have a parameter of type  \C{(A -> Prop)}: since it
 does not appear in the rest of the type of \C{ex}, this parameter is
