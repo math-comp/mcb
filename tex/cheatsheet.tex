@@ -38,7 +38,7 @@ $$
 
 \begin{description}
 \item[Top] is the first assumption, \C{y} here
-\item[Stack] alternative name for the list of $Assumptions$
+\item[Stack] is an alternative name for the list of $Assumptions$
 \end{description}
 
 \subsection*{Popping from the stack}
@@ -48,8 +48,8 @@ Note: in the following we assume $cmd$ does nothing, exactly like
 \begin{cheat}
 $cmd$=> x px
 \end{cheat}
-Run $cmd$, then pop Top, put it in the context naming it \C{x} then
-pop the new Top and names it \C{px} in the context
+Run $cmd$, then pop Top, put it in the context, naming it \C{x}, then
+pop the new Top and name it \C{px} in the context
 
 \begin{cheatout}
 =========
@@ -70,7 +70,7 @@ $cmd$=> [|x xs] //
 \end{cheat}
   Run $cmd$, then reason by cases on Top. In the first
   branch do nothing, in the second one pop two
-  assumptions naming then \C{x} and \C{xs}. Then get rid of
+  assumptions naming them \C{x} and \C{xs}. Then get rid of
   trivial goals. Note that, since only the first branch is
   trivial, one can write \C{=> [// | x xs]} too.\caveat{
   Immediately after
@@ -95,8 +95,8 @@ $\to$
 $cmd$=> /andP[pa pb]
 \end{cheat}
   Run $cmd$, then apply the view \C{andP} to Top, then destruct the
-  conjunction and introduce in the context the two
-  parts naming the \C{pa} and \C{pb}
+  conjunction and introduce the two
+  parts into the context, naming them \C{pa} and \C{pb}
 
 \begin{cheatout}
 =========
@@ -115,8 +115,8 @@ $\to$
 \begin{cheat}
 $cmd$=> /= {px}
 \end{cheat}
-  Run $cmd$ then simplify the goal then discard \C{px} from
-  then context
+  Run $cmd$, then simplify the goal, then discard \C{px} from
+  the context
 
 \begin{cheatout}
  x : nat
@@ -135,9 +135,9 @@ $~$
 \begin{cheat}
 $cmd$=> [y -> {x}]
 \end{cheat}
-  Run $cmd$ then destruct the existential, then introduce y,
-  then rewrite with Top left to right and
-  discard the equation, then clear x
+  Run $cmd$, then destruct the existential, introduce y,
+  then rewrite with Top from left to right,
+  discard the equation, and clear x
 
 \begin{cheatout}
  x : nat
@@ -441,8 +441,8 @@ $\to$
 \begin{cheat}
 have pa : P a.
 \end{cheat}
-  Open a new goal for \C{P a}. Once resolved
-  introduce a new entry in the context for it named \C{pa}
+  Open a new goal for \C{P a}. Once it is resolved,
+  introduce a new entry for it in the context, named \C{pa}
 
 \begin{cheatout}
  a : T
@@ -599,7 +599,7 @@ case: b => [h1| h2 h3]
 \begin{cheat}
 have /andP[x /eqP->] : P a && b == c
 \end{cheat}
-  Open a subgoal for \C{P a && b == c}. When proved
+  Open a subgoal for \C{P a && b == c}. When proved,
   apply to it the \C{andP} view, destruct the conjunction,
   introduce \C{x}, apply the view \C{eqP} to turn
   \C{b == c} into \C{b = c}, then rewrite with it and discard the
@@ -722,7 +722,7 @@ rewrite [pat]lem [in pat2]lem2 [X in pat3]lem3
 \end{cheat}
   Rewrite the subterms selected by the pattern \C{pat} with \C{lem}.
   Then in the subterms selected by the pattern \C{pat2}
-  match the pattern inferred from the left hand side of \C{lem2} and
+  match the pattern inferred from the left-hand side of \C{lem2} and
   rewrite the terms selected by it. Lastly, in the subterms selected by
   \C{pat3} rewrite with \C{lem3} the subterms identified by \C{X} exactly
 
@@ -766,8 +766,8 @@ rewrite [e as X in pat1]lem1
 rewrite /def1 -[pat]/term /=
 \end{cheat}
   Unfold all occurrences of \C{def1}. Then match the goal against \C{pat}
-  and change all its occurrences into \C{term} (pure computation). Last
-  simplify the goal
+  and change all its occurrences into \C{term} (pure computation). Last,
+  simplify the goal.
 
 \begin{cheat}
 rewrite 3?lem2 // {hyp} => x px

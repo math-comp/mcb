@@ -178,8 +178,8 @@ is that ``a term has a given type''. Such a statement, called a
 $$\Gamma \vdash t : T$$
 and reads:
 \emph{in the context $\Gamma$, the term $t$ has the type $T$}. A type
-is just a term, which is called a type when it occurs on the right
-hand-side of a column in a well-formed typing judgment, like $T$ in
+is just a term, which is called a type when it occurs on the right-hand
+side of a colon in a well-formed typing judgment, like $T$ in
 our case. A context is a list of variables, each paired with a type,
 that can occur in $t$ and $T$. This typing judgment expresses that
 under the typing assumptions listed in the context $\Gamma$, $t$ and
@@ -293,7 +293,7 @@ set theory makes between sets and propositions: type theory is based
 on a same and single collection of inductively defined terms. A
 judgment $\Gamma \vdash t : T$ relates two \emph{terms}, $t$ and $T$ (in the
 context $\Gamma$), and $T$ is called a \emph{type} because it appears
-on the right hand side of the column symbol in a typing judgment. Term $T$ can be
+on the right-hand side of the colon symbol in a typing judgment. Term $T$ can be
 thought of as a label for a collection of terms, and the judgment
 $\Gamma \vdash t : T$, as the statement that (in context $\Gamma$)
 ``term $t$ belongs to the collection $T$'', or even, to some extent,
@@ -311,12 +311,12 @@ set-theoretic sentence $t \in T$ would be. In particular, one cannot
 reason (internally) by case analysis on the proof that
 $t$ has type $T$, nor can we disprove (internally) that $t$ has type $T$ for some particular
 $T$. Finally, as we shall see later in this section, substitution of
-equals does not behave the same for terms at the left of a column, and
+equals does not behave the same for terms at the left of a colon, and
 for those on the right --- types.
 
 
 We assume a collection of distinct names, used to denote atomic terms
-and called \emph{sorts}.  One of this sorts is called \C{Prop}, and it
+and called \emph{sorts}.  One of these sorts is called \C{Prop}, and it
 is the type of statements:
 
 \begin{coq-left}{name=check-eq}{}
@@ -327,8 +327,8 @@ Check 7 = 7 : Prop.
 \end{coqout-right}
 \coqrun{name=r2}{ssr,check-eq}
 
-As noted already in Chapter~\ref{ch:proofs}, a well formed statement
-is not necessary a provable one:
+As noted already in Chapter~\ref{ch:proofs}, a well-formed statement
+is not necessarily a provable one:
 
 \begin{coq-left}{name=check-eq}{}
 Check 7 = 9 : Prop.
@@ -363,7 +363,7 @@ $~$
 Type@{U1} : Type@{U2} (* U1 < U2 *)
 \end{coqout-right}
 
-the instance of \C{Type} on the right side of the column has a greater
+the instance of \C{Type} on the right-hand side of the colon has a greater
 index (named \C{U2} here) than the instance of \C{Type} on the left.
 
 In an empty context,
@@ -494,7 +494,7 @@ by types on mathematical statements. This rule will rule out
 nonsensical assertions, like ``$\pi$ is equilateral'' or ``2 is a
 Banach space''. But the same rule shall also play a nastier role, for
 instance if the user wants to casually embed natural numbers into
-integers, or and integer into rational numbers: working with these
+integers, or an integer into rational numbers: working with these
 obvious inclusions might require an explicit cast in a typed setting,
 if $\mathbb{N}$, $\mathbb{Z}$, $\mathbb{Q}$ are represented by
 distinct types.
@@ -933,7 +933,7 @@ Inductive prod (A B : Type) := pair (a : A) (b : B).
 
 Pattern matching provides the elimination rule for
 conjunction, i.e. the (two) rules governing the construction of proofs
-using a conjunctive hypothesis. Here is left elimination rule:
+using a conjunctive hypothesis. Here is the left elimination rule:
 
 \begin{coq}{name=Ande1}{}
 Definition proj1 A B (p : A /\ B) : A :=
@@ -1001,7 +1001,7 @@ indicated by a so-called \emph{higher-order} quantification, because
 the parameter has an arrow type. Constants  \C{ex} and \C{ex_intro}
 can thus be  be specialized to any predicate \C{P}, so that the \C{ex}
 inductive declaration can be used on any formula. Finally, the
-\C{ex_intro} constant features a last, inner-most \C{forall a : A}
+\C{ex_intro} constant features a last, innermost \C{forall a : A}
 quantifier, which binds a term variable \C{a} representing the witness
 of the existential statement for \C{P}.\\
 
@@ -1148,7 +1148,7 @@ The \Coq{} system generates this program automatically, as soon as
 is defined. 
 
 It is worth mentioning that this principle is general enough to
-prove the ``stronger'' induction principle that give access, in
+prove the ``stronger'' induction principle that gives access, in
 the inductive step, to the property \C{P} on all numbers
 smaller than \C{n.+1} and not just its predecessor.
 
@@ -1197,7 +1197,7 @@ proof step that the \mcbMC{} library provides dedicated idioms
 that we will detail in Section~\ref{sec:ubnP}.
 
 Finally, recall that recursive functions are checked for termination:
-Through the lenses of the proofs-as-programs correspondence, this means
+Through the lens of the proofs-as-programs correspondence, this means
 that the induction principle just coded is sound, i.e., based on a
 well-founded order relation.
 \index[concept]{termination}

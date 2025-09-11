@@ -10,23 +10,22 @@ constitutes the infrastructure for the machine-checked proofs of the
 Four Color Theorem~\cite{Gonthier08} and of the
 Odd Order Theorem~\cite{gonthier:hal-00816699}.
 
-The reason of existence of this book is to break down the barriers to entry.
+The reason for this book's existence is to break down the barriers to entry.
 While there are several books around covering the usage of the
 \Coq{} system~\cite{BC04,SF,CPDT}
 and the theory it is based
 on~\cite{Coq:manual}\cite{paulinmohring:hal-01094195,hottbook},
 the \mcbMC{} library is built
 in an unconventional way.  As a consequence, this book provides a
-non-standard presentation of \Coq{}, putting upfront the formalization
+non-standard presentation of \Coq{}, putting up front the formalization
 choices and the proof style that are the pillars of the library.
 
-This book targets two classes of public.  On the one hand, newcomers,
+This book targets two kinds of audience.  On the one hand, newcomers,
 even the more mathematically inclined ones, %may
 find a soft
 introduction to the programming
 language of \Coq{}, Gallina, and the SSReflect proof language.
-On the other hand accustomed \Coq{} users %will hopefully
-find a
+On the other hand, accustomed \Coq{} users will, we hope, find a
 substantial account of the formalization style that made the \mcbMC{}
 library possible.
 
@@ -39,7 +38,7 @@ experiment with  a large library of formalized concepts and she is
 given as soon as possible sufficient tools to prove non-trivial
 mathematical results by reusing parts of the library. By the end of
 the first part, the reader has learned how to prove formally the
-infinitude of prime numbers, or the correctness of the Euclidean's
+infinitude of prime numbers, or the correctness of the Euclidean
 division algorithm, in a few lines of proof text.
 
 \paragraph{Acknowledgments.}
@@ -83,21 +82,21 @@ a shorthand for \mcbSSR{}.
 % proofs gradually, and takes benefit from frequent interactions with
 % the system.
 \emph{SSReflect} is a language designed to
-ease the activity of writing and maintaining formal proofs.
+ease the task of writing and maintaining formal proofs.
 In particular the maintenance of large
 formal libraries requires a solid writing discipline
 and a language that supports it.
 % . to be tractable,
 % as it is the case for any large corpus of code.
-\emph{SSReflect} provides linguistic constructs well adapted to
+\emph{SSReflect} provides linguistic constructs that are well-adapted to
 writing scripts that can be easily fixed in response to % ancillary
 changes to the contents of the formal libraries.
 % or changing the formal
 % definitions.
 
-Actually, \mcbSSR{} is firstly the name of a
+Actually, \mcbSSR{} is first and foremost the name of a
 formalization methodology, sometimes also called \emph{Boolean Reflection}.
-Initially conceived for  the formal proof
+Initially conceived for the formal proof
 of the Four Colors Theorem, it became a pillar of the \mcbMC{}
 library and of the formal proof of the Odd Order
 Theorem. The SSReflect proof language was named after this methodology
@@ -159,7 +158,7 @@ Tricky details typically overlooked by beginners are signaled as follows:
 
 \Coq{} code is in \C{typewriter} font and \C{(surrounded by parentheses)}
 when it occurs in the middle of the text.  Longer snippets are in boxes with line
-numbers like the following one:
+numbers, like the following one:
 
 \begin{coq}{}{title=A sample snippet}
 Example Gauss n : \sum_(0 <= i < n.+1) i = (n * n.+1) %/ 2.

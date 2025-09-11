@@ -42,12 +42,12 @@ feature beyond those we have already seen: type inference with
 dependent types, coercions and canonical instances of structures.  It
 is only a ``simple matter of programming'', albeit one that involves
 some new formalisation idioms. This chapter describes the most
-important: telescopes, packed classes, and phantom parameters.
+important ones: telescopes, packed classes, and phantom parameters.
 % class coercions, and quotation.
 
 While some of these formalisation patterns are quite technical, casual
 users do not need to master them all. Indeed the documented interface
-of structures suffices to use and declare instances of structures. We
+of structures suffices for using and declaring instances of structures. We
 describe these interfaces first, so only those who wish to extend old
 or create new hierarchies need to read on.
 
@@ -157,7 +157,7 @@ Canonical Zp_zmodType := ZmodType 'I_p Zp_zmodMixin.
 
 Line 1 bundles the additive operations (0, $+$, $-$) and their
 properties in a \emph{mixin}, which is then used in line 2 to create a
-canonical instance. After line 2 all the additive algebra provided in
+canonical instance. After line 2 all the additive algebra provided by
 \lib{ssralg} becomes applicable to \lstinline/'I_p/; for example \C{0}
 denotes the zero element, and \C{i + 1} denotes the successor of \C{i} mod $p$.
 
@@ -213,7 +213,7 @@ a single property is added.
 
 Constraining the shape of the modulus $p$ is a simple and robust way
 to enforce $p>1$: it standardizes the proofs of $p>0$ and $p>1$, which
-avoid the unpleasantness of multiple interpretations of \C{0}
+avoids the unpleasantness of multiple interpretations of \C{0}
 stemming from different proofs of $p>0$ --- the latter tends to happen
 with ad hoc inference of such proofs using canonical structures or
 tactics. The shape constraint can however be inconvenient when the
@@ -705,9 +705,9 @@ Definition zmodType := Zmodule.Pack class.
 Two structures extend rings independently: \C{comRingType} provides
 multiplication commutativity, and \C{unitRingType} provides computable
 inverses for all units (i.e., invertible elements) along with a test
-of invertibility. These structures are incomparable, and there are reasonable
+of invertibility. These structures are incomparable, as there are reasonable
 instances of each: $2\times 2$ matrices over $\mathbb{Q}$ have
-computable inverses but do not commute, while polynomials over
+computable inverses but do not commute, whereas polynomials over
 $\mathbb{Z}_p$ commute but do not have easily computable inverses.
 The respective definitions of \C{comRingType} and \C{unitRingType} follow exactly
 the pattern we have seen,
@@ -875,7 +875,7 @@ Definition phant_id T1 T2 v1 v2 := phantom T1 v1 -> phantom T2 v2.
 
 For example, each packed class contains exactly the same definition of
 the clone constructor\footnote{More precisely, the situation is slightly different
-  in the case of structure with a parameter, like modules.}, following the introduction of
+  in the case of a structure with a parameter, like modules.}, following the introduction of
 section variables \C{T} and~\C{cT}, and the definition of \C{class}:
 
 \begin{coq}{name=phant21}{}
@@ -912,7 +912,7 @@ to \lstinline/Choice.class nat_choiceType/.
 The code for the instance constructor for \C{choiceType} is almost
 identical, because it only extends \C{eqType} with a mixin that does
 not depend on \C{eqType}.
-Note that this definition allows \Coq{} to infer \C{T} from \C{m}.
+Note that this definition lets \Coq{} infer \C{T} from \C{m}.
 
 \begin{coq}{name=phant23}{}
 Definition pack T m :=
@@ -981,7 +981,7 @@ to it the theory of finite types.
 \begin{coq}{}{}
 Inductive windrose := N | S | E | W.
 \end{coq}
-The most naive way to show that \C{windrose} is a \C{finType} is
+The most na\"ive way to show that \C{windrose} is a \C{finType} is
 to provide a comparison function, then a choice function, \ldots
 finally an enumeration.  Instead, it is much simpler to show one
 can punt \C{windrose} in bijection with a pre-existing finite type,
@@ -1027,12 +1027,12 @@ Canonical windrose_countType := CountType windrose windrose_countMixin.
 Definition windrose_finMixin := PcanFinMixin pcan_wo4.
 Canonical windrose_finType := FinType windrose windrose_finMixin.
 \end{coq}
-Only one tiny detail has been left on the side so far.  To use
+Only one tiny detail has been left aside so far.  To use
 \C{windrose} in conjunction with the \C{\\in} infix notation or with
 the notation \C{#|...|} for cardinality, the type declaration has to
 be tagged as an instance of the \C{predArgType} structure, for types
-which model a predicate, as it is the one which supports the latter
-notations. It can be done as follows.  \index[coq]{\C{preArgType}}
+which model a predicate, as it is the structure that supports the latter
+notations. It can be done as follows.  \index[coq]{\C{predArgType}}
 
 \begin{coq}{}{}
 Inductive windrose : predArgType := N | S | E | W.
@@ -1047,7 +1047,7 @@ Check (N != S) && (N \in windrose) && (#| windrose | == 4).
 A generic technique is available in order to equip a data type with structures of
 \C{eqType}, \C{choiceType}, and \C{countType}. It consists in
 providing a correspondence with the generic tree data type
-\C{(GenTree.tree T)}: an n-ary tree with nodes labelled with
+\C{(GenTree.tree T)}: an n-ary tree with nodes labeled with
 natural numbers and leaves carrying a value in \C{T}.
 \index[coq]{\C{GenTree.tree}}
 
