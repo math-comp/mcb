@@ -32,7 +32,7 @@ integers smaller than 7?  How to benefit from extra properties
 integers smaller than 7 have, like being a finite collection?
 
 In standard mathematics one would simply say that the integers are an
-infinite set (called \C{nat}), and that the integers smaller that 7
+infinite set (called \C{nat}), and that the integers smaller than 7
 form a finite subset of the integers (called \C{'I_7}).  Integers and
 integers smaller than 7 are interchangeable data: if \C{(n : nat)} and
 \C{(i : 'I_7)} one can clearly add \C{n} to \C{i}, and possibly show
@@ -40,13 +40,13 @@ that the sum is still smaller than 7.  Also, an informed reader
 knows which operations are compatible with a subset. E.g. \C{(i-1)}
 stays in \C{'I_7}, as well as \C{(i+n \%| 7)}.  So in a sense, subsets
 also provide a linguistic construct to ask the reader to track an
-easy invariant and relieving the proof text from boring details.
+easy invariant and releaving the proof text of boring details.
 
 The closest notion provided by the \mcbCIC{} is the one of $\Sigma-$types,
 that we have already seen in the previous chapter in their general
 form of records.
 For example, one can define the type \C{'I_7} as the $\Sigma$-type $\Sigma_{(n:nat)} n
-< 7$ which pairs a natural number $n$ and proof that it is smaller than $7$.  Since proofs are terms, one can
+< 7$, which pairs a natural number $n$ and a proof that it is smaller than $7$.  Since proofs are terms, one can
 pack together objects and proofs of some properties to
 represent the objects that have those properties.  For example $3$,
 when seen as an inhabitant of \C{'I_7}, is represented by a dependent
@@ -118,7 +118,7 @@ in the form of an equality proof, its length.  As test bench
 we pick this simple example: a tuple is processed using
 functions defined on sequences, namely \lstinline/rev/ and
 \lstinline/map/.  These operations do preserve the invariant of
-tuples, i.e., they don't alter the length of the subjacent list.
+tuples, i.e., they don't alter the length of the subjacent sequence.
 
 \begin{coq}{name=p1}{}
 Example seq_on_tuple n (t : n.-tuple nat) :
@@ -222,7 +222,7 @@ it is expected to have type "LHS = RDX".
 
 Unifying \lstinline/(size (tval ?$_n$ ?$_T$ ?$_t$))/
 with \lstinline/(size (rev (tval n T t)))/ is hard.
-Both term's head symbol is \lstinline/size/, but then
+Both terms' head symbol is \lstinline/size/, but then
 the projection \lstinline/tval/ applied to unification
 variables has to be unified with \lstinline/(rev ...)/,
 and both terms are in normal form.
@@ -461,7 +461,7 @@ of \C{insub} are called \C{insubT} and \C{insubF}.}
 Both \C{Sub} and \C{insub} expect the typing context to
 specify the sub-type.
 
-Here is a few example uses, using \C{tuple}:
+Here are a few example uses, using \C{tuple}:
 
 \begin{coq}{name=insub}{}
 Variables (s : seq nat) (t : 3.-tuple nat).
@@ -753,11 +753,11 @@ Definition enum_rank (T : finType) : T -> 'I_#|T|.
 %\mcbREQUIRE{}
 \section{Finite functions}
 
-In standard mathematics, functions that are point wise equal are
+In standard mathematics, functions that are pointwise equal are
 considered as equal.  This principle, that we call \emph{functional
 extensionality}, is compatible with the \mcbCIC{} but is not built-in.
 At the time of writing, only very recent variations of CIC,
-as Cubical Type Theory~\cite{cubicaltt}, include such principle.
+like Cubical Type Theory~\cite{cubicaltt}, include such a principle.
 \index[concept]{functional extensionality}
 
 Still, this principle is provable in \Coq{} for functions with a
@@ -771,7 +771,7 @@ The actual definition\footnote{Since \mcbMC{} version 1.9 the definition
 of finite functions changed.
 The new implementation is based on a specific list-like data type indexed over
 the list of the elements of the domain. Thanks to this more sophisticated
-ecoding, the current Coq type checker accepts, for example, the following
+encoding, the current Coq type checker accepts, for example, the following
 declaration of a 3-branch tree:
 \C{Inductive tree3 := Leaf of nat | Node of \{ffun 'I_3 -> tree3\}.}
 At the time of writing Coq rejects the declaration above with the definition
@@ -878,7 +878,7 @@ Lemma bigA_distr_bigA (I J : finType) F :
 \end{coq}
 
 Such lemma, rephrased in mathematical notation down below,
-states that the indices \C{i} and \C{j} are independently chosen.
+states that the indices \C{i} and \C{j} are chosen independently.
 
 $$
 \prod_{i \in I} \sum_{j \in J} F i j = \sum_{f \in I \to J} \prod_{i \in I} F i (f i)
@@ -1155,8 +1155,8 @@ B : 'M_(n, m)
 \sum_i \sum_j A i j * B j i = \tr (B *m A)
 \end{coqout}
 
-It is worth noticing that the equation we used to expand the left hand
-side and the one we need to expand the right hand side are very
+It is worth noticing that the equation we used to expand the left-hand
+side and the one we need to expand the right-hand side are very
 similar.  Actually the sub proof following \C{have}
 can be generalized to any pair of matrices \C{A} and \C{B}.  The
 \mcbSSR{} proof language provides the \C{gen} modifier in order to tell \C{have}
@@ -1210,7 +1210,7 @@ subject of the next chapter.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Block operations}
 
-The size information stocked in the type of a matrix is
+The size information stored in the type of a matrix is
 also used to drive the decomposition of a matrix into sub-matrices,
 called blocks.  For example when the size expression of a square
 matrix is like \C{(n1 + n2)}, then the upper left block
@@ -1328,7 +1328,7 @@ Lemma conform_castmx (e_mn : (m2 = m3) * (n2 = n3))
 
 The curious reader may have spotted that the declaration of the
 \C{reflect} inductive predicate of section~\ref{ssec:specs} differs
-from the one part of the \mcbMC{} library in a tiny detail.
+from the one that is part of the \mcbMC{} library in a tiny detail.
 The real declaration indeed puts \C{reflect} in \C{Type} and not in
 \C{Prop}.
 

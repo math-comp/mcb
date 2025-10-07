@@ -119,7 +119,7 @@ the two types become syntactically equal and hence convertible.
 
 Unfortunately it is not hard to come up with classes of examples where
 guessing appropriate values for implicit arguments is, in general, not
-possible. In fact such guessing has been shown to be as hard as proof
+possible. In fact, such guessing has been shown to be as hard as proof
 search in the presence of higher-order constructs.
 For example to unify \lstinline/(prime _)/ with
 \lstinline/true/ one has to guess a prime number. Remember that
@@ -145,7 +145,7 @@ it is sufficient to program a wide panel of useful functionalities.
 
 The concrete syntax for implicit arguments, an underscore character,
 does not let one name the missing piece of information.
-If an expression contains multiple occurrence
+If an expression contains multiple occurrences
 of the placeholder ``\lstinline/_/'', they are all considered as
 potentially different by the system, and hence hold (internally)
 unique names.  For the sake of clarity we take the freedom to
@@ -245,8 +245,8 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 \end{coq}
 
-Of course, the \C{Argument} command remains useful on specific cases
-when a finer, manual tuning of implicit arguments remains needed.
+Of course, the \C{Argument} command remains useful in specific cases
+when a finer, manual tuning of implicit arguments is needed.
 The command \C{About} provides the user with the type of
 a given constant, and with the status, implicit or not, of each
 argument of the constant.
@@ -353,7 +353,7 @@ encountered would have been solved by a first order unification
 algorithm and we did not need to compute or synthesize
 \emph{functions}. In the next section we illustrate how the
 unification algorithm used in type inference can be extended in order
-to deal with higher-order problem. This extension is based on the use
+to deal with higher-order problems. This extension is based on the use
 of declarative programs, and we present the encoding of the relations
 which describe these programs.
 As of today however there is no precise, published, documentation of the type
@@ -464,7 +464,7 @@ The \lstinline/eq_op/ function is applied to three arguments.
 The first one is \lstinline/nat_eqType/ and its type,
 \lstinline/eqType/, is trivially equal to the one expected by
 \lstinline/eq_op/.
-The following two arguments are hence expected of to be of type
+The following two arguments are hence expected to be of type
 \lstinline/(sort nat_eqType)/ but \lstinline/3/ and \lstinline/4/ are
 of type \lstinline/nat/.
 Recall that unification takes computation into account exactly as the
@@ -577,7 +577,7 @@ function).
 
 \Coq{} gives up, leaving to the user the task of extending the
 unification algorithm with a declarative program that is able to solve
-unification problems of the form \lstinline/(sort $\mcbimplm{e}$)/
+unification problems of the form \lstinline/(sort $\mcbimplm{e}$)/,
 versus \lstinline/T/ for any \lstinline/T/.
 Given the current context, it seems reasonable to write an
 extension that picks \lstinline/nat_eqType/ when \lstinline/T/ is
@@ -633,7 +633,7 @@ argument \mcbimpl{S}.
 
 In the table we reported only the relevant entries.  Entries
 corresponding to the \lstinline/eq_op/ projection play no role
-in the \mcbMC{} library. The name of such projections is
+in the \mcbMC{} library. The names of such projections are
 usually omitted to signal that fact.
 
 What makes this approach interesting for a large library is that
@@ -655,7 +655,7 @@ of interfaces easily recognizable.
 \index[vernac]{\C{Structure}}
 
 The computer-science inclined reader shall see records as first-class
-values in the  \mcbCIC{} programming language. Otherwise said,
+values in the \mcbCIC{} programming language. In other words,
 the projections of a record are just ordinary functions, defined by
 pattern-matching on an inductive type, and which access the fields
 of the record.
@@ -797,7 +797,7 @@ The term synthesized by \Coq{} is the following one:
 
 When we define an overloaded notation, we convey
 through it more than just the arity (or the type) of the associated
-operation.  We associate to it a property, or a collection thereof.
+operation. We associate with it a property, or a collection thereof.
 For example, in the context of group theory, the infix \C{+} symbol
 is typically preferred to \C{*} whenever the group law is
 commutative.
@@ -1181,8 +1181,8 @@ operation being iterated and the neutral element for such operator.
 For example if $A$ is empty, then the union of all $g(a)$ is $\emptyset$,
 while if $n=0$, then the sum of all $f(i)$ is $0$.
 Then the range is an expression identifying a finite set of elements,
-sometimes expressing an order (relevant when the iterated operation is not
-commutative).  Finally a general term describing the
+sometimes expresses an order (relevant when the iterated operation is not
+commutative).  Finally, a general term describes the
 items being combined by the iterated operation.
 
 As already mentioned in section~\ref{sec:bigopnat},
@@ -1209,7 +1209,7 @@ one could write:
 $$
 \sum_{i < 2n,\, 2 \nmid i} i = n^2
 $$
-An alternative writing for the same summation exploits the general
+An alternative way of writing the same summation exploits the general
 terms to rule out even numbers:
 $$
 \sum_{i < n} (i * 2 + 1) = n^2
@@ -1258,7 +1258,7 @@ clearly identify all components. This variant, called \C{bigop},
 takes as argument a range \C{(r : seq I)}, a neutral element
 \C{(idx : R)}, and a binary operation \C{(op : R -> R -> R)}, to be
 iterated. Note that the type of the elements in the range are not the
-same as the type of the arguments of the iterated operation. Indeed,
+same as the types of the arguments of the iterated operation. Indeed,
 \C{bigop} also uses a function \C{(F : I -> R)}, as well as a
 filtering predicate \C{(P : pred I)}, to construct the actual
 iteration range. In the end, \C{bigop} filters the range \C{r} using
@@ -1417,7 +1417,7 @@ and obtain the following goal:
 \end{coqout}
 
 It is clear that for the two lemmas to be provable,
-one needs the associativity property of \C{addn} and also that
+one needs the associative property of \C{addn} and also that
 \C{0} is neutral.
 In other words, the lemmas we used require the operation \C{*\%M} to form
 a monoid together with the unit \C{1}.
@@ -1451,7 +1451,7 @@ As we anticipated, canonical structures can be indexed not only on
 types, but on any term.  In particular we can index them on function
 symbols to relate, for example, \C{addn} and its monoid structure.
 
-Here we only present the \C{Monoid} interface an operation has to
+Here we only present the \C{Monoid} interface that an operation has to
 satisfy in order to access a class of generic lemmas.
 Chapter~\ref{ch:hierarchy} adds other interfaces to the picture and organizes
 the bigop library around them.
@@ -1551,7 +1551,7 @@ Proof. by apply: big_nat_recr. Qed.
 
 the following unification problem has to be solved:
 \C{addn} versus \C{(operator ?m)}.
-Inferring a value for \C{?m} mean
+Inferring a value for \C{?m} means
 inferring a proof that \C{addn} forms a monoid with \C{0}; this is a
 prerequisite for the \C{big\_nat\_recr} lemma we don't have to provide
 by hand.
@@ -1811,7 +1811,7 @@ we are interested in: \C{(Equality.sort ?T)} versus \C{nat}.
 
 %\warntechnical{}
 
-It is possible to  ask \Coq{} if a certain term does validate an
+It is possible to ask \Coq{} whether a certain term validates an
 interface.  For example, to check if \C{addn} forms a monoid one can
 \C{Check [law of addn]}.  A notation of this kind exists for any
 interface, for example \C{[eqType of nat]} is another valid query to

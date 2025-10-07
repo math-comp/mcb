@@ -1,11 +1,11 @@
 \chapter{Linear algebra}
 \label{linalg:smith}
 
-The library covers linear algebra in finite dimension in two distinct
+The library covers linear algebra in finite dimensions in two distinct
 and almost independent parts. The first part provides a notion of
 abstract finite dimension vector spaces on top of the algebraic
 hierarchy. The second part represents vectors, families of vectors,
-spaces and linear maps using the same matrix operations, and with a
+spaces, and linear maps using the same matrix operations and with
 maximal sharing of operations.
 
 Warning: If you are going to formalize linear algebra, do not choose
@@ -21,27 +21,27 @@ development.
 
 \begin{itemize}
 \item We provide an abstract interface for vector spaces, which
-  inherits from the interface from left modules from the algebraic
+  inherits from the interface for left modules from the algebraic
   hierarchy, together with the axiom \C{Vector.axiom_def} which states
   an isomorphism between the vector space and $R^n$ for some $n$. This
   axiom should be read as: ``any vector is uniquely determined by its
-  coordinates in a fixed basis'' All the theory of this interface is
+  coordinates in a fixed basis''. All the theory of this interface is
   described in \lib{algebra.vector}.
 \end{itemize}
 
 \paragraph{Formalization choices}
 
 The library provides reasoning on vector spaces (addition, complement,
-intersection) and linear maps (identity, composition and inverse) as a
-primitive objects, with a few bridges with elements (taking the space
+intersection) and linear maps (identity, composition, and inverse) as
+primitive objects, with a few bridges to elements (taking the space
 spanned by a family of vectors, taking a basis or picking a non-zero
 element). \emph{There is no bridge from and to matrices at this
   stage}, so if you want to deal with matrix representations of linear
 maps, you would rather use the other linear algebra library.
 
 The incomplete basis theorem is not provided as a theorem in the
-library but is rather viewed as a composition of operations: first
-take the complement space and the get its basis.
+library but is rather viewed as a composition of operations: first,
+take the complement space and then get its basis.
 
 \begin{coq}{}{width=8cm}
 Theorem incomplete_basis_theorem (F : fieldType) (E : vectType F) (v : seq E) :
@@ -65,7 +65,7 @@ Galois theory is based on this library but is in another chapter.
 \paragraph{Contents}
 
 \begin{itemize}
-\item The type of matrices and basic operation on them (\textit{i.e.}
+\item The type of matrices and basic operations on them (\textit{i.e.}
   operations independent from linear algebra) are defined in the
   library \lib{algebra.matrix}.
 
@@ -74,8 +74,8 @@ Galois theory is based on this library but is in another chapter.
 
 \item The library \lib{algebra.mxalgebra} overloads matrix product
   which means at the same time: composition of linear maps,
-  application of maps and image of space by a map. This simplifies the
-  theory as there is less lemmas to write.
+  application of maps, and the image of a space by a map. This simplifies the
+  theory as there are fewer lemmas to write.
 
 \end{itemize}
 
@@ -84,7 +84,7 @@ Galois theory is based on this library but is in another chapter.
 \label{sec:comp-betw-vect}
 
 The library \lib{algebra.vector} has the same primitives as mxalgebra
-but with additional casts to go from one type to the other, that were
+but with additional casts to go from one type to the other, that are
 identified in mxalgebra.
 
 A usual treatment of linear algebra would require the use of mxalgebra
@@ -103,8 +103,8 @@ In the next revision of the book?
 
 The starting point for linear algebra is the library
 \lib{algebra.matrix}, which contains the basic definition of matrices
-(as a table of number represented by finite functions), and the
-following ``basic'' operations that are independent form the type:
+(as a table of numbers represented by finite functions), and the
+following ``basic'' operations that are independent from the type:
 \begin{itemize}
 \item building a matrix from its coefficients using big notations
   \C{$\backslash$matrix_(i < m, j < n) c_ i j}, \C{$\backslash$row_(j < n) c_ j}, \C{$\backslash$col_(i <
@@ -118,12 +118,12 @@ following ``basic'' operations that are independent form the type:
   (\C{row'}, \C{col'})
 \item exchanging two rows \C{xrow} or two columns \C{xcol}, or
   permuting rows \C{row_perm} or columns \C{col_perm} using a
-  permutation from the library \lib{fingroup.perm}
+  permutation from the library \lib{fingroup.perm}.
 \item building block matrices
 \end{itemize}
 
 If the base type has more structure, then one can provide more
-structure on matrices as well. In particular matrix type inherit the
+structure on matrices as well. In particular matrix types inherit the
 \C{eqType}, \C{choiceType}, \C{countType}, \C{finType} and
 \C{zmodType}. When the base type is a ring, we also have:
 \begin{itemize}
@@ -136,21 +136,21 @@ structure on matrices as well. In particular matrix type inherit the
   $E_{i_0,j_0} = \left(\delta_{i,i_0}\cdot\delta_{j,j_0}\right)_{i,j}$
   (\C{delta_mx}).
 \item Permutation matrices \C{tperm_mx}, \C{perm_mx}
-\item Trace \C{$\backslash$tr} and determinate \C{$\backslash$det}
+\item Trace \C{$\backslash$tr} and determinant \C{$\backslash$det}
 \item The cofactor \C{cofactor} and the adjoint matrix
   \C{$\backslash$adj}
 \item Invertibility test \C{unitmx} and inversion of a matrix
   \C{invmx}
 \end{itemize}
 
-\paragraph{linear maps and spaces as matrices}
+\paragraph{Linear maps and spaces as matrices}
 
 The library \lib{algebra.mxalgebra} provides an interpretation of row
 matrices as vectors and matrices both as linear maps and as the
-subspace of $R^n$ generated by the row vectors of matrices. Note that
+subspace of $R^n$ generated by the row vectors of the matrices. Note that
 this particular choice, \textit{i.e.} representing vectors as rows and
 not as columns, implies the use of the English convention instead of
-the french convention for application of a linear map to a
+the French convention for application of a linear map to a
 vector, since we write: $v \cdot f$ for the application~$f(v)$ of~$f$
 to~$v$.
 
@@ -165,7 +165,7 @@ Basic operations on matrices seen as spaces:
 \item The rank of the matrix is also the dimension of the space
   generated by its row vectors, \C{$\backslash$rank}
 \item Test whether the family of row vectors of a matrix is free or
-  full (\C{row_free}, \C{row_full}
+  full (\C{row_free}, \C{row_full}).
 \item Computation of the basis of the space
 \item Test
 \end{itemize}
@@ -173,15 +173,15 @@ Basic operations on matrices seen as spaces:
 Basic operations on matrices seen as linear maps:
 \begin{itemize}
 \item The kernel (\C{kermx}) of the map, represented as a matrix
-\item Test if a map has a given eigenvalue, and the eigenspace
-  associated with it, represented as a matrix
+\item Test if a map has a given eigenvalue and the eigenspace
+  associated with it, represented as a matrix.
 \end{itemize}
 
 
 \paragraph{Advanced features on Matrices}
 
-There are also more advanced operations, that are unrelated to the
-math:
+There are also more advanced operations, that are unrelated to
+mathematics:
 \begin{itemize}
 \item changing the type of the matrix using equalities on its
   dimensions (\C{castmx}) or forcing a matrix to have some dimensions

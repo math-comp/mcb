@@ -1,6 +1,6 @@
 \chapter{Numbers}
 
-The library contains various data structure for ``numbers''
+The library contains various data structures for ``numbers''
 starting from natural numbers, integers, rationals, Cauchy reals, as well as
 related constructions as modular integers, algebraic real numbers and algebraic
 complex numbers.
@@ -10,27 +10,27 @@ complex numbers.
 
 \item
 Natural numbers $\mathbb{N}$ play a special role in the \mcbMC{} library as they
-are such a basic notion that many other concept needs it (e.g., sequences, \ldots).
+are such a basic notion that many other concepts need them (e.g., sequences, \ldots).
 The definition of elementary arithmetic operations on natural numbers
 is given and studied in \lib{ssreflect.ssrnat}, except for division
-that is given in \lib{ssreflect.div}.  Elementary properties of
-prime numbers and factorization in primes are proved in
+which is given in \lib{ssreflect.div}.  Elementary properties of
+prime numbers and factorization into primes are proved in
 \lib{ssreflect.prime}.  Falling factorial and binomial coefficients are defined
 and studied in \lib{ssreflect.binomial}.
 
 \item
 The data structure of integers $\mathbb{Z}$ is defined in \lib{algebra.ssrint}
-as well as the operations that equip it with a structure of
+as well as the operations that equip it with the structure of an
 ordered ring. Library \lib{algebra.intdiv} provides various
 results about integer divisibility.  This library also provides
 results on polynomials and matrices with integer coefficients
 such as properties of the content of a polynomial or the
 existence of the Smith normal form for integer matrices~\ref{linalg:smith}.
 Library \lib{algebra.zmodp} defines arithmetic modulo a natural number $n$
-and the field structure of $\mathbb{Z}/\mathbb{Z}_p$ for $p$ a prime.
+and the field structure of $\mathbb{Z}/p\mathbb{Z}$ for $p$ a prime.
 
 \item
-The library \lib{algebra.rat} defined the ordered Archimedean ring of
+The library \lib{algebra.rat} defines the ordered Archimedean ring of
 rational numbers $\mathbb{Q}$.
 
 \item
@@ -42,7 +42,7 @@ real and complex algebraic numbers.
 Library \lib{real\_closed.cauchyreals} defines Cauchy real numbers.
 
 \item
-The generic theory of ... and order are in \lib{algebra.ssrnum}
+The generic theory of numbers and order are in \lib{algebra.ssrnum}
 and \lib{algebra.ssralg}.
 
 \end{itemize}

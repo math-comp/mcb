@@ -22,7 +22,7 @@ functions encountered in the mathematical tradition of set theory.
 % \Coq{}, how to perform computations and how to define basic
 % mathematical objects.
 
-This chapter provides code snippets that can be loaded in a Coq session,
+This chapter provides code snippets that can be loaded in a \Coq{} session,
 after the header described at the end of the introduction chapter.
 These snippets should be loaded in order and without
 omission to avoid mistakes that would take too long to explain
@@ -30,7 +30,7 @@ at this introductory level.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Functions}\label{sec:functions}
- Before being more
+Before being more
 precise about the logical foundations of the \Coq{} system in
 chapter~\ref{ch:ttch},
 we review in this section some vocabulary and notations associated
@@ -67,7 +67,7 @@ an operation applied to its arguments.  More precisely, it is the result
 of the binary operation of addition, applied to two natural numbers
 $2$ and $1$. The same expression can also represent the result of the
 unary operation of {\em adding one on the right to a natural number},
-applied to a natural number $2$.
+applied to the natural number 2.
 
 In \Coq{}, the operation of {\em adding one on the right to a natural number} is
 written in the following manner:
@@ -271,7 +271,7 @@ This capability of \Coq{} plays a crucial role
 in the \mcbMC{} library, as we shall see in chapter~\ref{ch:proofs}. It
 is however too early to be
 more precise about this normalization strategy. This would indeed
-require describing in more details the formalism underlying the
+require describing in more detail the formalism underlying the
 \Coq{} system, which we do only in chapter~\ref{ch:ttch}. The
 interested reader can consult \cite[section
 5.3.7, ``Performing computations'']{Coq:manual} for
@@ -518,10 +518,10 @@ Now, looking at the type of \C{repeat_twice} itself
 (and adding redundant parentheses for clarity),
 we obtain \C{(|==(nat -> nat)==| -> (|--nat--| -> nat))}:
 Thus, once the first argument
-\C{(f : |==nat -> nat==|)} is passed, we obtain a term the type of which is
+\C{(f : |==nat -> nat==|)} is passed, we obtain a term whose type is
 the right hand side of the main arrow, that is \C{(|--nat--| -> nat)}.
 By passing another argument, like \C{(2 : |--nat--|)}, we obtain an expression
-the type of which is, again, the right hand side of the main arrow,
+whose type is, again, the right hand side of the main arrow,
 here \C{nat}.
 Remark that each function has an arrow type and that the type of its
 argument matches the left hand side of this arrow (as depicted with
@@ -867,7 +867,7 @@ Definition pred n := if n is p.+1 then p else 0.
 \coqrun{name=pred_run}{ssr}
 \index[coq]{\C{predn} |seealso {\C{.-1}}}
 
-Observe that in the definitions of functions \C{predn} and
+Observe that in the definitions of functions \C{pred} and
 \C{non_zero}, we did omit the type of the input \C{n}: matching
 \C{n} against  the \C{p.+1} pattern imposes that \C{n} has type
 \C{nat}, as the \C{S} constructor belongs to \emph{exactly}
@@ -1139,7 +1139,7 @@ the first argument.  This % is exactly what one would expect when the
 rule thus also covers the case where the
 second argument is non-zero while the first argument is 0: in that
 case, the result of the function is zero.  Another possible view on
-\C{subn} it to see it as a subtraction operation on natural numbers,
+\C{subn} is to see it as a subtraction operation on natural numbers,
 made total by providing a default value in the ``exceptional'' cases.
 %We shall discuss totality of functions in more detail in
 %Section~\ref{sec:total}.
@@ -1325,14 +1325,14 @@ if the list holds numbers or booleans, even if the program does not
 really use the objects held in the list.
 A concrete example is the function that computes the size of the list;
 in the current setting such a function has to be written twice.
-Worse, starting from the next chapter we will prove properties of programs,
+Second, starting from the next chapter we will prove properties of programs,
 and given that the two size functions are ``different'', we would have
 to prove such properties twice.
 
 However it is clear that the two data types we just defined follow
 a similar schema, and so do the two functions for computing the size of
 a list
-or the theorems we may prove about these functions.  Hence, one would
+or the theorems we may prove about these functions.  Hence, one might
 want to be able to write something
 like the following, where $\alpha$ is a schematic variable:
 
@@ -1387,7 +1387,7 @@ constructor \C{cons} is devised specifically to describe how to produce a
 new list of type \C{(seq A)} by combining an element of \C{A}, the
 \emph{head} of the sequence, and an
 existing list of type \C{(seq A)}, the \emph{tail} of the sequence.  This
-also means that this data-type
+also means that this data type
 does not allow users to construct lists where the first element would be
 a boolean value and the second element would be a natural number.
 
@@ -1401,7 +1401,7 @@ but if one passes to it a data type, then it builds one.  Remark
 that this also means that \C{(seq (seq nat))} is a valid data type
 (namely, the type of lists of lists of natural numbers), and
 that the construction can be iterated.
-Types again avoid confusion: it is not licit to form the type \C{(seq 3)},
+Types again avoid confusion: it is not valid to form the type \C{(seq 3)},
 since the argument \C{3} has type \C{nat}, while the function
 \C{seq} expects an argument of type \C{Type}.\footnote{For historical
 reasons \Coq{} may display the type of \C{nat} or \C{bool} as \C{Set}
@@ -1708,7 +1708,7 @@ denoted by an infix \C{*} symbol, as in \C{(nat * bool)}.
 %pairs that have a natural number as their first component and a boolean
 %value as the second one.
 This inductive type has
-a \emph{single constructor} \C{mk_pair}. It takes over the two
+a \emph{single constructor}, \C{mk_pair}. It takes over the two
 polymorphic parameters, that become its two first, implicit arguments.
 The constructor \C{mk_pair} has two more explicit arguments which are
 the data stored in the pair. This constructor is associated with
@@ -1892,7 +1892,7 @@ tells \Coq{} that, whenever we name
 an input \C{x} (or \C{x'}, or \C{x1}, \ldots), its type is supposed to be
 \C{T}.  Concretely, it lets us omit an explicit type annotation
 in the definition of programs using \C{x}, such as \C{iter}.
-The  \C{Implicit Type} command is used frequently in the
+The \C{Implicit Type} command is used frequently in the
 \mcbMC{} library; the reader can refer to~\cite[``Extensions of Gallina'']{Coq:manual}
 for a more detailed documentation of it.
 
@@ -2114,7 +2114,7 @@ symbolic values. In order to highlight this, we will use another
 normalization strategy to perform computation, the \C{simpl}
 evaluation strategy.  One difference between the \C{Eval simpl}
 and \C{Compute} strategies is that the \C{simpl} one usually leaves
-expressions in nicer forms whenever they contain variables. Here again
+expressions in more readable forms whenever they contain variables. Here again
 we point the interested reader to \cite[section
 5.3.7, ``Performing computations'']{Coq:manual} for
 
@@ -2290,7 +2290,7 @@ Notation "m + n" := (addn m n) (at level 50, left associativity).
 
 For infix notations, which are meant to be printed between two arguments
 of the operator (like addition in \C{2 + 3}), we advise to always include
-space around the infix operator, so that notations don't get mixed up with
+space around the infix operator, so that notations do not get mixed up with
 potential notations occurring in the arguments.
 
 
@@ -2334,7 +2334,7 @@ Notation "n > m"  := (m.+1 <= n) (only parsing).
 \end{coq}
 \coqrun{name=notation4}{ssr,notation_gt}
 
-Another frequently used form of notation is called syntactic abbreviation.
+Another frequently used form of notation is called a syntactic abbreviation.
 It simply lets one specify a different name for the same object.
 For example the \C{S} constructor of natural numbers can also be accessed
 by writing \C{succn}.  This is useful if \C{S} is used in the current context
@@ -2401,7 +2401,7 @@ adopted throughout the \mcbMC{} library.
 	specific cases, like binding \C{1} and \C{0} to ring elements.
 \item Postfix notations begin with \C{.}, as in \C{.+1} and \C{.-group}
 	to let one write \C{(p.-group G)}. There is one exception for
-        the postfix notation of the factorial, which starts with
+	       a postfix notation of the factorial, which starts with
         \D{`}, as in \D{m`!}.
 \item Taking inspiration from \LaTeX{} some symbols begin with \C{\\},
 	like \C{\\in}, \C{\\matrix}, \C{\\sum}, \ldots
